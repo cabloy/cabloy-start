@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.base",
+  "compilerOptions": {},
+  "references": [
+    {
+      "path": "modules/a-auth/tsconfig.build.json"
+    },
+    {
+      "path": "modules/auth-simple/tsconfig.build.json"
+    },
+    {
+      "path": "modules/auth-oauth/tsconfig.build.json"
+    }
+  ],
+  "exclude": ["modules"]
+}

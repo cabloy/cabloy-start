@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.base",
+  "compilerOptions": {},
+  "references": [
+    {
+      "path": "modules/a-captcha/tsconfig.build.json"
+    },
+    {
+      "path": "modules/captcha-simple/tsconfig.build.json"
+    }
+  ],
+  "exclude": ["modules"]
+}

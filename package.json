@@ -1,0 +1,72 @@
+{
+  "name": "cabloy",
+  "version": "5.1.22",
+  "description": "A Node.js fullstack framework",
+  "keywords": [
+    "cabloy",
+    "fullstack",
+    "vona",
+    "zova"
+  ],
+  "homepage": "https://github.com/cabloy/cabloy#readme",
+  "bugs": {
+    "url": "https://github.com/cabloy/cabloy/issues"
+  },
+  "license": "MIT",
+  "author": "zhennann",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cabloy/cabloy.git"
+  },
+  "type": "module",
+  "scripts": {
+    "init": "pnpm install --no-frozen-lockfile && node scripts/init.ts",
+    "upgrade": "node scripts/upgrade.ts",
+    "upgrade:dry-run": "node scripts/upgrade.ts --dry-run",
+    "vona": "node ./vona/packages-cli/cli/src/bin/vona.ts --projectPath=vona",
+    "zova": "node ./zova/packages-cli/cli/src/bin/zova.ts --projectPath=zova",
+    "dev": "cd vona && npm run dev",
+    "dev:zova:admin": "cd zova && npm run dev:ssr:cabloyBasicAdmin",
+    "dev:zova:web": "cd zova && npm run dev:ssr:cabloyBasicWeb",
+    "build": "pnpm --dir zova run build:ssr:cabloyBasicBatch && pnpm --dir vona run build",
+    "build:docker": "pnpm --dir zova run build:ssr:cabloyBasicBatch && pnpm --dir vona run build:docker",
+    "start": "cd vona && npm run start",
+    "start:one": "cd vona && npm run start:one",
+    "test": "cd vona && npm run test",
+    "format": "oxfmt --check",
+    "format:fix": "oxfmt --write",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "docs:fix": "textlint --fix ./cabloy-docs/**/*.md",
+    "release-patch": "node scripts/release.ts patch",
+    "release-minor": "node scripts/release.ts minor",
+    "release-major": "node scripts/release.ts major",
+    "release": "node scripts/release.ts",
+    "release:dry-run": "node scripts/release.ts --dry-run",
+    "release:changelog": "node scripts/release.ts --changelog-only",
+    "release:publish": "node scripts/release.ts --publish-only",
+    "release:github": "node scripts/release.ts --release-only",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@cabloy/lint": "^5.1.21",
+    "@cabloy/process-helper": "^3.1.3",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.19.17",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.5",
+    "minimist": "^1.2.8",
+    "oxfmt": "^0.45.0",
+    "oxlint": "^1.65.0",
+    "textlint": "^15.7.0",
+    "textlint-rule-en-no-mixed-period": "^3.0.2",
+    "textlint-rule-ja-no-mixed-period": "^3.0.2",
+    "textlint-rule-ja-space-between-half-and-full-width": "^2.4.2",
+    "textlint-rule-period-in-list-item": "^1.0.1",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=24.4.0"
+  },
+  "packageManager": "pnpm@10.19.0"
+}
