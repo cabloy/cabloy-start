@@ -1,5 +1,5 @@
 {
-  "name": "zova-module-home-layouttabs",
+  "name": "zova-module-home-layoutadmin",
   "version": "5.0.0",
   "description": "",
   "keywords": [
@@ -49,5 +49,5 @@
       "exports.\\..import"
     ]
   },
-  "title": "home-layouttabs"
+  "title": "home-layoutadmin"
 }
