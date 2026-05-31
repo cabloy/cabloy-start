@@ -37,6 +37,7 @@ export class BehaviorFormFieldLayout extends BeanBehaviorBase<
         '.v-field-label::after': {
           'content': '" *"',
           'color': 'rgb(var(--v-theme-error))',
+          // @ts-ignore
           '--v-field-label-scale': '1.5em',
           'fontSize': 'var(--v-field-label-scale)',
         },
