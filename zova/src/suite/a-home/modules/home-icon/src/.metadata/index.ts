@@ -44,6 +44,7 @@ export interface IIconRecord {
     ':business:kitchen-set': true;
     ':business:money-bag': true;
     ':business:party': true;
+    ':business:paypal': true;
     ':business:provider': true;
     ':business:purchase': true;
     ':business:store': true;
@@ -235,6 +236,7 @@ export interface IIconRecord {
     ':outline:folder-transfer-outline': true;
     ':outline:group-outline': true;
     ':outline:heart-outline': true;
+    ':outline:help-outline': true;
     ':outline:insert-emoticon-outline': true;
     ':outline:key-reset-outline': true;
     ':outline:label-outline': true;

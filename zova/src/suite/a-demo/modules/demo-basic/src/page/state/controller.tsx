@@ -1,11 +1,14 @@
+import { VBtn, VBtnGroup, VDivider, VIcon } from 'vuetify/components';
 import { BeanControllerPageBase } from 'zova';
 import { Controller } from 'zova-module-a-bean';
+import { IIconRecord } from 'zova-module-a-icon';
 import { ZPage } from 'zova-module-home-base';
 
 @Controller()
 export class ControllerPageState extends BeanControllerPageBase {
   count: number = 0;
   count2: string;
+  icon: keyof IIconRecord;
 
   protected async __init__() {
     this.count2 = this.$computed(() => {
@@ -26,12 +29,25 @@ export class ControllerPageState extends BeanControllerPageBase {
       <ZPage>
         <div>{`count(ref): ${this.count}`}</div>
         <div>{`count(computed): ${this.count2}`}</div>
-        <button class="btn btn-primary" onClick={() => this.increment()}>
-          Increment
-        </button>
-        <button class="btn btn-secondary" onClick={() => this.decrement()}>
-          Decrement
-        </button>
+        <VBtnGroup variant="elevated">
+          <VBtn color="primary" nativeOnClick={() => this.increment()}>
+            Increment
+          </VBtn>
+          <VBtn color="secondary" nativeOnClick={() => this.decrement()}>
+            Decrement
+          </VBtn>
+        </VBtnGroup>
+        <VDivider color="primary" opacity=".7" thickness="12" variant="double" gradient></VDivider>
+        <div>
+          <VIcon icon={this.icon}></VIcon>
+          <VBtn
+            nativeOnClick={() => {
+              this.icon = this.icon === '::add' ? ('$cancel' as any) : '::add';
+            }}
+          >
+            Switch
+          </VBtn>
+        </div>
       </ZPage>
     );
   }

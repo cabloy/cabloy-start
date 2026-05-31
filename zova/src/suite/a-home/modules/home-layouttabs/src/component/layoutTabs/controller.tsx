@@ -1,9 +1,12 @@
 import type { ModelTabs, ModelTabsOptions } from 'zova-module-a-routertabs';
 
-import { BeanControllerBase, Use } from 'zova';
+import { provide, ref } from 'vue';
+import { BeanControllerBase, Use, UseScope } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { $QueryAutoLoad } from 'zova-module-a-model';
-import { IServiceSsrLayoutOptions, ServiceSsrLayout } from 'zova-module-home-base';
+import { ScopeModuleASsr } from 'zova-module-a-ssr';
+import { IServiceSsrLayoutOptions, ServiceLocale, ServiceSsrLayout } from 'zova-module-home-base';
+import { ILayoutConfig } from 'zova-module-vuetify-adapter';
 
 import { ModelLayout } from '../../model/layout.js';
 import { ModelMenu } from '../../model/menu.js';
@@ -22,8 +25,17 @@ export class ControllerLayoutTabs extends BeanControllerBase {
   @Use()
   $$modelLayout: ModelLayout;
 
+  @UseScope()
+  $$scopeSsr: ScopeModuleASsr;
+
   @Use({ init: { arg: { sidebarLeftOpenPC: true } as IServiceSsrLayoutOptions } })
   $$serviceSsrLayout: ServiceSsrLayout;
+
+  @Use()
+  $$serviceLocale: ServiceLocale;
+
+  layoutConfig: ILayoutConfig;
+  layoutConfigTimeout: number = 0;
 
   leftDrawerOpen: boolean;
   leftDrawerOpenMobile: boolean = false;
@@ -42,7 +54,6 @@ export class ControllerLayoutTabs extends BeanControllerBase {
     });
     // leftDrawerOpen
     this.leftDrawerOpen = this.$customRef(() => {
-      // eslint-disable-next-line
       const self = this;
       return {
         get() {
@@ -59,6 +70,8 @@ export class ControllerLayoutTabs extends BeanControllerBase {
         },
       };
     });
+    // layoutConfig
+    this.__initLayoutConfig();
     // passport
     if (process.env.SERVER) {
       await this.$passport.ensurePassport();
@@ -67,6 +80,10 @@ export class ControllerLayoutTabs extends BeanControllerBase {
     await $QueryAutoLoad(() => this.$$modelMenu.retrieveMenus());
     // tabs
     await this._initTabs();
+  }
+
+  toggleLeftDrawer() {
+    this.leftDrawerOpen = !this.leftDrawerOpen;
   }
 
   private async _initTabs() {
@@ -104,7 +121,19 @@ export class ControllerLayoutTabs extends BeanControllerBase {
     );
   }
 
-  toggleLeftDrawer() {
-    this.leftDrawerOpen = !this.leftDrawerOpen;
+  private __initLayoutConfig() {
+    this.layoutConfig = this.$scopeBase.config.layout;
+    this.layoutConfig.leftDrawerOpen = this.leftDrawerOpen;
+    if (process.env.SSR) {
+      const layoutConfigRef = ref<ILayoutConfig | undefined>(this.layoutConfig);
+      provide('VuetifyLayoutConfig', layoutConfigRef);
+      if (process.env.CLIENT) {
+        if (!this.layoutConfigTimeout) {
+          this.layoutConfigTimeout = window.setTimeout(() => {
+            layoutConfigRef.value = undefined;
+          }, 100);
+        }
+      }
+    }
   }
 }

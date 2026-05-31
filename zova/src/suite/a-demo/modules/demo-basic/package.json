@@ -1,7 +1,6 @@
 {
   "name": "zova-module-demo-basic",
-  "version": "5.0.6",
-  "gitHead": "09d901d17140a80ee0764211b441cda72fd94663",
+  "version": "5.0.0",
   "description": "demo basic",
   "keywords": [
     "Zova Module"
@@ -12,7 +11,8 @@
     "mock",
     "src",
     "icons",
-    "assets"
+    "assets",
+    "rest"
   ],
   "type": "module",
   "exports": {
@@ -33,6 +33,7 @@
     "prepack": "clean-package",
     "postpack": "clean-package restore && npm run clean"
   },
+  "dependencies": {},
   "devDependencies": {
     "clean-package": "^2.2.0",
     "rimraf": "^6.1.3"
@@ -48,18 +49,5 @@
       "exports.\\..import"
     ]
   },
-  "title": "demo-basic",
-  "zovaModule": {
-    "onionsConfig": {
-      "aop": {
-        "home": {
-          "match": "home-index.controller.pageHome"
-        },
-        "home3": {
-          "dependencies": "demo-basic:home",
-          "match": "regexp:///home-index\\.controller\\.pageHome/"
-        }
-      }
-    }
-  }
+  "title": "demo-basic"
 }

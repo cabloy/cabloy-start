@@ -1,18 +1,18 @@
 {
   "name": "zova-module-home-layoutempty",
-  "version": "5.0.6",
-  "gitHead": "09d901d17140a80ee0764211b441cda72fd94663",
+  "version": "5.0.0",
   "description": "",
   "keywords": [
     "Zova Module"
   ],
   "author": "",
   "files": [
-    "mock",
     "dist",
+    "mock",
     "src",
     "icons",
-    "assets"
+    "assets",
+    "rest"
   ],
   "type": "module",
   "exports": {

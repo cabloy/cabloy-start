@@ -1,4 +1,7 @@
-import { BeanControllerBase, ISlot } from 'zova';
+import type { ISlot } from 'zova';
+
+import { VBtn } from 'vuetify/components';
+import { BeanControllerBase } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 
 export interface ControllerCardProps {
@@ -19,14 +22,14 @@ export class ControllerCard extends BeanControllerBase {
   protected render() {
     return (
       <div>
-        <button
-          class="btn btn-primary"
-          onClick={() => {
+        <VBtn
+          color="secondary"
+          nativeOnClick={() => {
             this.$props.onReset?.(new Date());
           }}
         >
           Reset Time
-        </button>
+        </VBtn>
         <div>
           <div style={{ backgroundColor: 'teal' }}>
             <div>

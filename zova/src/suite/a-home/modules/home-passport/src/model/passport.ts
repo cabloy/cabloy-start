@@ -113,7 +113,7 @@ export class ModelPassport extends BeanModelBase {
         this._setPassportJwt();
         // page: login
         await this.app.$gotoLogin();
-        // clear: should after goto login page, avoid home-layouttabs use some cache data
+        // clear: should after goto login page, avoid home-layout use some cache data
         this.$clear(); // not await
       },
     });
@@ -130,6 +130,10 @@ export class ModelPassport extends BeanModelBase {
 
   get roles() {
     return this.passport?.roles;
+  }
+
+  get isAdmin() {
+    return !!this.passport?.roles.some(item => item.name === 'admin');
   }
 
   async getJwtInfo(): Promise<IJwtInfo | undefined> {

@@ -7,15 +7,15 @@ export class StyleLayoutTabs extends BeanStyleBase {
 
   protected async __init__() {
     this.cTab = this.$style({
-      fontSize: '1.0rem',
       $nest: {
-        '&:hover .tab-close': {
-          display: 'block',
-        },
-        '.tab-close': {
+        '.close': {
+          display: 'none',
           position: 'absolute',
-          top: '-6px',
-          right: '-6px',
+          top: '2px',
+          right: '4px',
+        },
+        '&:hover .close': {
+          display: 'block',
         },
       },
     });

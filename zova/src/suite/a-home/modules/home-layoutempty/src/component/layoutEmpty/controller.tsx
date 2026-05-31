@@ -1,3 +1,5 @@
+import { VApp } from 'vuetify/components';
+import { VMain } from 'vuetify/components';
 import { BeanControllerBase, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { ZRouterViewEmpty } from 'zova-module-a-router';
@@ -13,6 +15,12 @@ export class ControllerLayoutEmpty extends BeanControllerBase {
   $$serviceSsrLayout: ServiceSsrLayout;
 
   protected render() {
-    return <ZRouterViewEmpty></ZRouterViewEmpty>;
+    return (
+      <VApp>
+        <VMain style={{ transition: 'none' }}>
+          <ZRouterViewEmpty></ZRouterViewEmpty>
+        </VMain>
+      </VApp>
+    );
   }
 }

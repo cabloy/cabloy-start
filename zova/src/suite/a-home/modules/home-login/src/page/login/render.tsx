@@ -1,36 +1,61 @@
+import { VBtn, VCard, VCol, VDivider, VRow } from 'vuetify/components';
 import { BeanRenderBase } from 'zova';
 import { Render } from 'zova-module-a-bean';
 import { ZForm, ZFormFieldBlank, ZFormFieldPreset } from 'zova-module-a-form';
-import { ZIcon } from 'zova-module-a-icon';
+import { $iconName } from 'zova-module-a-icon';
+
+import { $useLocale } from '../../.metadata/locales.js';
 
 @Render()
 export class RenderPageLogin extends BeanRenderBase {
+  private textLogin: string;
+
+  protected async __init__() {
+    this.textLogin = $useLocale('Login');
+  }
+
   public render() {
     return (
-      <div class="min-h-screen bg-base-200 flex items-center">
-        <div class="card mx-auto w-full max-w-5xl  shadow-xl">
-          <div class="grid md:grid-cols-2 grid-cols-1 bg-base-100 rounded-xl">
-            {this._renderLandingInfo()}
-            <div class="py-24 px-10">
-              <h2 class="text-2xl font-semibold mb-2 text-center">{this.scope.locale.Login()}</h2>
-              <div class="mb-4">
+      <div class="pa-4 d-flex align-center justify-center" style={{ minHeight: '100vh' }}>
+        <VCard class="elevation-2" style={{ width: '100%', maxWidth: '960px' }}>
+          <VRow>
+            <VCol
+              cols={12}
+              md={6}
+              style={{
+                background: 'var(--v-theme-surface)',
+                borderTopLeftRadius: '6px',
+                borderBottomLeftRadius: '6px',
+              }}
+            >
+              {this._renderLandingInfo()}
+            </VCol>
+            <VCol cols={12} md={6} style={{ minWidth: '320px' }}>
+              <h2 class="text-center" style={{ marginBottom: '12px' }}>
+                {this.scope.locale.Login()}
+              </h2>
+              <div class="pa-4">
                 {this._renderForm()}
-                <div class="divider">OR</div>
+                <VDivider style={{ marginTop: '12px', marginBottom: '12px' }}></VDivider>
                 {this._renderGithub()}
               </div>
-            </div>
-          </div>
-        </div>
+            </VCol>
+          </VRow>
+        </VCard>
       </div>
     );
   }
 
   _renderLandingInfo() {
     return (
-      <div class="min-h-full rounded-l-xl bg-base-200">
-        <div class="py-12">
-          <h1 class="text-3xl text-center font-bold">Zova</h1>
-          <h5 class="text-2xl text-center opacity-40">Less is more, while more is less</h5>
+      <div style={{ minHeight: '100%' }}>
+        <div style={{ padding: '48px 0' }}>
+          <div style={{ maxWidth: '360px', margin: '0 auto' }}>
+            <h1 class="text-center font-bold">{this.sys.env.APP_TITLE}</h1>
+            <h2 class="text-center" style={{ opacity: 0.4 }}>
+              Less is more, while more is less
+            </h2>
+          </div>
         </div>
       </div>
     );
@@ -39,9 +64,9 @@ export class RenderPageLogin extends BeanRenderBase {
   _renderForm() {
     return (
       <ZForm
+        class="d-grid"
         data={this.user}
         schema={this.schema}
-        formProvider={{ behaviors: { FormFieldLayout: 'home-login:formFieldLayoutLogin' } }}
         onSubmitData={data => {
           return this.submitLogin(data);
         }}
@@ -52,36 +77,29 @@ export class RenderPageLogin extends BeanRenderBase {
       >
         <ZFormFieldPreset
           name="username"
-          render="basic-input:formFieldInput"
-          options={{
-            type: 'text',
-            placeholder: this.scope.locale.YourUsername(),
-          }}
-          class="grow"
-          layout={{ iconPrefix: ':daisy:person' }}
+          render="start-input:formFieldInput"
+          options={{ type: 'text' }}
+          layout={{ iconPrefix: ':daisy:person', label: this.scope.locale.YourUsername() }}
         ></ZFormFieldPreset>
         <ZFormFieldPreset
           name="password"
-          class="grow"
-          render="basic-input:formFieldInput"
-          options={{ type: 'password', placeholder: this.scope.locale.YourPassword() }}
-          layout={{ iconPrefix: ':daisy:lock' }}
+          render="start-input:formFieldInput"
+          options={{ type: 'password' }}
+          layout={{ iconPrefix: ':daisy:lock', label: this.scope.locale.YourPassword() }}
         ></ZFormFieldPreset>
         <ZFormFieldPreset
           name="captcha"
-          render="basic-captcha:formFieldCaptcha"
+          render="start-captcha:formFieldCaptcha"
           layout={{ iconPrefix: ':editor:code-block' }}
         ></ZFormFieldPreset>
         <ZFormFieldBlank
           slotDefault={$$form => {
             return (
-              <button
-                disabled={$$form.formState.isSubmitting}
-                type="submit"
-                class="btn mt-2 w-full btn-primary"
-              >
-                {this.scope.locale.Login()}
-              </button>
+              <div class="d-flex justify-center">
+                <VBtn disabled={$$form.formState.isSubmitting} type="submit" color="primary">
+                  {this.textLogin}
+                </VBtn>
+              </div>
             );
           }}
         ></ZFormFieldBlank>
@@ -91,15 +109,17 @@ export class RenderPageLogin extends BeanRenderBase {
 
   _renderGithub() {
     return (
-      <button
-        class="btn mt-2 w-full btn-default"
-        onClick={() => {
-          this.loginGitHub();
-        }}
-      >
-        <ZIcon name=":auth:github" width={24}></ZIcon>
-        {this.scope.locale.LoginGitHub()}
-      </button>
+      <div class="d-flex justify-center">
+        <VBtn
+          color="secondary"
+          prependIcon={$iconName(':auth:github')}
+          nativeOnClick={() => {
+            this.loginGitHub();
+          }}
+        >
+          {this.scope.locale.LoginGitHub()}
+        </VBtn>
+      </div>
     );
   }
 }

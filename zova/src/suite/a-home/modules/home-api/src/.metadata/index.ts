@@ -5,7 +5,6 @@ export * from '../api/home.js';
 export * from '../api/homeBaseMenu.js';
 export * from '../api/homeBasePermission.js';
 export * from '../api/homeUserPassport.js';
-export * from '../api/testSsrToolOne.js';
 
 import 'zova';
 declare module 'zova' {
@@ -67,17 +66,6 @@ declare module 'zova-module-home-api' {
           get $beanFullName(): 'home-api.api.homeUserPassport';
           get $onionName(): 'home-api:homeUserPassport';
           
-        }
-
-        export interface ApiTestSsrToolOne {
-          /** @internal */
-          get scope(): ScopeModuleHomeApi;
-        }
-
-        export interface ApiTestSsrToolOne {
-          get $beanFullName(): 'home-api.api.testSsrToolOne';
-          get $onionName(): 'home-api:testSsrToolOne';
-          
         } 
 }
 /** api: end */
@@ -87,14 +75,12 @@ import { ApiHome } from '../api/home.js';
 import { ApiHomeBaseMenu } from '../api/homeBaseMenu.js';
 import { ApiHomeBasePermission } from '../api/homeBasePermission.js';
 import { ApiHomeUserPassport } from '../api/homeUserPassport.js';
-import { ApiTestSsrToolOne } from '../api/testSsrToolOne.js';
 export interface IModuleApi {
   'captcha': ApiCaptcha;
 'home': ApiHome;
 'homeBaseMenu': ApiHomeBaseMenu;
 'homeBasePermission': ApiHomeBasePermission;
 'homeUserPassport': ApiHomeUserPassport;
-'testSsrToolOne': ApiTestSsrToolOne;
 }
 /** api: end */
 /** api: begin */
@@ -107,7 +93,6 @@ declare module 'zova' {
 'home-api.api.homeBaseMenu': ApiHomeBaseMenu;
 'home-api.api.homeBasePermission': ApiHomeBasePermission;
 'home-api.api.homeUserPassport': ApiHomeUserPassport;
-'home-api.api.testSsrToolOne': ApiTestSsrToolOne;
   }
 }
 /** api: end */
@@ -120,7 +105,6 @@ export * from '../apiSchema/home.js';
 export * from '../apiSchema/homeBaseMenu.js';
 export * from '../apiSchema/homeBasePermission.js';
 export * from '../apiSchema/homeUserPassport.js';
-export * from '../apiSchema/testSsrToolOne.js';
 
 import 'zova';
 declare module 'zova' {
@@ -182,17 +166,6 @@ declare module 'zova-module-home-api' {
           get $beanFullName(): 'home-api.apiSchema.homeUserPassport';
           get $onionName(): 'home-api:homeUserPassport';
           
-        }
-
-        export interface ApiSchemaTestSsrToolOne {
-          /** @internal */
-          get scope(): ScopeModuleHomeApi;
-        }
-
-        export interface ApiSchemaTestSsrToolOne {
-          get $beanFullName(): 'home-api.apiSchema.testSsrToolOne';
-          get $onionName(): 'home-api:testSsrToolOne';
-          
         } 
 }
 /** apiSchema: end */
@@ -202,14 +175,12 @@ import { ApiSchemaHome } from '../apiSchema/home.js';
 import { ApiSchemaHomeBaseMenu } from '../apiSchema/homeBaseMenu.js';
 import { ApiSchemaHomeBasePermission } from '../apiSchema/homeBasePermission.js';
 import { ApiSchemaHomeUserPassport } from '../apiSchema/homeUserPassport.js';
-import { ApiSchemaTestSsrToolOne } from '../apiSchema/testSsrToolOne.js';
 export interface IModuleApiSchema {
   'captcha': ApiSchemaCaptcha;
 'home': ApiSchemaHome;
 'homeBaseMenu': ApiSchemaHomeBaseMenu;
 'homeBasePermission': ApiSchemaHomeBasePermission;
 'homeUserPassport': ApiSchemaHomeUserPassport;
-'testSsrToolOne': ApiSchemaTestSsrToolOne;
 }
 /** apiSchema: end */
 /** apiSchema: begin */
@@ -222,7 +193,6 @@ declare module 'zova' {
 'home-api.apiSchema.homeBaseMenu': ApiSchemaHomeBaseMenu;
 'home-api.apiSchema.homeBasePermission': ApiSchemaHomeBasePermission;
 'home-api.apiSchema.homeUserPassport': ApiSchemaHomeUserPassport;
-'home-api.apiSchema.testSsrToolOne': ApiSchemaTestSsrToolOne;
   }
 }
 /** apiSchema: end */

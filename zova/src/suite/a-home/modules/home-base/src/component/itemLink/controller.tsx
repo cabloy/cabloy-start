@@ -1,7 +1,8 @@
-import { RouterLink } from '@cabloy/vue-router';
+import { VIcon } from 'vuetify/components';
+import { VListItem, VListItemTitle } from 'vuetify/components';
 import { BeanControllerBase } from 'zova';
 import { Controller } from 'zova-module-a-bean';
-import { IIconRecord, ZIcon } from 'zova-module-a-icon';
+import { IIconRecord } from 'zova-module-a-icon';
 
 export interface ControllerItemLinkProps {
   title: string;
@@ -19,24 +20,22 @@ export class ControllerItemLink extends BeanControllerBase {
   };
 
   _renderLink() {
-    const domContent = [
-      <ZIcon name={this.$props.icon} width={24}></ZIcon>,
-      <div>
-        <div>{this.$props.title}</div>
-        {this.$props.description && <div class="text-gray-400">{this.$props.description}</div>}
-      </div>,
-    ];
-    if (this.$props.href) {
-      return (
-        <a href={this.$props.href} target="_blank">
-          {domContent}
-        </a>
-      );
-    }
-    if (!this.$props.to) {
-      return <a href="#">{domContent}</a>;
-    }
-    return <RouterLink to={this.$props.to}>{domContent}</RouterLink>;
+    const slots = {
+      prepend: () => {
+        return <VIcon icon={this.$props.icon}></VIcon>;
+      },
+    };
+    return (
+      <VListItem
+        tag="a"
+        href={this.$props.href}
+        to={this.$props.to}
+        subtitle={this.$props.description}
+        v-slots={slots}
+      >
+        <VListItemTitle>{this.$props.title}</VListItemTitle>
+      </VListItem>
+    );
   }
 
   protected render() {

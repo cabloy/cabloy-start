@@ -4,10 +4,10 @@ export const config = (_sys: ZovaSys) => {
   return {
     layout: {
       sidebar: {
-        width: 300,
+        width: 360,
       },
       navbar: {
-        height: 132,
+        height: 112,
       },
     },
   };

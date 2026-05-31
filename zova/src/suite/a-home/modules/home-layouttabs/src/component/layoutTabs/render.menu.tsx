@@ -1,5 +1,7 @@
 import type { VNode } from 'vue';
 
+import { VDivider } from 'vuetify/components';
+import { VList, VListSubheader } from 'vuetify/components';
 import { BeanRenderBase } from 'zova';
 import { Render } from 'zova-module-a-bean';
 import { ZItemLink } from 'zova-module-home-base';
@@ -11,15 +13,16 @@ export class RenderMenu extends BeanRenderBase {
   _renderMenuItem(item: TypeMenuItem) {
     const titleLocale = this.$text(item.title ?? '');
     if (item.folder) {
-      return (
-        <li>
-          <h2 class="menu-title">{titleLocale}</h2>
-          <ul>{this._renderMenuItems(item.children)}</ul>
-        </li>
-      );
+      let domChildren: VNode[] = [];
+      domChildren.push(<VListSubheader key={`folder:${item.title}`}>{titleLocale}</VListSubheader>);
+      const domChildren2 = this._renderMenuItems(item.children);
+      if (domChildren2) {
+        domChildren = domChildren.concat(domChildren2);
+      }
+      return domChildren;
     }
     if (item.separator) {
-      return <li></li>;
+      return <VDivider></VDivider>;
     }
     let to: any;
     if (!item.external) {
@@ -35,15 +38,14 @@ export class RenderMenu extends BeanRenderBase {
       if (item.meta?.query) to.query = item.meta?.query;
     }
     return (
-      <li key={item.title}>
-        <ZItemLink
-          title={titleLocale}
-          description={item.description}
-          icon={item.icon as any}
-          href={item.external ? item.link : undefined}
-          to={to}
-        />
-      </li>
+      <ZItemLink
+        key={item.title}
+        title={titleLocale}
+        description={item.description}
+        icon={item.icon as any}
+        href={item.external ? item.link : undefined}
+        to={to}
+      ></ZItemLink>
     );
   }
 
@@ -51,7 +53,12 @@ export class RenderMenu extends BeanRenderBase {
     if (!items) return;
     const domItems: VNode[] = [];
     for (const item of items) {
-      domItems.push(this._renderMenuItem(item));
+      const domChildren = this._renderMenuItem(item);
+      if (Array.isArray(domChildren)) {
+        domItems.push(...domChildren);
+      } else {
+        domItems.push(domChildren);
+      }
     }
     return domItems;
   }
@@ -60,6 +67,6 @@ export class RenderMenu extends BeanRenderBase {
     const menuTree = this.$$modelMenu.menuTree;
     if (!menuTree) return;
     const domItems = this._renderMenuItems(menuTree);
-    return <ul class="menu bg-base-200 text-base-content min-h-full w-full p-4">{domItems}</ul>;
+    return <VList>{domItems}</VList>;
   }
 }

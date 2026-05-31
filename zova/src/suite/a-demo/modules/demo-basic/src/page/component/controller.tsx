@@ -4,7 +4,7 @@ import { ZPage } from 'zova-module-home-base';
 
 import type { ControllerCard } from '../../.metadata/index.jsx';
 
-import { ZCard } from '../../.metadata/index.jsx';
+import { ZCard } from '../../index.js';
 
 @Controller()
 export class ControllerPageComponent extends BeanControllerPageBase {
@@ -39,7 +39,7 @@ export class ControllerPageComponent extends BeanControllerPageBase {
         <input
           bs-behaviors-focus
           type="text"
-          class="input w-full max-w-xs"
+          class="input input-bordered w-full max-w-xs"
           value={this.resetTime.toString()}
           ref={ref => {
             // eslint-disable-next-line

@@ -5,15 +5,14 @@ import { Service } from 'zova-module-a-bean';
 @Service()
 export class ServiceSsr extends BeanBase {
   public async initialize() {
-    // ssr hydrated
-    if (process.env.CLIENT) {
-      this.ctx.meta.$ssr.onHydrated(() => {
-        // do something
-      });
-    }
     // ssr errorHandler
     if (process.env.SERVER) {
       this._ssrErrorHandler();
+    }
+    if (process.env.CLIENT && this.$ssr.isRuntimeSsrPreHydration) {
+      this.$ssr.onHydrated(() => {
+        this.$vuetify.display.update();
+      });
     }
   }
 

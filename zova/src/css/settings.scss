@@ -1,14 +1,18 @@
-body {
-  margin: 0;
-  padding: 0;
-}
+/**
+ * src/styles/settings.scss
+ *
+ * Configures SASS variables and Vuetify overwrites
+ */
 
-ul.menu details > ul {
-  z-index: 1;
-}
+// https://vuetifyjs.com/features/sass-variables/`
+@use 'vuetify/settings' with (
+  $color-pack: false
+);
 
-.router-link-active {
-  color: orange;
+:root {
+  --v-font-body:
+    'Geist', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 }
 
 .zova-icon__img {

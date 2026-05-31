@@ -19,15 +19,15 @@ export class ServiceSsrLayout extends BeanBase {
     if (process.env.SERVER) {
       this.ctx.meta.$ssr.context.onRendered((err?: Error) => {
         if (err) return;
-        if (!this.sys.config.ssr.cookie) {
-          this.ctx.meta.$ssr.context._meta.bodyTags += `<script id="__prefersColorSchemeDarkJS">
-            document.body.setAttribute('data-theme', window.ssr_themedark_data);
-            if(window.ssr_local_themename==='home-theme:orange'){
-              document.body.style.setProperty('--color-primary', '#f28238');
-            }
+        this.ctx.meta.$ssr.context._meta.bodyTags += `<script id="__prefersColorSchemeDarkJS">
+            const __themeDarkStyle=window.ssr_themedark_data;
+            const __themeDarkEl=document.createElement('style');
+            __themeDarkEl.setAttribute('vite-css-module-id','vuetify-theme-stylesheet');
+            __themeDarkEl.innerHTML=__themeDarkStyle;
+            document.head.appendChild(__themeDarkEl);
             document.querySelector('#__prefersColorSchemeDarkJS').remove();
+            document.body.setAttribute('data-theme',window.ssr_themedark?'dark':'light');
           </script>`.replaceAll('\n', '');
-        }
         if (this.$$scopeSsr.config.optimization.bodyReadyObserver) {
           this.ctx.meta.$ssr.context._meta.bodyTags += `<script id="__leftDrawerOpenJS">
   ${this.options?.sidebarLeftOpenPC ? this._getJsHandlerSidebar() : ''}
@@ -37,7 +37,7 @@ export class ServiceSsrLayout extends BeanBase {
     window.ssr_body_ready_handler_pageContainer();
   };
   window.ssr_body_ready_condition=()=>{
-    const __domPageContainer=document.querySelector('#q-app>.drawer>.drawer-content');
+    const __domPageContainer=document.querySelector('#q-app>.v-application>.v-application__wrap>main.v-main');
     return __domPageContainer;
   };
   window.ssr_body_ready_callback=()=>{
@@ -65,15 +65,21 @@ export class ServiceSsrLayout extends BeanBase {
         const __leftDrawerOpenPC=window.ssr_load_local('sidebarLeftOpenPC');
         __leftDrawerOpen=__leftDrawerOpenPC!==undefined?__leftDrawerOpenPC:${this.sys.config.layout.sidebar.leftOpenPC};
       }
-      const __domDrawerContainer=document.querySelector('#q-app>.drawer');
-      const __domDrawer=document.querySelector('#q-app>.drawer>.drawer-side');
+      const __domHeader=document.querySelector('#q-app>.v-application>.v-application__wrap>header.v-toolbar');
+      const __domDrawer=document.querySelector('#q-app>.v-application>.v-application__wrap>.v-navigation-drawer--left');
+      const __domPageContainer=document.querySelector('#q-app>.v-application>.v-application__wrap>main.v-main');
       const sidebarWidth = '${this.scope.config.layout.sidebar.width}px';
       const navbarHeight = '${this.scope.config.layout.navbar.height}px';
       if(__leftDrawerOpen){
+        __domHeader.style.left=sidebarWidth;
+        __domHeader.style.width=\`calc(100% - \${sidebarWidth})\`;
         __domDrawer.style.transform='translateX(0px)';
         __domDrawer.style.width=sidebarWidth;
-        __domDrawerContainer.classList.add('drawer-open');
+        __domPageContainer.style.setProperty('--v-layout-left',sidebarWidth);
+        __domPageContainer.style.setProperty('--v-layout-top',navbarHeight);
       }else{
+        __domPageContainer.style.setProperty('--v-layout-left','0px');
+        __domPageContainer.style.setProperty('--v-layout-top',navbarHeight);
       }
     };`;
   }
