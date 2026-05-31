@@ -28,6 +28,7 @@
     "tsc": "npm run prerun && npm run vona :bin:tsc",
     "build": "npm run prerun && npm run vona :bin:build -- --flavor=normal",
     "build:docker": "npm run prerun && npm run vona :bin:build -- --flavor=docker",
+    "build:store": "npm run prerun && vona :bin:build --flavor=store",
     "start": "node ./dist/normal/bootstrap.js",
     "start:one": "cross-env SERVER_WORKERS=1 node ./dist/normal/bootstrap.js",
     "start:docker": "cross-env SERVER_WORKERS=1 node ./dist/docker/bootstrap.js",
@@ -35,19 +36,13 @@
     "format": "oxfmt --check",
     "format:fix": "oxfmt --write",
     "lint": "oxlint",
-    "lint:fix": "oxlint --fix",
-    "docs:fix": "textlint --fix ./packages-docs/**/*.md"
+    "lint:fix": "oxlint --fix"
   },
   "dependencies": {
     "vona": "workspace:^"
   },
   "devDependencies": {
     "@cabloy/lint": "workspace:^",
-    "textlint": "^15.7.0",
-    "textlint-rule-en-no-mixed-period": "^3.0.2",
-    "textlint-rule-ja-no-mixed-period": "^3.0.2",
-    "textlint-rule-ja-space-between-half-and-full-width": "^2.4.2",
-    "textlint-rule-period-in-list-item": "^1.0.1",
     "oxfmt": "^0.45.0",
     "oxlint": "^1.65.0"
   },
