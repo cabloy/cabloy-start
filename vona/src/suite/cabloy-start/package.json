@@ -1,0 +1,14 @@
+{
+  "name": "vona-suite-cabloy-start",
+  "version": "5.1.1",
+  "description": "",
+  "author": "",
+  "files": [],
+  "type": "module",
+  "dependencies": {
+    "vona-module-start-siteadmin": "^5.1.1",
+    "vona-module-start-siteweb": "^5.1.1",
+    "vona-suite-a-cabloy": "^5.1.4"
+  },
+  "title": "cabloy-start"
+}

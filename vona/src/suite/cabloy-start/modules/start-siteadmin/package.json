@@ -1,7 +1,6 @@
 {
-  "name": "vona-module-home-index",
-  "version": "5.1.5",
-  "gitHead": "a79189b882c17af5911573896a781bbb0046d37d",
+  "name": "vona-module-start-siteadmin",
+  "version": "5.1.1",
   "description": "",
   "keywords": [
     "Vona Module"
@@ -10,7 +9,8 @@
   "files": [
     "assets",
     "dist",
-    "src"
+    "src",
+    "zovaRest"
   ],
   "type": "module",
   "exports": {
@@ -31,6 +31,7 @@
     "prepack": "clean-package",
     "postpack": "clean-package restore && npm run clean"
   },
+  "dependencies": {},
   "devDependencies": {
     "clean-package": "^2.2.0",
     "rimraf": "^6.1.3"
@@ -39,10 +40,11 @@
     "indent": 2,
     "remove": [
       "clean-package",
+      "devDependencies",
       "exports.\\..import"
     ]
   },
-  "title": "home-index",
+  "title": "start-siteadmin",
   "vonaModule": {
     "dependencies": {
       "a-vona": "5.0.0"

@@ -39,11 +39,7 @@ export class ControllerPassport extends BeanBase {
   @Core.captchaVerify({ scene: 'captcha-simple:simple' })
   @Api.body(v.object(DtoPassportJwt))
   async register(@Arg.body() data: DtoRegister) {
-    const jwt = await this.bean.auth.authenticate('auth-simple:simple', {
-      clientOptions: data,
-      state: { intention: 'register' },
-      clientName: 'default',
-    });
+    const jwt = await this.bean.authSimple.authenticate(data, 'register', 'default');
     return this._combineDtoPassportJwt(jwt);
   }
 
@@ -52,11 +48,7 @@ export class ControllerPassport extends BeanBase {
   @Core.captchaVerify({ scene: 'captcha-simple:simple' })
   @Api.body(v.object(DtoPassportJwt))
   async login(@Arg.body() data: DtoLogin): Promise<DtoPassportJwt> {
-    const jwt = await this.bean.auth.authenticate('auth-simple:simple', {
-      clientOptions: data,
-      state: { intention: 'login' },
-      clientName: 'default',
-    });
+    const jwt = await this.bean.authSimple.authenticate(data, 'login', 'default');
     return this._combineDtoPassportJwt(jwt);
   }
 
@@ -111,19 +103,19 @@ export class ControllerPassport extends BeanBase {
     return this._combineDtoPassportJwt(jwt);
   }
 
+  @Web.post('refreshAuthToken')
+  @Passport.public()
+  @Api.body(v.object(DtoJwtToken))
+  async refreshAuthToken(@Arg.body('refreshToken') refreshToken: string): Promise<DtoJwtToken> {
+    return await this.bean.passport.refreshAuthToken(refreshToken);
+  }
+
   @Web.post('createPassportJwtFromOauthCode')
   @Passport.public()
   @Api.body(v.object(DtoPassportJwt))
   async createPassportJwtFromOauthCode(@Arg.body('code') code: string): Promise<DtoPassportJwt> {
     const jwt = await this.bean.passport.createAuthTokenFromOauthCode(code);
     return this._combineDtoPassportJwt(jwt);
-  }
-
-  @Web.post('refreshAuthToken')
-  @Passport.public()
-  @Api.body(v.object(DtoJwtToken))
-  async refreshAuthToken(@Arg.body('refreshToken') refreshToken: string): Promise<DtoJwtToken> {
-    return await this.bean.passport.refreshAuthToken(refreshToken);
   }
 
   @Web.post('createTempAuthToken')

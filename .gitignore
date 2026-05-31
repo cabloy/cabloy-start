@@ -74,5 +74,13 @@ vona/src/suite/cabloy-basic/modules/basic-siteadmin/zovaRest
 vona/src/suite/cabloy-basic/modules/basic-siteweb/assets/site
 vona/src/suite/cabloy-basic/modules/basic-siteweb/zovaRest
 
+vona/src/suite/cabloy-start/modules/start-siteadmin/assets/site
+vona/src/suite/cabloy-start/modules/start-siteadmin/zovaRest
+vona/src/suite/cabloy-start/modules/start-siteweb/assets/site
+vona/src/suite/cabloy-start/modules/start-siteweb/zovaRest
+
 /vona/src/module/demo-student
 /zova/src/module/demo-student
+
+/vona/src/suite/cabloy-store
+/zova/src/suite/cabloy-store

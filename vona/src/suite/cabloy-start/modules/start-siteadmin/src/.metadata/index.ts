@@ -6,21 +6,21 @@ import 'vona-module-a-ssr';
 declare module 'vona-module-a-ssr' {
   
     export interface ISsrSiteRecord {
-      'basic-siteadmin:admin': ISsrSiteOptionsAdmin;
+      'start-siteadmin:admin': ISsrSiteOptionsAdmin;
     }
 
   
 }
-declare module 'vona-module-basic-siteadmin' {
+declare module 'vona-module-start-siteadmin' {
   
         export interface SsrSiteAdmin {
           /** @internal */
-          get scope(): ScopeModuleBasicSiteadmin;
+          get scope(): ScopeModuleStartSiteadmin;
         }
 
           export interface SsrSiteAdmin {
-            get $beanFullName(): 'basic-siteadmin.ssrSite.admin';
-            get $onionName(): 'basic-siteadmin:admin';
+            get $beanFullName(): 'start-siteadmin.ssrSite.admin';
+            get $onionName(): 'start-siteadmin:admin';
             get $onionOptions(): ISsrSiteOptionsAdmin;
           } 
 }
@@ -32,21 +32,21 @@ import 'vona-module-a-ssr';
 declare module 'vona-module-a-ssr' {
   
     export interface ISsrMenuRecord {
-      'basic-siteadmin:home': ISsrMenuOptionsHome;
+      'start-siteadmin:home': ISsrMenuOptionsHome;
     }
 
   
 }
-declare module 'vona-module-basic-siteadmin' {
+declare module 'vona-module-start-siteadmin' {
   
         export interface SsrMenuHome {
           /** @internal */
-          get scope(): ScopeModuleBasicSiteadmin;
+          get scope(): ScopeModuleStartSiteadmin;
         }
 
           export interface SsrMenuHome {
-            get $beanFullName(): 'basic-siteadmin.ssrMenu.home';
-            get $onionName(): 'basic-siteadmin:home';
+            get $beanFullName(): 'start-siteadmin.ssrMenu.home';
+            get $onionName(): 'start-siteadmin:home';
             get $onionOptions(): ISsrMenuOptionsHome;
           } 
 }
@@ -58,21 +58,21 @@ import 'vona-module-a-ssr';
 declare module 'vona-module-a-ssr' {
   
     export interface ISsrMenuGroupRecord {
-      'basic-siteadmin:management': ISsrMenuGroupOptionsManagement;
+      'start-siteadmin:management': ISsrMenuGroupOptionsManagement;
     }
 
   
 }
-declare module 'vona-module-basic-siteadmin' {
+declare module 'vona-module-start-siteadmin' {
   
         export interface SsrMenuGroupManagement {
           /** @internal */
-          get scope(): ScopeModuleBasicSiteadmin;
+          get scope(): ScopeModuleStartSiteadmin;
         }
 
           export interface SsrMenuGroupManagement {
-            get $beanFullName(): 'basic-siteadmin.ssrMenuGroup.management';
-            get $onionName(): 'basic-siteadmin:management';
+            get $beanFullName(): 'start-siteadmin.ssrMenuGroup.management';
+            get $onionName(): 'start-siteadmin:management';
             get $onionOptions(): ISsrMenuGroupOptionsManagement;
           } 
 }
@@ -85,9 +85,9 @@ import { BeanScopeBase, type BeanScopeUtil, type TypeModuleLocales, type TypeLoc
 import { Scope } from 'vona-module-a-bean';
 
 @Scope()
-export class ScopeModuleBasicSiteadmin extends BeanScopeBase {}
+export class ScopeModuleStartSiteadmin extends BeanScopeBase {}
 
-export interface ScopeModuleBasicSiteadmin {
+export interface ScopeModuleStartSiteadmin {
   util: BeanScopeUtil;
 locale: TypeModuleLocales<(typeof locales)[TypeLocaleBase]>;
 }
@@ -95,17 +95,17 @@ locale: TypeModuleLocales<(typeof locales)[TypeLocaleBase]>;
 import 'vona';
 declare module 'vona' {
   export interface IBeanScopeRecord {
-    'basic-siteadmin': ScopeModuleBasicSiteadmin;
+    'start-siteadmin': ScopeModuleStartSiteadmin;
   }
 
   export interface IBeanScopeContainer {
-    basicSiteadmin: ScopeModuleBasicSiteadmin;
+    startSiteadmin: ScopeModuleStartSiteadmin;
   }
   
   
 
   export interface IBeanScopeLocale {
-    'basic-siteadmin': (typeof locales)[TypeLocaleBase];
+    'start-siteadmin': (typeof locales)[TypeLocaleBase];
   }
 
   

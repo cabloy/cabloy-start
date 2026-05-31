@@ -1,11 +1,11 @@
 import type { IDecoratorSsrSiteOptions } from 'vona-module-a-ssr';
-import type { IIconRecord, IPagePathRecord } from 'zova-rest-cabloy-basic-admin';
+import type { IIconRecord, IPagePathRecord } from 'zova-rest-cabloy-start-admin';
 
 import { BeanSsrSiteBase, SsrSite } from 'vona-module-a-ssr';
 
 declare module 'vona-module-a-ssr' {
   export interface ISsrSitePublicPathRecord {
-    '': never;
+    admin: never;
   }
 }
 
@@ -20,7 +20,7 @@ export interface ISsrSiteOptionsAdmin extends IDecoratorSsrSiteOptions<
 > {}
 
 @SsrSite<ISsrSiteOptionsAdmin>({
-  publicPath: '',
-  bundlePath: 'ssr-cabloyBasicAdmin-5.0.0',
+  publicPath: 'admin',
+  bundlePath: 'ssr-cabloyStartAdmin-5.0.0',
 })
 export class SsrSiteAdmin extends BeanSsrSiteBase<ISsrSiteOptionsAdmin> {}

@@ -1,7 +1,6 @@
 {
-  "name": "vona-module-basic-siteadmin",
-  "version": "5.1.40",
-  "gitHead": "a79189b882c17af5911573896a781bbb0046d37d",
+  "name": "vona-module-start-siteweb",
+  "version": "5.1.1",
   "description": "",
   "keywords": [
     "Vona Module"
@@ -32,6 +31,7 @@
     "prepack": "clean-package",
     "postpack": "clean-package restore && npm run clean"
   },
+  "dependencies": {},
   "devDependencies": {
     "clean-package": "^2.2.0",
     "rimraf": "^6.1.3"
@@ -44,11 +44,10 @@
       "exports.\\..import"
     ]
   },
-  "title": "basic-siteadmin",
+  "title": "start-siteweb",
   "vonaModule": {
     "dependencies": {
-      "a-vona": "5.0.0",
-      "a-ssr": "5.0.0"
+      "a-vona": "5.0.0"
     }
   }
 }

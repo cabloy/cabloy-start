@@ -55,16 +55,16 @@ export class MetaVersion extends BeanBase implements IMetaVersionUpdate, IMetaVe
       }
       // user: admin
       if (!this.scope.config.disableUserAdmin) {
-        await this.bean.auth.authenticate('auth-simple:simple', {
-          clientOptions: {
+        await this.bean.authSimple.authenticate(
+          {
             username: 'admin',
             password: options.password || this.scope.config.passwordDefault.admin,
             avatar: ':emoji:flower',
             confirmed: true,
           },
-          state: { intention: 'register' },
-          clientName: 'default',
-        });
+          'register',
+          'default',
+        );
       }
     }
   }

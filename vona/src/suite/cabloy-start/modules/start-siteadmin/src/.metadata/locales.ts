@@ -14,5 +14,5 @@ export function $locale<K extends keyof (typeof locales)[TypeLocaleBase]>(
   key: K,
   ...args: any[]
 ): any {
-  return $makeLocaleMagic(`basic-siteadmin::${key}`, ...args);
+  return $makeLocaleMagic(`start-siteadmin::${key}`, ...args);
 }
