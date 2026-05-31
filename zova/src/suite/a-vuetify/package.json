@@ -5,10 +5,7 @@
   "author": "zhennann",
   "type": "module",
   "dependencies": {
-    "zova-module-start-captcha": "^5.0.0",
-    "zova-module-start-input": "^5.0.0",
-    "zova-module-vuetify-adapter": "workspace:^",
-    "zova-module-vuetify-form": "^5.0.0"
+    "zova-module-vuetify-adapter": "workspace:^"
   },
   "title": "a-vuetify"
 }
