@@ -243,7 +243,7 @@ importers:
         version: link:src/suite/cabloy-start/modules/start-button
       zova-module-start-captcha:
         specifier: workspace:^
-        version: link:src/suite/a-vuetify/modules/start-captcha
+        version: link:src/suite/cabloy-start/modules/start-captcha
       zova-module-start-commands:
         specifier: workspace:^
         version: link:src/suite/cabloy-start/modules/start-commands
@@ -264,7 +264,7 @@ importers:
         version: link:src/suite/cabloy-start/modules/start-form
       zova-module-start-input:
         specifier: workspace:^
-        version: link:src/suite/a-vuetify/modules/start-input
+        version: link:src/suite/cabloy-start/modules/start-input
       zova-module-start-layoutadmin:
         specifier: workspace:^
         version: link:src/suite/cabloy-start/modules/start-layoutadmin
@@ -319,9 +319,6 @@ importers:
       zova-module-vuetify-adapter:
         specifier: workspace:^
         version: link:src/suite/a-vuetify/modules/vuetify-adapter
-      zova-module-vuetify-form:
-        specifier: workspace:^
-        version: link:src/suite/a-vuetify/modules/vuetify-form
     devDependencies:
       '@cabloy/cli':
         specifier: ^3.1.14
@@ -1503,36 +1500,9 @@ importers:
 
   src/suite/a-vuetify:
     dependencies:
-      zova-module-start-captcha:
-        specifier: ^5.0.0
-        version: link:modules/start-captcha
-      zova-module-start-input:
-        specifier: ^5.0.0
-        version: link:modules/start-input
       zova-module-vuetify-adapter:
         specifier: workspace:^
         version: link:modules/vuetify-adapter
-      zova-module-vuetify-form:
-        specifier: ^5.0.0
-        version: link:modules/vuetify-form
-
-  src/suite/a-vuetify/modules/start-captcha:
-    devDependencies:
-      clean-package:
-        specifier: ^2.2.0
-        version: 2.2.0
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.1.3
-
-  src/suite/a-vuetify/modules/start-input:
-    devDependencies:
-      clean-package:
-        specifier: ^2.2.0
-        version: 2.2.0
-      rimraf:
-        specifier: ^6.1.3
-        version: 6.1.3
 
   src/suite/a-vuetify/modules/vuetify-adapter:
     dependencies:
@@ -1542,15 +1512,6 @@ importers:
       '@date-io/luxon':
         specifier: ^3.2.0
         version: 3.2.0(luxon@3.7.2)
-    devDependencies:
-      clean-package:
-        specifier: ^2.2.0
-        version: 2.2.0
-      rimraf:
-        specifier: ^6.1.3
-        version: 6.1.3
-
-  src/suite/a-vuetify/modules/vuetify-form:
     devDependencies:
       clean-package:
         specifier: ^2.2.0
@@ -1570,6 +1531,9 @@ importers:
       zova-module-start-button:
         specifier: ^5.0.0
         version: link:modules/start-button
+      zova-module-start-captcha:
+        specifier: ^5.0.0
+        version: link:modules/start-captcha
       zova-module-start-commands:
         specifier: ^5.0.0
         version: link:modules/start-commands
@@ -1588,6 +1552,9 @@ importers:
       zova-module-start-form:
         specifier: ^5.0.0
         version: link:modules/start-form
+      zova-module-start-input:
+        specifier: ^5.0.0
+        version: link:modules/start-input
       zova-module-start-layoutadmin:
         specifier: ^5.0.0
         version: link:modules/start-layoutadmin
@@ -1638,6 +1605,15 @@ importers:
         version: 6.1.3
 
   src/suite/cabloy-start/modules/start-button:
+    devDependencies:
+      clean-package:
+        specifier: ^2.2.0
+        version: 2.2.0
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.1.3
+
+  src/suite/cabloy-start/modules/start-captcha:
     devDependencies:
       clean-package:
         specifier: ^2.2.0
@@ -1702,6 +1678,15 @@ importers:
         version: 2.2.0
       rimraf:
         specifier: ^6.0.1
+        version: 6.1.3
+
+  src/suite/cabloy-start/modules/start-input:
+    devDependencies:
+      clean-package:
+        specifier: ^2.2.0
+        version: 2.2.0
+      rimraf:
+        specifier: ^6.1.3
         version: 6.1.3
 
   src/suite/cabloy-start/modules/start-layoutadmin:
