@@ -15,12 +15,12 @@ type ControllerInnerProps = TypeControllerInnerProps<
   ControllerLayoutWebProps,
   keyof typeof ControllerLayoutWeb.$propsDefault
 >;
-declare module 'zova-module-start-layoutweb' {
+declare module 'zova-module-home-layoutweb' {
   export interface ControllerLayoutWeb {
     $props: ControllerInnerProps;
   }
 }
-declare module 'zova-module-start-layoutweb' {
+declare module 'zova-module-home-layoutweb' {
   export interface RenderLayoutWeb extends ControllerLayoutWeb {}
   export interface RenderContent extends ControllerLayoutWeb {}
   export interface RenderFooter extends ControllerLayoutWeb {}
@@ -35,6 +35,6 @@ export const ZLayoutWeb = defineComponent((_props: ZLayoutWebProps) => {
 }, prepareComponentOptions());
 declare module 'zova-module-a-bean' {
   export interface IVonaComponentRecord {
-    'start-layoutweb:layoutWeb': ControllerLayoutWebProps;
+    'home-layoutweb:layoutWeb': ControllerLayoutWebProps;
   }
 }

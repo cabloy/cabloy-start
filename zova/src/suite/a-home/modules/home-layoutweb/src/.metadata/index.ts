@@ -8,33 +8,33 @@ import 'zova-module-a-model';
 declare module 'zova-module-a-model' {
   
     export interface IModelRecord {
-      'start-layoutweb:layout': IModelOptionsLayout;
-'start-layoutweb:menu': IModelOptionsMenu;
+      'home-layoutweb:layout': IModelOptionsLayout;
+'home-layoutweb:menu': IModelOptionsMenu;
     }
 
   
 }
-declare module 'zova-module-start-layoutweb' {
+declare module 'zova-module-home-layoutweb' {
   
         export interface ModelLayout {
           /** @internal */
-          get scope(): ScopeModuleStartLayoutweb;
+          get scope(): ScopeModuleHomeLayoutweb;
         }
 
         export interface ModelLayout {
-          get $beanFullName(): 'start-layoutweb.model.layout';
-          get $onionName(): 'start-layoutweb:layout';
+          get $beanFullName(): 'home-layoutweb.model.layout';
+          get $onionName(): 'home-layoutweb:layout';
           get $onionOptions(): IModelOptionsLayout;
         }
 
         export interface ModelMenu {
           /** @internal */
-          get scope(): ScopeModuleStartLayoutweb;
+          get scope(): ScopeModuleHomeLayoutweb;
         }
 
         export interface ModelMenu {
-          get $beanFullName(): 'start-layoutweb.model.menu';
-          get $onionName(): 'start-layoutweb:menu';
+          get $beanFullName(): 'home-layoutweb.model.menu';
+          get $onionName(): 'home-layoutweb:menu';
           get $onionOptions(): IModelOptionsMenu;
         } 
 }
@@ -45,8 +45,8 @@ import { ModelMenu } from '../model/menu.js';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
-    'start-layoutweb.model.layout': ModelLayout;
-'start-layoutweb.model.menu': ModelMenu;
+    'home-layoutweb.model.layout': ModelLayout;
+'home-layoutweb.model.menu': ModelMenu;
   }
 }
 /** model: end */
@@ -58,11 +58,11 @@ declare module 'zova' {
   
   
 }
-declare module 'zova-module-start-layoutweb' {
+declare module 'zova-module-home-layoutweb' {
   
         export interface ControllerLayoutWeb {
           /** @internal */
-          get scope(): ScopeModuleStartLayoutweb;
+          get scope(): ScopeModuleHomeLayoutweb;
         } 
 }
 /** controller: end */
@@ -71,7 +71,7 @@ import { ControllerLayoutWeb } from '../component/layoutWeb/controller.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
-    'start-layoutweb.controller.layoutWeb': ControllerLayoutWeb;
+    'home-layoutweb.controller.layoutWeb': ControllerLayoutWeb;
   }
 }
 /** controller: end */
@@ -85,10 +85,10 @@ export const components = {
 import 'zova';
 declare module 'zova' {
 export interface IComponentRecord {
-  'start-layoutweb:layoutWeb': ControllerLayoutWeb;
+  'home-layoutweb:layoutWeb': ControllerLayoutWeb;
 }
 export interface IZovaComponentRecord {
-  'start-layoutweb:layoutWeb': typeof ZLayoutWeb;
+  'home-layoutweb:layoutWeb': typeof ZLayoutWeb;
 }
 }
 /** components: end */
@@ -106,41 +106,41 @@ declare module 'zova' {
   
   
 }
-declare module 'zova-module-start-layoutweb' {
+declare module 'zova-module-home-layoutweb' {
   
         export interface RenderContent {
           /** @internal */
-          get scope(): ScopeModuleStartLayoutweb;
+          get scope(): ScopeModuleHomeLayoutweb;
         }
 
         export interface RenderFooter {
           /** @internal */
-          get scope(): ScopeModuleStartLayoutweb;
+          get scope(): ScopeModuleHomeLayoutweb;
         }
 
         export interface RenderHeader {
           /** @internal */
-          get scope(): ScopeModuleStartLayoutweb;
+          get scope(): ScopeModuleHomeLayoutweb;
         }
 
         export interface RenderLocale {
           /** @internal */
-          get scope(): ScopeModuleStartLayoutweb;
+          get scope(): ScopeModuleHomeLayoutweb;
         }
 
         export interface RenderTabs {
           /** @internal */
-          get scope(): ScopeModuleStartLayoutweb;
+          get scope(): ScopeModuleHomeLayoutweb;
         }
 
         export interface RenderTheme {
           /** @internal */
-          get scope(): ScopeModuleStartLayoutweb;
+          get scope(): ScopeModuleHomeLayoutweb;
         }
 
         export interface RenderLayoutWeb {
           /** @internal */
-          get scope(): ScopeModuleStartLayoutweb;
+          get scope(): ScopeModuleHomeLayoutweb;
         } 
 }
 /** render: end */
@@ -155,13 +155,13 @@ import { RenderLayoutWeb } from '../component/layoutWeb/render.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
-    'start-layoutweb.render.content': RenderContent;
-'start-layoutweb.render.footer': RenderFooter;
-'start-layoutweb.render.header': RenderHeader;
-'start-layoutweb.render.locale': RenderLocale;
-'start-layoutweb.render.tabs': RenderTabs;
-'start-layoutweb.render.theme': RenderTheme;
-'start-layoutweb.render.layoutWeb': RenderLayoutWeb;
+    'home-layoutweb.render.content': RenderContent;
+'home-layoutweb.render.footer': RenderFooter;
+'home-layoutweb.render.header': RenderHeader;
+'home-layoutweb.render.locale': RenderLocale;
+'home-layoutweb.render.tabs': RenderTabs;
+'home-layoutweb.render.theme': RenderTheme;
+'home-layoutweb.render.layoutWeb': RenderLayoutWeb;
   }
 }
 /** render: end */
@@ -177,9 +177,9 @@ import { BeanScopeBase, type BeanScopeUtil, TypeModuleConfig, TypeModuleLocales,
 import { Scope } from 'zova-module-a-bean';
 
 @Scope()
-export class ScopeModuleStartLayoutweb extends BeanScopeBase {}
+export class ScopeModuleHomeLayoutweb extends BeanScopeBase {}
 
-export interface ScopeModuleStartLayoutweb {
+export interface ScopeModuleHomeLayoutweb {
   util: BeanScopeUtil;
 config: TypeModuleConfig<typeof config>;
 locale: TypeModuleLocales<(typeof locales)[TypeLocaleBase]>;
@@ -188,21 +188,21 @@ locale: TypeModuleLocales<(typeof locales)[TypeLocaleBase]>;
 import 'zova';
 declare module 'zova' {
   export interface IBeanScopeRecord {
-    'start-layoutweb': ScopeModuleStartLayoutweb;
+    'home-layoutweb': ScopeModuleHomeLayoutweb;
   }
   
   export interface IBeanScopeConfig {
-    'start-layoutweb': ReturnType<typeof config>;
+    'home-layoutweb': ReturnType<typeof config>;
   }
 
   export interface IBeanScopeLocale {
-    'start-layoutweb': (typeof locales)[TypeLocaleBase];
+    'home-layoutweb': (typeof locales)[TypeLocaleBase];
   }
 
   
 }
 
-export function locale<K extends keyof (typeof locales)[TypeLocaleBase]>(key: K): `start-layoutweb::${K}` {
-  return `start-layoutweb::${key}`;
+export function locale<K extends keyof (typeof locales)[TypeLocaleBase]>(key: K): `home-layoutweb::${K}` {
+  return `home-layoutweb::${key}`;
 }  
 /** scope: end */

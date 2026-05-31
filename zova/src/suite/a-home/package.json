@@ -11,6 +11,7 @@
     "zova-module-home-index": "workspace:^",
     "zova-module-home-layoutadmin": "workspace:^",
     "zova-module-home-layoutempty": "workspace:^",
+    "zova-module-home-layoutweb": "workspace:^",
     "zova-module-home-login": "^5.0.0",
     "zova-module-home-passport": "workspace:^",
     "zova-module-home-theme": "^5.0.0"

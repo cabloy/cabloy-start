@@ -1,5 +1,5 @@
 {
-  "name": "zova-module-start-layoutweb",
+  "name": "zova-module-home-layoutweb",
   "version": "5.0.0",
   "description": "",
   "keywords": [
@@ -45,5 +45,5 @@
       "exports.\\..import"
     ]
   },
-  "title": "start-layoutweb"
+  "title": "home-layoutweb"
 }
