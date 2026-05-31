@@ -1,0 +1,30 @@
+import type { IResourceTableCellOptionsBase } from 'zova-module-a-openapi';
+import type {
+  IJsxRenderContextTableCell,
+  ITableCellRender,
+  NextTableCellRender,
+} from 'zova-module-a-table';
+
+import { BeanBase } from 'zova';
+import { TableCell } from 'zova-module-a-table';
+
+declare module 'zova-module-a-openapi' {
+  export interface IResourceTableCellRecord {
+    'start-text:text'?: ITableCellOptionsText;
+  }
+}
+
+export interface ITableCellOptionsText extends IResourceTableCellOptionsBase {}
+
+@TableCell<ITableCellOptionsText>()
+export class TableCellText extends BeanBase implements ITableCellRender {
+  render(
+    options: ITableCellOptionsText,
+    _renderContext: IJsxRenderContextTableCell,
+    next: NextTableCellRender,
+  ) {
+    const value = next();
+    if (!options.class) return value;
+    return <div class={options.class}>{value}</div>;
+  }
+}

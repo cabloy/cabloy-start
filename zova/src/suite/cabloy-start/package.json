@@ -1,0 +1,32 @@
+{
+  "name": "zova-suite-cabloy-start",
+  "version": "5.0.0",
+  "description": "",
+  "author": "",
+  "files": [],
+  "type": "module",
+  "dependencies": {
+    "zova-module-start-adapter": "^5.0.0",
+    "zova-module-start-app": "^5.0.0",
+    "zova-module-start-button": "^5.0.0",
+    "zova-module-start-captcha": "^5.0.0",
+    "zova-module-start-commands": "^5.0.0",
+    "zova-module-start-commandssync": "^5.0.0",
+    "zova-module-start-currency": "^5.0.0",
+    "zova-module-start-date": "^5.0.0",
+    "zova-module-start-demo": "^5.0.0",
+    "zova-module-start-form": "^5.0.0",
+    "zova-module-start-input": "^5.0.0",
+    "zova-module-start-layoutadmin": "^5.0.0",
+    "zova-module-start-layoutweb": "^5.0.0",
+    "zova-module-start-page": "^5.0.0",
+    "zova-module-start-pageentry": "^5.0.0",
+    "zova-module-start-paypal": "^5.0.0",
+    "zova-module-start-resource": "^5.0.0",
+    "zova-module-start-select": "^5.0.0",
+    "zova-module-start-switch": "^5.0.0",
+    "zova-module-start-table": "^5.0.0",
+    "zova-module-start-text": "^5.0.0"
+  },
+  "title": "cabloy-start"
+}
