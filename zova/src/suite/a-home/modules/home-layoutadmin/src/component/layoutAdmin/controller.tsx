@@ -11,10 +11,10 @@ import { ILayoutConfig } from 'zova-module-vuetify-adapter';
 import { ModelLayout } from '../../model/layout.js';
 import { ModelMenu } from '../../model/menu.js';
 
-export interface ControllerLayoutTabsProps {}
+export interface ControllerLayoutAdminProps {}
 
 @Controller()
-export class ControllerLayoutTabs extends BeanControllerBase {
+export class ControllerLayoutAdmin extends BeanControllerBase {
   static $propsDefault = {};
 
   $$modelTabs: ModelTabs;

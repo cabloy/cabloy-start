@@ -2,12 +2,12 @@ import { VAppBar, VAppBarNavIcon, VSpacer, VToolbarTitle } from 'vuetify/compone
 import { BeanRenderBase, Use } from 'zova';
 import { Render } from 'zova-module-a-bean';
 
-import type { RenderLayoutTabs } from './render.jsx';
+import type { RenderLayoutAdmin } from './render.jsx';
 
 @Render()
 export class RenderHeader extends BeanRenderBase {
   @Use()
-  $$r: RenderLayoutTabs;
+  $$r: RenderLayoutAdmin;
 
   public render() {
     const slots = {
