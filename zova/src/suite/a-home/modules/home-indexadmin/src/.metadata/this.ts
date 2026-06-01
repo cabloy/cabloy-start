@@ -1,2 +1,2 @@
-export const __ThisModule__ = 'home-index';
-export { ScopeModuleHomeIndex as ScopeModule } from './index.js';
+export const __ThisModule__ = 'home-indexadmin';
+export { ScopeModuleHomeIndexadmin as ScopeModule } from './index.js';
