@@ -2,7 +2,7 @@ import { BeanControllerPageBase } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 
 @Controller()
-export class ControllerPageHome extends BeanControllerPageBase {
+export class ControllerPageDashboard extends BeanControllerPageBase {
   public message: string;
 
   protected async __init__() {
