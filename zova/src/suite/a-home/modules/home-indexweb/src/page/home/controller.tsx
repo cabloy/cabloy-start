@@ -10,12 +10,13 @@ export class ControllerPageHome extends BeanControllerPageBase {
   }
 
   protected render() {
+    const localeCurrent = this.app.meta.locale.current;
     return (
       <div style="text-align: center;">
         <div>
           <div style="font-size: 36px;">{this.message}</div>
           <div style="font-size: 24px;opacity:.4;">Less is more, while more is less</div>
-          <div>Web</div>
+          <div>{`Web: ${localeCurrent}`}</div>
         </div>
       </div>
     );

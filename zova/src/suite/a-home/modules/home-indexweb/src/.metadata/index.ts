@@ -31,10 +31,10 @@ import { TypePagePathSchema } from 'zova-module-a-router';
 import 'zova';
 declare module 'zova-module-a-router' {
 export interface IPagePathRecord {
-  '/home/indexweb/home': TypePagePathSchema<undefined,undefined>;
+  '/home/indexweb/home/:locale?': TypePagePathSchema<undefined,undefined>;
 }
 export interface IPageNameRecord {
-  
+  'home-indexweb:home': undefined;
 }
 }
 export const pagePathSchemas = {
