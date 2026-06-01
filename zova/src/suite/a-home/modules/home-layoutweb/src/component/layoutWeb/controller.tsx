@@ -77,10 +77,6 @@ export class ControllerLayoutWeb extends BeanControllerBase {
     await this._initTabs();
   }
 
-  toggleLeftDrawer() {
-    this.leftDrawerOpen = !this.leftDrawerOpen;
-  }
-
   private async _initTabs() {
     const configTabs = this.scope.config.tabs;
     const tabsOptions: ModelTabsOptions = {
@@ -131,5 +127,9 @@ export class ControllerLayoutWeb extends BeanControllerBase {
         info: item,
       } as RouteTabInitial;
     });
+  }
+
+  toggleLeftDrawer() {
+    this.leftDrawerOpen = !this.leftDrawerOpen;
   }
 }

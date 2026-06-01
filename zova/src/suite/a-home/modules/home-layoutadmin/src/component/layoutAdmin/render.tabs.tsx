@@ -15,41 +15,7 @@ export class RenderTabs extends BeanRenderBase {
     if (!$$modelTabs) return;
     const domTabs: VNode[] = [];
     for (const tab of $$modelTabs.tabs) {
-      const { tabKey, info } = tab;
-      const className = tabKey === $$modelTabs.tabKeyCurrent ? 'text-primary' : '';
-      const titleLocale = this.$text(info?.title || '');
-      const tabIcon = this.getTabIcon(tab);
-      const slots = {
-        append: () => {
-          if (tab.affix) return;
-          return (
-            <ZIcon
-              class="close"
-              name="::close"
-              width="16"
-              height="16"
-              nativeOnClick={withModifiers(() => {
-                $$modelTabs.deleteTab(tabKey);
-              }, ['stop'])}
-            ></ZIcon>
-          );
-        },
-      };
-      const domTab = (
-        <VTab
-          key={tabKey}
-          value={tabKey}
-          class={`${className} ${this.cTab}`}
-          nativeOnClick={() => {
-            $$modelTabs.activeTab(tabKey);
-          }}
-          prependIcon={tabIcon}
-          v-slots={slots}
-        >
-          {titleLocale}
-        </VTab>
-      );
-      domTabs.push(domTab);
+      domTabs.push(this._renderTab(tab));
     }
     const domWrapper = (
       <VTabs
@@ -63,6 +29,44 @@ export class RenderTabs extends BeanRenderBase {
     );
     if (!this.$$modelTabs.cache) return domWrapper;
     return <ClientOnly>{domWrapper}</ClientOnly>;
+  }
+
+  private _renderTab(tab: RouteTab) {
+    const $$modelTabs = this.$$modelTabs;
+    const { tabKey, info } = tab;
+    const className = tabKey === $$modelTabs.tabKeyCurrent ? 'text-primary' : '';
+    const titleLocale = this.$text(info?.title || '');
+    const tabIcon = this.getTabIcon(tab);
+    const slots = {
+      append: () => {
+        if (tab.affix) return;
+        return (
+          <ZIcon
+            class="close"
+            name="::close"
+            width="16"
+            height="16"
+            nativeOnClick={withModifiers(() => {
+              $$modelTabs.deleteTab(tabKey);
+            }, ['stop'])}
+          ></ZIcon>
+        );
+      },
+    };
+    return (
+      <VTab
+        key={tabKey}
+        value={tabKey}
+        class={`${className} ${this.cTab}`}
+        nativeOnClick={() => {
+          $$modelTabs.activeTab(tabKey);
+        }}
+        prependIcon={tabIcon}
+        v-slots={slots}
+      >
+        {titleLocale}
+      </VTab>
+    );
   }
 
   public renderTabItems() {
