@@ -214,6 +214,9 @@ importers:
       zova-module-home-indexadmin:
         specifier: workspace:^
         version: link:src/suite/a-home/modules/home-indexadmin
+      zova-module-home-indexweb:
+        specifier: workspace:^
+        version: link:src/suite/a-home/modules/home-indexweb
       zova-module-home-layoutadmin:
         specifier: workspace:^
         version: link:src/suite/a-home/modules/home-layoutadmin
@@ -1398,6 +1401,9 @@ importers:
       zova-module-home-indexadmin:
         specifier: workspace:^
         version: link:modules/home-indexadmin
+      zova-module-home-indexweb:
+        specifier: ^5.0.0
+        version: link:modules/home-indexweb
       zova-module-home-layoutadmin:
         specifier: workspace:^
         version: link:modules/home-layoutadmin
@@ -1445,6 +1451,15 @@ importers:
         version: 6.1.3
 
   src/suite/a-home/modules/home-indexadmin:
+    devDependencies:
+      clean-package:
+        specifier: ^2.2.0
+        version: 2.2.0
+      rimraf:
+        specifier: ^6.1.3
+        version: 6.1.3
+
+  src/suite/a-home/modules/home-indexweb:
     devDependencies:
       clean-package:
         specifier: ^2.2.0

@@ -9,6 +9,7 @@
     "zova-module-home-base": "workspace:^",
     "zova-module-home-icon": "workspace:^",
     "zova-module-home-indexadmin": "workspace:^",
+    "zova-module-home-indexweb": "^5.0.0",
     "zova-module-home-layoutadmin": "workspace:^",
     "zova-module-home-layoutempty": "workspace:^",
     "zova-module-home-layoutweb": "workspace:^",
