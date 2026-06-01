@@ -15,6 +15,7 @@ export class ControllerPageHome extends BeanControllerPageBase {
         <div>
           <div style="font-size: 36px;">{this.message}</div>
           <div style="font-size: 24px;opacity:.4;">Less is more, while more is less</div>
+          <div>Dashboard</div>
         </div>
       </div>
     );
