@@ -18,7 +18,6 @@ export class ControllerItemLink extends BeanControllerBase {
   static $propsDefault = {
     description: '',
     icon: '',
-    target: '_blank',
   };
 
   _renderLink() {
