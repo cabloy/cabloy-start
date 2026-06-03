@@ -10,6 +10,7 @@ export interface ControllerItemLinkProps {
   icon?: keyof IIconRecord;
   href?: string;
   to?: string | object;
+  target?: string;
 }
 
 @Controller()
@@ -17,6 +18,7 @@ export class ControllerItemLink extends BeanControllerBase {
   static $propsDefault = {
     description: '',
     icon: '',
+    target: '_blank',
   };
 
   _renderLink() {
@@ -25,8 +27,10 @@ export class ControllerItemLink extends BeanControllerBase {
         return <VIcon icon={this.$props.icon}></VIcon>;
       },
     };
+    const attrs = this.$props.target ? { target: this.$props.target } : {};
     return (
       <VListItem
+        {...attrs}
         tag="a"
         href={this.$props.href}
         to={this.$props.to}
