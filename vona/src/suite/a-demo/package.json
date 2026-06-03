@@ -5,6 +5,8 @@
   "author": "",
   "files": [],
   "type": "module",
-  "dependencies": {},
+  "dependencies": {
+    "vona-module-demo-basic": "^5.0.0"
+  },
   "title": "a-demo"
 }
