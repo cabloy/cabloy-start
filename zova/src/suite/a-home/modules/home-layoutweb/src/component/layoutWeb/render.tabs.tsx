@@ -45,17 +45,19 @@ export class RenderTabs extends BeanRenderBase {
       return (
         <VMenu key={tab.tabKey} v-slots={slots}>
           <VList>
-            {info.children?.map(item => {
-              return (
-                <ZItemLink
-                  key={item.link}
-                  title={item.title!}
-                  icon={(item.icon as any) ?? $iconName('::none')}
-                  href={item.link && item.external ? item.link : undefined}
-                  to={item.link && !item.external ? item.link : undefined}
-                ></ZItemLink>
-              );
-            })}
+            {info.children
+              ?.filter(item => !item.folder)
+              .map(item => {
+                return (
+                  <ZItemLink
+                    key={item.link}
+                    title={item.title!}
+                    icon={(item.icon as any) ?? $iconName('::none')}
+                    href={item.link && item.external ? item.link : undefined}
+                    to={item.link && !item.external ? item.link : undefined}
+                  ></ZItemLink>
+                );
+              })}
           </VList>
         </VMenu>
       );
