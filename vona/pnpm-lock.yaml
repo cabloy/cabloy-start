@@ -3601,11 +3601,11 @@ packages:
     resolution: {integrity: sha512-y/xtNPNt/YeyoVxE/JCx+T7yjEzpezmbb+toK8DDD1P4m7Kzs5YR956+7OKexG3f8aXgC3rLZl7b1V+yNUSy5w==}
     engines: {node: '>=18'}
 
-  '@tanstack/query-core@5.100.14':
-    resolution: {integrity: sha512-5X41dGpxgeaHISCRW2oYwcSycZeULZzAunaudXT9ov1KOTj9xwt0CH6hbwqP1/z74ZWF7rYFnDpyYH07XFcZew==}
+  '@tanstack/query-core@5.101.0':
+    resolution: {integrity: sha512-cQetA74EB+seWySv1TTKr828TnP0u39m6LykwDXIo84SNortpDkp30TMEjkqtYCNP9c40uT/iwl6MLiufEt0Ow==}
 
-  '@tanstack/query-persist-client-core@5.100.14':
-    resolution: {integrity: sha512-mn60cqoQO/xB6aHxp/hxlSj5mcdcTO4tjj4SXSz5MKzkaMZnvcEGySz3+cGQOT8McREN56fL41L0eR//v5RwNw==}
+  '@tanstack/query-persist-client-core@5.101.0':
+    resolution: {integrity: sha512-LH99WepGVLwlLfuOcQcPK7f3Xg/Gf+xlMMIj9xWu/8oQ3egnDzjr+a4HvEmi6PGob5SmGXvmDKZaH5+In9dzjw==}
 
   '@tanstack/store@0.11.0':
     resolution: {integrity: sha512-WlzzCt3xi0G6pCAJu1U+2jiECwabETDpQDi3hfkFZvJii9AuZqEKbOiVarX1/bWhTNjU486yQtJCCasi/0q+Cw==}
@@ -3619,8 +3619,8 @@ packages:
     peerDependencies:
       vue: ^3.4.0
 
-  '@tanstack/vue-query@5.100.14':
-    resolution: {integrity: sha512-gNKay40Z29mvnjJtq2emzbZhGd2HRZQTOJuJZxAWpUKnmjOf79BndNnF1Aowm0Nt4WQtXYjFCGNZkBzSEJ+JEg==}
+  '@tanstack/vue-query@5.101.0':
+    resolution: {integrity: sha512-sZeW0RvfEZ9QRiaXirE/HQZsFT5saMlPZVfeYvjPX6lqSBS9lkD7wfnCfzOBns6HD2f34Gx9cazkuU3Xj6hl/A==}
     peerDependencies:
       '@vue/composition-api': ^1.1.2
       vue: ^2.6.0 || ^3.3.0
@@ -8407,11 +8407,11 @@ snapshots:
 
   '@tanstack/pacer-lite@0.1.1': {}
 
-  '@tanstack/query-core@5.100.14': {}
+  '@tanstack/query-core@5.101.0': {}
 
-  '@tanstack/query-persist-client-core@5.100.14':
+  '@tanstack/query-persist-client-core@5.101.0':
     dependencies:
-      '@tanstack/query-core': 5.100.14
+      '@tanstack/query-core': 5.101.0
 
   '@tanstack/store@0.11.0': {}
 
@@ -8425,10 +8425,10 @@ snapshots:
     transitivePeerDependencies:
       - '@vue/composition-api'
 
-  '@tanstack/vue-query@5.100.14(vue@3.5.34(typescript@5.9.3))':
+  '@tanstack/vue-query@5.101.0(vue@3.5.34(typescript@5.9.3))':
     dependencies:
       '@tanstack/match-sorter-utils': 8.19.4
-      '@tanstack/query-core': 5.100.14
+      '@tanstack/query-core': 5.101.0
       '@vue/devtools-api': 6.6.4
       vue: 3.5.34(typescript@5.9.3)
       vue-demi: 0.14.10(vue@3.5.34(typescript@5.9.3))
@@ -12438,9 +12438,9 @@ snapshots:
 
   zova-module-a-model@5.1.23(vue@3.5.34(typescript@5.9.3)):
     dependencies:
-      '@tanstack/query-core': 5.100.14
-      '@tanstack/query-persist-client-core': 5.100.14
-      '@tanstack/vue-query': 5.100.14(vue@3.5.34(typescript@5.9.3))
+      '@tanstack/query-core': 5.101.0
+      '@tanstack/query-persist-client-core': 5.101.0
+      '@tanstack/vue-query': 5.101.0(vue@3.5.34(typescript@5.9.3))
       localforage: 1.10.0
       mutate-on-copy: 1.1.13
       table-identity: link:packages-utils/table-identity
@@ -12513,8 +12513,8 @@ snapshots:
 
   zova-rest-cabloy-basic-admin@file:.zova-rest/cabloy-basic-admin(typescript@5.9.3):
     dependencies:
-      '@tanstack/query-core': 5.100.14
-      '@tanstack/vue-query': 5.100.14(vue@3.5.34(typescript@5.9.3))
+      '@tanstack/query-core': 5.101.0
+      '@tanstack/vue-query': 5.101.0(vue@3.5.34(typescript@5.9.3))
       openapi3-ts: 4.5.0
       table-identity: link:packages-utils/table-identity
       typestyle: 2.4.0
@@ -12547,8 +12547,8 @@ snapshots:
     dependencies:
       '@cabloy/vue-router': 4.4.16(vue@3.5.34(typescript@5.9.3))
       '@date-io/luxon': 3.2.0(luxon@3.7.2)
-      '@tanstack/query-core': 5.100.14
-      '@tanstack/vue-query': 5.100.14(vue@3.5.34(typescript@5.9.3))
+      '@tanstack/query-core': 5.101.0
+      '@tanstack/vue-query': 5.101.0(vue@3.5.34(typescript@5.9.3))
       luxon: 3.7.2
       openapi3-ts: 4.5.0
       table-identity: link:packages-utils/table-identity
@@ -12584,8 +12584,8 @@ snapshots:
     dependencies:
       '@cabloy/vue-router': 4.4.16(vue@3.5.34(typescript@5.9.3))
       '@date-io/luxon': 3.2.0(luxon@3.7.2)
-      '@tanstack/query-core': 5.100.14
-      '@tanstack/vue-query': 5.100.14(vue@3.5.34(typescript@5.9.3))
+      '@tanstack/query-core': 5.101.0
+      '@tanstack/vue-query': 5.101.0(vue@3.5.34(typescript@5.9.3))
       luxon: 3.7.2
       openapi3-ts: 4.5.0
       table-identity: link:packages-utils/table-identity
