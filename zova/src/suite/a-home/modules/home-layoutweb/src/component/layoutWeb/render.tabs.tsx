@@ -27,7 +27,7 @@ export class RenderTabs extends BeanRenderBase {
   private _renderTab(tab: RouteTab) {
     const $$modelTabs = this.$$modelTabs;
     const { tabKey, info } = tab;
-    const titleLocale = this.$text(info?.title || '');
+    const titleLocale = info?.title || '';
     if (info.folder) {
       const slots = {
         activator: ({ props }) => {

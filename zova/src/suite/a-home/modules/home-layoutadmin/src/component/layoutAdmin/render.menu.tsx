@@ -11,7 +11,7 @@ import { TypeMenuItem, TypeMenuTree } from '../../.metadata/index.js';
 @Render()
 export class RenderMenu extends BeanRenderBase {
   _renderMenuItem(item: TypeMenuItem) {
-    const titleLocale = this.$text(item.title ?? '');
+    const titleLocale = item.title ?? '';
     if (item.folder) {
       let domChildren: VNode[] = [];
       domChildren.push(<VListSubheader key={`folder:${item.title}`}>{titleLocale}</VListSubheader>);
