@@ -7024,8 +7024,8 @@ packages:
       typescript:
         optional: true
 
-  vuetify@4.0.8:
-    resolution: {integrity: sha512-tde1nicQ0fUxZ/drEW7oILArkCYhDqJVTVOaaLQdAzuDNX1FwqYfAd5eeJ06lYDSLGlf8anR3iFlmZaYs629hQ==}
+  vuetify@4.1.0:
+    resolution: {integrity: sha512-Pq05N76NMM1TVM6z2wWlV0XhQcwuNSjevlr8xhnNYpBkLZC3yjTGzHYbE1rXE4ircf1SImRcJ8khwKE3Xb2Glg==}
     peerDependencies:
       typescript: '>=4.7'
       vite-plugin-vuetify: '>=2.1.0'
@@ -12210,7 +12210,7 @@ snapshots:
     optionalDependencies:
       typescript: 5.9.3
 
-  vuetify@4.0.8(typescript@5.9.3)(vue@3.5.34(typescript@5.9.3)):
+  vuetify@4.1.0(typescript@5.9.3)(vue@3.5.34(typescript@5.9.3)):
     dependencies:
       vue: 3.5.34(typescript@5.9.3)
     optionalDependencies:
@@ -12553,7 +12553,7 @@ snapshots:
       openapi3-ts: 4.5.0
       table-identity: link:packages-utils/table-identity
       vue: 3.5.34(typescript@5.9.3)
-      vuetify: 4.0.8(typescript@5.9.3)(vue@3.5.34(typescript@5.9.3))
+      vuetify: 4.1.0(typescript@5.9.3)(vue@3.5.34(typescript@5.9.3))
       zod: '@cabloy/zod@4.3.6'
       zova: 5.1.90(typescript@5.9.3)(vue@3.5.34(typescript@5.9.3))
       zova-jsx: 1.1.53(typescript@5.9.3)
@@ -12590,7 +12590,7 @@ snapshots:
       openapi3-ts: 4.5.0
       table-identity: link:packages-utils/table-identity
       vue: 3.5.34(typescript@5.9.3)
-      vuetify: 4.0.8(typescript@5.9.3)(vue@3.5.34(typescript@5.9.3))
+      vuetify: 4.1.0(typescript@5.9.3)(vue@3.5.34(typescript@5.9.3))
       zod: '@cabloy/zod@4.3.6'
       zova: 5.1.90(typescript@5.9.3)(vue@3.5.34(typescript@5.9.3))
       zova-jsx: 1.1.53(typescript@5.9.3)
