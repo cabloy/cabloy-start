@@ -99,7 +99,7 @@ export class ControllerLayoutWeb extends BeanControllerBase {
         return this.$$modelMenu.retrieveMenus().data;
       },
       () => {
-        this.$$modelTabs.updateAllTabInfos(this._getInitialTabs());
+        this.$$modelTabs.resetAllTabInfos();
       },
     );
   }
