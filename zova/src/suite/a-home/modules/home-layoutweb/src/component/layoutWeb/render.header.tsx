@@ -16,7 +16,7 @@ export class RenderHeader extends BeanRenderBase {
         <VAppBarNavIcon
           icon={$iconName(':social:cabloy')}
           variant="text"
-          nativeOnClick={() => this.app.$gotoHome()}
+          nativeOnClick={() => this.app.$gotoHome({ params: { locale: true } })}
         ></VAppBarNavIcon>
         <VToolbarTitle>{this.sys.env.APP_TITLE}</VToolbarTitle>
         {this.$$r.$$renderTabs.renderTabs()}
