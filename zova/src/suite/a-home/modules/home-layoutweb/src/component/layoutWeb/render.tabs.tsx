@@ -168,9 +168,7 @@ export class RenderTabs extends BeanRenderBase {
 
   private _isMenuLeafCurrent(item: TypeMenuLeaf): boolean {
     if (item.external || !item.link) return false;
-    const currentRoute = this.$currentRoute;
-    if (!currentRoute) return false;
-    return currentRoute.fullPath === item.link;
+    return this.$router.checkActiveOfFullPath(item.link);
   }
 
   private _getMenuItemKey(item: TypeMenuItem): string {
