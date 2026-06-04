@@ -24,7 +24,15 @@ export class ControllerPageErrorNotFound extends BeanControllerPageBase {
         <div>
           <div class={this.cTitle}>404</div>
           <div class={this.cDescription}>Oops. Nothing here...</div>
-          <VBtn rounded elevation={12} ripple text="Go Home" to={this.sys.env.ROUTER_PAGE_HOME} />
+          <VBtn
+            rounded
+            elevation={12}
+            ripple
+            text={this.scope.locale.GoHome()}
+            nativeOnClick={() => {
+              this.app.$gotoHome();
+            }}
+          />
         </div>
       </div>
     );
