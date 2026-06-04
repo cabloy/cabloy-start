@@ -11,6 +11,7 @@ export interface ControllerItemLinkProps {
   href?: string;
   to?: string | object;
   target?: string;
+  activeClass?: string;
 }
 
 @Controller()
@@ -33,6 +34,7 @@ export class ControllerItemLink extends BeanControllerBase {
         tag="a"
         href={this.$props.href}
         to={this.$props.to}
+        activeClass={this.$props.activeClass}
         subtitle={this.$props.description}
         v-slots={slots}
       >

@@ -1,13 +1,15 @@
 import type { VNode } from 'vue';
 
-import { VList, VMenu, VTab, VTabs } from 'vuetify/components';
+import { VBtn, VList, VMenu, VTab, VTabs } from 'vuetify/components';
 import { BeanRenderBase, ClientOnly } from 'zova';
 import { Render } from 'zova-module-a-bean';
 import { $iconName } from 'zova-module-a-icon';
-import { RouteTab, ZRouterViewTabs } from 'zova-module-a-routertabs';
+import { ZRouterViewTabs } from 'zova-module-a-routertabs';
 import { ZItemLink } from 'zova-module-home-base';
 
-import type { TypeMenuItem } from '../../model/menu.js';
+import type { TypeMenuGroup, TypeMenuItem } from '../../model/menu.js';
+
+type TypeMenuLeaf = Exclude<TypeMenuItem, TypeMenuGroup>;
 
 @Render()
 export class RenderTabs extends BeanRenderBase {
@@ -16,7 +18,10 @@ export class RenderTabs extends BeanRenderBase {
     if (!$$modelTabs) return;
     const domTabs: VNode[] = [];
     for (const tab of $$modelTabs.tabs) {
-      domTabs.push(this._renderTab(tab));
+      const domTab = this._renderTab(tab.info as TypeMenuItem, true, tab.tabKey);
+      if (domTab) {
+        domTabs.push(domTab);
+      }
     }
     const domWrapper = (
       <VTabs centerActive modelValue={$$modelTabs.tabKeyCurrent} mandatory={false}>
@@ -27,55 +32,86 @@ export class RenderTabs extends BeanRenderBase {
     return <ClientOnly>{domWrapper}</ClientOnly>;
   }
 
-  private _renderTab(tab: RouteTab) {
-    const $$modelTabs = this.$$modelTabs;
-    const { tabKey, info } = tab;
-    const titleLocale = info?.title || '';
-    const className = tabKey === $$modelTabs.tabKeyCurrent ? 'text-primary' : '';
-    if (info.folder) {
-      const slots = {
-        activator: ({ props }) => {
-          return (
-            <VTab value={tabKey} class={className} prependIcon={this.getTabIcon(tab)} {...props}>
-              {titleLocale}
-            </VTab>
-          );
-        },
-      };
-      return (
-        <VMenu key={tab.tabKey} v-slots={slots}>
-          <VList>
-            {info.children
-              ?.filter(item => !item.folder)
-              .map((item, index) => {
-                const { href, target, to } = this._buildLinkProps(item as TypeMenuItem);
-                return (
-                  <ZItemLink
-                    key={item.link ?? `${tabKey}:${index}`}
-                    title={item.title!}
-                    icon={(item.icon as any) ?? $iconName('::none')}
-                    href={href}
-                    to={to}
-                    target={target}
-                  ></ZItemLink>
-                );
-              })}
-          </VList>
-        </VMenu>
-      );
+  private _renderTab(item: TypeMenuItem, topLevel: boolean = false, tabKey?: string) {
+    if (item.folder) {
+      return this._renderMenuFolder(item, topLevel, tabKey);
     }
-    const { href, to } = this._buildLinkProps(info as TypeMenuItem);
-    const attrs = info.external && info.target ? { target: info.target } : {};
+    if (item.separator) return;
+    return this._renderMenuLeaf(item, topLevel, tabKey);
+  }
+
+  private _renderMenuFolder(item: TypeMenuGroup, topLevel: boolean, tabKey?: string) {
+    const titleLocale = item.title || '';
+    const className = this._getMenuItemClassName(this._hasActiveDescendant(item));
+    const slots = {
+      activator: ({ props }) => {
+        return (
+          <VBtn
+            variant="text"
+            class={`v-tab ${className}`}
+            style={{ height: 'calc(var(--v-tabs-height))' }}
+            prependIcon={this._getMenuItemIcon(item)}
+            {...props}
+          >
+            {titleLocale}
+          </VBtn>
+        );
+      },
+    };
+    return (
+      <VMenu key={this._getMenuItemKey(item)} v-slots={slots}>
+        <VList>
+          {item.children?.map((child, index) => {
+            return this._renderMenuChild(child, topLevel, tabKey, index);
+          })}
+        </VList>
+      </VMenu>
+    );
+  }
+
+  private _renderMenuChild(
+    item: TypeMenuItem,
+    _topLevel: boolean,
+    tabKey?: string,
+    index?: number,
+  ) {
+    if (item.folder) {
+      return item.children?.map((child, childIndex) => {
+        return this._renderMenuChild(child, false, tabKey, childIndex);
+      });
+    }
+    if (item.separator) return;
+    const menuItem = item as TypeMenuLeaf;
+    const { href, target, to } = this._buildLinkProps(menuItem);
+    const key = menuItem.link ?? `${tabKey}:${index}`;
+    return (
+      <ZItemLink
+        key={key}
+        title={menuItem.title!}
+        icon={(menuItem.icon as any) ?? $iconName('::none')}
+        href={href}
+        to={to}
+        target={target}
+        activeClass="text-primary"
+      ></ZItemLink>
+    );
+  }
+
+  private _renderMenuLeaf(item: TypeMenuLeaf, _topLevel: boolean, tabKey?: string) {
+    const titleLocale = item.title || '';
+    const className = this._getMenuItemClassName(this._isMenuLeafActive(item, tabKey));
+    const { href, to } = this._buildLinkProps(item);
+    const attrs = item.external && item.target ? { target: item.target } : {};
     return (
       <VTab
-        key={tabKey}
+        key={this._getMenuItemKey(item)}
         value={tabKey}
         class={className}
         href={href}
         to={to}
-        tag={info.external ? 'a' : undefined}
+        tag={item.external ? 'a' : undefined}
         {...attrs}
-        prependIcon={this.getTabIcon(tab)}
+        prependIcon={this._getMenuItemIcon(item)}
       >
         {titleLocale}
       </VTab>
@@ -117,9 +153,46 @@ export class RenderTabs extends BeanRenderBase {
     };
   }
 
-  public getTabIcon(tab: RouteTab) {
-    const { info } = tab;
-    return info?.icon ? info?.icon : '';
+  private _hasActiveDescendant(item: TypeMenuGroup): boolean {
+    return item.children.some(child => {
+      if (child.folder) return this._hasActiveDescendant(child);
+      return this._isMenuLeafCurrent(child as TypeMenuLeaf);
+    });
+  }
+
+  private _isMenuLeafActive(item: TypeMenuLeaf, tabKey?: string): boolean {
+    if (item.external || !item.link) return false;
+    if (tabKey && tabKey === this.$$modelTabs?.tabKeyCurrent) return true;
+    return this._isMenuLeafCurrent(item);
+  }
+
+  private _isMenuLeafCurrent(item: TypeMenuLeaf): boolean {
+    if (item.external || !item.link) return false;
+    const currentRoute = this.$currentRoute;
+    if (!currentRoute) return false;
+    const fullPath = this.$router.isRouterName(item.link)
+      ? this.$router.resolveName(
+          item.link as never,
+          {
+            params: item.meta?.params,
+            query: item.meta?.query,
+          } as never,
+        )
+      : this.$router.resolvePath(item.link as never, item.meta?.query as never);
+    return currentRoute.fullPath === fullPath;
+  }
+
+  private _getMenuItemKey(item: TypeMenuItem): string {
+    if (item.folder) return item.name || item.title || '';
+    return item.name || item.link || item.title || '';
+  }
+
+  private _getMenuItemClassName(isActive: boolean): string {
+    return isActive ? 'text-primary' : '';
+  }
+
+  private _getMenuItemIcon(item: TypeMenuItem) {
+    return item.icon ? item.icon : '';
   }
 
   _renderRouterViewTabs() {
