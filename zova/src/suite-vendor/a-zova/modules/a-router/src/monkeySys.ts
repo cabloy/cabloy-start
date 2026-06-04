@@ -2,7 +2,6 @@ import type { IModule } from '@cabloy/module-info';
 import type { IMonkeyModuleSys, IMonkeySysApplicationInitialize, ZovaApplication } from 'zova';
 import type { ErrorSSR } from 'zova-module-a-ssr';
 
-import { combineQueries } from '@cabloy/utils';
 import { BeanSimple, cast, isHttpUrl } from 'zova';
 
 import type { SysRouter } from './bean/sys.router.js';
@@ -62,8 +61,14 @@ export class MonkeySys
           query[app.sys.env.ROUTER_KEY_RETURNTO] = returnTo;
         }
       }
-      // combineQueries
-      pagePath = combineQueries(pagePath, query);
+      // combineParamsAndQuery
+      pagePath = app.meta.$router.getPagePath(
+        pagePath as never,
+        {
+          params: options?.params,
+          query,
+        } as never,
+      );
       // redirect
       if (process.env.SERVER || options?.forceRedirect) {
         return app.$redirect(pagePath);
@@ -75,8 +80,8 @@ export class MonkeySys
         return app.meta.$router[options?.replace ? 'replace' : 'push'](pagePath);
       }
     };
-    app.$gotoHome = () => {
-      return app.$gotoPage(app.sys.env.ROUTER_PAGE_HOME);
+    app.$gotoHome = (options?: IGotoPageOptions) => {
+      return app.$gotoPage(app.sys.env.ROUTER_PAGE_HOME, options);
     };
     app.$gotoLogin = (returnTo?: string, cause?: string) => {
       if (!returnTo && cast(app.meta.$router.currentRoute)?.path === app.sys.env.ROUTER_PAGE_LOGIN)
