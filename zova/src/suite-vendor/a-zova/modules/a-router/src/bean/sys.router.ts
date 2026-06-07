@@ -1,6 +1,7 @@
 import type {
   RouteLocationMatched,
   RouteLocationNormalizedLoaded,
+  RouteLocationNormalizedLoadedGeneric,
   RouteLocationResolvedGeneric,
   Router,
   RouterOptions,
@@ -18,7 +19,7 @@ import {
 import { BeanBase, cast, deepExtend } from 'zova';
 import { Sys } from 'zova-module-a-bean';
 
-import { getRealRouteName, getRouteMatched, isRouterName } from '../lib/utils.js';
+import { getCurrentRoute, getRealRouteName, getRouteMatched, isRouterName } from '../lib/utils.js';
 import {
   IModuleRoute,
   IModuleRouteComponent,
@@ -98,11 +99,10 @@ export class SysRouter extends BeanBase {
   ) {
     const query = options?.query;
     let params = options?.params;
-    if (cast(params)?.locale === true) {
-      const locale =
-        this.app.meta.locale.current === this.sys.config.locale.default
-          ? undefined
-          : this.app.meta.locale.current;
+    const paramsLocale = cast(params)?.locale;
+    if (paramsLocale !== undefined) {
+      const localeCurrent = paramsLocale === true ? this.app.meta.locale.current : paramsLocale;
+      const locale = localeCurrent === this.sys.config.locale.default ? undefined : localeCurrent;
       params = Object.assign({}, params, { locale });
     }
     const pagePath = combineParamsAndQuery(path, { params, query });
@@ -142,6 +142,28 @@ export class SysRouter extends BeanBase {
     const moduleName = ModuleInfo.parseName(_path);
     if (!moduleName) return true;
     return this.sys.meta.module.exists(moduleName);
+  }
+
+  public checkActiveOfFullPath(
+    fullPath: string,
+    currentRoute?: RouteLocationNormalizedLoadedGeneric,
+  ): boolean {
+    if (!currentRoute) {
+      currentRoute = getCurrentRoute(this.ctx)?.value;
+    }
+    if (!currentRoute) return false;
+    if (currentRoute.fullPath === fullPath) return true;
+    if (!currentRoute.matched || currentRoute.matched.length === 0) return false;
+    return currentRoute.matched.some(routeAlias => {
+      const fullPathAlias = this.getPagePath(
+        routeAlias.path as never,
+        {
+          params: currentRoute.params,
+          query: currentRoute.query,
+        } as never,
+      );
+      return fullPathAlias === fullPath;
+    });
   }
 
   public async ensureRoute(pagePath: string) {
