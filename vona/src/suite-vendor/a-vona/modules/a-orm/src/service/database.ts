@@ -2,13 +2,13 @@ import { isNil } from '@cabloy/utils';
 import { appResource, BeanBase, deepExtend } from 'vona';
 import { Service } from 'vona-module-a-bean';
 
-import type { BeanDatabaseDialectBase } from '../bean/bean.databaseDialectBase.ts';
 import type { ConfigDatabaseClient } from '../types/config.ts';
 import type {
   IDatabaseClientDialectRecord,
   IDatabaseClientRecord,
   IDbInfo,
 } from '../types/database.ts';
+import type { ServiceDatabaseDialectBase } from './databaseDialectBase_.ts';
 
 import { ServiceDatabaseClient } from './databaseClient_.ts';
 
@@ -61,7 +61,7 @@ export class ServiceDatabase extends BeanBase {
 
   prepareClientNameSelector(
     dbInfo: IDbInfo,
-    dialect: BeanDatabaseDialectBase | keyof IDatabaseClientDialectRecord,
+    dialect: ServiceDatabaseDialectBase | keyof IDatabaseClientDialectRecord,
   ) {
     const dialect2 = typeof dialect === 'string' ? this.bean.database.getDialect(dialect) : dialect;
     if (!dialect2.capabilities.level) return dbInfo.clientName;

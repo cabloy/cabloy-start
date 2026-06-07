@@ -1,10 +1,10 @@
-import type { BeanSummerCacheBase, IDecoratorSummerCacheOptions } from 'vona-module-a-summer';
+import type { ServiceSummerCacheBase, IDecoratorSummerCacheOptions } from 'vona-module-a-summer';
 
 import { BeanBase, deepExtend } from 'vona';
 
-import type { BeanModelCache } from '../bean/bean.model/bean.model_cache.ts';
 import type { TypeModelCacheType } from '../types/model.ts';
 import type { ITableRecord } from '../types/onion/table.ts';
+import type { BeanModelCache } from './bean.model/bean.model_cache.ts';
 
 import { getCacheModelCacheInstances } from './const.ts';
 
@@ -25,7 +25,7 @@ export class ModelCacheBase extends BeanBase {
     return this.$scope.orm;
   }
 
-  public getInstance(table: keyof ITableRecord): BeanSummerCacheBase {
+  public getInstance(table: keyof ITableRecord): ServiceSummerCacheBase {
     if (this.options === false) throw new Error('cache disabled');
     const beanFullName = this._model.$beanFullName;
     const cacheName = this.getName(table);

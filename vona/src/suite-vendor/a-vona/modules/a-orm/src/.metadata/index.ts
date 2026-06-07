@@ -27,9 +27,7 @@ declare module 'vona-module-a-orm' {
 /** aopMethod: end */
 /** bean: begin */
 export * from '../bean/bean.database.ts';
-export * from '../bean/bean.databaseDialectBase.ts';
 export * from '../bean/bean.model.ts';
-export * from '../bean/bean.modelBase.ts';
 
 import 'vona';
 declare module 'vona' {
@@ -46,10 +44,12 @@ declare module 'vona-module-a-orm' {
 /** bean: end */
 /** bean: begin */
 import type { BeanDatabase } from '../bean/bean.database.ts';
-import 'vona';  
+import type { BeanModel } from '../bean/bean.model.ts';
+import 'vona';
 declare module 'vona' {
   export interface IBeanRecordGlobal {
     'database': BeanDatabase;
+    'model': BeanModel;
   }
 }
 /** bean: end */
@@ -61,6 +61,7 @@ export * from '../service/columns_.ts';
 export * from '../service/database.ts';
 export * from '../service/databaseAsyncLocalStorage_.ts';
 export * from '../service/databaseClient_.ts';
+export * from '../service/databaseDialectBase_.ts';
 export * from '../service/db_.ts';
 export * from '../service/entityResolver_.ts';
 export * from '../service/modelResolver_.ts';
