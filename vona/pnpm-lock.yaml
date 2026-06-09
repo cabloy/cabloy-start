@@ -12649,6 +12649,8 @@ snapshots:
 
   zova-rest-cabloy-store-admin@file:.zova-rest/cabloy-store-admin(typescript@5.9.3):
     dependencies:
+      '@cabloy/logger': 1.1.21
+      '@cabloy/module-info': 2.0.0
       '@cabloy/vue-router': 4.4.16(vue@3.5.34(typescript@5.9.3))
       '@date-io/luxon': 3.2.0(luxon@3.7.2)
       '@tanstack/query-core': 5.101.0
@@ -12686,6 +12688,8 @@ snapshots:
 
   zova-rest-cabloy-store-web@file:.zova-rest/cabloy-store-web(typescript@5.9.3):
     dependencies:
+      '@cabloy/logger': 1.1.21
+      '@cabloy/module-info': 2.0.0
       '@cabloy/vue-router': 4.4.16(vue@3.5.34(typescript@5.9.3))
       '@date-io/luxon': 3.2.0(luxon@3.7.2)
       '@tanstack/query-core': 5.101.0

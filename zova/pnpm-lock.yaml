@@ -313,6 +313,9 @@ importers:
       zova-module-store-model:
         specifier: workspace:^
         version: link:src/suite/cabloy-store/modules/store-model
+      zova-module-store-product:
+        specifier: workspace:^
+        version: link:src/suite/cabloy-store/modules/store-product
       zova-module-store-purchase:
         specifier: workspace:^
         version: link:src/suite/cabloy-store/modules/store-purchase
@@ -1799,6 +1802,9 @@ importers:
       zova-module-store-model:
         specifier: ^5.0.0
         version: link:modules/store-model
+      zova-module-store-product:
+        specifier: ^5.0.0
+        version: link:modules/store-product
       zova-module-store-purchase:
         specifier: ^5.0.0
         version: link:modules/store-purchase
@@ -1859,6 +1865,15 @@ importers:
         version: 2.2.0
       rimraf:
         specifier: ^6.0.1
+        version: 6.1.3
+
+  src/suite/cabloy-store/modules/store-product:
+    devDependencies:
+      clean-package:
+        specifier: ^2.2.0
+        version: 2.2.0
+      rimraf:
+        specifier: ^6.1.3
         version: 6.1.3
 
   src/suite/cabloy-store/modules/store-purchase:
