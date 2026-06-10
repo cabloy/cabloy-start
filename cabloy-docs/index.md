@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: 'Cabloy'
-  text: 'Unified fullstack framework documentation'
-  tagline: Build SSR, SPA, Web, and Admin applications with monorepo-native guidance for Cabloy, Vona, Zova, and AI-assisted development.
+  text: 'Node.js fullstack framework for AI vibe coding'
+  tagline: Build backend and frontend with one fullstack framework. Vona, Zova, suites, and CLI-first workflows make AI vibe coding faster and more accurate.
   actions:
     - theme: brand
       text: Get Started
@@ -17,57 +17,56 @@ hero:
       link: /ai/introduction
 
 features:
-  - title: Fullstack by design
-    details: Understand how Cabloy combines the Vona backend and the Zova frontend in one source tree so humans and AI agents can work from the same ground truth.
-  - title: Edition-aware workflows
-    details: Distinguish what is common across Cabloy Basic and Cabloy Start, and what changes because of UI library, module composition, or private value-add features.
-  - title: CLI-first automation
-    details: Reuse Vona and Zova CLI capabilities for scaffolding, refactoring, metadata, and verification instead of re-deriving framework conventions from scratch.
-  - title: AI-ready knowledge system
-    details: Connect public docs, internal architecture notes, Claude rules, and skills so AI-assisted development stays accurate, efficient, and maintainable.
+  - title: One framework system
+    details: Build backend and frontend in one fullstack architecture.
+  - title: Vona + Zova
+    details: Use aligned backend and frontend frameworks for code sharing, workflow reuse, and cross-stack consistency.
+  - title: Suite-based modular system
+    details: Organize capabilities as suites and modules so services, features, metadata, and tooling evolve in composable units.
+  - title: Multiple delivery modes
+    details: Deliver SSR, SPA, Web, and Admin applications with shared conventions across the stack.
+  - title: CLI-first workflows for AI vibe coding
+    details: Turn scaffolding, metadata, refactors, and verification into explicit commands for faster, more accurate AI vibe coding.
+  - title: Monorepo-native development
+    details: Keep framework source, docs, and tooling aligned in one monorepo workflow.
 ---
 
 # Cabloy Documentation
 
-This site is the new documentation home for the Cabloy monorepo.
+Cabloy is a Node.js fullstack framework for AI vibe coding. Use one fullstack framework instead of stitching together separate backend and frontend stacks. With Vona, Zova, suite-based modules, and CLI-first workflows, Cabloy turns common scaffolding, metadata, refactors, and verification into explicit commands for faster, more accurate AI vibe coding.
 
-It is designed around four practical goals:
+Start here to learn the shared Cabloy architecture, see how Vona and Zova fit together, understand how Cabloy Basic and Cabloy Start share one fullstack core but diverge by edition, and follow CLI-first workflows grounded in the current source tree.
 
-1. explain the shared architecture across Cabloy, Vona, and Zova
-2. document the real monorepo workflows used in current source code
-3. distinguish Cabloy Basic and Cabloy Start clearly
-4. provide durable guidance for AI-assisted development
+## What you can do here
 
-## What is covered here
+- **Get started quickly** with the fullstack quickstart and core Cabloy concepts
+- **Learn the shared fullstack architecture** across Cabloy, Vona, and Zova
+- **Explore backend and frontend workflows** without losing the cross-stack picture
+- **See how Cabloy Basic and Cabloy Start differ by edition** when UI assumptions, flavors, modules, SSR sites, or AI workflow guidance matter
+- **Follow source-grounded AI vibe coding guidance** for prompting, workflow selection, and verification
 
-- **Fullstack**: monorepo setup, shared workflows, and cross-stack architecture
-- **Backend (Vona)**: backend concepts, infrastructure, and CLI-backed workflows
-- **Frontend (Zova)**: frontend concepts, SSR, UI-stack considerations, and CLI-backed workflows
-- **Editions**: how Cabloy Basic and Cabloy Start relate and where they differ
-- **AI Development**: how docs, skills, rules, commands, and internal engineering notes work together
-- **Reference**: scripts, CLI command families, package layout, and terminology
+## First reading path
+
+### For getting started
+
+1. [Fullstack Quickstart](/fullstack/quickstart)
+2. [Editions Overview](/editions/overview)
+3. [Choosing Between Cabloy Basic and Cabloy Start](/editions/choosing-between-basic-and-start)
+4. [Fullstack Introduction](/fullstack/introduction)
+
+### For contributors and AI vibe coding workflows
+
+1. [Fullstack Introduction](/fullstack/introduction)
+2. [Fullstack CLI](/fullstack/cli)
+3. [VS Code Extensions](/fullstack/vscode-extensions)
+4. [AI Development Introduction](/ai/introduction)
+5. [Repo Scripts Reference](/reference/repo-scripts)
+6. [Editions Overview](/editions/overview)
 
 ## Documentation scope labels
 
 Use these labels throughout the site:
 
-<Badge type="tip" text="Common" /> applies to both Cabloy Basic and Cabloy Start.
-
-<Badge type="info" text="Basic" /> applies only to Cabloy Basic.
-
-<Badge type="warning" text="Start" /> applies only to Cabloy Start.
-
-## First reading path
-
-### For project users
-
-1. [Fullstack Quickstart](/fullstack/quickstart)
-2. [Editions Overview](/editions/overview)
-3. [Fullstack Introduction](/fullstack/introduction)
-
-### For framework contributors and AI workflows
-
-1. [Fullstack Introduction](/fullstack/introduction)
-2. [AI Development Introduction](/ai/introduction)
-3. [Repo Scripts Reference](/reference/repo-scripts)
-4. [Editions Overview](/editions/overview)
+- <Badge type="tip" text="Common" /> applies to both Cabloy Basic and Cabloy Start.
+- <Badge type="info" text="Basic" /> applies only to Cabloy Basic.
+- <Badge type="warning" text="Start" /> applies only to Cabloy Start.

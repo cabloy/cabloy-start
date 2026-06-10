@@ -2,6 +2,10 @@ import { defineConfig } from 'vitepress';
 
 const editionsItems = [
   { text: 'Overview', link: '/editions/overview' },
+  {
+    text: 'Choosing Basic vs Start',
+    link: '/editions/choosing-between-basic-and-start',
+  },
   { text: 'Cabloy Basic', link: '/editions/cabloy-basic' },
   { text: 'Cabloy Start', link: '/editions/cabloy-start' },
   { text: 'Edition Detection', link: '/editions/detection' },
@@ -23,6 +27,7 @@ const aiItems = [
   { text: 'CLI for Agents', link: '/ai/cli-for-agents' },
   { text: 'Rules and Config', link: '/ai/rules-and-config' },
   { text: 'Edition Detection', link: '/ai/edition-detection' },
+  { text: 'Edition Consistency Checklist', link: '/ai/edition-consistency-checklist' },
   { text: 'Verification', link: '/ai/verification' },
 ];
 
@@ -34,12 +39,34 @@ const referenceItems = [
   { text: 'Glossary', link: '/reference/glossary' },
 ];
 
+const GA_MEASUREMENT_ID = process.env.GA_MEASUREMENT_ID;
+const gaHead = GA_MEASUREMENT_ID
+  ? [
+      [
+        'script',
+        {
+          async: '',
+          src: `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`,
+        },
+      ],
+      [
+        'script',
+        {},
+        `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${GA_MEASUREMENT_ID}');`,
+      ],
+    ]
+  : [];
+
 export default defineConfig({
   title: 'Cabloy',
   description: 'Unified fullstack and AI-development documentation for the Cabloy monorepo',
   lang: 'en-US',
   base: '/',
   ignoreDeadLinks: [/^https?:\/\/localhost/],
+  head: gaHead,
   markdown: {
     lineNumbers: true,
   },
@@ -59,7 +86,13 @@ export default defineConfig({
           text: 'Fullstack',
           items: [
             { text: 'Introduction', link: '/fullstack/introduction' },
+            {
+              text: 'Comparison with Other Frameworks',
+              link: '/fullstack/comparison-with-other-frameworks',
+            },
             { text: 'Quickstart', link: '/fullstack/quickstart' },
+            { text: 'CLI', link: '/fullstack/cli' },
+            { text: 'VS Code Extensions', link: '/fullstack/vscode-extensions' },
             { text: 'Vona + Zova Integration', link: '/fullstack/vona-zova-integration' },
             { text: 'Backend OpenAPI to Frontend SDK', link: '/fullstack/openapi-to-sdk' },
             {

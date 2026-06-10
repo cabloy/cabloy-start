@@ -1,6 +1,19 @@
 # Fullstack Introduction
 
-Cabloy is a fullstack framework built around a single source tree where backend and frontend development stay close enough for code sharing, workflow reuse, and AI-assisted implementation.
+Cabloy is a Node.js fullstack framework for AI vibe coding.
+
+Use one fullstack framework instead of stitching together separate backend and frontend stacks.
+
+With Vona, Zova, suite-based modules, and CLI-first workflows, Cabloy turns common scaffolding, metadata, refactors, and verification into explicit commands for faster, more accurate AI vibe coding.
+
+## What Cabloy emphasizes
+
+- **One framework system** — build backend and frontend in one fullstack architecture
+- **Vona + Zova** — use aligned backend and frontend frameworks for code sharing, workflow reuse, and cross-stack consistency
+- **Suite-based modular system** — organize capabilities as suites and modules so services, features, metadata, and tooling evolve in composable units
+- **Multiple delivery modes** — deliver SSR, SPA, Web, and Admin applications with shared conventions across the stack
+- **CLI-first workflows for AI vibe coding** — turn common scaffolding, metadata, refactors, and verification into explicit commands for faster, more accurate AI vibe coding
+- **Monorepo-native development** — keep framework source, docs, and tooling aligned in one monorepo workflow
 
 ## Shared architecture
 
@@ -8,25 +21,22 @@ Cabloy is a fullstack framework built around a single source tree where backend 
 - **Zova** provides the frontend framework capabilities.
 - The root repository coordinates the two through shared scripts, shared terminology, and a shared release story.
 
-In the current monorepo root, the main command entrypoints are:
+This combination keeps backend and frontend development close enough for code sharing, workflow reuse, and AI vibe coding workflows.
 
-- `npm run vona`
-- `npm run zova`
-- `npm run dev`
-- `npm run build`
-- `npm run test`
-- `npm run tsc`
+## How the fullstack system stays connected
 
-These are defined in the root `package.json` and should be the first place an agent or contributor checks before inventing a custom workflow.
+At the repository level, shared scripts, shared terminology, and CLI-first workflows keep Vona and Zova aligned as one framework system.
 
-## Why the monorepo matters for workflow selection
+For the shared terminal-first workflow model, see [Fullstack CLI](/fullstack/cli).
 
-The monorepo makes it possible to answer cross-stack questions from source rather than memory, for example:
+## Why the monorepo matters
+
+The monorepo makes it possible to keep backend and frontend concepts, tooling, and generated outputs aligned from source rather than memory, for example:
 
 - how frontend routes and components are reflected back into backend type hints
 - how backend OpenAPI and DTO output feeds frontend SDK generation
-- how edition-specific scripts differ between Cabloy Basic and Cabloy Start
-- how Vona and Zova CLI commands can be reused instead of writing scaffolding manually
+- how common concepts can be documented once before edition-specific notes branch out
+- how Vona and Zova CLI capabilities can be reused instead of rebuilding scaffolding by hand
 
 ## Technology Stack
 
@@ -64,6 +74,8 @@ The monorepo makes it possible to answer cross-stack questions from source rathe
 
 ## Common-first, edition-aware
 
-Most framework concepts are shared across Cabloy Basic and Cabloy Start. The new documentation prefers a common-first explanation, then adds edition-specific notes only where the repos intentionally diverge.
+Most framework concepts are shared across Cabloy Basic and Cabloy Start because both editions follow the same Cabloy fullstack core. The documentation prefers a common-first explanation, then adds edition-specific notes only where the editions intentionally diverge.
 
-Use the [Editions Overview](/editions/overview) page whenever a task depends on UI library, module composition, or private-value project boundaries.
+Across editions, the frontend engineering layer stays mostly shared through Zova, Vue, Vite, Quasar tooling, and related libraries. The edition-specific UI layer then diverges between DaisyUI + Tailwind CSS for Cabloy Basic and Vuetify for Cabloy Start.
+
+Use the [Editions Overview](/editions/overview) page whenever a task depends on UI library assumptions, flavor names, module composition, SSR site baselines, distribution boundaries, or AI workflow guidance.

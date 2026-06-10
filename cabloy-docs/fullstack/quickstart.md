@@ -24,7 +24,7 @@ Before creating a new Cabloy project, make sure your environment has:
 npm create cabloy
 ```
 
-The generated project already includes `CLAUDE.md` and the `.claude/` workspace assets. Open this project in Claude Code and start coding immediately with project-specific guidance.
+The generated project already includes `CLAUDE.md` and the `.claude/` workspace assets. This path creates a Cabloy Basic project baseline. Open this project in Claude Code and start coding immediately with project-specific guidance.
 
 ## 3. Start the backend
 
@@ -46,10 +46,13 @@ npm run dev:zova:web   # http://localhost:9000/
 
 ### Cabloy Start
 
-Use the frontend commands provided by your project edition. Do not assume the Cabloy Basic flavor names apply to Cabloy Start.
+Cabloy Start is the private commercial edition. Instead of `npm create cabloy`, purchase access to the licensed private repository, clone that source directly, and run `npm run init`. Then use the frontend commands provided by that edition. Do not assume the Cabloy Basic flavor names apply to Cabloy Start.
 
-If you are not sure which edition you are using, read:
+For the full Start onboarding details, including the access and initialization flow, read [Cabloy Start](/editions/cabloy-start).
 
+If you are not sure which edition you are using or which one to choose, read:
+
+- [Choosing Between Cabloy Basic and Cabloy Start](/editions/choosing-between-basic-and-start)
 - [Edition Detection](/editions/detection)
 - [Cabloy Basic](/editions/cabloy-basic)
 - [Cabloy Start](/editions/cabloy-start)
@@ -64,7 +67,7 @@ npm run upgrade
 
 If you are contributing to framework-aware workflows or using Cabloy CLI generation directly, prefer CLI-backed generation over manual scaffolding.
 
-Instead of creating framework files by hand, start with:
+Read [Fullstack CLI](/fullstack/cli) for the shared cross-stack workflow model, then start with:
 
 ```bash
 npm run vona :create
