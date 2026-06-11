@@ -4,15 +4,9 @@ import { Render } from 'zova-module-a-bean';
 import { ZForm, ZFormFieldBlank, ZFormFieldPreset } from 'zova-module-a-form';
 import { $iconName } from 'zova-module-a-icon';
 
-import { $useLocale } from '../../.metadata/locales.js';
-
 @Render()
 export class RenderPageLogin extends BeanRenderBase {
-  private textLogin: string;
-
-  protected async __init__() {
-    this.textLogin = $useLocale('Login');
-  }
+  protected async __init__() {}
 
   public render() {
     return (
@@ -97,7 +91,7 @@ export class RenderPageLogin extends BeanRenderBase {
             return (
               <div class="d-flex justify-center">
                 <VBtn disabled={$$form.formState.isSubmitting} type="submit" color="primary">
-                  {this.textLogin}
+                  {this.scope.locale.Login()}
                 </VBtn>
               </div>
             );
