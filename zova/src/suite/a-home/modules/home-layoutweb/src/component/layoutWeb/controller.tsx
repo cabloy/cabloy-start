@@ -1,5 +1,5 @@
 import { provide, ref } from 'vue';
-import { BeanControllerBase, Use, useComputed, UseScope } from 'zova';
+import { BeanControllerBase, Use, UseScope } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { $QueryAutoLoad } from 'zova-module-a-model';
 import { ModelTabs, ModelTabsOptions, RouteTabInitial } from 'zova-module-a-routertabs';
@@ -42,7 +42,7 @@ export class ControllerLayoutWeb extends BeanControllerBase {
 
   protected async __init__() {
     // belowBreakpoint
-    this.belowBreakpoint = useComputed(() => {
+    this.belowBreakpoint = this.$computed(() => {
       let width;
       if (process.env.SERVER) {
         width = 0;
@@ -109,7 +109,9 @@ export class ControllerLayoutWeb extends BeanControllerBase {
     this.layoutConfig.leftDrawerOpen = this.leftDrawerOpen;
     if (process.env.SSR) {
       const layoutConfigRef = ref<ILayoutConfig | undefined>(this.layoutConfig);
-      provide('VuetifyLayoutConfig', layoutConfigRef);
+      this.ctx.util.instanceScope(() => {
+        provide('VuetifyLayoutConfig', layoutConfigRef);
+      });
       if (process.env.CLIENT) {
         if (!this.layoutConfigTimeout) {
           this.layoutConfigTimeout = window.setTimeout(() => {
