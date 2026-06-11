@@ -34,7 +34,7 @@ Use this distinction consistently:
 - use the CLI when you are discovering commands, generating framework resources, running framework-specific tooling, or inspecting workflow families
 - use root scripts when you are running broader repository workflows such as development, builds, or verification
 
-For the compact root-script lookup surface, see [Repo Scripts](/reference/repo-scripts).
+For the broader Reference landing page, see [Reference Introduction](/reference/introduction). For the compact root-script lookup surface, see [Repo Scripts](/reference/repo-scripts).
 
 ## Shared discovery pattern
 

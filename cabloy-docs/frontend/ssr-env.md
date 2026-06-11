@@ -20,6 +20,29 @@ Representative variables include:
 
 These affect areas such as cookie-driven SSR behavior, theme defaults, body-load observation, server-side API targeting, and SSR production port behavior.
 
+## Theme implications of `SSR_COOKIE`
+
+`SSR_COOKIE` is not only a storage choice. It also changes what SSR can guarantee about theme-sensitive output.
+
+A practical split is:
+
+- `SSR_COOKIE=true`: the server can resolve theme state from cookies during SSR
+- `SSR_COOKIE=false`: the server cannot guarantee that theme-sensitive SSR reads match the browser's eventual selected theme
+
+In practice, this means Web SSR and Admin SSR can intentionally expose different theme capabilities.
+
+- In a cookie-capable SSR path, theme-sensitive server rendering can rely on a stronger server/client match guarantee.
+- In a cookie-disabled SSR path, SSR should treat theme-sensitive reads as non-authoritative for the browser's final theme and prefer hydration-tolerant or client-finalized decisions when exact matching matters.
+
+A practical development rule is:
+
+- use `SSR_COOKIE` to determine the capability level
+- use the active edition and UI library to determine how that capability is implemented
+
+That matters because Cabloy Basic and Cabloy Start share the same theme architecture but do not use the same adapter-level SSR handoff strategy.
+
+For the broader theme usage contract and edition-aware checklist, see [Theme Guide](/frontend/theme-guide). For the runtime/flavor selection model behind these env choices, see [Environment and Config Guide](/frontend/environment-config-guide).
+
 ## Dynamic environment variables
 
 The runtime also exposes environment variables that describe the current execution context, such as:
