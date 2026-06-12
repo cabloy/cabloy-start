@@ -1,6 +1,6 @@
 {
   "name": "vona-core",
-  "version": "5.1.17",
+  "version": "5.1.20",
   "gitHead": "a79189b882c17af5911573896a781bbb0046d37d",
   "description": "vona",
   "keywords": [
@@ -29,7 +29,7 @@
   },
   "scripts": {
     "clean": "rimraf dist tsconfig.tsbuildinfo",
-    "tsc:publish": "npm run clean && vona :bin:buildGeneral --sourcemap && tsc",
+    "tsc:publish": "npm run clean && node ../../packages-cli/cli/src/bin/vona.ts :bin:buildGeneral --sourcemap && tsc",
     "prepublishOnly": "npm run tsc:publish",
     "prepack": "clean-package",
     "postpack": "clean-package restore"

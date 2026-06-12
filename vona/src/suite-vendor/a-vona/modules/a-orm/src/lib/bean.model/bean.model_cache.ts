@@ -860,7 +860,7 @@ export class BeanModelCache<TRecord extends {} = {}> extends BeanModelCrud<TReco
       if (!fieldName) throw new Error(`invalid magic method: ${prop}`);
       return (fieldValue: any, data: any, options?: any) => {
         const where = __combineMagicWhere(fieldName, op!, fieldValue);
-        if (fieldName === 'id') {
+        if (fieldName === 'id' && where.id !== null) {
           data = Object.assign({}, data, where);
         } else {
           options = deepExtend({}, options, { where });
@@ -879,15 +879,21 @@ export class BeanModelCache<TRecord extends {} = {}> extends BeanModelCrud<TReco
 }
 
 function __combineMagicWhere(fieldName: string, op: string, fieldValue?: any) {
+  if (fieldValue === undefined) {
+    if (op === 'eq') {
+      return {
+        [fieldName]: null,
+      };
+    }
+    throw new Error(`should specify the value for magic method: ${fieldName}/${op}`);
+  }
   return {
     [fieldName]:
-      fieldValue === undefined
-        ? undefined
-        : op === 'eq'
-          ? fieldValue
-          : {
-              [`_${op}_`]: fieldValue,
-            },
+      op === 'eq'
+        ? fieldValue
+        : {
+            [`_${op}_`]: fieldValue,
+          },
   };
 }
 

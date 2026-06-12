@@ -1,3 +1,4 @@
+import type { BeanModelMeta } from './bean.model/bean.model_meta.ts';
 import type { IModelClassRecord } from '../types/onion/model.ts';
 import type {
   TypeModelClassLike,
@@ -5,7 +6,6 @@ import type {
   TypeModelsClassLikeGeneral,
   TypeSymbolKeyEntity,
 } from '../types/relations.ts';
-import type { BeanModelMeta } from './bean.model/bean.model_meta.ts';
 import type {
   IModelRelationOptionsManyStatic,
   IModelRelationOptionsOneStatic,

@@ -1,6 +1,6 @@
 {
   "name": "zova-module-a-behaviors",
-  "version": "5.1.15",
+  "version": "5.1.18",
   "gitHead": "09d901d17140a80ee0764211b441cda72fd94663",
   "description": "",
   "keywords": [
@@ -28,7 +28,7 @@
   },
   "scripts": {
     "clean": "rimraf dist tsconfig.build.tsbuildinfo",
-    "tsc:publish": "npm run clean && zova :bin:buildModule --sourcemap && tsc -p tsconfig.build.json",
+    "tsc:publish": "npm run clean && node ../../../../../packages-cli/cli/src/bin/zova.ts :bin:buildModule --sourcemap && tsc -p tsconfig.build.json",
     "prepublishOnly": "npm run tsc:publish",
     "prepack": "clean-package",
     "postpack": "clean-package restore && npm run clean"

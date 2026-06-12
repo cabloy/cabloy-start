@@ -1,3 +1,4 @@
+import type { BeanModelMeta } from './bean.model/bean.model_meta.ts';
 import type { IModelClassRecord } from '../types/onion/model.ts';
 import type {
   TypeModelClassLike,
@@ -13,7 +14,6 @@ import type {
   IModelRelationOptionsManyDynamic,
   IModelRelationOptionsOneDynamic,
 } from '../types/relationsDefDynamic.ts';
-import type { BeanModelMeta } from './bean.model/bean.model_meta.ts';
 
 function hasOne<
   MODEL extends BeanModelMeta | keyof IModelClassRecord,
