@@ -45,10 +45,5 @@
     "@cabloy/lint": "workspace:^",
     "oxfmt": "^0.45.0",
     "oxlint": "^1.65.0"
-  },
-  "pnpm": {
-    "overrides": {
-      "zod": "npm:@cabloy/zod@4.3.6"
-    }
   }
 }
