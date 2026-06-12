@@ -2,7 +2,7 @@
   "name": "vona",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.19.0",
+  "packageManager": "pnpm@11.5.3",
   "description": "Vona is an intuitive, elegant and powerful Node.js framework for rapidly developing enterprise applications of any size",
   "repository": {
     "type": "git",
