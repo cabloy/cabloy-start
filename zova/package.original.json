@@ -14,7 +14,7 @@
     "url": "git+https://github.com/zovajs/zova.git"
   },
   "type": "module",
-  "packageManager": "pnpm@11.5.3",
+  "packageManager": "pnpm@11.5.2",
   "scripts": {
     "zova": "node ./packages-cli/cli/src/bin/zova.ts",
     "dev": "npm run dev:ssr:admin",
