@@ -1,447 +1,295 @@
-import minimist from 'minimist';
 import { execSync } from 'node:child_process';
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { randomBytes, randomInt, randomUUID } from 'node:crypto';
+import {
+  copyFileSync,
+  cpSync,
+  existsSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
+import { basename } from 'node:path';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-// --- Constants ---
-const TAG_PREFIX = 'cabloy@';
-const GITHUB_REPO = 'cabloy/cabloy';
-const PACKAGE_JSON_PATH = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'package.json');
-const CHANGELOG_PATH = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'CHANGELOG.md');
-const COMMIT_CAP = 200;
-// const ZOVA_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'zova');
-// const VONA_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'vona');
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const ROOT_DIR = resolve(__dirname, '..');
+const VONA_DIR = resolve(ROOT_DIR, 'vona');
+const ZOVA_DIR = resolve(ROOT_DIR, 'zova');
+const CABLOY_DOCS_DIR = resolve(ROOT_DIR, 'cabloy-docs');
+const PNPM_VERSION = '11.5.2';
+const VERSION_MARKER_FILE = '.cabloy-version';
 
-// --- Utility functions ---
-function exec(cmd: string, dryRun?: boolean): string {
-  if (dryRun) {
-    // eslint-disable-next-line
-    console.log(`  [dry-run] ${cmd}`);
-    return '';
+// --- Helpers ---
+
+function generatePassword(length: number, exclude: string): string {
+  const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const lower = 'abcdefghijklmnopqrstuvwxyz';
+  const digits = '0123456789';
+  const symbols = '!@#%^&*()_+-=[]{}|;:,.<>?/~`';
+  const pool = (upper + lower + digits + symbols).split('').filter(c => !exclude.includes(c));
+  const bytes = randomBytes(length);
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += pool[bytes[i] % pool.length];
   }
-  return execSync(cmd, { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] }).trim();
+  return result;
 }
 
-function readPackageJson(): Record<string, any> {
-  return JSON.parse(readFileSync(PACKAGE_JSON_PATH, 'utf-8'));
+function exec(cmd: string, cwd = ROOT_DIR): void {
+  execSync(cmd, { stdio: 'inherit', cwd });
 }
 
-function writePackageJson(pkg: Record<string, any>): void {
-  writeFileSync(PACKAGE_JSON_PATH, `${JSON.stringify(pkg, null, 2)}\n`);
+function execQuiet(cmd: string, cwd = ROOT_DIR): string {
+  return execSync(cmd, { stdio: 'pipe', cwd }).toString();
 }
 
-function getLastTag(): string | null {
-  try {
-    const result = execSync(`git tag -l '${TAG_PREFIX}*' --sort=-v:refname`, {
-      encoding: 'utf-8',
-    }).trim();
-    const tags = result.split('\n').filter(Boolean);
-    return tags.length > 0 ? tags[0] : null;
-  } catch {
-    return null;
+function pnpmInstall(cwd = ROOT_DIR): void {
+  exec('pnpm install --config.confirmModulesPurge=false --no-frozen-lockfile', cwd);
+}
+
+function checkPnpm(): void {
+  const version = execQuiet('pnpm --version').trimEnd();
+  const [major, minor, patch] = version.split('.').map(item => Number.parseInt(item, 10) || 0);
+  const lowerMajor = major < 11;
+  const lowerMinor = major === 11 && minor < 5;
+  const lowerPatch = major === 11 && minor === 5 && patch < 2;
+  if (lowerMajor || lowerMinor || lowerPatch) {
+    throw new Error(`pnpm should >= ${PNPM_VERSION}, current: ${version}`);
   }
 }
 
-interface CommitInfo {
-  hash: string;
-  subject: string;
-}
-
-function getCommitsSinceTag(tag: string | null): CommitInfo[] {
-  const range = tag ? `${tag}..HEAD` : 'HEAD';
-  const logCmd = `git log ${range} --pretty=format:"%h|||%s" --no-merges -${COMMIT_CAP}`;
-  const result = execSync(logCmd, { encoding: 'utf-8' }).trim();
-  if (!result) return [];
-  return result.split('\n').map(line => {
-    const [hash, subject] = line.split('|||');
-    return { hash: hash.trim(), subject: subject.trim() };
-  });
-}
-
-function bumpVersion(current: string, bumpType: 'patch' | 'minor' | 'major'): string {
-  const parts = current.split('.').map(Number);
-  if (parts.length !== 3) throw new Error(`Invalid version: ${current}`);
-  if (bumpType === 'major') {
-    parts[0]++;
-    parts[1] = 0;
-    parts[2] = 0;
-  } else if (bumpType === 'minor') {
-    parts[1]++;
-    parts[2] = 0;
-  } else {
-    parts[2]++;
-  }
-  return parts.join('.');
-}
-
-function getToday(): string {
-  return new Date().toISOString().split('T')[0];
-}
-
-// --- Pre-step: Commit pending changes ---
-function commitPendingChanges(dryRun?: boolean): void {
-  const status = execSync('git status --porcelain', { encoding: 'utf-8' }).trim();
-  if (!status) return;
-  // eslint-disable-next-line
-  console.log('\n📁 Committing pending changes...');
-  exec('git add .', dryRun);
-  exec('git commit -m "chore: pre-release commit"', dryRun);
-  exec('git push', dryRun);
-}
-
-// --- Pre-step: Sub-project release ---
-function subProjectRelease(bumpType: 'patch' | 'minor' | 'major', dryRun?: boolean): void {
-  // eslint-disable-next-line
-  console.log(`\n🔧 Running vona/zova release (${bumpType})...`);
-  if (dryRun) {
-    // eslint-disable-next-line
-    console.log(`  [dry-run] lerna publish ${bumpType} --yes`);
-    return;
-  }
-  execSync(`lerna publish ${bumpType} --yes`, { encoding: 'utf-8', stdio: 'inherit' });
-}
-
-// --- Step 1: Version Bump ---
-async function versionBump(
-  bumpType: 'patch' | 'minor' | 'major',
-  dryRun?: boolean,
-): Promise<string> {
-  const pkg = readPackageJson();
-  const currentVersion = pkg.version;
-  const lastTag = getLastTag();
-
-  // Check for changes since last tag
-  if (lastTag) {
-    const diffCmd = `git -c diff.renameLimit=10000 diff --name-only ${lastTag}..HEAD`;
-    const changedFiles = execSync(diffCmd, {
-      encoding: 'utf-8',
-      stdio: ['pipe', 'pipe', 'pipe'],
-    }).trim();
-    if (!changedFiles) {
-      // eslint-disable-next-line
-      console.log('No changes since last release. Skipping version bump.');
-      return currentVersion;
+function deleteGitkeepFiles(dir: string): void {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const fullPath = resolve(dir, entry.name);
+    if (entry.isDirectory()) {
+      deleteGitkeepFiles(fullPath);
+    } else if (entry.name === '.gitkeep') {
+      rmSync(fullPath);
     }
   }
-
-  const newVersion = bumpVersion(currentVersion, bumpType);
-  // eslint-disable-next-line
-  console.log(`\n📦 Version bump: ${currentVersion} → ${newVersion}`);
-
-  pkg.version = newVersion;
-  if (!dryRun) {
-    writePackageJson(pkg);
-  }
-
-  const tag = `${TAG_PREFIX}${newVersion}`;
-  exec('git add package.json', dryRun);
-  exec(`git commit -m "chore: release v${newVersion}"`, dryRun);
-  exec(`git tag ${tag}`, dryRun);
-  exec('git push', dryRun);
-  exec(`git push origin ${tag}`, dryRun);
-
-  return newVersion;
 }
 
-// --- Step 2: AI Changelog ---
-async function callAnthropic(commits: CommitInfo[], version: string): Promise<string> {
-  const token = process.env.ANTHROPIC_AUTH_TOKEN;
-  const baseUrl = process.env.ANTHROPIC_BASE_URL || 'https://api.anthropic.com';
-  const model = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-20250514';
-
-  if (!token) throw new Error('ANTHROPIC_AUTH_TOKEN environment variable is not set');
-
-  const commitList = commits.map(c => `- ${c.subject}`).join('\n');
-
-  const prompt = `You are a changelog generator. Given the following git commit messages since the last release, generate a concise, well-organized changelog in markdown format for version ${version}.
-
-Group changes into these categories (only include categories that have entries):
-- **Features**: New features or capabilities
-- **Bug Fixes**: Bug fixes and corrections
-- **Improvements**: Performance improvements, refactoring, DX improvements
-- **Breaking Changes**: Any breaking changes
-
-For each entry, write a clear description in imperative mood. Do not include commit hashes.
-
-Commits:
-${commitList}
-
-Respond with ONLY the changelog content in markdown, starting with ## ${version}`;
-
-  const response = await fetch(`${baseUrl}/v1/messages`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': token,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model,
-      max_tokens: 4096,
-      messages: [{ role: 'user', content: prompt }],
-    }),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Anthropic API error: ${response.status} ${errorText}`);
-  }
-
-  const data = (await response.json()) as {
-    content?: Array<{ type: string; text?: string }>;
-    error?: { message: string };
-  };
-  if (data.error) {
-    throw new Error(`Anthropic API error: ${data.error.message}`);
-  }
-  const textBlock = data.content?.find(c => c.type === 'text');
-  const text = textBlock?.text;
-  if (!text) {
-    throw new Error(`Unexpected Anthropic API response: ${JSON.stringify(data)}`);
-  }
-  return text;
+function isValidVersion(version: string): boolean {
+  return /^\d+\.\d+\.\d+$/.test(version);
 }
 
-async function generateChangelog(version: string, dryRun?: boolean, noAi?: boolean): Promise<void> {
+function readPackageVersion(): string {
+  const filePath = resolve(ROOT_DIR, 'package.json');
+  const packageContent = JSON.parse(readFileSync(filePath, 'utf-8')) as { version?: string };
+  const version = packageContent.version?.trim();
+  if (!version || !isValidVersion(version)) {
+    throw new Error(`Invalid Cabloy version in package.json: ${version ?? '<missing>'}`);
+  }
+  return version;
+}
+
+function readVersionMarker(): string | undefined {
+  const filePath = resolve(ROOT_DIR, VERSION_MARKER_FILE);
+  if (!existsSync(filePath)) return undefined;
+  const version = readFileSync(filePath, 'utf-8').trim();
+  if (!version) return undefined;
+  if (!isValidVersion(version)) {
+    throw new Error(`Invalid Cabloy version marker: ${version}`);
+  }
+  return version;
+}
+
+function resolveVersionMarker(): string {
+  const versionFromEnv = process.env.CABLOY_VERSION?.trim();
+  if (versionFromEnv) {
+    if (!isValidVersion(versionFromEnv)) {
+      throw new Error(`Invalid CABLOY_VERSION: ${versionFromEnv}`);
+    }
+    return versionFromEnv;
+  }
+  return readVersionMarker() ?? readPackageVersion();
+}
+
+function writeVersionMarker(): void {
+  const version = resolveVersionMarker();
+  const filePath = resolve(ROOT_DIR, VERSION_MARKER_FILE);
+  writeFileSync(filePath, `${version}\n`);
   // eslint-disable-next-line
-  console.log(`\n📝 Generating changelog for v${version}...`);
+  console.log(`[init] Marked Cabloy version: ${version}`);
+}
 
-  // Use the tag for the current version to find the previous tag
-  // After version bump, the current tag (e.g. cabloy@5.1.4) points to HEAD,
-  // so we need the tag BEFORE that to get the commit range
-  const currentTag = `${TAG_PREFIX}${version}`;
-  const allTags = execSync(`git tag -l '${TAG_PREFIX}*' --sort=-v:refname`, { encoding: 'utf-8' })
-    .trim()
-    .split('\n')
-    .filter(Boolean);
-  const currentTagIndex = allTags.indexOf(currentTag);
-  const previousTag =
-    currentTagIndex >= 0 && currentTagIndex < allTags.length - 1
-      ? allTags[currentTagIndex + 1]
-      : null;
-  const commits = getCommitsSinceTag(previousTag);
+// --- Step 0: Set APP_NAME in .env files ---
 
-  if (commits.length === 0) {
+function setAppName(): void {
+  const projectName = basename(ROOT_DIR);
+  const envFiles = [resolve(ROOT_DIR, 'vona/env/.env'), resolve(ROOT_DIR, 'zova/env/.env')];
+  for (const filePath of envFiles) {
+    if (!existsSync(filePath)) continue;
+    let content = readFileSync(filePath, 'utf-8');
+    content = content.replace(/^APP_NAME.*/m, `APP_NAME = ${projectName}`);
+    writeFileSync(filePath, content);
     // eslint-disable-next-line
-    console.log('No commits found. Skipping changelog generation.');
+    console.log(`[init] Set APP_NAME = ${projectName} in ${filePath}`);
+  }
+}
+
+// --- Step A: Generate vona/env/.env.prod.local ---
+
+function generateEnvProdLocal(): void {
+  const filePath = resolve(ROOT_DIR, 'vona/env/.env.prod.local');
+  if (existsSync(filePath)) {
+    // eslint-disable-next-line
+    console.log('[init] vona/env/.env.prod.local already exists, skipping');
+    return;
+  }
+  const serverKeys = `vona_${randomUUID()}_${Date.now()}_${randomInt(100, 10000)}`;
+  const content = `SERVER_KEYS = ${serverKeys}\n`;
+  writeFileSync(filePath, content);
+  // eslint-disable-next-line
+  console.log('[init] Generated vona/env/.env.prod.local');
+}
+
+// --- Step B: Generate vona/env/.env.prod.docker.local + docker-compose.yml ---
+
+function generateEnvProdDockerLocal(): void {
+  const envFilePath = resolve(ROOT_DIR, 'vona/env/.env.prod.docker.local');
+  if (existsSync(envFilePath)) {
+    // eslint-disable-next-line
+    console.log('[init] vona/env/.env.prod.docker.local already exists, skipping');
     return;
   }
 
-  let newSection: string;
+  const exclude = '\\\'"$';
+  const pgPassword = generatePassword(16, exclude);
+  const mysqlPassword = generatePassword(16, exclude);
+  const mysqlRootPassword = generatePassword(16, exclude);
 
-  if (noAi || dryRun) {
-    const commitList = commits.map(c => `- ${c.subject}`).join('\n');
-    newSection = `## ${version} (${getToday()})\n\n${commitList}`;
-  } else {
-    newSection = await callAnthropic(commits, version);
-    // Ensure the section starts with the version header if AI didn't include it
-    if (!newSection.startsWith(`## ${version}`)) {
-      newSection = `## ${version} (${getToday()})\n\n${newSection}`;
-    }
-  }
+  // Write .env.prod.docker.local
+  const envContent = `DATABASE_CLIENT_PG_PASSWORD = ${pgPassword}\nDATABASE_CLIENT_MYSQL_PASSWORD = ${mysqlPassword}\n`;
+  writeFileSync(envFilePath, envContent);
+  // eslint-disable-next-line
+  console.log('[init] Generated vona/env/.env.prod.docker.local');
 
-  // Read existing changelog or create new one
-  let existingContent = '';
-  if (existsSync(CHANGELOG_PATH)) {
-    existingContent = readFileSync(CHANGELOG_PATH, 'utf-8');
-  }
-
-  // Prepend new section
-  const header = '# Changelog\n\n';
-  let changelog: string;
-  if (existingContent.startsWith('# Changelog')) {
-    changelog = existingContent.replace('# Changelog\n\n', `${header + newSection}\n\n`);
-  } else {
-    changelog = `${header + newSection}\n\n${existingContent}`;
-  }
-
-  if (dryRun) {
+  // Copy docker-compose-original directory to docker-compose
+  const composeDirOriginal = resolve(ROOT_DIR, 'vona/docker-compose-original');
+  const composeDirTarget = resolve(ROOT_DIR, 'vona/docker-compose');
+  if (!existsSync(composeDirTarget)) {
+    cpSync(composeDirOriginal, composeDirTarget, {
+      recursive: true,
+      filter: src => !src.includes('.DS_Store') && !src.endsWith('docker-compose.original.yml'),
+    });
+    deleteGitkeepFiles(composeDirTarget);
     // eslint-disable-next-line
-    console.log(`  [dry-run] Write to CHANGELOG.md:\n${newSection}\n`);
+    console.log('[init] Generated vona/docker-compose directory');
   } else {
-    writeFileSync(CHANGELOG_PATH, changelog);
+    // eslint-disable-next-line
+    console.log('[init] vona/docker-compose directory already exists, skipping');
   }
 
-  exec('git add CHANGELOG.md', dryRun);
-  exec(`git commit -m "chore: update CHANGELOG.md for v${version}"`, dryRun);
-  exec('git push', dryRun);
+  // Generate docker-compose.yml from template
+  const composeOriginalPath = resolve(
+    ROOT_DIR,
+    'vona/docker-compose-original/docker-compose.original.yml',
+  );
+  const composeFilePath = resolve(ROOT_DIR, 'vona/docker-compose/docker-compose.yml');
+  let composeContent = readFileSync(composeOriginalPath, 'utf-8');
+  composeContent = composeContent.replace(
+    /POSTGRES_PASSWORD:\s*'<placeholder>'/,
+    `POSTGRES_PASSWORD: '${pgPassword}'`,
+  );
+  composeContent = composeContent.replace(
+    /MYSQL_ROOT_PASSWORD:\s*'<placeholder>'/,
+    `MYSQL_ROOT_PASSWORD: '${mysqlRootPassword}'`,
+  );
+  composeContent = composeContent.replace(
+    /MYSQL_PASSWORD:\s*'<placeholder>'/,
+    `MYSQL_PASSWORD: '${mysqlPassword}'`,
+  );
+  writeFileSync(composeFilePath, composeContent);
+  // eslint-disable-next-line
+  console.log('[init] Generated vona/docker-compose/docker-compose.yml');
 }
 
-// --- Step 3: npm Publish ---
-async function npmPublish(dryRun?: boolean): Promise<void> {
+// --- Step C: init:vona ---
+
+function initVona(): void {
   // eslint-disable-next-line
-  console.log('\n🚀 Publishing to npm...');
-
-  if (dryRun) {
-    // eslint-disable-next-line
-    console.log('  [dry-run] npm publish');
-    return;
-  }
-
-  execSync('npm publish', { encoding: 'utf-8', stdio: 'inherit' });
+  console.log('[init] Initializing vona...');
+  const pkgPath = resolve(VONA_DIR, 'package.json');
+  // if (!existsSync(pkgPath)) {
+  copyFileSync(resolve(VONA_DIR, 'package.original.json'), pkgPath);
+  pnpmInstall(VONA_DIR);
+  // }
+  exec('npm run vona :tools:deps');
 }
 
-// --- Step 4: GitHub Release ---
-async function githubRelease(version: string, dryRun?: boolean): Promise<void> {
+// --- Step D: init:zova ---
+
+function initZova(): void {
   // eslint-disable-next-line
-  console.log(`\n🏷️  Creating GitHub release for v${version}...`);
+  console.log('[init] Initializing zova...');
+  const pkgPath = resolve(ZOVA_DIR, 'package.json');
+  // if (!existsSync(pkgPath)) {
+  copyFileSync(resolve(ZOVA_DIR, 'package.original.json'), pkgPath);
+  pnpmInstall(ZOVA_DIR);
+  // }
+  exec('npm run zova :tools:deps');
+}
 
-  // Extract changelog section for this version
-  let notes = '';
-  if (existsSync(CHANGELOG_PATH)) {
-    const content = readFileSync(CHANGELOG_PATH, 'utf-8');
-    const versionHeader = `## ${version}`;
-    const startIdx = content.indexOf(versionHeader);
-    if (startIdx !== -1) {
-      const nextSectionIdx = content.indexOf('\n## ', startIdx + versionHeader.length);
-      notes =
-        nextSectionIdx !== -1
-          ? content.substring(startIdx, nextSectionIdx).trim()
-          : content.substring(startIdx).trim();
-    }
-  }
+// --- Step E: buildSsrCabloyBasicStartBatch ---
 
-  const tag = `${TAG_PREFIX}${version}`;
-
-  if (dryRun) {
+function buildSsrCabloyBasicStartBatch(): void {
+  if (existsSync(resolve(ROOT_DIR, '__CABLOY_BASIC__'))) {
     // eslint-disable-next-line
-    console.log(
-      `  [dry-run] gh release create ${tag} --repo ${GITHUB_REPO} --title "v${version}" --notes-file <changelog-section>`,
-    );
-    return;
+    console.log('[init] Building zova SSR cabloyBasicBatch...');
+    exec('pnpm run build:ssr:cabloyBasicBatch', ZOVA_DIR);
+  } else if (existsSync(resolve(ROOT_DIR, '__CABLOY_START__'))) {
+    // eslint-disable-next-line
+    console.log('[init] Building zova SSR cabloyStartBatch...');
+    exec('pnpm run build:ssr:cabloyStartBatch', ZOVA_DIR);
   }
+}
 
-  // Use gh CLI with a temp file for notes to avoid shell escaping issues
-  const tmpFile = resolve(dirname(fileURLToPath(import.meta.url)), '..', '.release-notes.tmp.md');
-  writeFileSync(tmpFile, notes);
-  try {
-    execSync(
-      `gh release create ${tag} --repo ${GITHUB_REPO} --title "v${version}" --notes-file "${tmpFile}"`,
-      {
-        encoding: 'utf-8',
-        stdio: 'inherit',
-      },
-    );
-  } finally {
-    if (existsSync(tmpFile)) {
-      execSync(`rm -f "${tmpFile}"`);
-    }
+// --- Step F: cleanupWorkspaceYaml ---
+
+function cleanupWorkspaceYaml(): void {
+  const subProjects = ['vona', 'zova'];
+  for (const sub of subProjects) {
+    const yamlPath = resolve(ROOT_DIR, sub, 'pnpm-workspace.yaml');
+    if (!existsSync(yamlPath)) continue;
+    let content = readFileSync(yamlPath, 'utf-8');
+    const lines = content.split('\n');
+    const filtered = lines.filter(line => {
+      const trimmed = line.trim();
+      if (trimmed === "'packages-docs'" || trimmed === 'packages-docs') return false;
+      return true;
+    });
+    content = filtered.join('\n');
+    writeFileSync(yamlPath, content);
+    // eslint-disable-next-line
+    console.log(`[init] Cleaned up ${sub}/pnpm-workspace.yaml`);
   }
+}
+
+// --- Step G: init:cabloy-docs ---
+
+function initCabloyDocs(): void {
+  const pkgPath = resolve(CABLOY_DOCS_DIR, 'package.json');
+  if (!existsSync(pkgPath)) return;
+  // eslint-disable-next-line
+  console.log('[init] Initializing cabloy-docs...');
+  pnpmInstall(CABLOY_DOCS_DIR);
 }
 
 // --- Main ---
-interface ReleaseOptions {
-  bumpType: 'patch' | 'minor' | 'major';
-  dryRun?: boolean;
-  changelogOnly?: boolean;
-  publishOnly?: boolean;
-  releaseOnly?: boolean;
-  skipChangelog?: boolean;
-  skipPublish?: boolean;
-  skipRelease?: boolean;
-  noAi?: boolean;
-}
 
-async function release(options: ReleaseOptions): Promise<void> {
-  // eslint-disable-next-line
-  console.log('🔧 Cabloy Release\n');
-
-  // Pre-flight checks
-  try {
-    execSync('git rev-parse --is-inside-work-tree', { encoding: 'utf-8', stdio: 'pipe' });
-  } catch {
-    // eslint-disable-next-line
-    console.error('Error: Not in a git repository');
-    process.exit(1);
-  }
-
-  const status = execSync('git status --porcelain', { encoding: 'utf-8' }).trim();
-  if (status && !options.dryRun) {
-    // eslint-disable-next-line
-    console.error('Error: Working tree is not clean. Commit or stash your changes first.');
-    process.exit(1);
-  }
-
-  // Determine the version to use
-  let version: string;
-
-  if (options.changelogOnly || options.publishOnly || options.releaseOnly) {
-    const pkg = readPackageJson();
-    version = pkg.version;
-    // eslint-disable-next-line
-    console.log(`Using current version: ${version}`);
-  } else {
-    // Pre-steps: commit pending, release sub-projects, then commit again
-    commitPendingChanges(options.dryRun);
-    subProjectRelease(options.bumpType, options.dryRun);
-    commitPendingChanges(options.dryRun);
-
-    version = await versionBump(options.bumpType, options.dryRun);
-  }
-
-  // Changelog
-  if (!options.skipChangelog && !options.publishOnly && !options.releaseOnly) {
-    await generateChangelog(version, options.dryRun, options.noAi);
-  }
-
-  // npm publish
-  if (!options.skipPublish && !options.changelogOnly && !options.releaseOnly) {
-    await npmPublish(options.dryRun);
-  }
-
-  // GitHub release
-  if (!options.skipRelease && !options.changelogOnly && !options.publishOnly) {
-    await githubRelease(version, options.dryRun);
-  }
-
-  // eslint-disable-next-line
-  console.log('\n✅ Release complete!');
-}
-
-// --- Entry point ---
-const args = minimist(process.argv.slice(2), {
-  boolean: [
-    'dry-run',
-    'changelog-only',
-    'publish-only',
-    'release-only',
-    'skip-changelog',
-    'skip-publish',
-    'skip-release',
-    'no-ai',
-  ],
-  default: {
-    'dry-run': false,
-    'changelog-only': false,
-    'publish-only': false,
-    'release-only': false,
-    'skip-changelog': false,
-    'skip-publish': false,
-    'skip-release': false,
-    'no-ai': false,
-  },
-});
-
-const bumpType = (args._[0] || 'patch') as 'patch' | 'minor' | 'major';
-if (!['patch', 'minor', 'major'].includes(bumpType)) {
-  // eslint-disable-next-line
-  console.error(`Invalid bump type: ${bumpType}. Use patch, minor, or major.`);
-  process.exit(1);
-}
-
-release({
-  bumpType,
-  dryRun: args['dry-run'],
-  changelogOnly: args['changelog-only'],
-  publishOnly: args['publish-only'],
-  releaseOnly: args['release-only'],
-  skipChangelog: args['skip-changelog'],
-  skipPublish: args['skip-publish'],
-  skipRelease: args['skip-release'],
-  noAi: args['no-ai'],
-}).catch(err => {
-  // eslint-disable-next-line
-  console.error(`\n❌ Release failed: ${err.message}`);
-  process.exit(1);
-});
+checkPnpm();
+pnpmInstall();
+setAppName();
+generateEnvProdLocal();
+generateEnvProdDockerLocal();
+cleanupWorkspaceYaml();
+initVona();
+initZova();
+initCabloyDocs();
+buildSsrCabloyBasicStartBatch();
+writeVersionMarker();
+// eslint-disable-next-line
+console.log('[init] Done!');
