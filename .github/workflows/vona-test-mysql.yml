@@ -10,6 +10,8 @@ jobs:
       matrix:
         node-version: [24]
     runs-on: ubuntu-latest
+    env:
+      PNPM_CONFIG_MINIMUM_RELEASE_AGE: 0
     services:
       redis:
         image: redis:latest
@@ -29,7 +31,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - uses: pnpm/action-setup@v5
         with:
-          version: 11.5.3
+          version: 11.5.2
       - name: init
         run: npm run init
       - run: DATABASE_DEFAULT_CLIENT=mysql DATABASE_CLIENT_MYSQL_HOST=127.0.0.1 DATABASE_CLIENT_MYSQL_PASSWORD=root npm run test
