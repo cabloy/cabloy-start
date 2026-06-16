@@ -4,7 +4,7 @@ import type { IResourceFormFieldOptionsBase } from 'zova-module-a-openapi';
 
 import { DateTime } from 'luxon';
 import { DateInstance, useDate } from 'vuetify';
-import { VDateInput } from 'vuetify/labs/VDateInput';
+import { VDateInput } from 'vuetify/components';
 import z from 'zod';
 import { BeanControllerBase } from 'zova';
 import { Controller } from 'zova-module-a-bean';
