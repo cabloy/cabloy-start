@@ -40,6 +40,26 @@ const fullstackGroups = [
     ],
   },
   {
+    text: 'Fullstack / Tutorials',
+    items: [
+      { text: 'Tutorials Overview', link: '/fullstack/tutorials-overview' },
+      { text: 'Tutorial 1: First Module', link: '/fullstack/tutorial-1-first-module' },
+      { text: 'Tutorial 2: First CRUD', link: '/fullstack/tutorial-2-first-crud' },
+      {
+        text: 'Tutorial 3: Frontend Metadata Sharing',
+        link: '/fullstack/tutorial-3-frontend-metadata-sharing',
+      },
+      {
+        text: 'Tutorial 4: Backend Contract Sharing',
+        link: '/fullstack/tutorial-4-backend-contract-sharing',
+      },
+      {
+        text: 'Tutorial 5: One Contract Surface, Four Uses',
+        link: '/fullstack/tutorial-5-one-contract-four-uses',
+      },
+    ],
+  },
+  {
     text: 'Tooling & Workflow',
     items: [
       { text: 'CLI', link: '/fullstack/cli' },
@@ -75,6 +95,7 @@ const referenceGroups = [
       { text: 'Introduction', link: '/reference/introduction' },
       { text: 'Repo Scripts', link: '/reference/repo-scripts' },
       { text: 'CLI Reference', link: '/reference/cli-reference' },
+      { text: 'Bean Scene Boilerplate Variants', link: '/reference/bean-scene-boilerplates' },
     ],
   },
   {
@@ -182,6 +203,7 @@ export default defineConfig({
           text: 'Core Programming Model',
           items: [
             { text: 'AOP Overview', link: '/backend/aop-overview' },
+            { text: 'Bean Scene Authoring', link: '/backend/bean-scene-authoring' },
             { text: 'Controller Guide', link: '/backend/controller-guide' },
             { text: 'Controller AOP Guide', link: '/backend/controller-aop-guide' },
             { text: 'Internal AOP Guide', link: '/backend/internal-aop-guide' },
@@ -223,6 +245,10 @@ export default defineConfig({
             { text: 'Schedule Guide', link: '/backend/schedule-guide' },
             { text: 'Worker Guide', link: '/backend/worker-guide' },
             { text: 'Broadcast Guide', link: '/backend/broadcast-guide' },
+            { text: 'Web Socket Guide', link: '/backend/websocket-guide' },
+            { text: 'Web Socket Usage Guide', link: '/backend/websocket-usage-guide' },
+            { text: 'Web Socket Protocol Guide', link: '/backend/websocket-protocol-guide' },
+            { text: 'Web Socket Call Flow', link: '/backend/websocket-call-flow' },
             { text: 'Redlock Guide', link: '/backend/redlock-guide' },
           ],
         },
@@ -248,6 +274,8 @@ export default defineConfig({
           text: 'Architecture & Modules',
           items: [
             { text: 'IoC and Beans', link: '/frontend/ioc-and-beans' },
+            { text: 'Bean Scene Authoring', link: '/frontend/bean-scene-authoring' },
+            { text: 'Behavior Guide', link: '/frontend/behavior-guide' },
             { text: 'Modules and Suites', link: '/frontend/modules-and-suites' },
             { text: 'Module Scope', link: '/frontend/module-scope' },
             { text: 'Design Principles', link: '/frontend/design-principles' },
@@ -277,6 +305,17 @@ export default defineConfig({
             { text: 'Page Params Guide', link: '/frontend/page-params-guide' },
             { text: 'Zod Guide', link: '/frontend/zod-guide' },
             { text: 'Page Route Guide', link: '/frontend/page-route-guide' },
+            { text: 'Router Tabs Introduction', link: '/frontend/router-tabs-introduction' },
+            { text: 'Router Tabs Overview', link: '/frontend/router-tabs-overview' },
+            { text: 'Router Tabs Mechanism', link: '/frontend/router-tabs-mechanism' },
+            {
+              text: 'Router Tabs Route Meta Cookbook',
+              link: '/frontend/router-tabs-route-meta-cookbook',
+            },
+            {
+              text: 'Router Tabs Admin and Web Comparison',
+              link: '/frontend/router-tabs-admin-web-comparison',
+            },
             { text: 'Route Alias Guide', link: '/frontend/route-alias-guide' },
             { text: 'Navigation Guards Guide', link: '/frontend/navigation-guards-guide' },
           ],
@@ -313,6 +352,10 @@ export default defineConfig({
         {
           text: 'SSR',
           items: [
+            { text: 'SSR Architecture Overview', link: '/frontend/ssr-architecture-overview' },
+            { text: 'SSR Build and Deploy Guide', link: '/frontend/ssr-build-deploy-guide' },
+            { text: 'SSR Troubleshooting Guide', link: '/frontend/ssr-troubleshooting-guide' },
+            { text: 'SSR Review Checklist', link: '/frontend/ssr-review-checklist' },
             { text: 'SSR Overview', link: '/frontend/ssr-overview' },
             { text: 'SSR Init Data', link: '/frontend/ssr-init-data' },
             { text: 'SSR ClientOnly', link: '/frontend/ssr-client-only' },

@@ -7,6 +7,17 @@ description: Use this skill whenever a Cabloy task crosses the Vona-to-Zova cont
 
 Use this skill when a backend contract change needs to be reflected in frontend consumers, or when frontend consumers appear stale and you need to diagnose whether the backend contract loop is the real source of drift.
 
+## Important recovery note for stale local file consumers
+
+When generated `.zova-rest` output or other generated consumer artifacts already contain the expected new keys or types but Vona still behaves as if old consumer types are installed, treat that first as a local file-dependency installation problem rather than a source-editing problem.
+
+In that situation:
+
+1. run the normal sync or regeneration flow first
+2. if stale behavior remains after `deps:vona`, rebuild `vona/node_modules` and reinstall dependencies
+
+Do not keep debugging source-level contract or renderer changes until the local file-package installation state is known to be healthy.
+
 ## Goals
 
 1. detect whether the active repository is Cabloy Basic or Cabloy Start
@@ -71,6 +82,7 @@ For deeper reference material, read:
 
 - `references/contract-loop-map.md`
 - `references/verification-checklist.md`
+- `references/resource-custom-state-pattern.md`
 
 ## Step 3: Identify the contract source of truth deliberately
 
@@ -130,6 +142,8 @@ Typical Zova commands include:
 - `npm run zova :openapi:config ...`
 - `npm run zova :openapi:generate ...`
 
+When the target is a module-local SDK, constrain `openapi.config.ts` with `operations.match` unless the module intentionally owns a broad API surface. This prevents unrelated APIs from being generated into the module.
+
 ### Path B: REST/type generation by flavor
 
 Use the edition-specific Zova REST/type build path when the workflow depends on the built flavor outputs.
@@ -149,6 +163,8 @@ After generation, inspect whether the frontend still needs follow-up in:
 - model-managed remote state
 - schema-driven UI
 - page or component assumptions
+
+If a custom endpoint still belongs to an existing resource, prefer one resource-state owner instead of letting a module-local model create a second cache tree. Reuse the resource-owned custom state pattern in `references/resource-custom-state-pattern.md`.
 
 ## Step 6: Keep edition-aware differences explicit
 

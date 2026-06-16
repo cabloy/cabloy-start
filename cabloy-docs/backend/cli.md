@@ -122,6 +122,24 @@ A practical bean-scene reading is:
 - `:create:bean sceneName beanName -- --module=...` uses `sceneName` as the operational family slot inside the bean identifier
 - this is why generated bean names later appear in forms such as `module.scene.bean`
 
+## Bean boilerplate variants
+
+Some backend bean scenes expose more than one scaffold template.
+
+In those cases, use `--boilerplate=...` to select a named variant:
+
+```bash
+npm run vona :create:bean ssrMenu menuTest -- --module=demo-student --boilerplate=web
+```
+
+A practical rule is:
+
+- the default scene template comes from the scene metadata `boilerplate`
+- a named variant such as `--boilerplate=web` maps to a metadata key such as `boilerplateWeb`
+- supported variants are scene-defined, so do not assume every scene exposes them
+
+For the current cross-stack lookup table, see [Bean Scene Boilerplate Variants](/reference/bean-scene-boilerplates).
+
 ## Initializer-family examples
 
 Not every backend resource is created through bean scenes.
@@ -131,13 +149,20 @@ Representative initializer commands include:
 ```bash
 npm run vona :init:constant demo-student
 npm run vona :init:types demo-student
+npm run vona :init:lib demo-student
 npm run vona :init:asset static -- --module=demo-student
 ```
 
 A practical distinction is:
 
 - `:create:bean` creates scene-based backend beans
-- `:init:*` commands create module-scope resources such as constants, typings, or asset-resource structure
+- `:init:*` commands create module-scope resources such as constants, typings, helper directories, or asset-resource structure
+
+A practical helper-placement rule is:
+
+- if a backend module needs reusable pure helper functions, initialize `src/lib` with `npm run vona :init:lib demo-student`
+- place those shared helpers under `src/lib` and export shared entrypoints from `src/lib/index.ts`
+- if the logic needs container-managed runtime behavior, do not force it into `src/lib`; re-evaluate `src/service` or another bean scene instead
 
 ## Relationship to modules, suites, and package metadata
 
