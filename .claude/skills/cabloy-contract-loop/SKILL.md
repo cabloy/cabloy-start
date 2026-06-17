@@ -5,29 +5,44 @@ description: Use this skill whenever a Cabloy task crosses the Vona-to-Zova cont
 
 # Cabloy Contract Loop
 
-Use this skill when a backend contract change needs to be reflected in frontend consumers, or when frontend consumers appear stale and you need to diagnose whether the backend contract loop is the real source of drift.
+Use this skill when a backend contract change needs to be reflected in frontend consumers, when frontend-owned metadata or resources need to be reflected back into backend consumers, or when either side appears stale and you need to diagnose where drift actually lives.
+
+Read the public [Contract Loop Playbook](../../../cabloy-docs/fullstack/contract-loop-playbook.md) for the canonical bidirectional model. This skill is the branching orchestration guide.
 
 ## Important recovery note for stale local file consumers
 
 When generated `.zova-rest` output or other generated consumer artifacts already contain the expected new keys or types but Vona still behaves as if old consumer types are installed, treat that first as a local file-dependency installation problem rather than a source-editing problem.
 
+This includes the reverse fullstack direction where newly added frontend resources such as custom renderers are later consumed by backend metadata.
+
 In that situation:
 
 1. run the normal sync or regeneration flow first
-2. if stale behavior remains after `deps:vona`, rebuild `vona/node_modules` and reinstall dependencies
+2. if Vona consumes newly added or changed Zova Admin render/action/metadata in Cabloy Basic, run `npm run build:zova:admin` from the repo root before anything else
+3. otherwise, if the change only affects flavor-built REST/type output, rebuild the relevant Zova flavor output first
+4. run `deps:vona`
+5. if stale behavior remains, rebuild `vona/node_modules` and reinstall dependencies
 
 Do not keep debugging source-level contract or renderer changes until the local file-package installation state is known to be healthy.
+
+## Current safeguard behavior in this repo
+
+- there is no contract-loop pre-commit gate in the current repo workflow
+- the active safeguard lives in the Claude `PostToolUse` hook configured in `.claude/settings.json`
+- for high-confidence reverse-chain source edits on the Zova side, the hook auto-runs `npm run build:zova:admin` and then `npm run deps:vona`
+- forward-chain detections remain reminder-only, so backend contract changes still require deliberate regeneration and verification
+- consumer-side reverse signals remain reminder-only, so do not assume every reverse-chain case auto-syncs itself
 
 ## Goals
 
 1. detect whether the active repository is Cabloy Basic or Cabloy Start
 2. classify whether the task truly crosses the backend/frontend contract boundary
-3. support both forward contract changes and reverse stale-consumer detection
+3. route the task into one of four modes: forward chain, reverse chain, consumer drift diagnosis, or local dependency drift recovery
 4. keep the workflow contract-first instead of hand-patching generated frontend types or services
 5. prefer CLI-first regeneration paths on both Vona and Zova sides
 6. finish with end-to-end verification guidance that checks both contract production and consumption
 
-## Step 1: Detect repo and contract scope
+## Step 1: Detect repo, edition, and branch
 
 Check the repository root for these marker files:
 
@@ -42,9 +57,11 @@ Interpretation:
 
 Then classify whether the task is really a contract-loop task.
 
-Use this skill in two common entry modes.
+These four modes are shared across Cabloy Basic and Cabloy Start. Edition detection chooses the operational branch, but does not change the core contract-loop model.
 
-### Mode A: forward contract change
+Use this skill in four common entry modes.
+
+### Mode A: forward chain
 
 The user already changed or plans to change backend contract surfaces such as:
 
@@ -55,7 +72,18 @@ The user already changed or plans to change backend contract surfaces such as:
 - OpenAPI metadata
 - inferred DTO or ORM DTO output that affects API consumers
 
-### Mode B: reverse stale-consumer detection
+### Mode B: reverse chain
+
+The user changed or plans to change frontend-owned resources or metadata that backend-side tooling or metadata will later consume, such as:
+
+- routes
+- components
+- icons
+- custom form-field resources
+- custom table-cell resources
+- generated frontend metadata that backend `ZovaRender.*(...)` references depend on
+
+### Mode C: consumer drift diagnosis
 
 The user reports symptoms on the frontend side such as:
 
@@ -64,7 +92,11 @@ The user reports symptoms on the frontend side such as:
 - API/model consumers no longer matching backend reality
 - hand-patched frontend types that seem to drift from backend truth
 
-In this mode, first diagnose whether the frontend is stale because the backend contract changed and the regeneration loop was skipped.
+In this mode, first diagnose whether the visible stale behavior comes from skipped regeneration, a wrong source-of-truth edit, or a stale generated consumer.
+
+### Mode D: local dependency drift recovery
+
+Use this mode when generated artifacts already contain the expected keys, types, or resources, but installed local file dependencies still behave stale after the normal sync flow.
 
 If the task is only backend scaffolding or only frontend scaffolding, the more specialized scaffold skills may be the better primary choice.
 
@@ -86,9 +118,9 @@ For deeper reference material, read:
 
 ## Step 3: Identify the contract source of truth deliberately
 
-In Cabloy, the backend is often the source of truth for the contract. Treat that as the default unless the codebase clearly shows a generated or schema-owned frontend artifact that should be regenerated from backend output.
+In Cabloy, the backend is often the source of truth for the contract. Treat that as the default unless the codebase clearly shows a frontend-owned artifact that the reverse chain should hand back into backend consumers.
 
-### If this is a forward change
+### If this is the forward chain
 
 Start with the backend side and update the contract deliberately.
 
@@ -105,16 +137,37 @@ The key rule is:
 
 - do **not** patch frontend consumers first if the backend contract is the real source of truth
 
-### If this is reverse stale-consumer detection
+### If this is the reverse chain
 
-Do not assume the frontend is the right place to fix the problem.
+Start with the frontend-owned resource or metadata that backend consumers later depend on.
+
+Typical frontend layers to inspect or change include:
+
+- routes
+- components
+- icons
+- custom form-field resources
+- custom table-cell resources
+- generated metadata that backend `ZovaRender.*(...)` references depend on
+
+The key rule is:
+
+- do **not** treat this as frontend-only cleanup if backend consumers depend on the generated handoff
+
+### If this is consumer drift diagnosis
+
+Do not assume the visible stale behavior identifies the wrong layer automatically.
 
 Instead:
 
-1. inspect what frontend artifact looks stale
+1. inspect what artifact looks stale
 2. identify whether that artifact is generated, schema-driven, or hand-authored
-3. inspect the backend contract source that should feed it
-4. only then decide whether the fix is regeneration, backend correction, or a genuine frontend bug
+3. inspect the source layer that should feed it
+4. only then decide whether the fix is regeneration, source correction, consumer alignment, or a genuine bug
+
+### If this is local dependency drift recovery
+
+Only enter this branch after the source layer and generated handoff are already known to be correct.
 
 ## Step 4: Verify backend contract output before touching frontend consumers
 
@@ -126,6 +179,7 @@ That may include:
 - confirming DTO and validation alignment
 - checking Swagger/OpenAPI output
 - confirming that the changed endpoint or schema now reflects the intended contract
+- if local OpenAPI generation depends on a running Swagger source, starting the backend service first — in Cabloy Basic, `npm run dev` is the normal path and exposes `http://localhost:7102/swagger/json?version=V31`
 
 If the backend contract output is wrong, frontend regeneration will only spread the mistake.
 
@@ -142,6 +196,11 @@ Typical Zova commands include:
 - `npm run zova :openapi:config ...`
 - `npm run zova :openapi:generate ...`
 
+Preflight reminder:
+
+- if `:openapi:generate` reads from a local Swagger endpoint, do not assume the generator itself is broken when fetch fails
+- first start the backend service, typically with `npm run dev`, and confirm `http://localhost:7102/swagger/json?version=V31` is reachable
+
 When the target is a module-local SDK, constrain `openapi.config.ts` with `operations.match` unless the module intentionally owns a broad API surface. This prevents unrelated APIs from being generated into the module.
 
 ### Path B: REST/type generation by flavor
@@ -152,6 +211,15 @@ Typical examples in Cabloy Basic include:
 
 - `cd zova && npm run build:rest:cabloyBasicAdmin`
 - `cd zova && npm run build:rest:cabloyBasicWeb`
+
+Important Cabloy Basic reverse-sync rule:
+
+- if Vona consumes newly added or changed Zova Admin render/action/metadata, do **not** stop at `build:rest:cabloyBasicAdmin`
+- run `npm run build:zova:admin` from the repo root instead, then run `npm run deps:vona`
+- treat this as a JS-bundle-plus-rest-output handoff, not a rest-types-only refresh
+- the current repo safeguard may auto-run those two commands for high-confidence Zova reverse-source edits, but only as a convenience layer on top of the contract-loop model
+- if the change was consumer-side, low-confidence, cross-edition, or happened outside the Claude hook path, run the reverse sync flow deliberately yourself
+- prefer visible proof under `zova/src/**/.metadata/**` when it is available; if the effective handoff only appears in `.zova-rest`, treat the safeguard as conservative reminder/auto-sync assistance rather than strict proof
 
 For Cabloy Start, verify the exact Start-specific flavor names, paths, SSR site baselines, and project assets in the licensed Start repo.
 
@@ -164,7 +232,12 @@ After generation, inspect whether the frontend still needs follow-up in:
 - schema-driven UI
 - page or component assumptions
 
-If a custom endpoint still belongs to an existing resource, prefer one resource-state owner instead of letting a module-local model create a second cache tree. Reuse the resource-owned custom state pattern in `references/resource-custom-state-pattern.md`.
+Keep frontend follow-up thin:
+
+- use thin semantic model facades over generated consumers instead of re-declaring the contract
+- if a custom endpoint still belongs to an existing resource, prefer one resource-state owner instead of letting a module-local model create a second cache tree
+
+Reuse the resource-owned custom state pattern in `references/resource-custom-state-pattern.md`.
 
 ## Step 6: Keep edition-aware differences explicit
 

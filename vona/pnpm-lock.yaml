@@ -7090,8 +7090,8 @@ packages:
       typescript:
         optional: true
 
-  vuetify@4.1.1:
-    resolution: {integrity: sha512-m75ZkDIBwstDhID/zPtQmh9m601G/C4wnvCmlA6hgvhD7EOwR9I4DClpxPQiNTd1toKWHCr3kD2XJqU1fh0tYA==}
+  vuetify@4.1.2:
+    resolution: {integrity: sha512-2SUzXt2Q71/cVmSZhU6kOmAo1ev3NZaI/ynj55TTcu6jXAc9kezoqZKY+Xm+0STnAOcCoTseF0qPSs01LjUaaA==}
     peerDependencies:
       typescript: '>=4.7'
       vite-plugin-vuetify: '>=2.1.0'
@@ -12271,7 +12271,7 @@ snapshots:
     optionalDependencies:
       typescript: 5.9.3
 
-  vuetify@4.1.1(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3)):
+  vuetify@4.1.2(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3)):
     dependencies:
       vue: 3.5.38(typescript@5.9.3)
     optionalDependencies:
@@ -12616,7 +12616,7 @@ snapshots:
       openapi3-ts: 4.5.0
       table-identity: link:packages-utils/table-identity
       vue: 3.5.38(typescript@5.9.3)
-      vuetify: 4.1.1(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
+      vuetify: 4.1.2(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
       zod: '@cabloy/zod@4.3.6'
       zova: 5.1.103(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
       zova-jsx: 1.1.63(typescript@5.9.3)
@@ -12655,7 +12655,7 @@ snapshots:
       openapi3-ts: 4.5.0
       table-identity: link:packages-utils/table-identity
       vue: 3.5.38(typescript@5.9.3)
-      vuetify: 4.1.1(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
+      vuetify: 4.1.2(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
       zod: '@cabloy/zod@4.3.6'
       zova: 5.1.103(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
       zova-jsx: 1.1.63(typescript@5.9.3)
@@ -12694,7 +12694,7 @@ snapshots:
       openapi3-ts: 4.5.0
       table-identity: link:packages-utils/table-identity
       vue: 3.5.38(typescript@5.9.3)
-      vuetify: 4.1.1(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
+      vuetify: 4.1.2(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
       zod: '@cabloy/zod@4.3.6'
       zova: 5.1.103(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
       zova-jsx: 1.1.63(typescript@5.9.3)
@@ -12733,7 +12733,7 @@ snapshots:
       openapi3-ts: 4.5.0
       table-identity: link:packages-utils/table-identity
       vue: 3.5.38(typescript@5.9.3)
-      vuetify: 4.1.1(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
+      vuetify: 4.1.2(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
       zod: '@cabloy/zod@4.3.6'
       zova: 5.1.103(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
       zova-jsx: 1.1.63(typescript@5.9.3)

@@ -1,10 +1,10 @@
 # Backend OpenAPI to Frontend SDK
 
-This page turns one of Cabloy’s most important fullstack collaboration paths into an explicit guide.
+This page is the **forward chain** deep dive for Cabloy’s bidirectional contract loop.
 
 ## Why this path matters
 
-Cabloy’s fullstack productivity depends heavily on a contract loop:
+In the bidirectional [Contract Loop Playbook](/fullstack/contract-loop-playbook), this page covers the **forward chain**:
 
 1. Vona emits backend API metadata through Swagger/OpenAPI
 2. Zova consumes that metadata to generate frontend SDKs and schema-aware helpers
@@ -12,7 +12,7 @@ Cabloy’s fullstack productivity depends heavily on a contract loop:
 
 This is one of the strongest AI-leverage paths in the repo because it reduces duplicated type work and keeps backend/frontend coordination closer to source truth.
 
-## The contract loop in practical terms
+## The forward chain in practical terms
 
 A useful split is:
 
@@ -20,7 +20,9 @@ A useful split is:
 - fullstack docs define the bridge from emitted contract to generated SDK
 - frontend docs define the consumption side of the generated contract
 
-That means this page is the fullstack contract-bridge page, not the backend authoring page and not the frontend usage page.
+That means this page is the forward-chain bridge page, not the backend authoring page and not the frontend usage page.
+
+If the changed source is actually a frontend-owned resource that backend consumers later depend on, switch to the reverse-chain guide: [Frontend Metadata Back to Backend](/fullstack/frontend-metadata-to-backend).
 
 ## Backend side: Vona emits the contract
 
@@ -70,23 +72,31 @@ cd zova && npm run build:rest:cabloyBasicAdmin
 cd zova && npm run build:rest:cabloyBasicWeb
 ```
 
-A practical contract-loop sequence is:
+A practical forward-chain sequence is:
 
 1. author or change the backend contract
 2. emit or inspect backend OpenAPI output
-3. configure frontend module ownership if needed
-4. generate module-level OpenAPI SDK output
-5. run the rest build for the active Basic flavor when needed
-6. consume the generated contract from frontend code instead of re-declaring it manually
+3. if the frontend generator reads from a local Swagger endpoint, start the backend service first so the endpoint is reachable — in this repo, `npm run dev` is the normal path and exposes Swagger at `http://localhost:7102/swagger/json?version=V31`
+4. configure frontend module ownership if needed
+5. generate module-level OpenAPI SDK output
+6. run the rest build for the active flavor when needed
+7. consume the generated contract from frontend code instead of re-declaring it manually
+8. keep frontend follow-up thin by wrapping generated consumers with semantic facades instead of re-declaring the contract
+9. when the custom API still belongs to an existing resource, reuse the existing resource-owner instead of creating a competing cache owner
 
 A practical responsibility split is:
 
 - project-level OpenAPI config decides where the backend Swagger/OpenAPI source comes from
 - module-level OpenAPI config decides which generated contract slice belongs to which frontend module
+- module-level ownership should be declared explicitly with `operations.match` or `operations.ignore`
+
+If both `operations.match` and `operations.ignore` are empty, frontend SDK generation should fail fast instead of generating a large unrelated contract surface for the module. That fail-fast behavior helps both developers and AI agents notice the missing ownership boundary immediately and repair the config before the wrong SDK slice is generated.
 
 A practical regeneration rule is:
 
 - if the backend contract changed, prefer regenerating the SDK/rest layer before hand-editing frontend request code
+- if `npm run zova :openapi:generate ...` fails because the local Swagger source is unavailable, first start the backend service and confirm `http://localhost:7102/swagger/json?version=V31` is reachable before treating generation as broken
+- if the generated consumer path is already correct, but frontend behavior still looks stale, stop patching generated files and diagnose consumer drift or local dependency drift instead
 
 ## Cabloy Start workflow
 

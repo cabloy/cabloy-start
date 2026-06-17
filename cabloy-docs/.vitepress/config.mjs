@@ -23,6 +23,7 @@ const aiItems = [
   { text: 'Playbook: Backend Module', link: '/ai/playbook-backend-module' },
   { text: 'Playbook: Frontend Page', link: '/ai/playbook-frontend-page' },
   { text: 'Playbook: Contract Regeneration', link: '/ai/playbook-contract-regeneration' },
+  { text: 'Playbook: Module Removal', link: '/ai/playbook-module-removal' },
   { text: 'Playbook: Metadata Refresh', link: '/ai/playbook-metadata-refresh' },
   { text: 'CLI for Agents', link: '/ai/cli-for-agents' },
   { text: 'Rules and Config', link: '/ai/rules-and-config' },
@@ -50,12 +51,16 @@ const fullstackGroups = [
         link: '/fullstack/tutorial-3-frontend-metadata-sharing',
       },
       {
-        text: 'Tutorial 4: Backend Contract Sharing',
-        link: '/fullstack/tutorial-4-backend-contract-sharing',
+        text: 'Tutorial 4: Custom Form/Table Renderers for Level',
+        link: '/fullstack/tutorial-4-custom-level-renderers',
       },
       {
-        text: 'Tutorial 5: One Contract Surface, Four Uses',
-        link: '/fullstack/tutorial-5-one-contract-four-uses',
+        text: 'Tutorial 5: Backend Contract Sharing',
+        link: '/fullstack/tutorial-5-backend-contract-sharing',
+      },
+      {
+        text: 'Tutorial 6: One Contract Surface, Four Uses',
+        link: '/fullstack/tutorial-6-one-contract-four-uses',
       },
     ],
   },
@@ -75,6 +80,7 @@ const fullstackGroups = [
       },
       { text: 'Framework Performance', link: '/fullstack/framework-performance' },
       { text: 'Vona + Zova Integration', link: '/fullstack/vona-zova-integration' },
+      { text: 'Contract Loop Playbook', link: '/fullstack/contract-loop-playbook' },
       { text: 'Backend OpenAPI to Frontend SDK', link: '/fullstack/openapi-to-sdk' },
       {
         text: 'Frontend Metadata Back to Backend',
@@ -243,6 +249,7 @@ export default defineConfig({
             { text: 'Queue Guide', link: '/backend/queue-guide' },
             { text: 'Election Guide', link: '/backend/election-guide' },
             { text: 'Schedule Guide', link: '/backend/schedule-guide' },
+            { text: 'Status Guide', link: '/backend/status-guide' },
             { text: 'Worker Guide', link: '/backend/worker-guide' },
             { text: 'Broadcast Guide', link: '/backend/broadcast-guide' },
             { text: 'Web Socket Guide', link: '/backend/websocket-guide' },
@@ -268,6 +275,22 @@ export default defineConfig({
             { text: 'Introduction', link: '/frontend/introduction' },
             { text: 'Quickstart', link: '/frontend/quickstart' },
             { text: 'Foundation', link: '/frontend/foundation' },
+            {
+              text: 'Reading Zova for Vue Developers',
+              link: '/frontend/reading-zova-for-vue-developers',
+            },
+            {
+              text: 'Zova vs Vue 3 Comparison',
+              link: '/frontend/zova-vs-vue3-comparison',
+            },
+            {
+              text: 'Zova Reactivity Under the Hood',
+              link: '/frontend/zova-reactivity-under-the-hood',
+            },
+            {
+              text: 'Zova Source Reading Map',
+              link: '/frontend/zova-source-reading-map',
+            },
           ],
         },
         {
@@ -324,6 +347,15 @@ export default defineConfig({
           text: 'Components & UI',
           items: [
             { text: 'Component Guide', link: '/frontend/component-guide' },
+            { text: 'Form Guide', link: '/frontend/form-guide' },
+            {
+              text: 'Zova Form Under the Hood',
+              link: '/frontend/zova-form-under-the-hood',
+            },
+            {
+              text: 'Zova Form Source Reading Map',
+              link: '/frontend/zova-form-source-reading-map',
+            },
             { text: 'Component Props Guide', link: '/frontend/component-props-guide' },
             { text: 'Component v-model Guide', link: '/frontend/component-v-model-guide' },
             { text: 'Generic Component Guide', link: '/frontend/generic-component-guide' },
@@ -336,9 +368,23 @@ export default defineConfig({
           text: 'Data & State',
           items: [
             { text: 'Server Data', link: '/frontend/server-data' },
+            { text: 'Fetch Interceptor Guide', link: '/frontend/fetch-interceptor-guide' },
             { text: 'API Guide', link: '/frontend/api-guide' },
             { text: 'Model Architecture', link: '/frontend/model-architecture' },
             { text: 'Model State Guide', link: '/frontend/model-state-guide' },
+            { text: 'Model Resource Owner Pattern', link: '/frontend/model-resource-owner-pattern' },
+            {
+              text: 'Using ModelResource in Your Module',
+              link: '/frontend/model-resource-usage-guide',
+            },
+            {
+              text: 'Resource Model Best Practices',
+              link: '/frontend/model-resource-best-practices',
+            },
+            {
+              text: 'Resource Model Cookbook',
+              link: '/frontend/model-resource-cookbook',
+            },
           ],
         },
         {

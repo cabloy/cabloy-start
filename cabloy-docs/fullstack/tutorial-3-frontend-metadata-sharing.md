@@ -2,7 +2,7 @@
 
 <Badge type="info" text="Basic" />
 
-In this tutorial, one prompt lets AI show the reverse direction of Cabloy’s fullstack contract loop: backend field metadata can reference frontend render resources.
+In this tutorial, one prompt lets AI show the **reverse chain** of Cabloy’s fullstack contract loop: backend field metadata can reference frontend render resources.
 
 You start with the simplest path first: reuse the existing built-in rendering resources for the `level` field.
 
@@ -19,7 +19,7 @@ By the end of this tutorial, you will understand:
 Give AI a prompt like this:
 
 ```text
-Please add a level field to the Student resource. It should be a number field with these enum values:
+Please add a level field to the Student resource. It should be a required number field with these enum values:
 
 - 1: beginner
 - 2: intermediate

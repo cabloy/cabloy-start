@@ -389,7 +389,7 @@ async function main(): Promise<void> {
 
     log('Upgrade complete!');
   } finally {
-    // 5. Cleanup
+    // 6. Cleanup
     cleanup(dryRun);
   }
 }

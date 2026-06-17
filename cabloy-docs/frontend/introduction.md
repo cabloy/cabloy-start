@@ -32,6 +32,10 @@ Start here when you need the shortest route to the frontend mental model and sta
 
 - [Quickstart](/frontend/quickstart)
 - [Foundation](/frontend/foundation)
+- [Reading Zova for Vue Developers](/frontend/reading-zova-for-vue-developers)
+- [Zova vs Vue 3 Comparison](/frontend/zova-vs-vue3-comparison)
+- [Zova Reactivity Under the Hood](/frontend/zova-reactivity-under-the-hood)
+- [Zova Source Reading Map](/frontend/zova-source-reading-map)
 - [IoC and Beans](/frontend/ioc-and-beans)
 - [Behavior Guide](/frontend/behavior-guide)
 - [Modules and Suites](/frontend/modules-and-suites)
@@ -56,9 +60,12 @@ Use this path when the task is page-oriented, route-oriented, or the first time 
 
 ### Components and UI flow
 
-Use this path when the task is about UI composition, component contracts, or theme work:
+Use this path when the task is about UI composition, component contracts, form architecture, form internals, form source reading, or theme work:
 
 - [Component Guide](/frontend/component-guide)
+- [Form Guide](/frontend/form-guide)
+- [Zova Form Under the Hood](/frontend/zova-form-under-the-hood)
+- [Zova Form Source Reading Map](/frontend/zova-form-source-reading-map)
 - [Component Props Guide](/frontend/component-props-guide)
 - [Component v-model Guide](/frontend/component-v-model-guide)
 - [Generic Component Guide](/frontend/generic-component-guide)
@@ -74,6 +81,10 @@ Use this path when the task is about data loading, API contracts, generated SDKs
 - [API Guide](/frontend/api-guide)
 - [Model Architecture](/frontend/model-architecture)
 - [Model State Guide](/frontend/model-state-guide)
+- [Model Resource Owner Pattern](/frontend/model-resource-owner-pattern)
+- [Using ModelResource in Your Module](/frontend/model-resource-usage-guide)
+- [Resource Model Best Practices](/frontend/model-resource-best-practices)
+- [Resource Model Cookbook](/frontend/model-resource-cookbook)
 - [OpenAPI SDK Guide](/frontend/openapi-sdk-guide)
 - [API Schema Guide](/frontend/api-schema-guide)
 - [SDK Guide](/frontend/sdk-guide)
