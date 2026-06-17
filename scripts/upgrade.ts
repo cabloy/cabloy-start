@@ -300,7 +300,17 @@ function runInit(dryRun: boolean, version: string): void {
   exec('npm run init', { CABLOY_VERSION: version } as any);
 }
 
-// --- Step 5: Cleanup ---
+// --- Step 5: Run init:test-data ---
+
+function runInitTestData(dryRun: boolean): void {
+  if (dryRun) {
+    log('  [dry-run] Run: npm run init:test-data');
+    return;
+  }
+  exec('npm run init:test-data');
+}
+
+// --- Step 6: Cleanup ---
 
 function cleanup(dryRun?: boolean): void {
   if (dryRun) {
@@ -364,6 +374,11 @@ async function main(): Promise<void> {
     // 4. Run init
     log('Running npm run init...');
     runInit(dryRun, latestPackageInfo.version);
+    log('');
+
+    // 5. Run init:test-data
+    log('Running npm run init:test-data...');
+    runInitTestData(dryRun);
     log('');
 
     if (dryRun) {
