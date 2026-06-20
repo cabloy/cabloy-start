@@ -38,10 +38,10 @@ export class TableCellActionDelete extends BeanBase implements ITableCellRender 
         color={options.color}
         icon={options.icon}
         onPerform={async () => {
-          const res = await $host.$performCommand('start-commands:confirm', {
+          const confirmed = await $host.$performCommand('start-commands:confirm', {
             text: this.scope.locale.DeleteConfirm(),
           });
-          if (!res) return;
+          if (!confirmed) return;
           await $host.$performCommand('start-commands:delete', options, renderContext);
         }}
       ></ZButton>

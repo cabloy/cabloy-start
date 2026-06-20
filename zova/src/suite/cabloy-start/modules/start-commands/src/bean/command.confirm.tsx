@@ -10,7 +10,7 @@ import { BeanBase } from 'zova';
 import { Command } from 'zova-module-a-command';
 import { IModalConfirmOptions } from 'zova-module-start-app';
 
-export type TypeCommandConfirmResult = unknown;
+export type TypeCommandConfirmResult = Promise<boolean>;
 
 export interface ICommandOptionsConfirm
   extends ICommandOptionsBase<TypeCommandConfirmResult>, IModalConfirmOptions {
