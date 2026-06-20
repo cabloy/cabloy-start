@@ -2,7 +2,7 @@ import type { IIconRecord } from 'zova-module-a-icon';
 
 import type { ServiceAppModal } from '../service/appModal.js';
 
-export type ModalType = 'alert';
+export type ModalType = 'alert' | 'confirm' | 'prompt';
 export type AlertType = 'success' | 'info' | 'warning' | 'error';
 
 export interface IModalAlertOptions {
@@ -35,7 +35,7 @@ export interface IModalPromptOptionsInner extends IModalPromptOptions {
 
 export interface IModalItem {
   id: number;
-  type: 'alert' | 'confirm' | 'prompt';
+  type: ModalType;
   options?: {};
   dialogOptions?: {};
 }
