@@ -6,6 +6,10 @@ In this tutorial, one prompt lets AI show the **reverse chain** of Cabloy’s fu
 
 You start with the simplest path first: reuse the existing built-in rendering resources for the `level` field.
 
+> [!NOTE]
+> This tutorial still uses the standalone `demo-student` sandbox introduced in Tutorial 1.
+> Keep that sandbox separate from the repo's real suite-owned `a-training/training-student` example so you can experiment and compare the two paths side by side.
+
 ## Goal
 
 By the end of this tutorial, you will understand:

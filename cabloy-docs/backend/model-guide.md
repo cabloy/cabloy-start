@@ -17,10 +17,10 @@ That means model design affects not only SQL behavior, but also CRUD defaults, D
 
 ## Create a model
 
-Example: create a model named `student` in module `demo-student`.
+Example: create a model named `student` in module `training-student`.
 
 ```bash
-npm run vona :create:bean model student -- --module=demo-student
+npm run vona :create:bean model student -- --module=training-student
 ```
 
 ## Model definition
@@ -56,7 +56,7 @@ class ServiceStudent {
 ```typescript
 class ServiceStudent {
   async findAll(): Promise<EntityStudent[]> {
-    return await this.$scope.demoStudent.model.student.select();
+    return await this.$scope.trainingStudent.model.student.select();
   }
 }
 ```
@@ -66,7 +66,7 @@ class ServiceStudent {
 ```typescript
 class ServiceStudent {
   async findAll(): Promise<EntityStudent[]> {
-    return await this.bean._getBean('demo-student.model.student').select();
+    return await this.bean._getBean('training-student.model.student').select();
   }
 }
 ```
@@ -121,7 +121,7 @@ Representative patterns:
 ```typescript
 this.scope.model.student.builder().where('name', 'tom').orderBy('name');
 this.scope.model.student.builderSelect().where('name', 'tom').orderBy('name');
-this.scope.model.student.query('select * from demoStudent');
+this.scope.model.student.query('select * from trainingStudent');
 ```
 
 A practical rule is:
@@ -155,7 +155,7 @@ Representative pattern:
 ```typescript
 config.onions = {
   model: {
-    'demo-student:student': {
+    'training-student:student': {
       disableDeleted: true,
       disableInstance: true,
       client: 'mysql',
@@ -279,3 +279,13 @@ When creating backend persistence logic:
 4. choose deliberately among local scope, cross-module scope, and direct bean access
 5. remember that datasource, cache, and model options can change the behavior of the backend contract loop
 6. drop to raw SQL or lower-level query builder logic only when the higher-level model surface is insufficient
+
+## Where to read next
+
+If your next question is how model persistence behavior fits into one complete backend contract thread, continue with:
+
+- [Entity Guide](/backend/entity-guide)
+- [DTO Guide](/backend/dto-guide)
+- [CRUD Workflow](/backend/crud-workflow)
+- [Vona Source Reading Map](/backend/vona-source-reading-map)
+- [Backend Resource/Module Contract Chain](/backend/backend-resource-module-contract-chain)

@@ -6,7 +6,23 @@ It is the practical follow-up to [Model Resource Owner Pattern](/frontend/model-
 
 For review guardrails and design checks after applying the pattern, continue with [Resource Model Best Practices and Anti-Patterns](/frontend/model-resource-best-practices).
 
+If you need the lower-level generic model runtime beneath this resource-owner usage layer, continue with [Model Runtime Under the Hood](/frontend/a-model-under-the-hood).
+
 For implementation templates covering common extension scenarios, continue with [Resource Model Cookbook](/frontend/model-resource-cookbook).
+
+> [!TIP]
+> **Resource docs path**
+>
+> 1. **[Model Resource Owner Pattern](/frontend/model-resource-owner-pattern)** — learn why `ModelResource` is a resource owner
+> 2. **[Rest Resource Under the Hood](/frontend/rest-resource-under-the-hood)** — learn how the module runtime pieces cooperate
+> 3. **[Rest Resource Source Reading Map](/frontend/rest-resource-source-reading-map)** — learn which files to read next
+> 4. **[Using `ModelResource` in Your Module](/frontend/model-resource-usage-guide)** — learn how to reuse the owner in application code
+> 5. **[Resource Model Best Practices](/frontend/model-resource-best-practices)** — learn the review guardrails
+> 6. **[Resource Model Cookbook](/frontend/model-resource-cookbook)** — learn the common implementation shapes
+>
+> **You are here:** step 4.
+> **Previous recommended pages:** [Model Resource Owner Pattern](/frontend/model-resource-owner-pattern), [Rest Resource Under the Hood](/frontend/rest-resource-under-the-hood), and [Rest Resource Source Reading Map](/frontend/rest-resource-source-reading-map).
+> **Next recommended pages:** [Resource Model Best Practices](/frontend/model-resource-best-practices), then [Resource Model Cookbook](/frontend/model-resource-cookbook).
 
 Use this page when the main question is not only “what does `ModelResource` do?”, but also:
 
@@ -95,7 +111,7 @@ This is the right option when business semantics appear, but ownership should st
 A representative shape is:
 
 ```typescript
-const StudentResource = 'demo-student:student';
+const StudentResource = 'training-student:student';
 
 @Model()
 export class ModelStudent extends BeanModelBase {
@@ -109,7 +125,7 @@ export class ModelStudent extends BeanModelBase {
       id,
       action: 'summary',
       queryFn: async () => {
-        const res = await this.scope.api.demoStudent.summary({ params: { id } });
+        const res = await this.scope.api.trainingStudent.summary({ params: { id } });
         return res ?? null;
       },
       meta: {
@@ -123,7 +139,7 @@ export class ModelStudent extends BeanModelBase {
       id,
       action: 'deleteForce',
       mutationFn: async () => {
-        await this.scope.api.demoStudent.deleteForce({ params: { id } });
+        await this.scope.api.trainingStudent.deleteForce({ params: { id } });
       },
     });
   }
@@ -184,7 +200,7 @@ summary(id: TableIdentity) {
     id,
     action: 'summary',
     queryFn: async () => {
-      const res = await this.scope.api.demoStudent.summary({ params: { id } });
+      const res = await this.scope.api.trainingStudent.summary({ params: { id } });
       return res ?? null;
     },
   });
@@ -227,7 +243,7 @@ deleteForce(id: TableIdentity) {
     id,
     action: 'deleteForce',
     mutationFn: async () => {
-      await this.scope.api.demoStudent.deleteForce({ params: { id } });
+      await this.scope.api.trainingStudent.deleteForce({ params: { id } });
     },
   });
 }

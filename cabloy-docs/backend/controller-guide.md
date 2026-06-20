@@ -18,12 +18,12 @@ A useful contract-loop mental model is:
 
 ## Create a controller
 
-Example: create a controller named `student` in module `demo-student`.
+Example: create a controller named `student` in module `training-student`.
 
 ### CLI command
 
 ```bash
-npm run vona :create:bean controller student -- --module=demo-student
+npm run vona :create:bean controller student -- --module=training-student
 ```
 
 ## Controller definition
@@ -345,3 +345,13 @@ The safest workflow is:
 3. add `@Web`, `@Arg`, validation, and OpenAPI metadata in the same style
 4. choose deliberately whether response wrapper defaults should stay in place
 5. verify the resulting routes and response conventions
+
+## Where to read next
+
+If your next question is how the HTTP-facing controller layer connects to the rest of one real backend module, continue with:
+
+- [Service Guide](/backend/service-guide)
+- [DTO Guide](/backend/dto-guide)
+- [OpenAPI Guide](/backend/openapi-guide)
+- [Vona Source Reading Map](/backend/vona-source-reading-map)
+- [Backend Resource/Module Contract Chain](/backend/backend-resource-module-contract-chain)

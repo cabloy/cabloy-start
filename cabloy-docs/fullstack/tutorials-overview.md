@@ -36,7 +36,7 @@ Why these fields?
 
 This keeps the storyline small enough for beginners while still showing Cabloy’s fullstack contract model.
 
-At the beginning of the series, the `demo-student` module does not exist yet. The tutorials build it step by step.
+At the beginning of the series, the `demo-student` module does not exist yet. The tutorials build it step by step. This standalone tutorial track is intentional: it gives readers a safe experiment surface that does not collide with the repo's real `a-training/training-student` implementation and also makes side-by-side comparison easier.
 
 ## What you should prepare first
 

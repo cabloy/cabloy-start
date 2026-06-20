@@ -16,10 +16,10 @@ That is why DTO design should be treated as a framework concern instead of only 
 
 ## Create a DTO
 
-Example: create a DTO named `studentCreate` in module `demo-student`.
+Example: create a DTO named `studentCreate` in module `training-student`.
 
 ```bash
-npm run vona :create:bean dto studentCreate -- --module=demo-student
+npm run vona :create:bean dto studentCreate -- --module=training-student
 ```
 
 ## DTO definition
@@ -172,3 +172,13 @@ When creating DTOs:
 4. avoid re-declaring fields manually if Vona’s DTO-generation or class-derivation tools already solve the problem
 5. treat DTO design as part of the contract between backend handlers, models, and frontend integration
 6. choose explicit DTOs when named long-lived contracts matter, and inferred DTOs when the model/query shape already expresses the contract clearly
+
+## Where to read next
+
+If your next question is how named DTO artifacts fit into one complete backend module specimen, continue with:
+
+- [DTO Infer and Generation](/backend/dto-infer-generation)
+- [Controller Guide](/backend/controller-guide)
+- [OpenAPI Guide](/backend/openapi-guide)
+- [Vona Source Reading Map](/backend/vona-source-reading-map)
+- [Backend Resource/Module Contract Chain](/backend/backend-resource-module-contract-chain)

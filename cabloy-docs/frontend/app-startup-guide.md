@@ -68,7 +68,7 @@ A module can provide its own main lifecycle entrypoints.
 Representative creation command:
 
 ```bash
-npm run zova :init:main demo-student
+npm run zova :init:main training-student
 ```
 
 Representative pattern:
@@ -87,7 +87,7 @@ A module can also provide broader app hook behavior through a monkey entry.
 Representative creation command:
 
 ```bash
-npm run zova :init:monkey demo-student
+npm run zova :init:monkey training-student
 ```
 
 Representative pattern:
@@ -164,8 +164,11 @@ A practical reading sequence is:
 
 1. [System Startup Guide](/frontend/system-startup-guide)
 2. this page for router/guard readiness
-3. [Page Route Guide](/frontend/page-route-guide)
-4. [Navigation Guards Guide](/frontend/navigation-guards-guide)
+3. [Zova App Guide](/frontend/zova-app-guide)
+4. [Page Route Guide](/frontend/page-route-guide)
+5. [Navigation Guards Guide](/frontend/navigation-guards-guide)
+
+If you want the thin root app-host layer that sits inside the running frontend app, read [Zova App Guide](/frontend/zova-app-guide). That guide focuses on `a-app` as the root controller/behavior host rather than on startup hook timings.
 
 ## Relationship to environment/config selection
 

@@ -8,18 +8,22 @@ CRUD is one of the clearest places where Cabloy’s CLI-first philosophy pays of
 
 Instead of creating controller, service, model, entity, DTO, metadata, locale, and test files by hand, Vona already provides generators that create the initial backend thread.
 
+> [!NOTE]
+> The fullstack tutorial series intentionally uses a standalone `demo-student` sandbox so readers can experiment without colliding with the repo's real suite-owned `a-training/training-student` implementation.
+> This guide, by contrast, uses the current repo implementation as its compact specimen.
+
 ## Generate a CRUD skeleton
 
-Example: generate a CRUD workflow for `student` in module `demo-student`.
+Example: generate a CRUD workflow for `student` in module `training-student`.
 
 ```bash
-npm run vona :tools:crud student -- --module=demo-student
+npm run vona :tools:crud student -- --module=training-student
 ```
 
 A lighter variant also exists:
 
 ```bash
-npm run vona :tools:crudBasic student -- --module=demo-student
+npm run vona :tools:crudBasic student -- --module=training-student
 ```
 
 This is important because the repo already encodes both the full CRUD thread and a lighter CRUD-basic workflow in the CLI surface.

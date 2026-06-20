@@ -15,7 +15,7 @@ Vona uses a bean named `meta.index` to configure a module’s field indexes.
 Create it with:
 
 ```bash
-npm run vona :create:bean meta index -- --module=demo-student
+npm run vona :create:bean meta index -- --module=training-student
 ```
 
 Representative shell:
@@ -32,7 +32,7 @@ Representative pattern:
 ```typescript
 @Meta({
   indexes: {
-    demoStudent: 'name',
+    trainingStudent: 'name',
   },
 })
 class MetaIndex {}
@@ -52,7 +52,7 @@ import { $tableColumns } from 'vona-module-a-ormutils';
 
 @Meta({
   indexes: {
-    ...$tableColumns('demoStudent', 'name'),
+    ...$tableColumns('trainingStudent', 'name'),
   },
 })
 class MetaIndex {}
@@ -77,3 +77,9 @@ Also ask:
 3. is the typed style a better fit than raw string declarations?
 
 That leads to backend changes that are more production-aware and more aligned with Vona’s module metadata model.
+
+## Where to read next
+
+- If you want the broader persistence-side source-reading chooser, continue with [Backend Source Reading Roadmap](/backend/backend-source-reading-roadmap).
+- If you are deciding how indexed fields relate to backend persistence truth, continue with [Entity Guide](/backend/entity-guide).
+- If the index question is part of a persisted-schema change, continue with [Migration and Changes](/backend/migration-and-changes).

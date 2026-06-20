@@ -38,6 +38,7 @@ const fullstackGroups = [
     items: [
       { text: 'Introduction', link: '/fullstack/introduction' },
       { text: 'Quickstart', link: '/fullstack/quickstart' },
+      { text: 'Suites and Modules', link: '/fullstack/suites-and-modules' },
     ],
   },
   {
@@ -81,6 +82,22 @@ const fullstackGroups = [
       { text: 'Framework Performance', link: '/fullstack/framework-performance' },
       { text: 'Vona + Zova Integration', link: '/fullstack/vona-zova-integration' },
       { text: 'Contract Loop Playbook', link: '/fullstack/contract-loop-playbook' },
+      {
+        text: 'Backend Metadata to Frontend Table Actions',
+        link: '/fullstack/backend-metadata-to-frontend-table-actions',
+      },
+      {
+        text: 'Backend Metadata to Frontend Table Actions Verify Playbook',
+        link: '/fullstack/backend-metadata-to-frontend-table-actions-verify-playbook',
+      },
+      {
+        text: 'Backend Metadata to Frontend Table Actions Debug Checklist',
+        link: '/fullstack/backend-metadata-to-frontend-table-actions-debug-checklist',
+      },
+      {
+        text: 'Backend Metadata to Frontend Table Actions Source Reading Map',
+        link: '/fullstack/backend-metadata-to-frontend-table-actions-source-reading-map',
+      },
       { text: 'Backend OpenAPI to Frontend SDK', link: '/fullstack/openapi-to-sdk' },
       {
         text: 'Frontend Metadata Back to Backend',
@@ -166,6 +183,19 @@ export default defineConfig({
             { text: 'Foundation', link: '/backend/foundation' },
             { text: 'Backend Essentials', link: '/backend/backend-essentials' },
             { text: 'Quickstart', link: '/backend/quickstart' },
+            {
+              text: 'Backend Source Reading Roadmap',
+              link: '/backend/backend-source-reading-roadmap',
+            },
+            { text: 'Vona Source Reading Map', link: '/backend/vona-source-reading-map' },
+            {
+              text: 'Backend Source Reading Verify Playbook',
+              link: '/backend/backend-source-reading-verify-playbook',
+            },
+            {
+              text: 'Backend Source Reading Debug Checklist',
+              link: '/backend/backend-source-reading-debug-checklist',
+            },
           ],
         },
         {
@@ -218,6 +248,10 @@ export default defineConfig({
             { text: 'Model Guide', link: '/backend/model-guide' },
             { text: 'Entity Guide', link: '/backend/entity-guide' },
             { text: 'DTO Guide', link: '/backend/dto-guide' },
+            {
+              text: 'Backend Resource/Module Contract Chain',
+              link: '/backend/backend-resource-module-contract-chain',
+            },
           ],
         },
         {
@@ -263,6 +297,18 @@ export default defineConfig({
           text: 'API & Testing',
           items: [
             { text: 'OpenAPI Guide', link: '/backend/openapi-guide' },
+            {
+              text: 'Backend Contract Emission Specimen',
+              link: '/backend/backend-contract-emission-specimen',
+            },
+            {
+              text: 'Backend Contract Emission Source Reading Map',
+              link: '/backend/backend-contract-emission-source-reading-map',
+            },
+            {
+              text: 'Backend Contract Emission Output Inspection',
+              link: '/backend/backend-contract-emission-output-inspection',
+            },
             { text: 'DTO Infer and Generation', link: '/backend/dto-infer-generation' },
             { text: 'Unit Testing', link: '/backend/unit-testing' },
           ],
@@ -288,6 +334,10 @@ export default defineConfig({
               link: '/frontend/zova-reactivity-under-the-hood',
             },
             {
+              text: 'Frontend Source Reading Roadmap',
+              link: '/frontend/frontend-source-reading-roadmap',
+            },
+            {
               text: 'Zova Source Reading Map',
               link: '/frontend/zova-source-reading-map',
             },
@@ -309,6 +359,8 @@ export default defineConfig({
           items: [
             { text: 'Environment and Config Guide', link: '/frontend/environment-config-guide' },
             { text: 'App Startup Guide', link: '/frontend/app-startup-guide' },
+            { text: 'Zova App Guide', link: '/frontend/zova-app-guide' },
+            { text: 'Root Behaviors Guide', link: '/frontend/root-behaviors-guide' },
             { text: 'System Startup Guide', link: '/frontend/system-startup-guide' },
           ],
         },
@@ -328,9 +380,19 @@ export default defineConfig({
             { text: 'Page Params Guide', link: '/frontend/page-params-guide' },
             { text: 'Zod Guide', link: '/frontend/zod-guide' },
             { text: 'Page Route Guide', link: '/frontend/page-route-guide' },
+            { text: 'A-Router Guide', link: '/frontend/a-router-guide' },
+            { text: 'Zova Router Under the Hood', link: '/frontend/zova-router-under-the-hood' },
+            { text: 'Router View Hosts Guide', link: '/frontend/router-view-hosts-guide' },
             { text: 'Router Tabs Introduction', link: '/frontend/router-tabs-introduction' },
             { text: 'Router Tabs Overview', link: '/frontend/router-tabs-overview' },
             { text: 'Router Tabs Mechanism', link: '/frontend/router-tabs-mechanism' },
+            { text: 'Router Tabs vs Stack', link: '/frontend/router-tabs-vs-stack' },
+            { text: 'Router Stack Guide', link: '/frontend/router-stack-guide' },
+            { text: 'Page Meta Guide', link: '/frontend/page-meta-guide' },
+            {
+              text: 'Router Tabs Layout Integration',
+              link: '/frontend/router-tabs-layout-integration',
+            },
             {
               text: 'Router Tabs Route Meta Cookbook',
               link: '/frontend/router-tabs-route-meta-cookbook',
@@ -356,6 +418,36 @@ export default defineConfig({
               text: 'Zova Form Source Reading Map',
               link: '/frontend/zova-form-source-reading-map',
             },
+            {
+              text: 'Form Scene to Page Meta',
+              link: '/frontend/form-scene-to-page-meta-guide',
+            },
+            {
+              text: 'Permission, formScene, and Action Visibility',
+              link: '/frontend/permission-formscene-action-visibility-guide',
+            },
+            { text: 'Table Guide', link: '/frontend/table-guide' },
+            { text: 'TableCell Authoring Cookbook', link: '/frontend/table-cell-cookbook' },
+            {
+              text: 'Table + Resource CRUD Cookbook',
+              link: '/frontend/table-resource-crud-cookbook',
+            },
+            {
+              text: 'Table Action Visibility & Permission Flow',
+              link: '/frontend/table-action-visibility-permission-flow-guide',
+            },
+            {
+              text: 'Zova Table Under the Hood',
+              link: '/frontend/zova-table-under-the-hood',
+            },
+            {
+              text: 'Zova Table Controller Render Deep Dive',
+              link: '/frontend/zova-table-controller-render-supplement',
+            },
+            {
+              text: 'Zova Table Source Reading Map',
+              link: '/frontend/zova-table-source-reading-map',
+            },
             { text: 'Component Props Guide', link: '/frontend/component-props-guide' },
             { text: 'Component v-model Guide', link: '/frontend/component-v-model-guide' },
             { text: 'Generic Component Guide', link: '/frontend/generic-component-guide' },
@@ -370,20 +462,54 @@ export default defineConfig({
             { text: 'Server Data', link: '/frontend/server-data' },
             { text: 'Fetch Interceptor Guide', link: '/frontend/fetch-interceptor-guide' },
             { text: 'API Guide', link: '/frontend/api-guide' },
+            { text: 'OpenAPI Runtime Under the Hood', link: '/frontend/a-openapi-under-the-hood' },
             { text: 'Model Architecture', link: '/frontend/model-architecture' },
-            { text: 'Model State Guide', link: '/frontend/model-state-guide' },
-            { text: 'Model Resource Owner Pattern', link: '/frontend/model-resource-owner-pattern' },
+            { text: 'Model Runtime Under the Hood', link: '/frontend/a-model-under-the-hood' },
             {
-              text: 'Using ModelResource in Your Module',
-              link: '/frontend/model-resource-usage-guide',
-            },
-            {
-              text: 'Resource Model Best Practices',
-              link: '/frontend/model-resource-best-practices',
-            },
-            {
-              text: 'Resource Model Cookbook',
-              link: '/frontend/model-resource-cookbook',
+              text: 'Resource Models & CRUD',
+              items: [
+                { text: 'Model State Guide', link: '/frontend/model-state-guide' },
+                {
+                  text: 'Model Resource Owner Pattern',
+                  link: '/frontend/model-resource-owner-pattern',
+                },
+                {
+                  text: 'Rest Resource Under the Hood',
+                  link: '/frontend/rest-resource-under-the-hood',
+                },
+                {
+                  text: 'Rest Resource Source Reading Map',
+                  link: '/frontend/rest-resource-source-reading-map',
+                },
+                {
+                  text: 'Resource Entry Page Deep Dive',
+                  link: '/frontend/resource-entry-page-deep-dive',
+                },
+                {
+                  text: 'Resource List Page Deep Dive',
+                  link: '/frontend/resource-list-page-deep-dive',
+                },
+                {
+                  text: 'ModelResource Internals Deep Dive',
+                  link: '/frontend/model-resource-internals-deep-dive',
+                },
+                {
+                  text: 'Filter to Query to Select Data Flow',
+                  link: '/frontend/filter-query-select-data-flow-guide',
+                },
+                {
+                  text: 'Using ModelResource in Your Module',
+                  link: '/frontend/model-resource-usage-guide',
+                },
+                {
+                  text: 'Resource Model Best Practices and Anti-Patterns',
+                  link: '/frontend/model-resource-best-practices',
+                },
+                {
+                  text: 'Resource Model Cookbook',
+                  link: '/frontend/model-resource-cookbook',
+                },
+              ],
             },
           ],
         },
@@ -391,6 +517,26 @@ export default defineConfig({
           text: 'API Contract & SDK',
           items: [
             { text: 'OpenAPI SDK Guide', link: '/frontend/openapi-sdk-guide' },
+            {
+              text: 'Generated Contract Consumption Specimen',
+              link: '/frontend/generated-contract-consumption-specimen',
+            },
+            {
+              text: 'Generated Contract Consumption: List Branch',
+              link: '/frontend/generated-contract-consumption-list-branch',
+            },
+            {
+              text: 'Generated Contract Consumption: Entry Branch',
+              link: '/frontend/generated-contract-consumption-entry-branch',
+            },
+            {
+              text: 'Generated Contract Consumption Verify Playbook',
+              link: '/frontend/generated-contract-consumption-verify-playbook',
+            },
+            {
+              text: 'Generated Contract Consumption Debug Checklist',
+              link: '/frontend/generated-contract-consumption-debug-checklist',
+            },
             { text: 'API Schema Guide', link: '/frontend/api-schema-guide' },
             { text: 'SDK Guide', link: '/frontend/sdk-guide' },
           ],

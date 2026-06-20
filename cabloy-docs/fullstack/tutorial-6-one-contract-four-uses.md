@@ -8,6 +8,10 @@ This capstone sits on top of both the forward chain and the reverse chain rather
 
 This time the main teaching field is `mobile`, while `level` stays as the supporting example for table and form rendering.
 
+> [!NOTE]
+> This capstone still uses the standalone `demo-student` sandbox carried through the tutorial series.
+> That keeps the final experiment path isolated while preserving a clean comparison against the repo's real suite-owned `a-training/training-student` implementation.
+
 ## Goal
 
 By the end of this tutorial, you will understand how one business field thread can participate in:

@@ -12,6 +12,8 @@ Use this page together with:
 
 - [Form Guide](/frontend/form-guide)
 - [Zova Form Under the Hood](/frontend/zova-form-under-the-hood)
+- [Rest Resource Under the Hood](/frontend/rest-resource-under-the-hood)
+- [Rest Resource Source Reading Map](/frontend/rest-resource-source-reading-map)
 - [Zova Source Reading Map](/frontend/zova-source-reading-map)
 - [Behavior Guide](/frontend/behavior-guide)
 - [API Schema Guide](/frontend/api-schema-guide)
@@ -19,6 +21,7 @@ Use this page together with:
 
 > [!TIP]
 > **Zova Form docs path**
+>
 > 1. **[Form Guide](/frontend/form-guide)** — learn the public authoring surface
 > 2. **[Zova Form Under the Hood](/frontend/zova-form-under-the-hood)** — learn how the runtime pieces cooperate
 > 3. **[Zova Form Source Reading Map](/frontend/zova-form-source-reading-map)** — learn which files to read next
@@ -36,18 +39,11 @@ The `a-form` module sits at the intersection of several Zova concerns at once:
 - behavior-based field wrapping
 - resource-driven CRUD page integration
 
-Because of that, form documentation now has three distinct layers:
+This page exists for one narrow job:
 
 - [Form Guide](/frontend/form-guide) explains how to author forms
 - [Zova Form Under the Hood](/frontend/zova-form-under-the-hood) explains how the runtime pieces cooperate
-- this page explains which files to read first for each source-reading question
-
-Because of that, source reading can become slow for one predictable reason:
-
-- you can find one relevant file such as the form controller
-- but you do not yet know the shortest accurate path to the next runtime layer
-
-This page gives a compact reading order so you can move from public surface to runtime detail without drifting.
+- this page gives the shortest file-order paths for specific form questions
 
 ## How to use this page
 
@@ -250,6 +246,8 @@ Use this path when you are asking questions like:
 - `blockForm/controller.tsx` shows how a block-level wrapper passes schema/data/provider/meta into `ZForm`
 - `lib/utils.ts` shows the canonical scene-to-form-meta translation helpers
 - `blockFilter/controller.tsx` shows the lighter-weight filter-form branch using the same form module
+
+If your next question becomes how `formScene` becomes `formMeta`, then `pageMeta`, and finally visible shell/tab state, continue with [Form Scene to Page Meta Guide](/frontend/form-scene-to-page-meta-guide).
 
 ## 8. Representative specimens to read before editing the framework
 

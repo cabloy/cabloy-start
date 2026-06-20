@@ -9,6 +9,10 @@ The teaching thread in this page is the pair of Student actions:
 - `summary/:id`
 - `deleteForce/:id`
 
+> [!NOTE]
+> This tutorial still runs inside the standalone `demo-student` sandbox from the earlier pages.
+> Use that sandbox for OpenAPI regeneration experiments so you do not interfere with the repo's real suite-owned `a-training/training-student` implementation.
+
 ## Goal
 
 By the end of this tutorial, you will understand:
@@ -135,6 +139,7 @@ npm run dev
 
 ## Read more
 
+- [Backend Metadata to Frontend Table Actions](/fullstack/backend-metadata-to-frontend-table-actions)
 - [Backend OpenAPI to Frontend SDK](/fullstack/openapi-to-sdk)
 - [OpenAPI Guide](/backend/openapi-guide)
 - [OpenAPI SDK Guide](/frontend/openapi-sdk-guide)

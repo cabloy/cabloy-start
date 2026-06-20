@@ -2,9 +2,11 @@
 
 This guide is the landing page for the router-tabs documentation set in Zova within the Cabloy monorepo.
 
-Use it to understand what the router-tabs mechanism is, which questions each companion document answers, and what order to read them in.
+Use it to understand what the router-tabs mechanism is, how it fits into the broader routed-host layer, which questions each companion document answers, and what order to read them in.
 
 ## What router tabs are
+
+Router tabs are one routed-host strategy built on top of the shared Zova router-view host layer.
 
 Router tabs provide a workbench-style navigation model for frontend layouts that need more than a simple route-transition model.
 
@@ -34,12 +36,16 @@ This document explains:
 
 Read [Router Tabs Mechanism](/frontend/router-tabs-mechanism).
 
+If your real question is whether this should be modeled as tabs at all, compare it first with [Router Tabs vs Stack](/frontend/router-tabs-vs-stack), then read [Router Stack Guide](/frontend/router-stack-guide) if the stack branch is a better fit.
+
 This document explains:
 
 - the shared state model
 - `tabKey` and `componentKey`
 - page metadata, keep-alive, cache, and pruning behavior
 - the relationship between the shared model and concrete layouts
+
+For authoring-focused page metadata usage, continue with [Page Meta Guide](/frontend/page-meta-guide).
 
 ### How should I author route meta for this?
 
@@ -64,6 +70,21 @@ This document explains:
 - how Web reuses the same model with a different shell style
 - why layout-specific UI should not be confused with shared mechanism semantics
 
+## Router ecosystem map
+
+Use this compact map when you want the shortest accurate document order for Zova routing and routed-shell behavior.
+
+| If your question is mainly about                                                            | Read this next                                                               | Then continue with                                                                                                                                                                                          |
+| ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| route records, shell/layout choice, and the public route surface                            | [Page Route Guide](/frontend/page-route-guide)                               | [Route Alias Guide](/frontend/route-alias-guide), [Navigation Guards Guide](/frontend/navigation-guards-guide)                                                                                              |
+| route registration, startup, lazy loading, and controller route-state injection             | [Zova Router Under the Hood](/frontend/zova-router-under-the-hood)           | [Router View Hosts Guide](/frontend/router-view-hosts-guide)                                                                                                                                                |
+| why one routed page behaves like an empty shell while another behaves like a workbench host | [Router View Hosts Guide](/frontend/router-view-hosts-guide)                 | this page, then [Router Tabs Mechanism](/frontend/router-tabs-mechanism)                                                                                                                                    |
+| the business meaning of router tabs                                                         | [Router Tabs Overview](/frontend/router-tabs-overview)                       | [Router Tabs Admin and Web Comparison](/frontend/router-tabs-admin-web-comparison)                                                                                                                          |
+| how the tabs model works in code                                                            | [Router Tabs Mechanism](/frontend/router-tabs-mechanism)                     | [Page Meta Guide](/frontend/page-meta-guide), [Router Tabs Layout Integration](/frontend/router-tabs-layout-integration), then [Router Tabs Route Meta Cookbook](/frontend/router-tabs-route-meta-cookbook) |
+| how the current Basic layouts turn the shared tabs model into a visible shell               | [Router Tabs Layout Integration](/frontend/router-tabs-layout-integration)   | [Router Tabs Admin and Web Comparison](/frontend/router-tabs-admin-web-comparison)                                                                                                                          |
+| how to intentionally author `tabKey`, `componentKey`, and `keepAlive`                       | [Router Tabs Route Meta Cookbook](/frontend/router-tabs-route-meta-cookbook) | [Zova Source Reading Map](/frontend/zova-source-reading-map)                                                                                                                                                |
+| which files to read first for a targeted source dive                                        | [Zova Source Reading Map](/frontend/zova-source-reading-map)                 | the branch that matches your current question                                                                                                                                                               |
+
 ## Recommended reading paths
 
 ### Product or architecture perspective
@@ -79,8 +100,9 @@ Recommended order:
 Recommended order:
 
 1. [Router Tabs Mechanism](/frontend/router-tabs-mechanism)
-2. [Router Tabs Route Meta Cookbook](/frontend/router-tabs-route-meta-cookbook)
-3. [Router Tabs Admin and Web Comparison](/frontend/router-tabs-admin-web-comparison)
+2. [Router Tabs Layout Integration](/frontend/router-tabs-layout-integration)
+3. [Router Tabs Route Meta Cookbook](/frontend/router-tabs-route-meta-cookbook)
+4. [Router Tabs Admin and Web Comparison](/frontend/router-tabs-admin-web-comparison)
 
 ### Maintenance and refactor perspective
 
@@ -100,6 +122,7 @@ For internal design boundaries, maintenance invariants, and refactor safety rule
 
 ## See also
 
+- [Router View Hosts Guide](/frontend/router-view-hosts-guide)
 - [Router Tabs Overview](/frontend/router-tabs-overview)
 - [Router Tabs Mechanism](/frontend/router-tabs-mechanism)
 - [Router Tabs Route Meta Cookbook](/frontend/router-tabs-route-meta-cookbook)

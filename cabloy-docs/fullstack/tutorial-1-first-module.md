@@ -52,6 +52,8 @@ Usage notes:
 - use `npm run vona :create:module` for the backend module boundary
 - use `npm run zova :create:module` for the frontend module boundary
 - use an empty `--suite=` when you want an independent module rather than a suite-owned module
+- this tutorial intentionally uses a standalone `demo-student` sandbox so readers can experiment without colliding with the repo's real `a-training/training-student` example
+- for the normal suite-first domain decision path, see [Suites and Modules](/fullstack/suites-and-modules)
 - rerun `npm run dev` after module creation so the local workflow picks up the new modules cleanly
 
 ## Generated or affected files
@@ -82,6 +84,7 @@ At this stage, the key idea is ownership, not business logic yet.
 - the backend module root is where the Student resource, entity, DTOs, controller, tests, and backend metadata will live later
 - the frontend module root is where generated OpenAPI output, model helpers, render resources, and frontend metadata will live later
 - the frontend `.metadata` entrypoint is part of how the module exposes its local registration surface
+- because this tutorial path is intentionally standalone, you can compare its generated result against the repo's real suite-owned `a-training/training-student` implementation without overwriting it
 
 A good beginner rule is: do not rush into editing business logic until you can explain which module roots were created and why they will own the next tutorials.
 

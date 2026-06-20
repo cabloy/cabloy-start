@@ -33,6 +33,7 @@ Use this page as the main fullstack hub, then choose the path that matches your 
 Start here when you want the shortest route to a working monorepo mental model:
 
 - [Quickstart](/fullstack/quickstart)
+- [Suites and Modules](/fullstack/suites-and-modules)
 - [CLI](/fullstack/cli)
 - [VS Code Extensions](/fullstack/vscode-extensions)
 
@@ -43,6 +44,8 @@ Use this path when the task is about how backend and frontend stay aligned insid
 - [Comparison with Other Frameworks](/fullstack/comparison-with-other-frameworks)
 - [Framework Performance](/fullstack/framework-performance)
 - [Vona + Zova Integration](/fullstack/vona-zova-integration)
+- [Contract Loop Playbook](/fullstack/contract-loop-playbook)
+- [Backend Metadata to Frontend Table Actions](/fullstack/backend-metadata-to-frontend-table-actions)
 - [Backend OpenAPI to Frontend SDK](/fullstack/openapi-to-sdk)
 - [Frontend Metadata Back to Backend](/fullstack/frontend-metadata-to-backend)
 

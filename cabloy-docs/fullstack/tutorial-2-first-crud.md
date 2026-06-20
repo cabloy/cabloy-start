@@ -27,6 +27,10 @@ Once the module exists, this is the next useful step because the prompt can driv
 
 That keeps the conversation focused on the generated business thread rather than on repetitive scaffolding details.
 
+> [!NOTE]
+> This tutorial continues the standalone `demo-student` sandbox from Tutorial 1.
+> That sandbox is intentional: it lets you run the full tutorial flow without colliding with the repo's real suite-owned `a-training/training-student` implementation.
+
 ## CLI commands to inspect/use
 
 Inspect the CRUD family first:

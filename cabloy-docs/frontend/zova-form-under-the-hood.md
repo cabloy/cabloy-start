@@ -5,6 +5,8 @@ This guide explains the source-level runtime path behind Zova Form.
 Use this page together with:
 
 - [Form Guide](/frontend/form-guide)
+- [Rest Resource Under the Hood](/frontend/rest-resource-under-the-hood)
+- [Rest Resource Source Reading Map](/frontend/rest-resource-source-reading-map)
 - [Zova Form Source Reading Map](/frontend/zova-form-source-reading-map)
 - [Zova Reactivity Under the Hood](/frontend/zova-reactivity-under-the-hood)
 - [Behavior Guide](/frontend/behavior-guide)
@@ -14,8 +16,11 @@ Use this page after [Form Guide](/frontend/form-guide) when you want to move fro
 
 If your next question is not “how does this runtime work?” but “which files should I read next?”, continue with [Zova Form Source Reading Map](/frontend/zova-form-source-reading-map).
 
+If your next question is specifically how `formScene` flows into `formMeta`, then `pageMeta`, and finally shell/tab state, continue with [Form Scene to Page Meta Guide](/frontend/form-scene-to-page-meta-guide).
+
 > [!TIP]
 > **Zova Form docs path**
+>
 > 1. **[Form Guide](/frontend/form-guide)** — learn the public authoring surface
 > 2. **[Zova Form Under the Hood](/frontend/zova-form-under-the-hood)** — learn how the runtime pieces cooperate
 > 3. **[Zova Form Source Reading Map](/frontend/zova-form-source-reading-map)** — learn which files to read next
