@@ -31,7 +31,7 @@
     "tsc:publish": "npm run clean && zova :bin:buildModule --sourcemap",
     "prepublishOnly": "npm run tsc:publish",
     "prepack": "clean-package",
-    "postpack": "clean-package restore && npm run clean"
+    "postpack": "clean-package restore"
   },
   "dependencies": {},
   "devDependencies": {
