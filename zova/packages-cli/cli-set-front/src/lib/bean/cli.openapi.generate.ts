@@ -82,8 +82,8 @@ export class CliOpenapiGenerate extends BeanCliBase {
         text: moduleName,
       });
       // generate res
-      const moduleInfo = this.helper.parseModuleInfo(moduleName);
-      const module = this.helper.findModule(moduleName);
+      const moduleInfo = this.helper.parseModuleInfoCanonical(moduleName);
+      const module = this.helper.findModuleCanonical(moduleName);
       await this._generateOpenapi(total, openapiTypescript, config, moduleInfo, module, __caches);
     }
   }

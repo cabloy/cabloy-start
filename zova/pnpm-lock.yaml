@@ -15,7 +15,7 @@ overrides:
   '@vue/server-renderer': npm:@cabloy/vue-server-renderer@^3.5.18
   '@vue/shared': 3.5.13
   vue-router: npm:@cabloy/vue-router@^4.4.16
-  zod: npm:@cabloy/zod@4.3.6
+  zod: npm:@cabloy/zod@4.3.8
 
 importers:
 
@@ -37,8 +37,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       '@cabloy/utils':
-        specifier: ^2.1.22
-        version: 2.1.22
+        specifier: ^2.1.25
+        version: 2.1.25
       '@cabloy/vue-router':
         specifier: ^4.4.16
         version: 4.4.16(vue@3.5.34(typescript@5.9.3))
@@ -118,13 +118,13 @@ importers:
         specifier: ^4.1.1
         version: 4.1.1(typescript@5.9.3)(vite-plugin-vuetify@2.1.3)(vue@3.5.34(typescript@5.9.3))
       zod:
-        specifier: npm:@cabloy/zod@4.3.6
-        version: '@cabloy/zod@4.3.6'
+        specifier: npm:@cabloy/zod@4.3.8
+        version: '@cabloy/zod@4.3.8'
       zova:
         specifier: workspace:^
         version: link:packages-zova/zova
       zova-jsx:
-        specifier: ^1.1.63
+        specifier: ^1.1.67
         version: link:packages-utils/zova-jsx
       zova-module-a-api:
         specifier: workspace:^
@@ -326,8 +326,8 @@ importers:
         version: link:src/suite/a-vuetify/modules/vuetify-adapter
     devDependencies:
       '@cabloy/cli':
-        specifier: ^3.1.18
-        version: 3.1.18(vue@3.5.34(typescript@5.9.3))
+        specifier: ^3.1.27
+        version: 3.1.27(vue@3.5.34(typescript@5.9.3))
       '@cabloy/lint':
         specifier: ^5.1.27
         version: 5.1.27(@typescript-eslint/eslint-plugin@8.59.3(@typescript-eslint/parser@8.59.3(eslint@10.4.0(jiti@2.7.0))(supports-color@10.2.2)(typescript@5.9.3))(eslint@10.4.0(jiti@2.7.0))(typescript@5.9.3))(@typescript-eslint/rule-tester@8.59.3(eslint@10.4.0(jiti@2.7.0))(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.59.3(typescript@5.9.3))(@typescript-eslint/utils@8.59.3(eslint@10.4.0(jiti@2.7.0))(typescript@5.9.3))(eslint@10.4.0(jiti@2.7.0))(oxfmt@0.45.0)(oxlint@1.65.0)(supports-color@10.2.2)(typescript@5.9.3)(vue-eslint-parser@10.4.0(eslint@10.4.0(jiti@2.7.0)))
@@ -398,8 +398,8 @@ importers:
   packages-cli/cli:
     dependencies:
       '@cabloy/cli':
-        specifier: ^3.1.18
-        version: 3.1.18(vue@3.5.34(typescript@5.9.3))
+        specifier: ^3.1.27
+        version: 3.1.27(vue@3.5.34(typescript@5.9.3))
       '@cabloy/process-helper':
         specifier: ^3.1.8
         version: 3.1.8
@@ -410,7 +410,7 @@ importers:
         specifier: ^7.6.2
         version: 7.8.0
       zova-cli-set-front:
-        specifier: ^1.2.78
+        specifier: ^1.2.92
         version: link:../cli-set-front
     devDependencies:
       clean-package:
@@ -432,8 +432,8 @@ importers:
         specifier: ^7.28.6
         version: 7.28.6(@babel/core@7.29.0)
       '@cabloy/cli':
-        specifier: ^3.1.18
-        version: 3.1.18(vue@3.5.38(typescript@5.9.3))
+        specifier: ^3.1.27
+        version: 3.1.27(vue@3.5.38(typescript@5.9.3))
       '@cabloy/extend':
         specifier: ^3.2.8
         version: 3.2.8
@@ -444,8 +444,8 @@ importers:
         specifier: ^7.9.2
         version: 7.9.2(typescript@5.9.3)
       '@cabloy/utils':
-        specifier: ^2.1.22
-        version: 2.1.22
+        specifier: ^2.1.25
+        version: 2.1.25
       '@cabloy/vite-plugin-babel':
         specifier: ^1.3.3
         version: 1.3.3(@babel/core@7.29.0)(vite@8.0.14(@types/node@22.19.19)(esbuild@0.27.7)(jiti@2.7.0)(less@4.6.4)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.47.1)(yaml@2.9.0))
@@ -519,7 +519,7 @@ importers:
         specifier: ^1.1.17
         version: link:../../packages-utils/zova-openapi
       zova-vite:
-        specifier: ^1.1.39
+        specifier: ^1.1.42
         version: link:../../packages-utils/zova-vite
     devDependencies:
       clean-package:
@@ -675,8 +675,8 @@ importers:
         specifier: ^2.1.8
         version: 2.1.8
       '@cabloy/utils':
-        specifier: ^2.1.22
-        version: 2.1.22
+        specifier: ^2.1.25
+        version: 2.1.25
       '@cabloy/word-utils':
         specifier: ^2.1.14
         version: link:../word-utils
@@ -687,7 +687,7 @@ importers:
         specifier: ^3.5.38
         version: 3.5.38(typescript@5.9.3)
       zova-core:
-        specifier: ^5.1.57
+        specifier: ^5.1.61
         version: link:../../packages-zova/zova-core
     devDependencies:
       clean-package:
@@ -728,8 +728,8 @@ importers:
         specifier: ^3.2.8
         version: 3.2.8
       '@cabloy/module-glob':
-        specifier: ^5.3.13
-        version: 5.3.13
+        specifier: ^5.3.16
+        version: 5.3.16
       '@cabloy/module-info':
         specifier: ^2.0.0
         version: 2.0.0
@@ -828,10 +828,10 @@ importers:
   packages-zova/zova:
     dependencies:
       zova-core:
-        specifier: ^5.1.57
+        specifier: ^5.1.61
         version: link:../zova-core
       zova-suite-a-zova:
-        specifier: ^5.1.103
+        specifier: ^5.1.118
         version: link:../../src/suite-vendor/a-zova
     devDependencies:
       clean-package:
@@ -862,8 +862,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       '@cabloy/utils':
-        specifier: ^2.1.22
-        version: 2.1.22
+        specifier: ^2.1.25
+        version: 2.1.25
       '@cabloy/vue-compiler-sfc':
         specifier: ^3.5.14
         version: 3.5.14
@@ -892,8 +892,8 @@ importers:
         specifier: ^1.1.9
         version: 1.1.9
       '@cabloy/zod-query':
-        specifier: ^2.1.11
-        version: 2.1.11
+        specifier: ^2.1.12
+        version: 2.1.12
       '@types/js-cookie':
         specifier: ^3.0.6
         version: 3.0.6
@@ -913,8 +913,8 @@ importers:
         specifier: ^2.0.4
         version: 2.0.4(vue@3.5.38(typescript@5.9.3))
       zod:
-        specifier: npm:@cabloy/zod@4.3.6
-        version: '@cabloy/zod@4.3.6'
+        specifier: npm:@cabloy/zod@4.3.8
+        version: '@cabloy/zod@4.3.8'
     devDependencies:
       clean-package:
         specifier: ^2.2.0
@@ -929,7 +929,7 @@ importers:
   src/suite-vendor/a-cabloy:
     dependencies:
       zova-module-rest-resource:
-        specifier: ^5.1.36
+        specifier: ^5.1.40
         version: link:modules/rest-resource
 
   src/suite-vendor/a-cabloy/modules/rest-resource:
@@ -944,79 +944,79 @@ importers:
   src/suite-vendor/a-zova:
     dependencies:
       zova-module-a-api:
-        specifier: ^5.1.18
+        specifier: ^5.1.21
         version: link:modules/a-api
       zova-module-a-app:
-        specifier: ^5.1.21
+        specifier: ^5.1.24
         version: link:modules/a-app
       zova-module-a-bean:
-        specifier: ^5.1.28
+        specifier: ^5.1.31
         version: link:modules/a-bean
       zova-module-a-behavior:
-        specifier: ^5.1.22
+        specifier: ^5.1.25
         version: link:modules/a-behavior
       zova-module-a-behaviors:
-        specifier: ^5.1.18
+        specifier: ^5.1.21
         version: link:modules/a-behaviors
       zova-module-a-boundary:
-        specifier: ^5.1.18
+        specifier: ^5.1.21
         version: link:modules/a-boundary
       zova-module-a-command:
-        specifier: ^5.1.29
+        specifier: ^5.1.33
         version: link:modules/a-command
       zova-module-a-fetch:
-        specifier: ^5.1.20
+        specifier: ^5.1.23
         version: link:modules/a-fetch
       zova-module-a-form:
-        specifier: ^5.1.35
+        specifier: ^5.1.43
         version: link:modules/a-form
       zova-module-a-icon:
-        specifier: ^5.1.23
+        specifier: ^5.1.26
         version: link:modules/a-icon
       zova-module-a-interceptor:
-        specifier: ^5.1.26
+        specifier: ^5.1.29
         version: link:modules/a-interceptor
       zova-module-a-logger:
-        specifier: ^5.1.23
+        specifier: ^5.1.26
         version: link:modules/a-logger
       zova-module-a-meta:
-        specifier: ^5.1.18
+        specifier: ^5.1.21
         version: link:modules/a-meta
       zova-module-a-model:
-        specifier: ^5.1.27
+        specifier: ^5.1.30
         version: link:modules/a-model
       zova-module-a-openapi:
-        specifier: ^5.1.34
+        specifier: ^5.1.41
         version: link:modules/a-openapi
       zova-module-a-router:
-        specifier: ^5.1.26
+        specifier: ^5.1.29
         version: link:modules/a-router
       zova-module-a-routerstack:
-        specifier: ^5.1.23
+        specifier: ^5.1.26
         version: link:modules/a-routerstack
       zova-module-a-routertabs:
-        specifier: ^5.1.29
+        specifier: ^5.1.32
         version: link:modules/a-routertabs
       zova-module-a-ssr:
-        specifier: ^5.1.23
+        specifier: ^5.1.26
         version: link:modules/a-ssr
       zova-module-a-ssrhmr:
-        specifier: ^5.1.19
+        specifier: ^5.1.22
         version: link:modules/a-ssrhmr
       zova-module-a-ssrserver:
-        specifier: ^5.1.19
+        specifier: ^5.1.22
         version: link:modules/a-ssrserver
       zova-module-a-style:
-        specifier: ^5.1.29
+        specifier: ^5.1.32
         version: link:modules/a-style
       zova-module-a-table:
-        specifier: ^5.1.32
+        specifier: ^5.1.37
         version: link:modules/a-table
       zova-module-a-zod:
-        specifier: ^5.1.30
+        specifier: ^5.1.34
         version: link:modules/a-zod
       zova-module-a-zova:
-        specifier: ^5.1.70
+        specifier: ^5.1.82
         version: link:modules/a-zova
 
   src/suite-vendor/a-zova/modules/a-api:
@@ -1183,8 +1183,8 @@ importers:
   src/suite-vendor/a-zova/modules/a-openapi:
     dependencies:
       '@cabloy/json-schema-to-zod':
-        specifier: ^2.6.4
-        version: 2.6.4
+        specifier: ^2.6.5
+        version: 2.6.5
       openapi3-ts:
         specifier: ^4.5.0
         version: 4.5.0
@@ -1312,11 +1312,11 @@ importers:
         specifier: ^1.1.9
         version: 1.1.9
       '@cabloy/zod-query':
-        specifier: ^2.1.11
-        version: 2.1.11
+        specifier: ^2.1.12
+        version: 2.1.12
       zod:
-        specifier: npm:@cabloy/zod@4.3.6
-        version: '@cabloy/zod@4.3.6'
+        specifier: npm:@cabloy/zod@4.3.8
+        version: '@cabloy/zod@4.3.8'
     devDependencies:
       clean-package:
         specifier: ^2.2.0
@@ -1340,8 +1340,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       '@cabloy/utils':
-        specifier: ^2.1.22
-        version: 2.1.22
+        specifier: ^2.1.25
+        version: 2.1.25
       '@cabloy/vue-router':
         specifier: ^4.4.16
         version: 4.4.16(vue@3.5.38(typescript@5.9.3))
@@ -1355,12 +1355,12 @@ importers:
         specifier: ^3.7.2
         version: 3.7.2
       zova-jsx:
-        specifier: ^1.1.63
+        specifier: ^1.1.67
         version: link:../../../../../packages-utils/zova-jsx
     devDependencies:
       '@cabloy/cli':
-        specifier: ^3.1.18
-        version: 3.1.18(vue@3.5.38(typescript@5.9.3))
+        specifier: ^3.1.27
+        version: 3.1.27(vue@3.5.38(typescript@5.9.3))
       '@types/luxon':
         specifier: ^3.7.1
         version: 3.7.1
@@ -2069,8 +2069,8 @@ packages:
   '@bufbuild/protobuf@2.12.0':
     resolution: {integrity: sha512-B/XlCaFIP8LOwzo+bz5uFzATYokcwCKQcghqnlfwSmM5eX/qTkvDBnDPs+gXtX/RyjxJ4DRikECcPJbyALA8FA==}
 
-  '@cabloy/cli@3.1.18':
-    resolution: {integrity: sha512-469aCSeUHKr6jbiMTtiAJBpWPegmy99Ont9ZUWzoJvLKbkk9yYDX7OKfj/E0nQAVdf2P2vz9T7WOOSjytfQdGQ==}
+  '@cabloy/cli@3.1.27':
+    resolution: {integrity: sha512-KMNKh6AbkxfgWx4+HL5ufDEInVdx11k8mIXLL55LMChA4h0dkwQ4z7CReSr4sDXs0jW2nGxgAdi7xjVzn8yZnw==}
 
   '@cabloy/compose@2.1.8':
     resolution: {integrity: sha512-TdEr9BY54BYoIlTjkrOKkzK8yJWmP07OrRTh4punJMnWzM+oDExQ2EGCGAHXnEHjLWqdhyMGm/ejmxnVgBmraQ==}
@@ -2084,8 +2084,8 @@ packages:
   '@cabloy/extend@3.2.8':
     resolution: {integrity: sha512-BrXYUtlC1kFY33hNxL/hEaS7wW8TsOuu22k0VCEtzg2iw+USkb4BqONth5Uv2pJcIlDMeWx8A8aUIRF3WQ2ckQ==}
 
-  '@cabloy/json-schema-to-zod@2.6.4':
-    resolution: {integrity: sha512-7CcifAN5S+29zqvDTvBB/QQH9vwNno8AVKG/hcZPveaiYWtbQO6e7OeYtbor5KccAZUr5j/SUoNmsXr3DYprFw==}
+  '@cabloy/json-schema-to-zod@2.6.5':
+    resolution: {integrity: sha512-y94YrwsrLw+zrISqqHstEuCDgcnfolO/rElOnSmY5I84rmnj3SW52H1pKhnsaozVAcaOEL6Tt3QWHXQKGCYRLA==}
     hasBin: true
 
   '@cabloy/json5@1.1.9':
@@ -2100,8 +2100,8 @@ packages:
   '@cabloy/localeutil@2.1.8':
     resolution: {integrity: sha512-haHUf245W2hmMrTw4UE23kOLcCPFj3XYWkjVYA643C/qhSGD7/ztMPf0VQL/AvmDnvIsjvKWdt79M4vjgOyD/A==}
 
-  '@cabloy/module-glob@5.3.13':
-    resolution: {integrity: sha512-6zqMrRYuzF0ZBatR8FBxzx8sFLvv8/lyY1IZbuIW/KHldk15A+7BwfXaCdz8c+/gmdbVp/agaFzG4ND8UUAr0g==}
+  '@cabloy/module-glob@5.3.16':
+    resolution: {integrity: sha512-+fkKjX01Fgug5i5edHRbcMyLNQSP/atWCnybhfhH/NOgpaw29JxmuUpeNuggmuT4MeDIiPpBE4UKoAGCeKIizQ==}
 
   '@cabloy/module-info@2.0.0':
     resolution: {integrity: sha512-ArN0/Ei4LH2LklWB2fy4+DVvli56A0m4mZPnKnQYoXEfkMtXChxbNDm6DZScY57lfTSyx7ZfGTgNVEbxF6VwYg==}
@@ -2155,8 +2155,8 @@ packages:
   '@cabloy/socket@2.1.9':
     resolution: {integrity: sha512-iuqHddhxlQBg/bftoFPX5iTzELYEkPfm1DLC7YJX+qUvU3rO99EilAmqimpMTVbZNOM4d1Fa2+xgdKoNVDd9cA==}
 
-  '@cabloy/utils@2.1.22':
-    resolution: {integrity: sha512-jhyuwtJ6HVTqpvW4uYP8xmg8FYAfJrbtttXNmNKHj1dJKET3GzkfU+n7Fq1sX8qMraDKfsWJj1l3o8aebBfKqQ==}
+  '@cabloy/utils@2.1.25':
+    resolution: {integrity: sha512-GA0qAqlXpgqH7mMSUP5eeO06t/FIP+FPkUay6rAMQwRnw5gXxLRgoxpgDUBrfpY8nInf7Dcr2lRfgAlrS8Istg==}
 
   '@cabloy/vite-plugin-babel@1.3.3':
     resolution: {integrity: sha512-fr4XlCREJDFi0bg3rXpm1jmvGN2M7WHGG4vCzpLmXGMzrM3X68Bk/gem16NoVSBteKH/ybm4CaNFIOy6Gqu8cg==}
@@ -2200,14 +2200,14 @@ packages:
   '@cabloy/zod-openapi@1.1.9':
     resolution: {integrity: sha512-rAZz0/OeQ2WjNGJlj8RuvI5n106VSUQQ1JrFncRPY6mme98RQThMOVPObx299yBA5QQRCR6nkl0tGMHG3q6uVg==}
 
-  '@cabloy/zod-query@2.1.11':
-    resolution: {integrity: sha512-2GCAg1t1xNjZt/5SjZf4tMTqt+CfpvWgUUcwm/yMBx1OzvOizkr3YwAy6ms81KZM/HN6y0aKoA/04jE84fzXWQ==}
+  '@cabloy/zod-query@2.1.12':
+    resolution: {integrity: sha512-6P7hEmX52bWe27lsGi+OkYSbGt7d7M1Yt4YnCDXbRilwlgZ28STbFhIHpW1gcINa020P5xWPVvAfimu8PGU3PA==}
 
   '@cabloy/zod-to-openapi@8.1.6':
     resolution: {integrity: sha512-pb9iUQuvi5SCYHevqeNBVZO65LguRDSvkHlJ6gxxOXNYQRcObwbIzxLag9/ZUj3GejAPPUNJgjb0CPaYM5s98Q==}
 
-  '@cabloy/zod@4.3.6':
-    resolution: {integrity: sha512-pbN0IZK6BT6bhRp3wGlUVi4zLF5qCm3wspxpXCtOWB8bpQSqi+VgTMb2NGw/NGhlcD83zSyjudBdObqrI+te7w==}
+  '@cabloy/zod@4.3.8':
+    resolution: {integrity: sha512-3ik9c1F0VJzQy+/YSnY8DhtDcShgDBmdx+B8j+gFcF+qa6xNK7vyMZ+EYRO2GT7BCucQkTEU/aZBmfEJZcg1Kg==}
 
   '@colors/colors@1.5.0':
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
@@ -8085,13 +8085,13 @@ snapshots:
 
   '@bufbuild/protobuf@2.12.0': {}
 
-  '@cabloy/cli@3.1.18(vue@3.5.34(typescript@5.9.3))':
+  '@cabloy/cli@3.1.27(vue@3.5.34(typescript@5.9.3))':
     dependencies:
       '@babel/parser': 7.29.3
-      '@cabloy/module-glob': 5.3.13
+      '@cabloy/module-glob': 5.3.16
       '@cabloy/module-info': 2.0.0
       '@cabloy/process-helper': 3.1.8
-      '@cabloy/utils': 2.1.22
+      '@cabloy/utils': 2.1.25
       '@cabloy/word-utils': link:packages-utils/word-utils
       '@npmcli/config': 10.9.0
       '@zhennann/common-bin': 4.0.1
@@ -8113,13 +8113,13 @@ snapshots:
       - supports-color
       - vue
 
-  '@cabloy/cli@3.1.18(vue@3.5.38(typescript@5.9.3))':
+  '@cabloy/cli@3.1.27(vue@3.5.38(typescript@5.9.3))':
     dependencies:
       '@babel/parser': 7.29.3
-      '@cabloy/module-glob': 5.3.13
+      '@cabloy/module-glob': 5.3.16
       '@cabloy/module-info': 2.0.0
       '@cabloy/process-helper': 3.1.8
-      '@cabloy/utils': 2.1.22
+      '@cabloy/utils': 2.1.25
       '@cabloy/word-utils': link:packages-utils/word-utils
       '@npmcli/config': 10.9.0
       '@zhennann/common-bin': 4.0.1
@@ -8154,7 +8154,7 @@ snapshots:
 
   '@cabloy/extend@3.2.8': {}
 
-  '@cabloy/json-schema-to-zod@2.6.4': {}
+  '@cabloy/json-schema-to-zod@2.6.5': {}
 
   '@cabloy/json5@1.1.9':
     dependencies:
@@ -8193,10 +8193,10 @@ snapshots:
 
   '@cabloy/localeutil@2.1.8': {}
 
-  '@cabloy/module-glob@5.3.13':
+  '@cabloy/module-glob@5.3.16':
     dependencies:
       '@cabloy/module-info': 2.0.0
-      '@cabloy/utils': 2.1.22
+      '@cabloy/utils': 2.1.25
       boxen: 4.2.0
       chalk: 3.0.0
       fs-extra: 11.3.5
@@ -8290,7 +8290,7 @@ snapshots:
 
   '@cabloy/socket@2.1.9': {}
 
-  '@cabloy/utils@2.1.22':
+  '@cabloy/utils@2.1.25':
     dependencies:
       '@cabloy/module-info': 2.0.0
       '@cabloy/word-utils': link:packages-utils/word-utils
@@ -8394,13 +8394,13 @@ snapshots:
     dependencies:
       '@cabloy/zod-to-openapi': 8.1.6
 
-  '@cabloy/zod-query@2.1.11': {}
+  '@cabloy/zod-query@2.1.12': {}
 
   '@cabloy/zod-to-openapi@8.1.6':
     dependencies:
       openapi3-ts: 4.5.0
 
-  '@cabloy/zod@4.3.6': {}
+  '@cabloy/zod@4.3.8': {}
 
   '@colors/colors@1.5.0':
     optional: true

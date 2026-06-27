@@ -12,12 +12,12 @@ import {
 } from 'vona-module-a-openapiutils';
 import z from 'zod';
 
-import type { BeanModelMeta } from '../bean.model/bean.model_meta.ts';
 import type { IDtoGetParams, TypeDtoGetResult } from '../../types/dto/dtoGet.ts';
 import type { TypeDtoMutateType } from '../../types/dto/dtoMutate.ts';
 import type { IModelRelationIncludeWrapper } from '../../types/model.ts';
 import type { IDecoratorModelOptions, IModelClassRecord } from '../../types/onion/model.ts';
 import type { IRelationItem } from '../../types/relationsDef.ts';
+import type { BeanModelMeta } from '../bean.model/bean.model_meta.ts';
 
 import {
   getClassEntityFromClassModel,
@@ -53,10 +53,10 @@ function _DtoGet_raw<
   // model
   const modelClass = prepareClassModel(modelLike);
   // entity
-  let entityClass = getClassEntityFromClassModel(modelClass);
+  let entityClass = params?.dtoClass ?? getClassEntityFromClassModel(modelClass);
   // columns
-  const columns = prepareColumns(params?.columns);
-  // always create a new class, no matter if columns empty
+  const columns = params?.dtoClass ? undefined : prepareColumns(params?.columns);
+  // always create a new class, no matter if columns empty: dtoClass keeps own fields
   entityClass = $Class.pick(entityClass, columns as any);
   // relations
   _DtoGet_relations(modelClass, entityClass, params as any);
@@ -83,6 +83,10 @@ function _DtoGet_relation_handle<TRecord extends {}>(
   mutateTypeTopLevel?: TypeDtoMutateType,
 ) {
   const [relationName, relationReal, includeReal, withReal, autoload] = relation;
+  if (relationReal === false) {
+    Api.field(schemaRenderVisible(false), v.optional())(entityClass.prototype, relationName);
+    return;
+  }
   const { type, model, options } = relationReal;
   const modelTarget = prepareClassModel(model);
   const optionsReal = Object.assign({}, options, { include: includeReal, with: withReal });
@@ -164,7 +168,7 @@ function _DtoGet_relation_handle_schemaLazy(
       );
     }
     // dynamic
-    const entityClass = getClassEntityFromClassModel(modelTarget);
+    const entityClass = optionsReal.dtoClass ?? getClassEntityFromClassModel(modelTarget);
     const beanFullName = appResource.getBeanFullName(entityClass);
     const _hashkey = _DtoGet_relation_handle_schemaLazy_hashkey(optionsReal, mutateTypeTopLevel);
     const dynamicName = `${beanFullName}_${_hashkey}`;

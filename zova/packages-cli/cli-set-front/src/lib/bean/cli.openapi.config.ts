@@ -35,10 +35,7 @@ export class CliOpenapiConfig extends BeanCliBase {
 
   async _generateModuleConfig(moduleName: string) {
     // check if exists
-    const _module = this.helper.findModule(moduleName);
-    if (!_module) {
-      throw new Error(`module does not exist: ${moduleName}`);
-    }
+    const _module = this.helper.findModuleCanonical(moduleName);
     // target dir
     const targetDir = await this.helper.ensureDir(_module.root);
     const configFile = path.join(targetDir, 'cli/openapi.config.ts');

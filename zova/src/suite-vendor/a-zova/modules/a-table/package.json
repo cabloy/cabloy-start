@@ -1,6 +1,6 @@
 {
   "name": "zova-module-a-table",
-  "version": "5.1.32",
+  "version": "5.1.37",
   "gitHead": "09d901d17140a80ee0764211b441cda72fd94663",
   "description": "",
   "keywords": [
@@ -76,7 +76,8 @@
         "optionsGlobalInterfaceName": "IDecoratorTableCellOptions",
         "optionsGlobalInterfaceFrom": "zova-module-a-table",
         "boilerplate": "tableCell/boilerplate",
-        "boilerplateTableActionRow": "tableActionRow/boilerplate"
+        "boilerplateTableActionRow": "tableActionRow/boilerplate",
+        "boilerplateDetailsActionRow": "detailsActionRow/boilerplate"
       }
     }
   }

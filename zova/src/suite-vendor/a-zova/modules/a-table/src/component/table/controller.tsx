@@ -11,6 +11,7 @@ import {
   CellContext,
   createColumnHelper,
   getCoreRowModel,
+  Row,
   TableOptionsWithReactiveData,
 } from '@tanstack/vue-table';
 import { SchemaObject } from 'openapi3-ts/oas31';
@@ -50,6 +51,7 @@ export interface ControllerTableProps<TData extends {} = {}> {
   tableScope?: ITableScope;
   getColumns?: TypeTableGetColumns<TData>;
   slotDefault?: (table: ControllerTable<TData>) => VNode;
+  getRowId?: (originalRow: TData, index: number, parent?: Row<TData>) => string;
 }
 
 @Controller()
@@ -85,11 +87,11 @@ export class ControllerTable<TData extends {} = {}> extends BeanControllerTableB
     this._createTable();
   }
 
-  get schema() {
+  public get schema() {
     return this.$props.schema;
   }
 
-  get data() {
+  public get data() {
     return this.$props.data;
   }
 
@@ -102,7 +104,7 @@ export class ControllerTable<TData extends {} = {}> extends BeanControllerTableB
     // eslint-disable-next-line
     const self = this;
     const tableOptions: TableOptionsWithReactiveData<TData> = {
-      getRowId: (row: TData) => cast(row).id,
+      getRowId: this.$props.getRowId ?? ((originalRow: TData) => cast(originalRow).id),
       getCoreRowModel: getCoreRowModel(),
       renderFallbackValue: this.scope.config.renderFallbackValue,
       manualPagination: true,
@@ -426,7 +428,10 @@ export class ControllerTable<TData extends {} = {}> extends BeanControllerTableB
       return this.getColumnProperty(name);
     });
     celEnv.registerFunction('getValue(string):dyn', name => {
-      return this.zovaJsx.transientObject.getValue(name);
+      return this.zovaJsx.transientObject.getValue(name) ?? null;
+    });
+    celEnv.registerFunction('getValue(string, dyn):dyn', (name, defaultValue) => {
+      return this.zovaJsx.transientObject.getValue(name) ?? defaultValue;
     });
     return celEnv;
   }

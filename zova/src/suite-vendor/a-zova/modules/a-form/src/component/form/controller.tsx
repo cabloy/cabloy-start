@@ -127,6 +127,7 @@ export class ControllerForm<
   }
 
   public async submit(submitMeta?: TSubmitMeta): Promise<boolean> {
+    if (this.formMeta?.formScene === 'view') return false;
     const [_, error] = await catchError(() => {
       return this.form.handleSubmit(submitMeta as any);
     });
@@ -172,6 +173,9 @@ export class ControllerForm<
     const celEnv = celEnvBase.clone();
     celEnv.registerFunction('getValue(string):dyn', name => {
       return this.form.getFieldValue(name) ?? null;
+    });
+    celEnv.registerFunction('getValue(string, dyn):dyn', (name, defaultValue) => {
+      return this.form.getFieldValue(name) ?? defaultValue;
     });
     celEnv.registerFunction('getProperty(string):dyn', name => {
       return this.getFieldProperty(name) ?? null;

@@ -21,10 +21,19 @@ celEnvBase.registerFunction('join(list):string', list => {
 celEnvBase.registerFunction('join(list,string):string', (list, sep) => {
   return _join(list, sep);
 });
+celEnvBase.registerFunction('sum(list):int', list => {
+  return _sum(list);
+});
 
 // string
 celEnvBase.registerFunction('string(null):string', value => {
   return String(value);
+});
+celEnvBase.registerFunction('toFixed(double,int):string', (value, precision) => {
+  return _toFixed(value, precision);
+});
+celEnvBase.registerFunction('toFixed(int,int):string', (value, precision) => {
+  return _toFixed(value, precision);
 });
 
 // operator: +
@@ -44,20 +53,20 @@ celEnvBase.registerOperator('bool == null', (b, n) => b === n);
 celEnvBase.registerFunction('get(map,string):dyn', (obj, name) => {
   return getProperty(obj, name) ?? null;
 });
-celEnvBase.registerFunction('get(map,string,string):dyn', (obj, name, sep) => {
-  return getProperty(obj, name, sep) ?? null;
+celEnvBase.registerFunction('get(map,string,dyn):dyn', (obj, name, defaultValue) => {
+  return getProperty(obj, name) ?? defaultValue;
 });
 celEnvBase.registerFunction('get(bool,string):dyn', (_obj, _name) => {
   return null;
 });
-celEnvBase.registerFunction('get(bool,string,string):dyn', (_obj, _name, _sep) => {
-  return null;
+celEnvBase.registerFunction('get(bool,string,dyn):dyn', (_obj, _name, defaultValue) => {
+  return defaultValue;
 });
 celEnvBase.registerFunction('get(null,string):dyn', (_obj, _name) => {
   return null;
 });
-celEnvBase.registerFunction('get(null,string,string):dyn', (_obj, _name, _sep) => {
-  return null;
+celEnvBase.registerFunction('get(null,string,dyn):dyn', (_obj, _name, defaultValue) => {
+  return defaultValue;
 });
 
 celEnvBase.registerFunction('exists(null,string):bool', (obj, name) => {
@@ -82,4 +91,20 @@ function _concat(...args: any[]): any[] {
 function _join(list?: [], sep?: string): string {
   if (!list) return '';
   return list.join(sep);
+}
+
+function _sum(list?: []): bigint {
+  if (!list || list.length === 0) return 0n;
+  return list.reduce((acc, item) => {
+    if (item === null || item === undefined) return acc;
+    return acc + BigInt(item as number | string | bigint);
+  }, 0n);
+}
+
+function _toFixed(value: number | bigint, precision: number | bigint): string {
+  const precisionInt = Number(precision);
+  if (typeof value === 'bigint') {
+    return precisionInt > 0 ? `${value}.${'0'.repeat(precisionInt)}` : String(value);
+  }
+  return value.toFixed(precisionInt);
 }

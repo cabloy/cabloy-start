@@ -132,7 +132,7 @@ const referenceGroups = [
   },
 ];
 
-const GA_MEASUREMENT_ID = process.env.GA_MEASUREMENT_ID;
+const GA_MEASUREMENT_ID = 'G-2NYR9RGRL4'; // process.env.GA_MEASUREMENT_ID;
 const gaHead = GA_MEASUREMENT_ID
   ? [
       [
@@ -266,6 +266,11 @@ export default defineConfig({
             { text: 'ORM Mutation Guide', link: '/backend/orm-mutation-guide' },
             { text: 'ORM Aggregate and Group Guide', link: '/backend/orm-aggregate-group-guide' },
             { text: 'Relations Guide', link: '/backend/relations-guide' },
+            { text: 'Master-Detail Workflow', link: '/backend/master-detail-workflow' },
+            {
+              text: 'Master-Detail Source Reading Map',
+              link: '/backend/master-detail-source-reading-map',
+            },
             { text: 'Transaction Guide', link: '/backend/transaction-guide' },
           ],
         },
@@ -421,6 +426,10 @@ export default defineConfig({
             {
               text: 'Form Scene to Page Meta',
               link: '/frontend/form-scene-to-page-meta-guide',
+            },
+            {
+              text: 'Schema-Driven Field Effects',
+              link: '/frontend/schema-driven-field-effects-guide',
             },
             {
               text: 'Permission, formScene, and Action Visibility',

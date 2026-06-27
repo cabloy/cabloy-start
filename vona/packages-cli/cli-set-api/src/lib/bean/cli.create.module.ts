@@ -25,12 +25,9 @@ export class CliCreateModule extends BeanCliBase {
     // suite name/info
     const suiteName = argv.suite;
     if (suiteName) {
-      argv.suiteInfo = this.helper.parseSuiteInfo(suiteName);
+      argv.suiteInfo = this.helper.parseSuiteInfoCanonical(suiteName);
       // check if exists
-      argv._suite = this.helper.findSuite(suiteName);
-      if (!argv._suite) {
-        throw new Error(`suite does not exist: ${suiteName}`);
-      }
+      argv._suite = this.helper.findSuiteCanonical(suiteName);
     }
     // nameMeta
     const nameMeta = this.helper.parseNameMeta(argv.name);
@@ -38,7 +35,7 @@ export class CliCreateModule extends BeanCliBase {
     argv.name = nameMeta.short;
     // module name/info
     const moduleName = argv.name;
-    argv.moduleInfo = this.helper.parseModuleInfo(moduleName);
+    argv.moduleInfo = this.helper.parseModuleInfoCanonical(moduleName);
     argv.relativeNameCapitalize = this.helper.stringToCapitalize(argv.moduleInfo.relativeName, '-');
     // check if exists
     const _module = this.helper.findModule(moduleName);

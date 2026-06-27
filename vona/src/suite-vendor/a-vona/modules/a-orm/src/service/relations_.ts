@@ -99,6 +99,7 @@ export class ServiceRelations extends BeanBase {
     methodOptions?: IModelMethodOptions,
   ) {
     const [relationName, relationReal, includeReal, withReal] = relation;
+    if (relationReal === false) return;
     const { type, modelMiddle, model, keyFrom, keyTo, key, options } = relationReal;
     const modelTarget = this.__getModelTarget(model, options?.meta) as BeanModelCache;
     const optionsReal = Object.assign({}, options, { include: includeReal, with: withReal });
@@ -171,6 +172,7 @@ export class ServiceRelations extends BeanBase {
     methodOptions?: IModelMethodOptions,
   ) {
     const [relationName, relationReal, includeReal, withReal] = relation;
+    if (relationReal === false) return;
     const { type, modelMiddle, model, keyFrom, keyTo, key, options } = relationReal;
     const modelTarget = this.__getModelTarget(model, options?.meta) as BeanModelCache;
     const optionsReal = Object.assign({}, options, { include: includeReal, with: withReal });
@@ -187,7 +189,7 @@ export class ServiceRelations extends BeanBase {
       }
       for (const entity of entities) {
         entity[relationName] = items.find(item => {
-          if (item[key] === cast(entity).id) {
+          if (this.__sameTableIdentity(item[key], cast(entity).id)) {
             if (!withKey) delete item[key];
             return true;
           }
@@ -199,7 +201,9 @@ export class ServiceRelations extends BeanBase {
       const options2 = deepExtend({}, methodOptionsReal, optionsReal);
       const items = await modelTarget.mget(idsTo, options2);
       for (const entity of entities) {
-        entity[relationName] = items.find(item => cast(item).id === cast(entity)[key]);
+        entity[relationName] = items.find(item =>
+          this.__sameTableIdentity(cast(item).id, cast(entity)[key]),
+        );
       }
     } else if (type === 'hasMany') {
       const idsFrom = entities.map(item => cast(item).id).filter(id => !isNil(id));
@@ -210,7 +214,7 @@ export class ServiceRelations extends BeanBase {
         for (const entity of entities) {
           entity[relationName] = [];
           for (const item of items) {
-            if (item[key] === cast(entity).id) {
+            if (this.__sameTableIdentity(item[key], cast(entity).id)) {
               delete item[key];
               entity[relationName].push(item);
             }
@@ -220,7 +224,7 @@ export class ServiceRelations extends BeanBase {
         const options2 = deepExtend({}, optionsReal, { groups: key, where: { [key]: idsFrom } });
         const items = await modelTarget.group(options2, methodOptionsReal);
         for (const entity of entities) {
-          const item = items.find(item => item[key] === cast(entity).id);
+          const item = items.find(item => this.__sameTableIdentity(item[key], cast(entity).id));
           if (item) {
             delete item[key];
           }
@@ -233,7 +237,7 @@ export class ServiceRelations extends BeanBase {
         for (const entity of entities) {
           entity[relationName] = [];
           for (const item of items) {
-            if (item[key] === cast(entity).id) {
+            if (this.__sameTableIdentity(item[key], cast(entity).id)) {
               if (!withKey) delete item[key];
               entity[relationName].push(item);
             }
@@ -258,7 +262,7 @@ export class ServiceRelations extends BeanBase {
       if (optionsReal.groups) {
         for (const entity of entities) {
           const idsTo = itemsMiddle
-            .filter(item => item[keyFrom] === cast(entity).id)
+            .filter(item => this.__sameTableIdentity(item[keyFrom], cast(entity).id))
             .map(item => item[keyTo]);
           const options2 = deepExtend({}, optionsReal, {
             groups: optionsReal.groups,
@@ -269,7 +273,7 @@ export class ServiceRelations extends BeanBase {
       } else if (optionsReal.aggrs) {
         for (const entity of entities) {
           const idsTo = itemsMiddle
-            .filter(item => item[keyFrom] === cast(entity).id)
+            .filter(item => this.__sameTableIdentity(item[keyFrom], cast(entity).id))
             .map(item => item[keyTo]);
           const options2 = deepExtend({}, optionsReal, { where: { id: idsTo } });
           entity[relationName] = await modelTarget.aggregate(options2, methodOptionsReal);
@@ -281,9 +285,11 @@ export class ServiceRelations extends BeanBase {
         for (const entity of entities) {
           entity[relationName] = [];
           for (const itemMiddle of itemsMiddle) {
-            if (itemMiddle[keyFrom] === cast(entity).id) {
+            if (this.__sameTableIdentity(itemMiddle[keyFrom], cast(entity).id)) {
               entity[relationName].push(
-                items.find(item => cast(item).id === cast(itemMiddle)[keyTo]),
+                items.find(item =>
+                  this.__sameTableIdentity(cast(item).id, cast(itemMiddle)[keyTo]),
+                ),
               );
             }
           }
@@ -299,6 +305,7 @@ export class ServiceRelations extends BeanBase {
     methodOptions?: IModelMethodOptions,
   ) {
     const [relationName, relationReal, includeReal, withReal] = relation;
+    if (relationReal === false) return entitiesResult;
     const { type, modelMiddle, model, keyFrom, keyTo, key, options } = relationReal;
     const modelTarget = this.__getModelTarget(model, options?.meta) as BeanModelCache;
     const methodOptionsReal = Object.assign({}, methodOptions, {
@@ -348,19 +355,21 @@ export class ServiceRelations extends BeanBase {
         if (entity[relationName] && entity[relationName].length > 0) {
           const entityId = cast(entity).id;
           const idsTo = entity[relationName].map(item => item.id).filter(id => !isNil(id));
-          let idsTarget;
+          let idsTargetSet: Set<string>;
           if (idsTo.length === 0) {
-            idsTarget = [];
+            idsTargetSet = new Set();
           } else {
             const itemsTarget = await cast(modelTarget).__select_raw(
               undefined,
               { where: { [key]: entityId, id: idsTo } },
               methodOptionsReal,
             );
-            idsTarget = itemsTarget.map(item => item.id);
+            idsTargetSet = new Set(
+              itemsTarget.map((item: { id: TableIdentity }) => String(item.id)),
+            );
           }
           for (const child of entity[relationName]) {
-            if (!isNil(child.id) && !idsTarget.includes(child.id)) {
+            if (!isNil(child.id) && !idsTargetSet.has(String(child.id))) {
               throw new Error(`invalid id: ${child.id}`);
             }
             children.push(Object.assign({}, child, { [key]: entityId }));
@@ -375,7 +384,7 @@ export class ServiceRelations extends BeanBase {
         if (entity[relationName]) {
           entityResult[relationName] = [];
           for (const child of children) {
-            if (child[key] === cast(entity).id) {
+            if (this.__sameTableIdentity(child[key], cast(entity).id)) {
               entityResult[relationName].push(child);
             }
           }
@@ -403,7 +412,9 @@ export class ServiceRelations extends BeanBase {
             );
           }
           for (const child of entity[relationName]) {
-            const itemMiddle = itemsMiddle.find(item => item[keyTo] === child.id);
+            const itemMiddle = itemsMiddle.find(item =>
+              this.__sameTableIdentity(item[keyTo], child.id),
+            );
             if (!itemMiddle) {
               if (!child.deleted) {
                 // add
@@ -426,7 +437,7 @@ export class ServiceRelations extends BeanBase {
         if (entity[relationName]) {
           entityResult[relationName] = [];
           for (const child of children) {
-            if (child[keyFrom] === cast(entity).id) {
+            if (this.__sameTableIdentity(child[keyFrom], cast(entity).id)) {
               entityResult[relationName].push({ id: child[keyTo] });
             }
           }
@@ -444,6 +455,7 @@ export class ServiceRelations extends BeanBase {
     methodOptions?: IModelMethodOptions,
   ) {
     const [_relationName, relationReal, includeReal, withReal] = relation;
+    if (relationReal === false) return;
     const { type, modelMiddle, model, keyFrom, key, options } = relationReal;
     const modelTarget = this.__getModelTarget(model, options?.meta) as BeanModelCache;
     const methodOptionsReal = Object.assign({}, methodOptions, {
@@ -475,6 +487,14 @@ export class ServiceRelations extends BeanBase {
     }
   }
 
+  private __sameTableIdentity(
+    id1: TableIdentity | null | undefined,
+    id2: TableIdentity | null | undefined,
+  ) {
+    if (isNil(id1) || isNil(id2)) return false;
+    return String(id1) === String(id2);
+  }
+
   private __prepareColumnsAndKey(columns: string | string[] | undefined, key: string) {
     if (!columns) return [columns, true];
     columns = Array.isArray(columns) ? columns : [columns];
@@ -494,6 +514,7 @@ export class ServiceRelations extends BeanBase {
     const refKeys: string[] = [];
     for (const relation of relations) {
       const [_relationName, relationReal] = relation;
+      if (relationReal === false) continue;
       const { type, key } = relationReal;
       if (type === 'belongsTo') {
         if (!columns.includes(key)) {
