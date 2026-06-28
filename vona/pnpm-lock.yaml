@@ -16,15 +16,354 @@ overrides:
   zod: npm:@cabloy/zod@4.3.8
 
 patchedDependencies:
-  zova-core@5.1.61: 0f4164c4d2bbb16d671beb5c26759dff37769be0709df941bc7b90b94261ac54
+  zova-core@5.1.74: 0f4164c4d2bbb16d671beb5c26759dff37769be0709df941bc7b90b94261ac54
 
 importers:
 
   .:
     dependencies:
+      '@babel/core':
+        specifier: ^7.29.0
+        version: 7.29.0
+      '@babel/traverse':
+        specifier: ^7.29.0
+        version: 7.29.0
+      '@cabloy/deps':
+        specifier: workspace:^
+        version: link:packages-utils/deps
+      '@cabloy/json5':
+        specifier: workspace:^
+        version: link:packages-utils/json5
+      '@cabloy/module-info':
+        specifier: ^2.0.0
+        version: 2.0.0
+      '@cabloy/socket':
+        specifier: workspace:^
+        version: link:packages-utils/socket
+      '@cabloy/type-fest':
+        specifier: ^5.3.1
+        version: 5.3.1
+      '@cabloy/utils':
+        specifier: workspace:^
+        version: link:packages-utils/utils
+      '@cabloy/word-utils':
+        specifier: ^2.1.8
+        version: 2.1.14
+      '@cabloy/zod-openapi':
+        specifier: workspace:^
+        version: link:packages-utils/zod-openapi
+      '@cabloy/zod-to-openapi':
+        specifier: ^8.1.6
+        version: 8.1.6
+      '@sesamecare-oss/redlock':
+        specifier: ^1.4.0
+        version: 1.4.0(ioredis@5.10.1)
+      better-sqlite3:
+        specifier: ^12.9.0
+        version: 12.10.0
+      bignumber.js:
+        specifier: ^9.3.1
+        version: 9.3.1
+      boxen:
+        specifier: ^8.0.1
+        version: 8.0.1
+      bullmq:
+        specifier: ^5.74.1
+        version: 5.76.8
+      chalk:
+        specifier: ^5.6.2
+        version: 5.6.2
+      cli-table3:
+        specifier: ^0.6.5
+        version: 0.6.5
+      fs-extra:
+        specifier: ^11.3.4
+        version: 11.3.5
+      ioredis:
+        specifier: ^5.10.1
+        version: 5.10.1
+      knex:
+        specifier: ^3.3.0
+        version: 3.3.0(better-sqlite3@12.10.0)
+      luxon:
+        specifier: ^3.7.2
+        version: 3.7.2
+      mutate-on-copy:
+        specifier: ^1.1.8
+        version: 1.1.13
+      openapi3-ts:
+        specifier: ^4.5.0
+        version: 4.5.0
+      passport-oauth2:
+        specifier: ^1.8.0
+        version: 1.8.0
+      react:
+        specifier: ^19.2.5
+        version: 19.2.6
+      retry:
+        specifier: ^0.13.1
+        version: 0.13.1
+      table-identity:
+        specifier: workspace:^
+        version: link:packages-utils/table-identity
+      typestyle:
+        specifier: ^2.4.0
+        version: 2.4.0
+      uuid:
+        specifier: ^11.1.0
+        version: 11.1.1
       vona:
         specifier: workspace:^
         version: link:packages-vona/vona
+      vona-module-a-aspect:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-aspect
+      vona-module-a-aspectutils:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-aspectutils
+      vona-module-a-auth:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-auth/modules/a-auth
+      vona-module-a-bean:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-bean
+      vona-module-a-beanmutate:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-beanmutate
+      vona-module-a-body:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-body
+      vona-module-a-broadcast:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-broadcast
+      vona-module-a-cabloy:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-cabloy/modules/a-cabloy
+      vona-module-a-cache:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-cache
+      vona-module-a-caching:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-caching
+      vona-module-a-captcha:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-captcha/modules/a-captcha
+      vona-module-a-core:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-core
+      vona-module-a-datasharding:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-cabloy/modules/a-datasharding
+      vona-module-a-datasource:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-cabloy/modules/a-datasource
+      vona-module-a-election:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-election
+      vona-module-a-error:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-error
+      vona-module-a-event:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-event
+      vona-module-a-executor:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-executor
+      vona-module-a-hmr:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-hmr
+      vona-module-a-hmrbase:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-hmrbase
+      vona-module-a-index:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-index
+      vona-module-a-instance:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-instance
+      vona-module-a-jwt:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-jwt
+      vona-module-a-locale:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-locale
+      vona-module-a-logger:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-logger
+      vona-module-a-mail:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-mail
+      vona-module-a-mailconfirm:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-mailconfirm
+      vona-module-a-menu:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-menu
+      vona-module-a-meta:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-meta
+      vona-module-a-onion:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-onion
+      vona-module-a-openapi:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-openapi
+      vona-module-a-openapischema:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-openapischema
+      vona-module-a-openapiutils:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-openapiutils
+      vona-module-a-orm:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-orm
+      vona-module-a-ormdialect:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-ormdialect
+      vona-module-a-ormutils:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-ormutils
+      vona-module-a-paypal:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-paypal/modules/a-paypal
+      vona-module-a-permission:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-permission
+      vona-module-a-play:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-play
+      vona-module-a-printtip:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-printtip
+      vona-module-a-queue:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-queue
+      vona-module-a-redis:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-redis
+      vona-module-a-redlock:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-redlock
+      vona-module-a-runtime:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-runtime
+      vona-module-a-schedule:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-schedule
+      vona-module-a-security:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-security
+      vona-module-a-serialization:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-serialization
+      vona-module-a-socket:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-cabloy/modules/a-socket
+      vona-module-a-ssr:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-cabloy/modules/a-ssr
+      vona-module-a-ssrhmr:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-cabloy/modules/a-ssrhmr
+      vona-module-a-startup:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-startup
+      vona-module-a-static:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-static
+      vona-module-a-status:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-cabloy/modules/a-status
+      vona-module-a-summer:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-summer
+      vona-module-a-swagger:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-swagger
+      vona-module-a-upload:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-upload
+      vona-module-a-user:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-user
+      vona-module-a-validation:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-validation
+      vona-module-a-version:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-version
+      vona-module-a-vona:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-vona
+      vona-module-a-web:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-web
+      vona-module-a-worker:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-worker
+      vona-module-a-zod:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-vona/modules/a-zod
+      vona-module-auth-oauth:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-auth/modules/auth-oauth
+      vona-module-auth-simple:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-auth/modules/auth-simple
+      vona-module-cabloy-store:
+        specifier: workspace:^
+        version: link:src/suite/cabloy-store/modules/cabloy-store
+      vona-module-captcha-simple:
+        specifier: workspace:^
+        version: link:src/suite-vendor/a-captcha/modules/captcha-simple
+      vona-module-demo-basic:
+        specifier: workspace:^
+        version: link:src/suite/a-demo/modules/demo-basic
+      vona-module-home-base:
+        specifier: workspace:^
+        version: link:src/suite/a-home/modules/home-base
+      vona-module-home-index:
+        specifier: workspace:^
+        version: link:src/suite/a-home/modules/home-index
+      vona-module-home-user:
+        specifier: workspace:^
+        version: link:src/suite/a-home/modules/home-user
+      vona-module-start-siteadmin:
+        specifier: workspace:^
+        version: link:src/suite/cabloy-start/modules/start-siteadmin
+      vona-module-start-siteweb:
+        specifier: workspace:^
+        version: link:src/suite/cabloy-start/modules/start-siteweb
+      vona-module-store-base:
+        specifier: workspace:^
+        version: link:src/suite/cabloy-store/modules/store-base
+      vona-module-store-github:
+        specifier: workspace:^
+        version: link:src/suite/cabloy-store/modules/store-github
+      vona-module-store-purchase:
+        specifier: workspace:^
+        version: link:src/suite/cabloy-store/modules/store-purchase
+      vona-module-store-siteadmin:
+        specifier: workspace:^
+        version: link:src/suite/cabloy-store/modules/store-siteadmin
+      vona-module-store-siteweb:
+        specifier: workspace:^
+        version: link:src/suite/cabloy-store/modules/store-siteweb
+      vona-module-store-test:
+        specifier: workspace:^
+        version: link:src/suite/cabloy-store/modules/store-test
+      vona-shared:
+        specifier: workspace:^
+        version: link:packages-vona/vona-shared
+      winston:
+        specifier: ^3.19.0
+        version: 3.19.0
+      winston-transport:
+        specifier: ^4.9.0
+        version: 4.9.0
+      zod:
+        specifier: npm:@cabloy/zod@4.3.8
+        version: '@cabloy/zod@4.3.8'
       zova-rest-cabloy-basic-admin:
         specifier: workspace:^
         version: link:.zova-rest/cabloy-basic-admin
@@ -41,15 +380,66 @@ importers:
         specifier: workspace:^
         version: link:.zova-rest/cabloy-store-web
     devDependencies:
+      '@cabloy/cli':
+        specifier: workspace:^
+        version: link:packages-cli/cabloy-cli
       '@cabloy/lint':
         specifier: workspace:^
         version: link:packages-utils/lint
+      '@swc/core':
+        specifier: ^1.15.26
+        version: 1.15.33(@swc/helpers@0.5.21)
+      '@swc/helpers':
+        specifier: ^0.5.21
+        version: 0.5.21
+      '@types/babel__core':
+        specifier: ^7.20.5
+        version: 7.20.5
+      '@types/babel__traverse':
+        specifier: ^7.28.0
+        version: 7.28.0
+      '@types/koa':
+        specifier: ^3.0.2
+        version: 3.0.2
+      '@types/luxon':
+        specifier: ^3.7.1
+        version: 3.7.1
+      '@types/node':
+        specifier: ^22.19.17
+        version: 22.19.19
+      '@types/react':
+        specifier: npm:@cabloy/types-react@^19.2.16
+        version: '@cabloy/types-react@19.2.16'
+      '@types/retry':
+        specifier: ^0.12.5
+        version: 0.12.5
+      cross-env:
+        specifier: ^7.0.3
+        version: 7.0.3
+      gogocode:
+        specifier: ^1.0.55
+        version: 1.0.55(vue@3.5.38(typescript@5.9.3))
       oxfmt:
         specifier: ^0.45.0
         version: 0.45.0
       oxlint:
         specifier: ^1.65.0
         version: 1.65.0
+      ts-node-maintained:
+        specifier: ^10.9.6
+        version: 10.9.6(@swc/core@1.15.33(@swc/helpers@0.5.21))(@types/node@22.19.19)(typescript@5.9.3)
+      tslib:
+        specifier: ^2.8.1
+        version: 2.8.1
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vona-mock:
+        specifier: workspace:^
+        version: link:packages-vona/vona-mock
+      why-is-node-running:
+        specifier: ^3.2.2
+        version: 3.2.2
 
   .zova-rest/cabloy-basic-admin:
     dependencies:
@@ -165,11 +555,11 @@ importers:
         specifier: npm:@cabloy/zod@4.3.8
         version: '@cabloy/zod@4.3.8'
       zova:
-        specifier: ^5.1.119
-        version: 5.1.119(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
+        specifier: ^5.1.126
+        version: 5.1.126(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
       zova-jsx:
-        specifier: ^1.1.67
-        version: 1.1.67(typescript@5.9.3)
+        specifier: ^1.1.74
+        version: 1.1.74(typescript@5.9.3)
       zova-module-a-api:
         specifier: ^5.1.21
         version: 5.1.21
@@ -255,11 +645,11 @@ importers:
         specifier: npm:@cabloy/zod@4.3.8
         version: '@cabloy/zod@4.3.8'
       zova:
-        specifier: ^5.1.119
-        version: 5.1.119(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
+        specifier: ^5.1.126
+        version: 5.1.126(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
       zova-jsx:
-        specifier: ^1.1.67
-        version: 1.1.67(typescript@5.9.3)
+        specifier: ^1.1.74
+        version: 1.1.74(typescript@5.9.3)
       zova-module-a-api:
         specifier: ^5.1.21
         version: 5.1.21
@@ -1003,6 +1393,9 @@ importers:
       '@cabloy/word-utils':
         specifier: ^2.1.8
         version: 2.1.9
+      zod:
+        specifier: npm:@cabloy/zod@4.3.8
+        version: '@cabloy/zod@4.3.8'
     devDependencies:
       clean-package:
         specifier: ^2.2.0
@@ -7297,14 +7690,20 @@ packages:
   zova-core@5.1.57:
     resolution: {integrity: sha512-u993tu4ijfbW9s+g4MBPAZEwHNp1Q339b/4dChCQ+5CykyFn/HXpJOtdw+1xJvlnnWE3ASe8up2BmksDEz+WVg==}
 
-  zova-core@5.1.61:
-    resolution: {integrity: sha512-NpIG/6+NzZfVNh1I+sqxP3u9mVNNdWLoeqUWBip0dcFhH/EvkEtgd89OXRl1K2PGZ5ikbLCAItQEp+yMjCm6nw==}
+  zova-core@5.1.62:
+    resolution: {integrity: sha512-U2Abh9gYBlpqUSQyiW7a+PmKp+xzYoa6Zkd3a8ri/slJV4cz3bgGvv32pKqhKZVRzxzzoEX6Pl14qpzhXOKAdQ==}
+
+  zova-core@5.1.74:
+    resolution: {integrity: sha512-1yAKdLldggor5hza8laZ5FpAtVzVdJThKb4ve+ZQSzr6VMTjRUKPAIwKlpg89pQYsTTyHm9Ask/KG+AKfnzxuQ==}
 
   zova-jsx@1.1.63:
     resolution: {integrity: sha512-kdqGSAvWZ/UPvucyHNo3Imz4trmCaQMmNTqsMapU1WuCuIjPChImHLb9z2X6qurGuyOLg1byXoqvzUADoU3x2g==}
 
-  zova-jsx@1.1.67:
-    resolution: {integrity: sha512-w7Vq46Ggxy0Tjx3vM0E9ihb6SNfSnGaTUNuTZFhdkR+xkIYb40r7EypcSsB16YE2HZ/QD91SC5oduOOCmYLj5A==}
+  zova-jsx@1.1.68:
+    resolution: {integrity: sha512-gdxunvyNJjgx3UtXTYjsqpC8FkSXxIM5RJC5KKDDMRrVNEu3t4PV53/ucW6XESD0JuErMC0ld7o8RJb/bI3/0g==}
+
+  zova-jsx@1.1.74:
+    resolution: {integrity: sha512-xTpSbMpO3DjWr90Cz5isKznApRb6HtDPZXvQ3fA9c1jsDR4zlpVgZD0fCtUrgVTuGK1hTBQbwaoxfRY8VBtHWg==}
 
   zova-module-a-api@5.1.18:
     resolution: {integrity: sha512-4G5772uYN1PP5JTZkKLyYrTpH0IK0TeQz8tzDthED2HTDEY817GmWbzHc+8pPWp4tTMWcbqYsmCPRUsK80Sr+w==}
@@ -7447,14 +7846,14 @@ packages:
   zova-module-a-zod@5.1.30:
     resolution: {integrity: sha512-jQJV9MfJiymestwfljP7hPhlJdKk4+2ysi4geJAebmZ4uxPTzLCCEnqc80Ig7hX5D6m6pIoZs4QaCwG7RwdXwA==}
 
-  zova-module-a-zod@5.1.34:
-    resolution: {integrity: sha512-CURvuDMIID7iyIG3cP6RefJ53e7fMM8TPY/hvjMxJsfCphILK3ZG8DjPN3L1fAjhR1m9OOuXmkYUwrPaoRbtUw==}
+  zova-module-a-zod@5.1.35:
+    resolution: {integrity: sha512-hCZG81WY5MPG5ozaYLMiNML4FtdCGNOJpi5drEKTP/xpsvzil66ZaOXkWj+XO/3MlkulmcBEThBx7amcHHWszg==}
 
   zova-module-a-zova@5.1.70:
     resolution: {integrity: sha512-FAGLow6iVpMxyLlVoKjeb0xcMQiheOjYVlSUI1m0Q64H8vdMovm5AJRD/79C5ETcHgkVJxgKCVl9C4xN19aTUQ==}
 
-  zova-module-a-zova@5.1.82:
-    resolution: {integrity: sha512-JDgLmu/7+oPrFLb7/zhHtl739+dhuBL/J508ObWuahiVymU7wzJEPPSmi/XaCnKB58FXpfcaoe0rMoxNsT0gmA==}
+  zova-module-a-zova@5.1.89:
+    resolution: {integrity: sha512-YSPlswGSkVEh4jEN8e+zUQ1s902jJpym+37wHrOMhOTxqzoabiQg8hy7b6iMhbUS8OduH/H9t7lZhn3BM4SJfA==}
 
   zova-module-rest-resource@5.1.36:
     resolution: {integrity: sha512-lIKtm1ZGbd9uhLglqSXRJDe5el4UVtsOSvE/qrqxib6thtDvu6vFgZMu8ZrrQ8h1KPktZ9WOiX5oD/OpoYG5gg==}
@@ -7465,14 +7864,14 @@ packages:
   zova-suite-a-zova@5.1.103:
     resolution: {integrity: sha512-8xQLu9mGdTqQlSGl/yzel+NqKpeh9jjL3nf0kphwwm15wzgEy4XjH+s9jLAAit21QekmxgUHArb3j2VmJsrnMw==}
 
-  zova-suite-a-zova@5.1.118:
-    resolution: {integrity: sha512-DhnlKOT6VG0+v60TjQNN/Qaa9v1UEsGU8jo/layFlLociG5AHUuoiCABSN4dklYcBnAVwu1EvCVQhcgnWwrPfA==}
+  zova-suite-a-zova@5.1.125:
+    resolution: {integrity: sha512-JE2gfchep6I9OTmQ43O36gbO8JtLfxiy4yCMMsifGvtfZDDuPRx6/KFtFKBIusB7Oohc6GBBGDfixANXdhGDZA==}
 
   zova@5.1.104:
     resolution: {integrity: sha512-a+Ib22pFmhO/0AtuFgZnMIdYbxH3I3ppPW14FmHg4xV7/uTofNBuE4BfOGrIuPxXUUlrSllxYUDdJfPaf/Vzmw==}
 
-  zova@5.1.119:
-    resolution: {integrity: sha512-st8Wwh4NvoNcZUvNb67XsG7GVhaMyFIK/EZ6Zfc0uqwdKtUShC6IBGHMc3u/28cIXRcpsH5REi9HL6SB8WQj/Q==}
+  zova@5.1.126:
+    resolution: {integrity: sha512-MRuKzH7rUO7jxYRqTJrjkj9GtgX/liEVyT2cBFp+O+EraHD4EQuYKf88QJzzI6w4CbfPKfgFvOfhsYnzU96pjw==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -12578,7 +12977,36 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  zova-core@5.1.61(patch_hash=0f4164c4d2bbb16d671beb5c26759dff37769be0709df941bc7b90b94261ac54)(typescript@5.9.3):
+  zova-core@5.1.62(typescript@5.9.3):
+    dependencies:
+      '@cabloy/compose': link:packages-utils/compose
+      '@cabloy/extend': link:packages-utils/extend
+      '@cabloy/json5': link:packages-utils/json5
+      '@cabloy/localeutil': link:packages-utils/localeutil
+      '@cabloy/logger': 1.1.24
+      '@cabloy/module-info': 2.0.0
+      '@cabloy/utils': link:packages-utils/utils
+      '@cabloy/vue-compiler-sfc': 3.5.14
+      '@cabloy/vue-reactivity': 3.5.16
+      '@cabloy/vue-router': 4.4.16(vue@3.5.38(typescript@5.9.3))
+      '@cabloy/vue-runtime-core': 3.5.57
+      '@cabloy/vue-runtime-dom': 3.5.13
+      '@cabloy/vue-server-renderer': 3.5.18(vue@3.5.38(typescript@5.9.3))
+      '@cabloy/word-utils': 2.1.14
+      '@cabloy/zod-errors-custom': link:packages-utils/zod-errors-custom
+      '@cabloy/zod-openapi': link:packages-utils/zod-openapi
+      '@cabloy/zod-query': link:packages-utils/zod-query
+      '@types/js-cookie': 3.0.6
+      '@vue/shared': 3.5.36
+      deep-equal: 2.2.3
+      reflect-metadata: 0.2.2
+      vue: 3.5.38(typescript@5.9.3)
+      vue-plugin-render-freeze: 2.0.4(vue@3.5.38(typescript@5.9.3))
+      zod: '@cabloy/zod@4.3.8'
+    transitivePeerDependencies:
+      - typescript
+
+  zova-core@5.1.74(patch_hash=0f4164c4d2bbb16d671beb5c26759dff37769be0709df941bc7b90b94261ac54)(typescript@5.9.3):
     dependencies:
       '@cabloy/compose': link:packages-utils/compose
       '@cabloy/extend': link:packages-utils/extend
@@ -12618,14 +13046,25 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  zova-jsx@1.1.67(typescript@5.9.3):
+  zova-jsx@1.1.68(typescript@5.9.3):
     dependencies:
       '@cabloy/compose': link:packages-utils/compose
       '@cabloy/utils': link:packages-utils/utils
       '@cabloy/word-utils': 2.1.14
       typestyle: 2.4.0
       vue: 3.5.38(typescript@5.9.3)
-      zova-core: 5.1.61(patch_hash=0f4164c4d2bbb16d671beb5c26759dff37769be0709df941bc7b90b94261ac54)(typescript@5.9.3)
+      zova-core: 5.1.62(typescript@5.9.3)
+    transitivePeerDependencies:
+      - typescript
+
+  zova-jsx@1.1.74(typescript@5.9.3):
+    dependencies:
+      '@cabloy/compose': link:packages-utils/compose
+      '@cabloy/utils': link:packages-utils/utils
+      '@cabloy/word-utils': 2.1.14
+      typestyle: 2.4.0
+      vue: 3.5.38(typescript@5.9.3)
+      zova-core: 5.1.74(patch_hash=0f4164c4d2bbb16d671beb5c26759dff37769be0709df941bc7b90b94261ac54)(typescript@5.9.3)
     transitivePeerDependencies:
       - typescript
 
@@ -12816,7 +13255,7 @@ snapshots:
       '@cabloy/zod-query': link:packages-utils/zod-query
       zod: '@cabloy/zod@4.3.8'
 
-  zova-module-a-zod@5.1.34:
+  zova-module-a-zod@5.1.35:
     dependencies:
       '@cabloy/zod-errors-custom': link:packages-utils/zod-errors-custom
       '@cabloy/zod-openapi': link:packages-utils/zod-openapi
@@ -12834,12 +13273,12 @@ snapshots:
       '@cabloy/word-utils': 2.1.14
       defu: 6.1.7
       luxon: 3.7.2
-      zova-jsx: 1.1.63(typescript@5.9.3)
+      zova-jsx: 1.1.68(typescript@5.9.3)
     transitivePeerDependencies:
       - typescript
       - vue
 
-  zova-module-a-zova@5.1.82(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3)):
+  zova-module-a-zova@5.1.89(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3)):
     dependencies:
       '@cabloy/compose': link:packages-utils/compose
       '@cabloy/deps': link:packages-utils/deps
@@ -12850,7 +13289,7 @@ snapshots:
       '@cabloy/word-utils': 2.1.14
       defu: 6.1.7
       luxon: 3.7.2
-      zova-jsx: 1.1.67(typescript@5.9.3)
+      zova-jsx: 1.1.74(typescript@5.9.3)
     transitivePeerDependencies:
       - typescript
       - vue
@@ -12893,7 +13332,7 @@ snapshots:
       - typescript
       - vue
 
-  zova-suite-a-zova@5.1.118(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3)):
+  zova-suite-a-zova@5.1.125(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3)):
     dependencies:
       zova-module-a-api: 5.1.21
       zova-module-a-app: 5.1.24
@@ -12918,8 +13357,8 @@ snapshots:
       zova-module-a-ssrserver: 5.1.22
       zova-module-a-style: 5.1.32
       zova-module-a-table: 5.1.37(vue@3.5.38(typescript@5.9.3))
-      zova-module-a-zod: 5.1.34
-      zova-module-a-zova: 5.1.82(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
+      zova-module-a-zod: 5.1.35
+      zova-module-a-zova: 5.1.89(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
     transitivePeerDependencies:
       - '@vue/composition-api'
       - debug
@@ -12938,10 +13377,10 @@ snapshots:
       - typescript
       - vue
 
-  zova@5.1.119(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3)):
+  zova@5.1.126(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3)):
     dependencies:
-      zova-core: 5.1.61(patch_hash=0f4164c4d2bbb16d671beb5c26759dff37769be0709df941bc7b90b94261ac54)(typescript@5.9.3)
-      zova-suite-a-zova: 5.1.118(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
+      zova-core: 5.1.74(patch_hash=0f4164c4d2bbb16d671beb5c26759dff37769be0709df941bc7b90b94261ac54)(typescript@5.9.3)
+      zova-suite-a-zova: 5.1.125(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
     transitivePeerDependencies:
       - '@vue/composition-api'
       - debug

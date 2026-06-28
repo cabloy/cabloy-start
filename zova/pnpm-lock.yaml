@@ -124,7 +124,7 @@ importers:
         specifier: workspace:^
         version: link:packages-zova/zova
       zova-jsx:
-        specifier: ^1.1.67
+        specifier: ^1.1.74
         version: link:packages-utils/zova-jsx
       zova-module-a-api:
         specifier: workspace:^
@@ -687,7 +687,7 @@ importers:
         specifier: ^3.5.38
         version: 3.5.38(typescript@5.9.3)
       zova-core:
-        specifier: ^5.1.61
+        specifier: ^5.1.74
         version: link:../../packages-zova/zova-core
     devDependencies:
       clean-package:
@@ -828,10 +828,10 @@ importers:
   packages-zova/zova:
     dependencies:
       zova-core:
-        specifier: ^5.1.61
+        specifier: ^5.1.74
         version: link:../zova-core
       zova-suite-a-zova:
-        specifier: ^5.1.118
+        specifier: ^5.1.125
         version: link:../../src/suite-vendor/a-zova
     devDependencies:
       clean-package:
@@ -886,8 +886,8 @@ importers:
         specifier: ^2.1.14
         version: link:../../packages-utils/word-utils
       '@cabloy/zod-errors-custom':
-        specifier: ^2.1.9
-        version: 2.1.9
+        specifier: ^2.1.10
+        version: 2.1.10
       '@cabloy/zod-openapi':
         specifier: ^1.1.9
         version: 1.1.9
@@ -1013,10 +1013,10 @@ importers:
         specifier: ^5.1.37
         version: link:modules/a-table
       zova-module-a-zod:
-        specifier: ^5.1.34
+        specifier: ^5.1.35
         version: link:modules/a-zod
       zova-module-a-zova:
-        specifier: ^5.1.82
+        specifier: ^5.1.89
         version: link:modules/a-zova
 
   src/suite-vendor/a-zova/modules/a-api:
@@ -1306,8 +1306,8 @@ importers:
   src/suite-vendor/a-zova/modules/a-zod:
     dependencies:
       '@cabloy/zod-errors-custom':
-        specifier: ^2.1.9
-        version: 2.1.9
+        specifier: ^2.1.10
+        version: 2.1.10
       '@cabloy/zod-openapi':
         specifier: ^1.1.9
         version: 1.1.9
@@ -1355,7 +1355,7 @@ importers:
         specifier: ^3.7.2
         version: 3.7.2
       zova-jsx:
-        specifier: ^1.1.67
+        specifier: ^1.1.74
         version: link:../../../../../packages-utils/zova-jsx
     devDependencies:
       '@cabloy/cli':
@@ -2194,8 +2194,8 @@ packages:
     peerDependencies:
       vue: 3.5.13
 
-  '@cabloy/zod-errors-custom@2.1.9':
-    resolution: {integrity: sha512-k30D8uyqO8vfCq6ZJBbiUpt5jliqIBFiumJneLCUyAlCChOXWNvwzaAq+c9f1JVoJguEePhAxPiGQpsksKJHpQ==}
+  '@cabloy/zod-errors-custom@2.1.10':
+    resolution: {integrity: sha512-MEyJClI621uGezvBN0RjyvFv63hW6jbalT0TZ4F9FagR3aQRE/qDYyl/o8DlD18My3l2OsoiWnLHsJfJPD99tg==}
 
   '@cabloy/zod-openapi@1.1.9':
     resolution: {integrity: sha512-rAZz0/OeQ2WjNGJlj8RuvI5n106VSUQQ1JrFncRPY6mme98RQThMOVPObx299yBA5QQRCR6nkl0tGMHG3q6uVg==}
@@ -8386,9 +8386,10 @@ snapshots:
       '@vue/shared': 3.5.13
       vue: 3.5.38(typescript@5.9.3)
 
-  '@cabloy/zod-errors-custom@2.1.9':
+  '@cabloy/zod-errors-custom@2.1.10':
     dependencies:
       '@cabloy/word-utils': link:packages-utils/word-utils
+      zod: '@cabloy/zod@4.3.8'
 
   '@cabloy/zod-openapi@1.1.9':
     dependencies:
