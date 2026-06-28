@@ -58,7 +58,14 @@ cd vona && npm run tsc
 cd vona && npm test -- <resource-test>.test.ts
 ```
 
-If web SSR also matters, add the web build and then repeat dependency sync as needed.
+If the same handoff must also be available to Web, also run:
+
+```bash
+npm run build:zova:web
+npm run deps:vona
+```
+
+Do not treat `build:rest:*` alone as sufficient, because the SSR bundle and rest output must move together.
 
 ## 4. What to verify in the result
 
@@ -82,11 +89,11 @@ Confirm:
 
 If all of these are true:
 
-- generated `.zova-rest` files already contain the new renderer keys
-- `deps:vona` was run
-- Vona still behaves as if old renderer types are installed
+- the generated `.zova-rest` artifacts already contain the new renderer keys
+- `npm run deps:vona` was run after the relevant Zova build
+- Vona still sees stale renderer types
 
-Then suspect a stale or unhealthy local installation state in `vona/node_modules`.
+Then treat it as local dependency drift and suspect a stale or unhealthy local installation state in `vona/node_modules`.
 
 Recovery action:
 
