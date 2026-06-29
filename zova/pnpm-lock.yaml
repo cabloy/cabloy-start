@@ -410,7 +410,7 @@ importers:
         specifier: ^7.6.2
         version: 7.8.0
       zova-cli-set-front:
-        specifier: ^1.2.92
+        specifier: ^1.2.94
         version: link:../cli-set-front
     devDependencies:
       clean-package:
@@ -831,7 +831,7 @@ importers:
         specifier: ^5.1.74
         version: link:../zova-core
       zova-suite-a-zova:
-        specifier: ^5.1.125
+        specifier: ^5.1.128
         version: link:../../src/suite-vendor/a-zova
     devDependencies:
       clean-package:
@@ -998,7 +998,7 @@ importers:
         specifier: ^5.1.32
         version: link:modules/a-routertabs
       zova-module-a-ssr:
-        specifier: ^5.1.26
+        specifier: ^5.1.29
         version: link:modules/a-ssr
       zova-module-a-ssrhmr:
         specifier: ^5.1.22
