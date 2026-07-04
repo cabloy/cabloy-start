@@ -93,7 +93,8 @@ export class CliBinBuild extends BeanCliBase {
     const { env, modulesMeta } = await generateVonaMeta(configMeta, configOptions);
     const outDir = path.join(projectPath, getOutDir());
     await rimraf(outDir);
-    await this._rollup(projectPath, env, outDir);
+    const { externals, allowBuilds } = await this._rollup(projectPath, env, modulesMeta, outDir);
+    await this._packageJson(projectPath, outDir, externals, allowBuilds);
     await this._assets(projectPath, modulesMeta, outDir);
     // custom
     await this._custom(projectPath, env, outDir);
@@ -120,6 +121,37 @@ export class CliBinBuild extends BeanCliBase {
       fse.removeSync(outReleasesDirCopy);
       fse.copySync(outDir, outReleasesDirCopy);
     }
+  }
+
+  async _packageJson(
+    _projectPath: string,
+    outDir: string,
+    externals: Record<string, string>,
+    allowBuilds: Record<string, boolean>,
+  ) {
+    // package.json
+    const dependencies: Record<string, string> = {};
+    for (const name of Object.keys(externals).sort()) {
+      const version = externals[name];
+      if (!version) throw new Error(`external dependency version not found: ${name}`);
+      dependencies[name] = version;
+    }
+    const pkgContent = {
+      type: 'module',
+      dependencies,
+    };
+    await fse.writeFile(
+      path.join(outDir, 'package.json'),
+      `${JSON.stringify(pkgContent, null, 2)}\n`,
+    );
+    // pnpm-workspace.yaml
+    const nativeBuildDepsAllowList = Object.keys(allowBuilds);
+    const content = [
+      'allowBuilds:',
+      ...nativeBuildDepsAllowList.map(name => `  ${name}: true`),
+      '',
+    ].join('\n');
+    await fse.writeFile(path.join(outDir, 'pnpm-workspace.yaml'), content);
   }
 
   async _custom(projectPath: string, env: NodeJS.ProcessEnv, outDir: string) {
@@ -156,7 +188,12 @@ export class CliBinBuild extends BeanCliBase {
     await rimraf(`${assetsPath}/**/.DS_Store`, { glob: true });
   }
 
-  async _rollup(projectPath: string, env: NodeJS.ProcessEnv, outDir: string) {
+  async _rollup(
+    projectPath: string,
+    env: NodeJS.ProcessEnv,
+    modulesMeta: Awaited<ReturnType<typeof glob>>,
+    outDir: string,
+  ) {
     const aliasEntries: aliasImport.Alias[] = [];
     const dialectDrivers = (process.env.BUILD_DIALECT_DRIVERS || '').split(',');
     for (const name of __dialectDriversAll) {
@@ -167,6 +204,34 @@ export class CliBinBuild extends BeanCliBase {
     const sourceMap = process.env.BUILD_SOURCEMAP === 'true';
 
     const replaceValues = generateConfigDefine(env, ['NODE_ENV', 'META_MODE', 'META_FLAVOR']);
+    for (const relativeName in modulesMeta.modules) {
+      const module = modulesMeta.modules[relativeName];
+      const replacesModule = module.package.vonaModule?.bundle?.replaces;
+      if (!replacesModule) continue;
+      for (const replaceModule of replacesModule) {
+        replaceValues[replaceModule[0]] = replaceModule[1];
+      }
+    }
+
+    const externals: Record<string, string> = {};
+    for (const relativeName in modulesMeta.modules) {
+      const module = modulesMeta.modules[relativeName];
+      const externalsModule = module.package.vonaModule?.bundle?.externals;
+      if (!externalsModule) continue;
+      for (const external of externalsModule) {
+        externals[external] = module.package.dependencies[external];
+      }
+    }
+
+    const allowBuilds: Record<string, true> = {};
+    for (const relativeName in modulesMeta.modules) {
+      const module = modulesMeta.modules[relativeName];
+      const allowBuildsModule = module.package.vonaModule?.bundle?.allowBuilds;
+      if (!allowBuildsModule) continue;
+      for (const allowBuild of allowBuildsModule) {
+        allowBuilds[allowBuild] = true;
+      }
+    }
 
     const babelPluginVonaBeanModule = getAbsolutePathOfModule('babel-plugin-vona-bean-module', '');
     const babelPluginTransformTypescriptMetadata = getAbsolutePathOfModule(
@@ -235,6 +300,7 @@ export class CliBinBuild extends BeanCliBase {
     const inputOptions: RollupOptions = {
       input: path.join(projectPath, '.vona/bootstrap.ts'),
       plugins,
+      external: Object.keys(externals),
       onLog: (level: LogLevel, log: RollupLog, defaultHandler: LogOrStringHandler) => {
         if (
           log.code === 'CIRCULAR_DEPENDENCY' &&
@@ -276,5 +342,7 @@ export class CliBinBuild extends BeanCliBase {
         await bundle.close();
       }
     }
+
+    return { externals, allowBuilds };
   }
 }

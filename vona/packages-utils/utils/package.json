@@ -1,6 +1,6 @@
 {
   "name": "@cabloy/utils",
-  "version": "2.1.25",
+  "version": "2.1.26",
   "gitHead": "a79189b882c17af5911573896a781bbb0046d37d",
   "description": "cabloy utils",
   "keywords": [
@@ -34,7 +34,7 @@
     "postpack": "clean-package restore"
   },
   "dependencies": {
-    "@cabloy/module-info": "^2.0.0",
+    "@cabloy/module-info": "^2.0.3",
     "@cabloy/word-utils": "^2.1.8",
     "@marcbachmann/cel-js": "^7.6.0",
     "object-hash": "^3.0.0"

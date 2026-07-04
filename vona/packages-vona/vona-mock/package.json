@@ -1,6 +1,6 @@
 {
   "name": "vona-mock",
-  "version": "6.1.30",
+  "version": "6.1.31",
   "gitHead": "a79189b882c17af5911573896a781bbb0046d37d",
   "description": "vona mock",
   "keywords": [
@@ -34,7 +34,7 @@
     "postpack": "clean-package restore"
   },
   "dependencies": {
-    "@cabloy/module-info": "^2.0.0",
+    "@cabloy/module-info": "^2.0.3",
     "@cabloy/module-info-pro": "workspace:^",
     "vona-core": "workspace:^"
   },
