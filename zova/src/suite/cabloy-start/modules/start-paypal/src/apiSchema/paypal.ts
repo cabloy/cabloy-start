@@ -1,10 +1,12 @@
+import type { IApiSchemaOptions } from 'zova-module-a-api';
+
 import { BeanBase } from 'zova';
-import { ApiSchema, IApiSchemaOptions } from 'zova-module-a-api';
+import { ApiSchema } from 'zova-module-a-api';
 
 import {
-  ApiApiPaypalcancelOrderPath,
-  ApiApiPaypalcaptureOrderPath,
   ApiApiPaypalgetRecordPath,
+  ApiApiPaypalcaptureOrderPath,
+  ApiApiPaypalcancelOrderPath,
 } from '../api/paypal.js';
 
 @ApiSchema()

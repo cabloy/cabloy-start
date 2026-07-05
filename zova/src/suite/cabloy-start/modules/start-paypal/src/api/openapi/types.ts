@@ -304,55 +304,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/cabloy/store/cabloyModule': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['CabloyStoreCabloyModule_select'];
-    put?: never;
-    post: operations['CabloyStoreCabloyModule_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/cabloy/store/cabloyModule/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['CabloyStoreCabloyModule_view'];
-    put?: never;
-    post?: never;
-    delete: operations['CabloyStoreCabloyModule_delete'];
-    options?: never;
-    head?: never;
-    patch: operations['CabloyStoreCabloyModule_update'];
-    trace?: never;
-  };
-  '/api/cabloy/store/cabloyModule/viewByName/{name}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['CabloyStoreCabloyModule_viewByName'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/cabloy/store/cabloyModule/stat/{id}': {
+  '/api/image/upload-token': {
     parameters: {
       query?: never;
       header?: never;
@@ -361,126 +313,14 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    post: operations['CabloyStoreCabloyModule_stat'];
+    post: operations['Image_createUploadToken'];
     delete?: never;
     options?: never;
     head?: never;
     patch?: never;
     trace?: never;
   };
-  '/api/cabloy/store/cabloyProvider': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['CabloyStoreCabloyProvider_select'];
-    put?: never;
-    post: operations['CabloyStoreCabloyProvider_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/cabloy/store/cabloyProvider/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['CabloyStoreCabloyProvider_view'];
-    put?: never;
-    post?: never;
-    delete: operations['CabloyStoreCabloyProvider_delete'];
-    options?: never;
-    head?: never;
-    patch: operations['CabloyStoreCabloyProvider_update'];
-    trace?: never;
-  };
-  '/api/store/purchaseOrder': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['StorePurchaseOrder_select'];
-    put?: never;
-    post: operations['StorePurchaseOrder_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/store/purchaseOrder/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['StorePurchaseOrder_view'];
-    put?: never;
-    post?: never;
-    delete: operations['StorePurchaseOrder_delete'];
-    options?: never;
-    head?: never;
-    patch: operations['StorePurchaseOrder_update'];
-    trace?: never;
-  };
-  '/api/store/purchaseRecord': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['StorePurchaseRecord_select'];
-    put?: never;
-    post: operations['StorePurchaseRecord_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/store/purchaseRecord/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['StorePurchaseRecord_view'];
-    put?: never;
-    post?: never;
-    delete: operations['StorePurchaseRecord_delete'];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/store/purchaseRecord/getByCurrentUser/{moduleId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['StorePurchaseRecord_getByCurrentUser'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/store/purchaseRecord/purchasePaypal': {
+  '/api/image/upload': {
     parameters: {
       query?: never;
       header?: never;
@@ -489,7 +329,55 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    post: operations['StorePurchaseRecord_purchasePaypal'];
+    post: operations['Image_upload'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/image/direct-upload': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['Image_createDirectUpload'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/image/upload-url': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['Image_uploadUrl'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/image/delivery/{imageId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['Image_delivery'];
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -544,70 +432,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/play': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: operations['Play_index'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/test/auth/passport/isAuthenticated': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['TestAuthPassport_isAuthenticated'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/test/auth/passport/current': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['TestAuthPassport_current'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/test/captcha/signin': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: operations['TestCaptcha_signin'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -633,9 +457,9 @@ export interface components {
       link?: string | undefined;
       external?: boolean | undefined;
       target?: string | undefined;
-      meta?: components['schemas']['a-menu.dto.menuItemMeta'];
+      meta?: components['schemas']['a-menu.dto.menuItemMeta_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
     };
-    'a-menu.dto.menuItemMeta':
+    'a-menu.dto.menuItemMeta_2d063d28bc7243bed02ebd8bddf1212a93c6305b':
       | {
           params?: unknown;
           query?: unknown;
@@ -655,22 +479,21 @@ export interface components {
       roleNames?: string[] | undefined;
       actions?: unknown;
     };
-    'home-user.dto.passport':
+    'home-user.dto.passport_2d063d28bc7243bed02ebd8bddf1212a93c6305b':
       | {
           user: components['schemas']['home-user.entity.user'];
           auth: components['schemas']['a-auth.dto.auth'];
           roles: components['schemas']['home-user.entity.role'][];
         }
       | undefined;
-    /** @description User */
     'home-user.entity.user': {
       /**
-       * Format: date
+       * Format: date-time
        * @description Created At
        */
       createdAt: Date;
       /**
-       * Format: date
+       * Format: date-time
        * @description Updated At
        */
       updatedAt: Date;
@@ -715,15 +538,14 @@ export interface components {
         clientName: string;
       };
     };
-    /** @description Role */
     'home-user.entity.role': {
       /**
-       * Format: date
+       * Format: date-time
        * @description Created At
        */
       createdAt: Date;
       /**
-       * Format: date
+       * Format: date-time
        * @description Updated At
        */
       updatedAt: Date;
@@ -746,6 +568,11 @@ export interface components {
       passport: components['schemas']['home-user.dto.passport'];
       jwt: components['schemas']['a-jwt.dto.jwtToken'];
     };
+    'home-user.dto.passport': {
+      user: components['schemas']['home-user.entity.user'];
+      auth: components['schemas']['a-auth.dto.auth'];
+      roles: components['schemas']['home-user.entity.role'][];
+    };
     'a-jwt.dto.jwtToken': {
       accessToken: string;
       refreshToken: string;
@@ -757,763 +584,123 @@ export interface components {
       email: string;
       password: string;
       passwordConfirm: string;
-      captcha: components['schemas']['a-captcha.dto.captchaVerify_c3cd80b1eeafe39bfe4433491bb081d68e84797e'];
+      captcha: components['schemas']['a-captcha.dto.captchaVerify_42dbf1a77dd2259bc46e709048a4a5eaa5f766ef'];
     };
-    'a-captcha.dto.captchaVerify_c3cd80b1eeafe39bfe4433491bb081d68e84797e': {
+    'a-captcha.dto.captchaVerify_42dbf1a77dd2259bc46e709048a4a5eaa5f766ef': {
       id: string;
       token: string;
     };
     'home-user.dto.login': {
       username: string;
       password: string;
-      captcha: components['schemas']['a-captcha.dto.captchaVerify_c3cd80b1eeafe39bfe4433491bb081d68e84797e_3218e7d152830e08f6e764b9e0c3796df929ee2b'];
+      captcha: components['schemas']['a-captcha.dto.captchaVerify_42dbf1a77dd2259bc46e709048a4a5eaa5f766ef_f73253d699f0fd90b98fded80a123a0a180dbca2_521117d88e78d91bd8791d711d8297e186ca1540_626802c24df1498cec99aab0854fedf90c9b6dd3_c961397f84976b27de33206aaa32153d70a77381'];
     };
-    'a-captcha.dto.captchaVerify_c3cd80b1eeafe39bfe4433491bb081d68e84797e_3218e7d152830e08f6e764b9e0c3796df929ee2b': {
+    'a-captcha.dto.captchaVerify_42dbf1a77dd2259bc46e709048a4a5eaa5f766ef_f73253d699f0fd90b98fded80a123a0a180dbca2_521117d88e78d91bd8791d711d8297e186ca1540_626802c24df1498cec99aab0854fedf90c9b6dd3_c961397f84976b27de33206aaa32153d70a77381': {
       id: string;
       token: string;
     };
-    'cabloy-store.dto.cabloyModuleCreate': {
-      /** @description Name */
-      name: string;
-      /** @description Title */
-      title: string;
-      /** @description Description */
-      description?: string | undefined;
-      /** @description Description(Chinese) */
-      descriptionZhcn?: string | undefined;
-      /** @description Version */
-      version: string;
-      /** @description Repository */
-      repoUrl?: string | undefined;
-      /** @description Demo */
-      demoUrl?: string | undefined;
-      /** @description License */
-      license: number;
-      /**
-       * @description Price
-       * @default 0
-       */
-      price?: number | undefined;
-      /** @description Provider */
-      providerId: number | string;
-      /**
-       * @description Language
-       * @default en-us
-       */
-      _locale?: string;
-      content?: components['schemas']['cabloy-store.entity.cabloyModuleContent_81badf1cb6c91a163ef245059a4656a90b23a2f0_1816ff740d81c738ec055c7038bbd93beb9405a7'];
-      _content?: unknown;
-      _contentZhcn?: unknown;
+    'a-image.dto.imageUploadTokenResponse': {
+      token: string;
+      expiresIn?: number | undefined;
     };
-    'cabloy-store.entity.cabloyModuleContent_81badf1cb6c91a163ef245059a4656a90b23a2f0_1816ff740d81c738ec055c7038bbd93beb9405a7': {
-      /** @description Content */
-      content: string;
-      /** @description Content(Chinese) */
-      contentZhcn?: string | undefined;
+    'a-image.dto.imageUploadTokenRequest': {
+      imageScene: string;
+      size: number;
+      mimeType: string;
+      expiresIn?: number | undefined;
     };
-    'cabloy-store.dto.cabloyModuleQueryRes': {
-      list: components['schemas']['cabloy-store.dto.cabloyModuleQueryResItem'][];
-      total: string;
-      pageCount: number;
-      pageSize: number;
-      pageNo: number;
-    };
-    'cabloy-store.dto.cabloyModuleQueryResItem': {
-      /**
-       * Format: date
-       * @description Created At
-       */
-      createdAt: Date;
-      /**
-       * Format: date
-       * @description Updated At
-       */
-      updatedAt: Date;
-      /**
-       * @description Deleted
-       * @default false
-       */
-      deleted?: boolean;
-      /**
-       * @description Instance ID
-       * @default 0
-       */
-      iid?: number;
-      /** @description ID */
+    'a-image.dto.imageUploadResponse': {
       id: number | string;
-      /** @description Name */
-      name: string;
-      /** @description Title */
-      title: string;
-      /** @description Description */
-      description?: string | undefined;
-      /** @description Description(Chinese) */
-      descriptionZhcn?: string | undefined;
-      /** @description Version */
-      version: string;
-      /** @description Repository */
-      repoUrl?: string | undefined;
-      /** @description Demo */
-      demoUrl?: string | undefined;
-      /** @description License */
-      license: number;
-      /**
-       * @description Price
-       * @default 0
-       */
-      price?: number | undefined;
-      /** @description Provider */
-      providerId: number | string;
-      /** @description Published */
-      published?: boolean | undefined;
-      userId?: number | string | undefined;
-      /**
-       * @description Language
-       * @default en-us
-       */
-      _locale?: string;
-      provider?: components['schemas']['cabloy-store.entity.cabloyProvider_2c7d642ee581efa300341e343180fbb0ecdc785d_1816ff740d81c738ec055c7038bbd93beb9405a7'];
+      provider: string;
+      clientName: string;
+      resourceId: string;
+      filename?: string | undefined;
+      contentType?: string | undefined;
+      size?: number | undefined;
+      width?: number | undefined;
+      height?: number | undefined;
+      requireSignedURLs?: boolean | undefined;
+      variants?:
+        | {
+            [key: string]: components['schemas']['a-image.dto.imageTransformOptions'];
+          }
+        | undefined;
+      imageScene?: string | undefined;
+      /** Format: date-time */
+      uploadedAt?: Date;
+      url?: string | undefined;
+      signed?: boolean | undefined;
     };
-    'cabloy-store.entity.cabloyProvider_2c7d642ee581efa300341e343180fbb0ecdc785d_1816ff740d81c738ec055c7038bbd93beb9405a7': {
-      /** @description ID */
+    'a-image.dto.imageTransformOptions': {
+      width?: number | undefined;
+      height?: number | undefined;
+      /** @enum {string|null} */
+      fit?: 'scale-down' | 'contain' | 'cover' | 'crop' | 'pad' | null | undefined;
+      /** @enum {string|null} */
+      gravity?: 'auto' | 'center' | 'top' | 'bottom' | 'left' | 'right' | null | undefined;
+      background?: string | undefined;
+      quality?: number | undefined;
+      /** @enum {string|null} */
+      format?: 'auto' | 'avif' | 'webp' | 'jpeg' | 'png' | null | undefined;
+      dpr?: number | undefined;
+      rotate?: number | undefined;
+      sharpen?: number | undefined;
+    };
+    'a-image.dto.imageDirectUploadResponse': {
       id: number | string;
-      /** @description Name */
-      name: string;
+      provider: string;
+      clientName: string;
+      resourceId: string;
+      uploadUrl: string;
+      draft?: boolean | undefined;
+      filename?: string | undefined;
+      imageScene?: string | undefined;
     };
-    'cabloy-store.dto.cabloyModuleView':
+    'a-image.dto.imageDirectUploadRequest': {
+      imageScene: string;
+      filename?: string | undefined;
+      size: number;
+      mimeType: string;
+      contentType?: string | undefined;
+      requireSignedURLs?: boolean | undefined;
+      expiry?: string | undefined;
+      customId?: string | undefined;
+    };
+    'a-image.dto.imageUploadUrlRequest': {
+      imageScene: string;
+      /** Format: uri */
+      url: string;
+      size: number;
+      mimeType: string;
+      filename?: string | undefined;
+      contentType?: string | undefined;
+      requireSignedURLs?: boolean | undefined;
+    };
+    'a-image.dto.imageTransformOptions_2d063d28bc7243bed02ebd8bddf1212a93c6305b':
       | {
-          /**
-           * Format: date
-           * @description Created At
-           */
-          createdAt: Date;
-          /**
-           * Format: date
-           * @description Updated At
-           */
-          updatedAt: Date;
-          /**
-           * @description Deleted
-           * @default false
-           */
-          deleted?: boolean;
-          /**
-           * @description Instance ID
-           * @default 0
-           */
-          iid?: number;
-          /** @description ID */
-          id: number | string;
-          /** @description Name */
-          name: string;
-          /** @description Title */
-          title: string;
-          /** @description Description */
-          description?: string | undefined;
-          /** @description Description(Chinese) */
-          descriptionZhcn?: string | undefined;
-          /** @description Version */
-          version: string;
-          /** @description Repository */
-          repoUrl?: string | undefined;
-          /** @description Demo */
-          demoUrl?: string | undefined;
-          /** @description License */
-          license: number;
-          /**
-           * @description Price
-           * @default 0
-           */
-          price?: number | undefined;
-          /** @description Provider */
-          providerId: number | string;
-          /** @description Published */
-          published?: boolean | undefined;
-          userId?: number | string | undefined;
-          /**
-           * @description Language
-           * @default en-us
-           */
-          _locale?: string;
-          content?: components['schemas']['cabloy-store.entity.cabloyModuleContent_1c9d53f3af6f7dcc5939f31fcb21323dc5f0c0f2_1816ff740d81c738ec055c7038bbd93beb9405a7'];
-          provider?: components['schemas']['cabloy-store.entity.cabloyProvider_2c7d642ee581efa300341e343180fbb0ecdc785d_1816ff740d81c738ec055c7038bbd93beb9405a7'];
-          _content?: unknown;
-          _contentZhcn?: unknown;
+          width?: number | undefined;
+          height?: number | undefined;
+          /** @enum {string|null} */
+          fit?: 'scale-down' | 'contain' | 'cover' | 'crop' | 'pad' | null | undefined;
+          /** @enum {string|null} */
+          gravity?: 'auto' | 'center' | 'top' | 'bottom' | 'left' | 'right' | null | undefined;
+          background?: string | undefined;
+          quality?: number | undefined;
+          /** @enum {string|null} */
+          format?: 'auto' | 'avif' | 'webp' | 'jpeg' | 'png' | null | undefined;
+          dpr?: number | undefined;
+          rotate?: number | undefined;
+          sharpen?: number | undefined;
         }
       | undefined;
-    'cabloy-store.entity.cabloyModuleContent_1c9d53f3af6f7dcc5939f31fcb21323dc5f0c0f2_1816ff740d81c738ec055c7038bbd93beb9405a7': {
-      /** @description ID */
-      id: number | string;
-      /** @description Content */
-      content: string;
-      /** @description Content(Chinese) */
-      contentZhcn?: string | undefined;
-    };
-    'cabloy-store.dto.cabloyModuleUpdate': {
-      /** @description Name */
-      name: string;
-      /** @description Title */
-      title: string;
-      /** @description Description */
-      description?: string | undefined;
-      /** @description Description(Chinese) */
-      descriptionZhcn?: string | undefined;
-      /** @description Version */
-      version: string;
-      /** @description Repository */
-      repoUrl?: string | undefined;
-      /** @description Demo */
-      demoUrl?: string | undefined;
-      /** @description License */
-      license: number;
-      /**
-       * @description Price
-       * @default 0
-       */
-      price?: number | undefined;
-      /** @description Provider */
-      providerId: number | string;
-      /**
-       * @description Language
-       * @default en-us
-       */
-      _locale?: string;
-      content?: components['schemas']['cabloy-store.entity.cabloyModuleContent_e7b4a0d4d4633f151e39304b0c3e984921d39abe_1816ff740d81c738ec055c7038bbd93beb9405a7'];
-      _content?: unknown;
-      _contentZhcn?: unknown;
-    };
-    'cabloy-store.entity.cabloyModuleContent_e7b4a0d4d4633f151e39304b0c3e984921d39abe_1816ff740d81c738ec055c7038bbd93beb9405a7': {
-      /**
-       * @description Deleted
-       * @default false
-       */
-      deleted?: boolean | undefined;
-      /** @description ID */
-      id?: number | string | undefined;
-      /** @description Content */
-      content: string;
-      /** @description Content(Chinese) */
-      contentZhcn?: string | undefined;
-    };
-    'cabloy-store.dto.cabloyModuleViewByName':
-      | {
-          /**
-           * Format: date
-           * @description Created At
-           */
-          createdAt: Date;
-          /**
-           * Format: date
-           * @description Updated At
-           */
-          updatedAt: Date;
-          /**
-           * @description Deleted
-           * @default false
-           */
-          deleted?: boolean;
-          /**
-           * @description Instance ID
-           * @default 0
-           */
-          iid?: number;
-          /** @description ID */
-          id: number | string;
-          /** @description Name */
-          name: string;
-          /** @description Title */
-          title: string;
-          /** @description Description */
-          description?: string | undefined;
-          /** @description Description(Chinese) */
-          descriptionZhcn?: string | undefined;
-          /** @description Version */
-          version: string;
-          /** @description Repository */
-          repoUrl?: string | undefined;
-          /** @description Demo */
-          demoUrl?: string | undefined;
-          /** @description License */
-          license: number;
-          /**
-           * @description Price
-           * @default 0
-           */
-          price?: number | undefined;
-          /** @description Provider */
-          providerId: number | string;
-          /** @description Published */
-          published?: boolean | undefined;
-          userId?: number | string | undefined;
-          /**
-           * @description Language
-           * @default en-us
-           */
-          _locale?: string;
-          provider?: components['schemas']['cabloy-store.entity.cabloyProvider_2c7d642ee581efa300341e343180fbb0ecdc785d_1816ff740d81c738ec055c7038bbd93beb9405a7'];
-          html?: {
-            /** @description ID */
-            id: number | string;
-            html: string;
-            htmlZhcn?: string | undefined;
-          };
-          stat?: {
-            /** @description ID */
-            id: number | string;
-            /**
-             * @description Views
-             * @default 0
-             */
-            views?: number;
-            /**
-             * @description Purchaseds
-             * @default 0
-             */
-            purchaseds?: number;
-          };
-        }
-      | undefined;
-    'cabloy-store.entity.cabloyModuleStat': {
-      /**
-       * Format: date
-       * @description Created At
-       */
-      createdAt: Date;
-      /**
-       * Format: date
-       * @description Updated At
-       */
-      updatedAt: Date;
-      /**
-       * @description Deleted
-       * @default false
-       */
-      deleted?: boolean;
-      /**
-       * @description Instance ID
-       * @default 0
-       */
-      iid?: number;
-      /** @description ID */
-      id: number | string;
-      moduleId: number | string;
-      /**
-       * @description Views
-       * @default 0
-       */
-      views?: number;
-      /**
-       * @description Purchaseds
-       * @default 0
-       */
-      purchaseds?: number;
-    };
-    'cabloy-store.dto.cabloyProviderCreate': {
-      /** @description Name */
-      name: string;
-      /** @description Description */
-      description?: string | undefined;
-      /**
-       * @description GitHub Account
-       * @default false
-       */
-      githubAccount?: boolean | undefined;
-    };
-    'cabloy-store.dto.cabloyProviderQueryRes': {
-      list: {
-        /**
-         * Format: date
-         * @description Created At
-         */
-        createdAt: Date;
-        /**
-         * Format: date
-         * @description Updated At
-         */
-        updatedAt: Date;
-        /**
-         * @description Deleted
-         * @default false
-         */
-        deleted?: boolean;
-        /**
-         * @description Instance ID
-         * @default 0
-         */
-        iid?: number;
-        /** @description ID */
-        id: number | string;
-        /** @description Name */
-        name: string;
-        /** @description Description */
-        description?: string | undefined;
-        /**
-         * @description GitHub Account
-         * @default false
-         */
-        githubAccount?: boolean | undefined;
-        userId?: number | string | undefined;
-      }[];
-      total: string;
-      pageCount: number;
-      pageSize: number;
-      pageNo: number;
-    };
-    /** @description Provider */
-    'cabloy-store.entity.cabloyProvider':
-      | {
-          /**
-           * Format: date
-           * @description Created At
-           */
-          createdAt: Date;
-          /**
-           * Format: date
-           * @description Updated At
-           */
-          updatedAt: Date;
-          /**
-           * @description Deleted
-           * @default false
-           */
-          deleted?: boolean;
-          /**
-           * @description Instance ID
-           * @default 0
-           */
-          iid?: number;
-          /** @description ID */
-          id: number | string;
-          /** @description Name */
-          name: string;
-          /** @description Description */
-          description?: string | undefined;
-          /**
-           * @description GitHub Account
-           * @default false
-           */
-          githubAccount?: boolean | undefined;
-          userId?: number | string | undefined;
-        }
-      | undefined;
-    'cabloy-store.dto.cabloyProviderUpdate': {
-      /** @description Name */
-      name: string;
-      /** @description Description */
-      description?: string | undefined;
-      /**
-       * @description GitHub Account
-       * @default false
-       */
-      githubAccount?: boolean | undefined;
-    };
-    'store-purchase.dto.purchaseOrderCreate': {
-      userId: number | string;
-      moduleId: number | string;
-      /** @description Remark */
-      remark?: string | undefined;
-      /** @description License */
-      license: number;
-      /** @description Amount */
-      amount: number;
-      /** @default 0 */
-      status?: number;
-      paypalRecordId?: number | string | undefined;
-      /** @description Gross Amount */
-      grossAmount: number;
-      /** @description Paypal Fee */
-      paypalFee: number;
-      /** @description Net Amount */
-      netAmount: number;
-    };
-    'store-purchase.dto.purchaseOrderQueryRes': {
-      list: {
-        /**
-         * Format: date
-         * @description Created At
-         */
-        createdAt: Date;
-        /**
-         * Format: date
-         * @description Updated At
-         */
-        updatedAt: Date;
-        /**
-         * @description Deleted
-         * @default false
-         */
-        deleted?: boolean;
-        /**
-         * @description Instance ID
-         * @default 0
-         */
-        iid?: number;
-        /** @description ID */
-        id: number | string;
-        userId: number | string;
-        moduleId: number | string;
-        /** @description Remark */
-        remark?: string | undefined;
-        /** @description License */
-        license: number;
-        /** @description Amount */
-        amount: number;
-        /** @default 0 */
-        status?: number;
-        paypalRecordId?: number | string | undefined;
-        /** @description Gross Amount */
-        grossAmount: number;
-        /** @description Paypal Fee */
-        paypalFee: number;
-        /** @description Net Amount */
-        netAmount: number;
-      }[];
-      total: string;
-      pageCount: number;
-      pageSize: number;
-      pageNo: number;
-    };
-    /** @description Purchase Order */
-    'store-purchase.entity.purchaseOrder':
-      | {
-          /**
-           * Format: date
-           * @description Created At
-           */
-          createdAt: Date;
-          /**
-           * Format: date
-           * @description Updated At
-           */
-          updatedAt: Date;
-          /**
-           * @description Deleted
-           * @default false
-           */
-          deleted?: boolean;
-          /**
-           * @description Instance ID
-           * @default 0
-           */
-          iid?: number;
-          /** @description ID */
-          id: number | string;
-          userId: number | string;
-          moduleId: number | string;
-          /** @description Remark */
-          remark?: string | undefined;
-          /** @description License */
-          license: number;
-          /** @description Amount */
-          amount: number;
-          /** @default 0 */
-          status?: number;
-          paypalRecordId?: number | string | undefined;
-          /** @description Gross Amount */
-          grossAmount: number;
-          /** @description Paypal Fee */
-          paypalFee: number;
-          /** @description Net Amount */
-          netAmount: number;
-        }
-      | undefined;
-    'store-purchase.dto.purchaseOrderUpdate': {
-      userId: number | string;
-      moduleId: number | string;
-      /** @description Remark */
-      remark?: string | undefined;
-      /** @description License */
-      license: number;
-      /** @description Amount */
-      amount: number;
-      /** @default 0 */
-      status?: number;
-      paypalRecordId?: number | string | undefined;
-      /** @description Gross Amount */
-      grossAmount: number;
-      /** @description Paypal Fee */
-      paypalFee: number;
-      /** @description Net Amount */
-      netAmount: number;
-    };
-    'store-purchase.dto.purchaseRecordCreate': {
-      /** @description User */
-      userId: number | string;
-      /** @description Module */
-      moduleId: number | string;
-      /**
-       * Format: date
-       * @description Last Purchase Time
-       */
-      lastPurchaseTime: Date;
-      /**
-       * Format: date
-       * @description Expiration Date
-       */
-      expirationDate?: Date;
-    };
-    'store-purchase.dto.purchaseRecordQueryRes': {
-      list: {
-        /**
-         * Format: date
-         * @description Created At
-         */
-        createdAt: Date;
-        /**
-         * Format: date
-         * @description Updated At
-         */
-        updatedAt: Date;
-        /**
-         * @description Deleted
-         * @default false
-         */
-        deleted?: boolean;
-        /**
-         * @description Instance ID
-         * @default 0
-         */
-        iid?: number;
-        /** @description ID */
-        id: number | string;
-        /** @description User */
-        userId: number | string;
-        /** @description Module */
-        moduleId: number | string;
-        /**
-         * Format: date
-         * @description Last Purchase Time
-         */
-        lastPurchaseTime: Date;
-        /**
-         * Format: date
-         * @description Expiration Date
-         */
-        expirationDate?: Date;
-        user?: components['schemas']['home-user.entity.user_2c7d642ee581efa300341e343180fbb0ecdc785d_1816ff740d81c738ec055c7038bbd93beb9405a7'];
-        module?: components['schemas']['cabloy-store.entity.cabloyModule_2c7d642ee581efa300341e343180fbb0ecdc785d_1816ff740d81c738ec055c7038bbd93beb9405a7'];
-      }[];
-      total: string;
-      pageCount: number;
-      pageSize: number;
-      pageNo: number;
-    };
-    'home-user.entity.user_2c7d642ee581efa300341e343180fbb0ecdc785d_1816ff740d81c738ec055c7038bbd93beb9405a7': {
-      /** @description ID */
-      id: number | string;
-      /** @description User Name */
-      name: string;
-    };
-    'cabloy-store.entity.cabloyModule_2c7d642ee581efa300341e343180fbb0ecdc785d_1816ff740d81c738ec055c7038bbd93beb9405a7': {
-      /** @description ID */
-      id: number | string;
-      /** @description Name */
-      name: string;
-      content?: components['schemas']['cabloy-store.entity.cabloyModuleContent_1c9d53f3af6f7dcc5939f31fcb21323dc5f0c0f2_1816ff740d81c738ec055c7038bbd93beb9405a7'];
-      provider?: components['schemas']['cabloy-store.entity.cabloyProvider_2c7d642ee581efa300341e343180fbb0ecdc785d_1816ff740d81c738ec055c7038bbd93beb9405a7'];
-    };
-    /** @description Purchase Record */
-    'store-purchase.entity.purchaseRecord':
-      | {
-          /**
-           * Format: date
-           * @description Created At
-           */
-          createdAt: Date;
-          /**
-           * Format: date
-           * @description Updated At
-           */
-          updatedAt: Date;
-          /**
-           * @description Deleted
-           * @default false
-           */
-          deleted?: boolean;
-          /**
-           * @description Instance ID
-           * @default 0
-           */
-          iid?: number;
-          /** @description ID */
-          id: number | string;
-          /** @description User */
-          userId: number | string;
-          /** @description Module */
-          moduleId: number | string;
-          /**
-           * Format: date
-           * @description Last Purchase Time
-           */
-          lastPurchaseTime: Date;
-          /**
-           * Format: date
-           * @description Expiration Date
-           */
-          expirationDate?: Date;
-        }
-      | undefined;
-    'store-purchase.dto.purchaseRecordView':
-      | {
-          /**
-           * Format: date
-           * @description Created At
-           */
-          createdAt: Date;
-          /**
-           * Format: date
-           * @description Updated At
-           */
-          updatedAt: Date;
-          /**
-           * @description Deleted
-           * @default false
-           */
-          deleted?: boolean;
-          /**
-           * @description Instance ID
-           * @default 0
-           */
-          iid?: number;
-          /** @description ID */
-          id: number | string;
-          /** @description User */
-          userId: number | string;
-          /** @description Module */
-          moduleId: number | string;
-          /**
-           * Format: date
-           * @description Last Purchase Time
-           */
-          lastPurchaseTime: Date;
-          /**
-           * Format: date
-           * @description Expiration Date
-           */
-          expirationDate?: Date;
-          user?: components['schemas']['home-user.entity.user_2c7d642ee581efa300341e343180fbb0ecdc785d_1816ff740d81c738ec055c7038bbd93beb9405a7'];
-          module?: components['schemas']['cabloy-store.entity.cabloyModule_2c7d642ee581efa300341e343180fbb0ecdc785d_1816ff740d81c738ec055c7038bbd93beb9405a7'];
-        }
-      | undefined;
-    'store-purchase.dto.purchasePaypalResBody': {
-      orderId: number | string;
-      approveUrl: string;
-    };
-    'store-purchase.dto.purchasePaypalReqBody': {
-      moduleId: number | string;
-      remark: string;
-      returnTo: string;
-      returnUrl: string;
-      cancelUrl: string;
-    };
     'a-paypal.entity.paypalRecord': {
       /**
-       * Format: date
+       * Format: date-time
        * @description Created At
        */
       createdAt: Date;
       /**
-       * Format: date
+       * Format: date-time
        * @description Updated At
        */
       updatedAt: Date;
@@ -1548,15 +735,6 @@ export interface components {
       returnTo: string;
       scene: string;
       orderId: number | string;
-    };
-    'a-play.dto.play': {
-      args: string[];
-      projectPath: string;
-    };
-    'test-captcha.dto.signin': {
-      username: string;
-      password: string;
-      captcha?: unknown;
     };
   };
   responses: never;
@@ -1852,7 +1030,7 @@ export interface operations {
           'application/json': {
             code: string;
             message: string;
-            data?: components['schemas']['home-user.dto.passport'];
+            data?: components['schemas']['home-user.dto.passport_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
           };
         };
       };
@@ -2109,102 +1287,132 @@ export interface operations {
     };
     authToken: true;
   };
-  CabloyStoreCabloyModule_select: {
+  Image_createUploadToken: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['a-image.dto.imageUploadTokenRequest'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['a-image.dto.imageUploadTokenResponse'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  Image_upload: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'multipart/form-data': {
+          token: string;
+          /** Format: binary */
+          image: Blob;
+        };
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['a-image.dto.imageUploadResponse'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  Image_createDirectUpload: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['a-image.dto.imageDirectUploadRequest'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['a-image.dto.imageDirectUploadResponse'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  Image_uploadUrl: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['a-image.dto.imageUploadUrlRequest'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['a-image.dto.imageUploadResponse'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  Image_delivery: {
     parameters: {
       query?: {
-        columns?: string[] | undefined;
-        where?:
-          | {
-              [key: string]: unknown;
-            }
-          | undefined;
-        orders?: string | string[][] | undefined;
-        pageNo?: number;
-        pageSize?: number;
-        createdAt?: string | undefined;
-        name?: string | undefined;
+        variantName?: string | undefined;
+        transformOptions?: components['schemas']['a-image.dto.imageTransformOptions_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
+        token?: string | undefined;
       };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['cabloy-store.dto.cabloyModuleQueryRes'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  CabloyStoreCabloyModule_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['cabloy-store.dto.cabloyModuleCreate'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: number | string;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  CabloyStoreCabloyModule_view: {
-    parameters: {
-      query?: never;
       header?: never;
       path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: components['schemas']['cabloy-store.dto.cabloyModuleView'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  CabloyStoreCabloyModule_delete: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
+        imageId: number | string;
       };
       cookie?: never;
     };
@@ -2219,545 +1427,6 @@ export interface operations {
             code: string;
             message: string;
             data?: unknown;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  CabloyStoreCabloyModule_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['cabloy-store.dto.cabloyModuleUpdate'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: unknown;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  CabloyStoreCabloyModule_viewByName: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        name: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: components['schemas']['cabloy-store.dto.cabloyModuleViewByName'];
-          };
-        };
-      };
-    };
-  };
-  CabloyStoreCabloyModule_stat: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: unknown;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['cabloy-store.entity.cabloyModuleStat'];
-          };
-        };
-      };
-    };
-  };
-  CabloyStoreCabloyProvider_select: {
-    parameters: {
-      query?: {
-        columns?: string[] | undefined;
-        where?:
-          | {
-              [key: string]: unknown;
-            }
-          | undefined;
-        orders?: string | string[][] | undefined;
-        pageNo?: number;
-        pageSize?: number;
-        createdAt?: string | undefined;
-        name?: string | undefined;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['cabloy-store.dto.cabloyProviderQueryRes'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  CabloyStoreCabloyProvider_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['cabloy-store.dto.cabloyProviderCreate'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: number | string;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  CabloyStoreCabloyProvider_view: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: components['schemas']['cabloy-store.entity.cabloyProvider'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  CabloyStoreCabloyProvider_delete: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: unknown;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  CabloyStoreCabloyProvider_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['cabloy-store.dto.cabloyProviderUpdate'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: unknown;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  StorePurchaseOrder_select: {
-    parameters: {
-      query?: {
-        columns?: string[] | undefined;
-        where?:
-          | {
-              [key: string]: unknown;
-            }
-          | undefined;
-        orders?: string | string[][] | undefined;
-        pageNo?: number;
-        pageSize?: number;
-        createdAt?: string | undefined;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['store-purchase.dto.purchaseOrderQueryRes'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  StorePurchaseOrder_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['store-purchase.dto.purchaseOrderCreate'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: number | string;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  StorePurchaseOrder_view: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: components['schemas']['store-purchase.entity.purchaseOrder'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  StorePurchaseOrder_delete: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: unknown;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  StorePurchaseOrder_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['store-purchase.dto.purchaseOrderUpdate'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: unknown;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  StorePurchaseRecord_select: {
-    parameters: {
-      query?: {
-        columns?: string[] | undefined;
-        where?:
-          | {
-              [key: string]: unknown;
-            }
-          | undefined;
-        orders?: string | string[][] | undefined;
-        pageNo?: number;
-        pageSize?: number;
-        createdAt?: string | undefined;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['store-purchase.dto.purchaseRecordQueryRes'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  StorePurchaseRecord_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['store-purchase.dto.purchaseRecordCreate'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: number | string;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  StorePurchaseRecord_view: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: components['schemas']['store-purchase.entity.purchaseRecord'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  StorePurchaseRecord_delete: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: unknown;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  StorePurchaseRecord_getByCurrentUser: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        moduleId: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: components['schemas']['store-purchase.dto.purchaseRecordView'];
-          };
-        };
-      };
-    };
-  };
-  StorePurchaseRecord_purchasePaypal: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['store-purchase.dto.purchasePaypalReqBody'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['store-purchase.dto.purchasePaypalResBody'];
           };
         };
       };
@@ -2841,108 +1510,5 @@ export interface operations {
       };
     };
     authToken: true;
-  };
-  Play_index: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['a-play.dto.play'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: unknown;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  TestAuthPassport_isAuthenticated: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: boolean;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  TestAuthPassport_current: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: unknown;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  TestCaptcha_signin: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['test-captcha.dto.signin'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: unknown;
-          };
-        };
-      };
-    };
   };
 }
