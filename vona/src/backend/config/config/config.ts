@@ -8,7 +8,6 @@ import {
   getLoggerPathPhysicalRoot,
   getPublicPathPhysicalRoot,
   getSqlite3DatabaseNameDefault,
-  getSqlite3NativeBinding,
 } from 'vona';
 
 declare module 'vona' {
@@ -149,9 +148,6 @@ export default async function (app: VonaApplication) {
         client: 'better-sqlite3',
         connection: {
           filename: env.DATABASE_CLIENT_SQLITE3_FILENAME || getSqlite3DatabaseNameDefault(app),
-          options: {
-            nativeBinding: getSqlite3NativeBinding(app, env.DATABASE_CLIENT_SQLITE3_NATIVEBINDING),
-          },
         },
       },
       pg: {
