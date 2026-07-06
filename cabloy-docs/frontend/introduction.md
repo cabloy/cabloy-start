@@ -41,6 +41,7 @@ Recommended starting set:
 - [Quickstart](/frontend/quickstart)
 - [Foundation](/frontend/foundation)
 - [Reading Zova for Vue Developers](/frontend/reading-zova-for-vue-developers)
+- [State Architecture for Vue Developers](/frontend/state-architecture-for-vue-developers)
 - [Frontend Source Reading Roadmap](/frontend/frontend-source-reading-roadmap)
 - [Zova Source Reading Map](/frontend/zova-source-reading-map)
 - [IoC and Beans](/frontend/ioc-and-beans)
@@ -79,6 +80,7 @@ Use this path when the task is about UI composition, component contracts, form o
 
 - [Component Guide](/frontend/component-guide)
 - [Form Guide](/frontend/form-guide)
+- [Image Guide](/frontend/image-guide)
 - [Zova Form Under the Hood](/frontend/zova-form-under-the-hood)
 - [Zova Form Source Reading Map](/frontend/zova-form-source-reading-map)
 - [Table Guide](/frontend/table-guide)
