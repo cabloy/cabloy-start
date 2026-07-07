@@ -34,19 +34,20 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
   protected render() {
     const { $$page } = this.$$renderContext;
     return (
-      <ZTable<TData>
-        class={this.$props.class}
-        controllerRef={ref => {
-          this.tableRef = ref;
-          $$page.tableRef = ref as unknown as BeanControllerTableBase<{}>;
-        }}
-        data={$$page.data as unknown as TData[]}
-        schema={$$page.schemaRow}
-        tableScope={$$page.jsxCelScope}
-        slotDefault={$$table => {
-          return this._renderTable($$table);
-        }}
-      ></ZTable>
+      <div class={this.$props.class}>
+        <ZTable<TData>
+          controllerRef={ref => {
+            this.tableRef = ref;
+            $$page.tableRef = ref as unknown as BeanControllerTableBase<{}>;
+          }}
+          data={$$page.data as unknown as TData[]}
+          schema={$$page.schemaRow}
+          tableScope={$$page.jsxCelScope}
+          slotDefault={$$table => {
+            return this._renderTable($$table);
+          }}
+        ></ZTable>
+      </div>
     );
   }
 
