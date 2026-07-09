@@ -124,7 +124,7 @@ importers:
         specifier: workspace:^
         version: link:packages-zova/zova
       zova-jsx:
-        specifier: ^1.1.76
+        specifier: ^1.1.77
         version: link:packages-utils/zova-jsx
       zova-module-a-api:
         specifier: workspace:^
@@ -687,7 +687,7 @@ importers:
         specifier: ^3.5.38
         version: 3.5.38(typescript@5.9.3)
       zova-core:
-        specifier: ^5.1.76
+        specifier: ^5.1.77
         version: link:../../packages-zova/zova-core
     devDependencies:
       clean-package:
@@ -828,10 +828,10 @@ importers:
   packages-zova/zova:
     dependencies:
       zova-core:
-        specifier: ^5.1.76
+        specifier: ^5.1.77
         version: link:../zova-core
       zova-suite-a-zova:
-        specifier: ^5.1.130
+        specifier: ^5.1.131
         version: link:../../src/suite-vendor/a-zova
     devDependencies:
       clean-package:
@@ -929,7 +929,7 @@ importers:
   src/suite-vendor/a-cabloy:
     dependencies:
       zova-module-rest-resource:
-        specifier: ^5.1.40
+        specifier: ^5.1.41
         version: link:modules/rest-resource
 
   src/suite-vendor/a-cabloy/modules/rest-resource:
@@ -983,10 +983,10 @@ importers:
         specifier: ^5.1.21
         version: link:modules/a-meta
       zova-module-a-model:
-        specifier: ^5.1.30
+        specifier: ^5.1.31
         version: link:modules/a-model
       zova-module-a-openapi:
-        specifier: ^5.1.42
+        specifier: ^5.1.43
         version: link:modules/a-openapi
       zova-module-a-router:
         specifier: ^5.1.29
@@ -1016,7 +1016,7 @@ importers:
         specifier: ^5.1.36
         version: link:modules/a-zod
       zova-module-a-zova:
-        specifier: ^5.1.91
+        specifier: ^5.1.92
         version: link:modules/a-zova
 
   src/suite-vendor/a-zova/modules/a-api:
@@ -1355,7 +1355,7 @@ importers:
         specifier: ^3.7.2
         version: 3.7.2
       zova-jsx:
-        specifier: ^1.1.76
+        specifier: ^1.1.77
         version: link:../../../../../packages-utils/zova-jsx
     devDependencies:
       '@cabloy/cli':

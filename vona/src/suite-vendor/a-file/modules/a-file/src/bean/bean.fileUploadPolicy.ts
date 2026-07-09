@@ -125,6 +125,34 @@ export class BeanFileUploadPolicy extends BeanBase {
     };
   }
 
+  async resolveSceneUploadPolicy(data: { fileScene: keyof IFileSceneRecord }) {
+    const fileConfig = this.scope.config.file;
+    const fileScene = data.fileScene;
+    const sceneOptions = this._getSceneOptions(fileScene);
+    const { providerName, clientName } = await this._resolveProvider(sceneOptions);
+    const providerContext = await this.bean.fileProvider.getClientOptions({
+      providerName,
+      clientName,
+    });
+    if (!providerContext.entityFileProvider || providerContext.disabled) {
+      return this.app.throw(403, `File provider unavailable: ${providerName}.${clientName}`);
+    }
+    const uploadOptions = {
+      ...(fileConfig.upload ?? {}),
+      ...(sceneOptions.upload ?? {}),
+    };
+    const mimeTypes = [...(uploadOptions.mimeTypes ?? [])];
+    const extensions = [...(uploadOptions.extensions ?? [])];
+    return {
+      fileScene,
+      maxSize: uploadOptions.maxSize,
+      mimeTypes: mimeTypes.length > 0 ? mimeTypes : undefined,
+      extensions: extensions.length > 0 ? extensions : undefined,
+      multiple: uploadOptions.multiple,
+      public: this._resolvePublic(providerContext.clientOptions, sceneOptions),
+    };
+  }
+
   async resolveUploadPolicy(data: {
     fileScene: keyof IFileSceneRecord;
     size: number;
