@@ -1,7 +1,7 @@
 import { provide, ref } from 'vue';
 import { BeanControllerBase, Use, UseScope } from 'zova';
 import { Controller } from 'zova-module-a-bean';
-import { $QueryAutoLoad } from 'zova-module-a-model';
+import { $QueryEnsureLoaded } from 'zova-module-a-model';
 import { ModelTabs, ModelTabsOptions, RouteTabInitial } from 'zova-module-a-routertabs';
 import { ScopeModuleASsr } from 'zova-module-a-ssr';
 import { IServiceSsrLayoutOptions, ServiceLocale, ServiceSsrLayout } from 'zova-module-home-base';
@@ -72,7 +72,7 @@ export class ControllerLayoutWeb extends BeanControllerBase {
     // layoutConfig
     this.__initLayoutConfig();
     // menu
-    await $QueryAutoLoad(() => this.$$modelMenu.retrieveMenus());
+    await $QueryEnsureLoaded(() => this.$$modelMenu.retrieveMenus());
     // tabs
     await this._initTabs();
   }
