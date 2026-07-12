@@ -831,7 +831,7 @@ importers:
         specifier: ^5.1.77
         version: link:../zova-core
       zova-suite-a-zova:
-        specifier: ^5.1.131
+        specifier: ^5.1.132
         version: link:../../src/suite-vendor/a-zova
     devDependencies:
       clean-package:
@@ -983,7 +983,7 @@ importers:
         specifier: ^5.1.21
         version: link:modules/a-meta
       zova-module-a-model:
-        specifier: ^5.1.31
+        specifier: ^5.1.32
         version: link:modules/a-model
       zova-module-a-openapi:
         specifier: ^5.1.43
