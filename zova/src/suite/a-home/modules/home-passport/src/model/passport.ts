@@ -9,7 +9,7 @@ import type {
 
 import { combineQueries, isNil } from '@cabloy/utils';
 import { SchemaObject } from 'openapi3-ts/oas31';
-import { BeanModelBase, Model } from 'zova-module-a-model';
+import { $QueryEnsureFresh, $QueryGetFresh, BeanModelBase, Model } from 'zova-module-a-model';
 import {
   IPermissionHintGeneral,
   IResourceFormActionRowNameRecord,
@@ -81,6 +81,41 @@ export class ModelPassport extends BeanModelBase {
     });
   }
 
+  getTempAuthToken(options: { path?: string; staleTime: number }) {
+    if (!process.env.CLIENT || !this.isAuthenticated) return;
+    return this.$useStateData({
+      queryKey: ['tempAuthToken', options.path],
+      queryFn: async () => {
+        return await this.$api.homeUserPassport.createTempAuthToken(undefined, {
+          query: { path: options.path },
+        });
+      },
+      staleTime: options.staleTime,
+      meta: {
+        disableSuspenseOnInit: true,
+        persister: false,
+        ssr: { dehydrate: false },
+      },
+    });
+  }
+
+  getFreshTempAuthToken(options: { path?: string; staleTime: number }): string | undefined {
+    return $QueryGetFresh(
+      () => this.getTempAuthToken(options),
+      query => this._isTempAuthTokenExpired(query.data, query.dataUpdatedAt, options.staleTime),
+    );
+  }
+
+  async ensureFreshTempAuthToken(options: {
+    path?: string;
+    staleTime: number;
+  }): Promise<string | undefined> {
+    return await $QueryEnsureFresh(
+      () => this.getTempAuthToken(options),
+      query => this._isTempAuthTokenExpired(query.data, query.dataUpdatedAt, options.staleTime),
+    );
+  }
+
   getOauthLoginUrl(module: string, providerName: string, clientName?: string): string {
     const apiPath = this.sys.util.apiActionPathTranslate(ApiApiHomeUserPassportloginOauthPath, {
       module,
@@ -113,7 +148,7 @@ export class ModelPassport extends BeanModelBase {
         this._setPassportJwt();
         // page: login
         await this.app.$gotoLogin();
-        // clear: should after goto login page, avoid home-layout use some cache data
+        // clear: should after goto login page, avoid home-layoutadmin use some cache data
         this.$clear(); // not await
       },
     });
@@ -162,6 +197,14 @@ export class ModelPassport extends BeanModelBase {
       this._setLocaleTz();
     }
     return this.passport;
+  }
+
+  private _isTempAuthTokenExpired(
+    token: string | undefined,
+    dataUpdatedAt: number,
+    staleTime: number,
+  ) {
+    return token === undefined || dataUpdatedAt + staleTime <= Date.now();
   }
 
   private _setLocaleTz() {
