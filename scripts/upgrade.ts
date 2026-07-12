@@ -47,6 +47,14 @@ const OVERWRITE_DIRS: string[] = [
   'zova/scripts',
 ];
 
+const OVERWRITE_DIRS_CABLOY_BASIC: string[] = [
+  'vona/src/suite/cabloy-basic',
+  'vona/src/suite/a-training',
+  'zova/src/suite/cabloy-basic',
+  'zova/src/suite/a-training',
+  'zova/src/suite/a-devui',
+];
+
 const MERGE_DIRS: string[] = [
   // Claude project assets
   '.claude/commands',
@@ -242,8 +250,12 @@ async function downloadAndExtract(tarballUrl: string): Promise<void> {
 // --- Step 3: Selective overwrite ---
 
 function selectiveOverwrite(dryRun?: boolean): void {
+  const overwriteDirs = existsSync(resolve(ROOT_DIR, '__CABLOY_BASIC__'))
+    ? [...OVERWRITE_DIRS, ...OVERWRITE_DIRS_CABLOY_BASIC]
+    : OVERWRITE_DIRS;
+
   // Overwrite directories
-  for (const dir of OVERWRITE_DIRS) {
+  for (const dir of overwriteDirs) {
     const src = resolve(TEMP_DIR, dir);
     const dest = resolve(ROOT_DIR, dir);
     if (!existsSync(src)) continue;
@@ -316,12 +328,11 @@ function runInitTestData(dryRun: boolean): void {
 // --- Step 6: Cleanup ---
 
 function cleanup(dryRun?: boolean): void {
-  if (dryRun) {
-    log('  [dry-run] Remove temp dir: node_modules/.cabloy-upgrade/');
-    return;
-  }
   if (existsSync(TEMP_DIR)) {
     rmSync(TEMP_DIR, { recursive: true, force: true });
+  }
+  if (dryRun) {
+    log('  [dry-run] Removed temp dir: node_modules/.cabloy-upgrade/');
   }
 }
 
@@ -350,15 +361,20 @@ async function main(): Promise<void> {
   if (currentVersion) {
     const comparison = compareVersions(currentVersion, latestPackageInfo.version);
     if (comparison === 0) {
-      log(`Cabloy is already up to date (current: ${currentVersion}). Skipping upgrade.`);
-      return;
-    }
-    if (comparison > 0) {
+      if (!dryRun) {
+        log(`Cabloy is already up to date (current: ${currentVersion}). Skipping upgrade.`);
+        return;
+      }
+      log(
+        `Cabloy is already up to date (current: ${currentVersion}). Continuing dry-run to show overwrite plan.\n`,
+      );
+    } else if (comparison > 0) {
       throw new Error(
         `Project Cabloy version ${currentVersion} is newer than npm latest ${latestPackageInfo.version}. Aborting upgrade.`,
       );
+    } else {
+      log(`Upgrading Cabloy from ${currentVersion} to ${latestPackageInfo.version}...\n`);
     }
-    log(`Upgrading Cabloy from ${currentVersion} to ${latestPackageInfo.version}...\n`);
   } else {
     log(`Upgrading Cabloy to ${latestPackageInfo.version}...\n`);
   }

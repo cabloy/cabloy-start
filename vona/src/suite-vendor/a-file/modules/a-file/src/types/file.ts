@@ -4,12 +4,18 @@ import type { IFileProviderClientOptions, IFileProviderRecord } from './fileProv
 import type { IFileSceneRecord } from './fileScene.ts';
 
 export type TypeFileMeta = Record<string, unknown>;
-export type TypeFileDeliveryExpiry = Date | string | number;
+export type TypeFileDirectUploadExpiry = Date | string | number;
+export type TypeFileStatus = 'draft' | 'ready' | 'expired';
 
 export interface IFileDeliveryOptions {
-  signed?: boolean;
   expiresIn?: number;
-  expiresAt?: TypeFileDeliveryExpiry;
+  audience?: boolean;
+  responseMode?: 'auto' | 'buffer' | 'url';
+}
+
+export interface IFileProviderDeliveryOptions {
+  protected: boolean;
+  expiresIn?: number;
   responseMode?: 'auto' | 'buffer' | 'url';
 }
 
@@ -25,6 +31,7 @@ export interface IFileUploadInput<TMeta extends TypeFileMeta = TypeFileMeta> {
 
 export interface IFileUploadUrlInput<TMeta extends TypeFileMeta = TypeFileMeta> {
   url: string;
+  policy?: IFileUploadUrlPolicyResolved;
   filename?: string;
   contentType?: string;
   size?: number;
@@ -40,7 +47,7 @@ export interface IFileDirectUploadInput<TMeta extends TypeFileMeta = TypeFileMet
   objectKey?: string;
   public?: boolean;
   meta?: TMeta;
-  expiry?: TypeFileDeliveryExpiry;
+  expiry?: TypeFileDirectUploadExpiry;
 }
 
 export interface IFileUploadContextResolved<TMeta extends TypeFileMeta = TypeFileMeta> {
@@ -92,6 +99,9 @@ export interface IFileResource<
   provider: keyof IFileProviderRecord;
   clientName: string;
   fileScene?: keyof IFileSceneRecord | string;
+  status?: TypeFileStatus;
+  draftExpiresAt?: Date;
+  finalizedAt?: Date;
   uploadedAt?: Date;
 }
 
@@ -102,6 +112,37 @@ export interface IFileDirectUploadResult<
   uploadUrl: string;
   headers?: Record<string, string>;
   method?: 'PUT' | 'POST';
+}
+
+export interface IFileActionResponse {
+  id: TableIdentity;
+  filename?: string;
+  contentType?: string;
+  size?: number;
+  public?: boolean;
+  uploadedAt?: Date;
+  url: string;
+  signed: boolean;
+}
+
+export interface IFileDirectUploadResponse {
+  id: TableIdentity;
+  uploadUrl: string;
+  headers?: Record<string, string>;
+  method?: 'PUT' | 'POST';
+  filename?: string;
+  public?: boolean;
+}
+
+export interface IFileView {
+  id: TableIdentity;
+  filename?: string;
+  contentType?: string;
+  size?: number;
+  public?: boolean;
+  uploadedAt?: Date;
+  downloadUrl: string;
+  signed?: boolean;
 }
 
 export interface IFileUploadOptions<
@@ -115,26 +156,26 @@ export interface IFileUploadOptions<
   fileScene?: keyof IFileSceneRecord;
 }
 
-export interface IFileUploadPolicyResolved<
+export interface IFileUploadUrlPolicyResolved<
   TMeta extends TypeFileMeta = TypeFileMeta,
 > extends IFileUploadContextResolved<TMeta> {
   maxSize?: number;
   mimeTypes?: string[];
   extensions?: string[];
   multiple?: boolean;
-  fileSize: number;
-  mimeType: string;
 }
 
-export interface IFileUploadTokenPayload<
+export interface IFileUploadPolicyResolved<
   TMeta extends TypeFileMeta = TypeFileMeta,
-> extends IFileUploadPolicyResolved<TMeta> {
-  kind: 'fileUpload';
+> extends IFileUploadUrlPolicyResolved<TMeta> {
+  fileSize: number;
+  mimeType: string;
 }
 
 export interface IFileDownloadTokenPayload {
   kind: 'fileDownload';
   fileId: TableIdentity;
+  audienceUserId?: TableIdentity;
 }
 
 declare module 'vona' {

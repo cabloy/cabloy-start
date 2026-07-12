@@ -1,11 +1,16 @@
 import type { IUploadFile } from 'vona-module-a-upload';
 import type { IDecoratorControllerOptions } from 'vona-module-a-web';
 
+import fse from 'fs-extra';
 import { BeanBase } from 'vona';
 import { Core } from 'vona-module-a-core';
 import { Api, v } from 'vona-module-a-openapiutils';
 import { Passport } from 'vona-module-a-user';
 import { Arg, Controller, Web } from 'vona-module-a-web';
+import z from 'zod';
+
+import type { TypeImageVariantInput } from '../types/image.ts';
+import type { IImageSceneRecord } from '../types/imageScene.ts';
 
 import { DtoImageDeliveryRequest } from '../dto/imageDeliveryRequest.ts';
 import { DtoImageDirectUploadFinalizeRequest } from '../dto/imageDirectUploadFinalizeRequest.ts';
@@ -15,8 +20,6 @@ import { DtoImageDirectUploadResponse } from '../dto/imageDirectUploadResponse.t
 import { DtoImageUploadPolicyRequest } from '../dto/imageUploadPolicyRequest.ts';
 import { DtoImageUploadPolicyResponse } from '../dto/imageUploadPolicyResponse.ts';
 import { DtoImageUploadResponse } from '../dto/imageUploadResponse.ts';
-import { DtoImageUploadTokenRequest } from '../dto/imageUploadTokenRequest.ts';
-import { DtoImageUploadTokenResponse } from '../dto/imageUploadTokenResponse.ts';
 import { DtoImageUploadUrlRequest } from '../dto/imageUploadUrlRequest.ts';
 
 export interface IControllerOptionsImage extends IDecoratorControllerOptions {}
@@ -29,40 +32,48 @@ export class ControllerImage extends BeanBase {
     return await this.bean.imageUploadPolicy.resolveSceneUploadPolicy(data);
   }
 
-  @Web.post('upload-token')
-  @Api.body(DtoImageUploadTokenResponse)
-  async createUploadToken(@Arg.body() data: DtoImageUploadTokenRequest) {
-    return await this.bean.imageUploadPolicy.createUploadToken(data);
-  }
-
   @Web.post('upload')
-  @Core.fileUpload()
+  @Core.fileUpload({
+    busboy: {
+      limits: {
+        fields: 1,
+        files: 1,
+        parts: 3,
+      },
+    },
+  })
   @Api.body(DtoImageUploadResponse)
   @Api.contentType('application/json')
-  async upload(@Arg.field('token') token: string, @Arg.file('image') file: IUploadFile) {
-    const payload = await this.bean.imageUploadPolicy.verifyUploadToken(
-      token,
-      this.ctx.route.routePathRaw,
-    );
+  async upload(
+    @Arg.field('imageScene', v.required(), z.string()) imageScene: keyof IImageSceneRecord,
+    @Arg.file('image', v.required()) file: IUploadFile,
+  ) {
+    const stat = await fse.stat(file.file);
+    const policy = await this.bean.imageUploadPolicy.resolveUploadPolicy({
+      imageScene,
+      size: Number(stat.size),
+      mimeType: file.info.mimeType,
+    });
     await this.bean.imageUploadPolicy.validateUploadFile(
       {
         file: file.file,
         filename: file.info.filename,
         mimeType: file.info.mimeType,
       },
-      payload,
+      policy,
     );
     const image = await this.bean.image.upload(
-      payload.providerName,
+      policy.providerName,
       {
         file: file.file,
         filename: file.info.filename,
         contentType: file.info.mimeType,
+        public: policy.public,
       },
       {
-        clientName: payload.clientName,
-        meta: payload.meta,
-        imageScene: payload.imageScene,
+        clientName: policy.clientName,
+        meta: policy.meta,
+        imageScene: policy.imageScene,
       },
     );
     return await this.bean.image.createImageActionResponse(image);
@@ -80,8 +91,8 @@ export class ControllerImage extends BeanBase {
       policy.providerName,
       {
         filename: data.filename,
-        contentType: data.contentType,
-        requireSignedURLs: data.requireSignedURLs,
+        contentType: data.contentType ?? data.mimeType,
+        public: policy.public,
         expiry: data.expiry,
         customId: data.customId,
       },
@@ -114,7 +125,7 @@ export class ControllerImage extends BeanBase {
         url: data.url,
         filename: data.filename,
         contentType: data.contentType,
-        requireSignedURLs: data.requireSignedURLs,
+        public: policy.public,
       },
       {
         clientName: policy.clientName,
@@ -125,19 +136,52 @@ export class ControllerImage extends BeanBase {
     return await this.bean.image.createImageActionResponse(image);
   }
 
-  @Web.get('delivery/:imageId')
+  @Web.get('delivery')
   @Passport.public()
-  async delivery(
-    @Arg.param('imageId', v.tableIdentity()) imageId: number,
-    @Arg.query(v.object(DtoImageDeliveryRequest)) query: DtoImageDeliveryRequest,
-  ) {
-    const payload = await this.bean.imageUploadPolicy.verifyDeliveryToken(
-      query.token,
-      this.scope.util.combineApiPath(`image/delivery/${imageId}`, false, true),
-    );
-    if (String(payload.imageId) !== String(imageId)) {
-      return this.app.throw(401);
+  async delivery(@Arg.query(v.object(DtoImageDeliveryRequest)) query: DtoImageDeliveryRequest) {
+    const { imageId } = query;
+    const image = await this.bean.image.get(imageId);
+    if (!image) return this.app.throw(404);
+    let request: TypeImageVariantInput = query.token
+      ? undefined
+      : {
+          variantName: query.variantName as any,
+          transformOptions: query.transformOptions as any,
+        };
+    if (query.token || !image.public) {
+      const payload = await this.bean.imageUploadPolicy.verifyDeliveryToken(
+        query.token,
+        this.scope.util.combineApiPath('image/delivery', false, true),
+      );
+      if (String(payload.imageId) !== String(imageId)) {
+        return this.app.throw(401);
+      }
+      if (payload.audienceUserId !== undefined) {
+        const auth = await this.bean.passport.checkAuthToken(
+          this.bean.jwt.extractAuthTokenFromAllWays(),
+          undefined,
+          { path: this.ctx.path },
+        );
+        if (!auth) return this.app.throw(401);
+        const user = auth.passport.user;
+        if (!user || user.anonymous) return this.app.throw(401);
+        if (String(user.id) !== String(payload.audienceUserId)) return this.app.throw(403);
+      }
+      request = payload.request;
     }
-    this.ctx.redirect(payload.targetUrl);
+    const result = await this.bean.image.downloadForDelivery(imageId, request, {
+      protected: !image.public,
+    });
+    if (result.kind === 'url') {
+      if (!result.url) {
+        throw new Error(`image delivery url missing: ${imageId}`);
+      }
+      this.ctx.redirect(result.url);
+      return;
+    }
+    if (result.contentType) {
+      this.ctx.type = result.contentType;
+    }
+    this.ctx.body = result.buffer;
   }
 }

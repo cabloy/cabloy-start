@@ -4,8 +4,8 @@ import type { ServiceOnion, TypeOnionOptionsEnableSimple } from 'vona-module-a-o
 import type { EntityFile } from '../entity/file.ts';
 import type { EntityFileProvider } from '../entity/fileProvider.ts';
 import type {
-  IFileDeliveryOptions,
   IFileDirectUploadInput,
+  IFileProviderDeliveryOptions,
   IFileDownloadResult,
   IFileProviderDirectUploadResource,
   IFileProviderResource,
@@ -78,19 +78,24 @@ export interface IFileProviderExecute<
     clientOptions: T,
     options: O,
   ): Promise<IFileProviderDirectUploadResource>;
+  finalizeDirectUpload?(
+    file: EntityFile,
+    clientOptions: T,
+    options: O,
+  ): Promise<IFileProviderResource | undefined>;
   get(file: EntityFile, clientOptions: T, options: O): Promise<IFileProviderResource | undefined>;
   delete(file: EntityFile, clientOptions: T, options: O): Promise<void>;
   getDownloadUrl(
     file: EntityFile,
     clientOptions: T,
     options: O,
-    deliveryOptions?: IFileDeliveryOptions,
+    deliveryOptions?: IFileProviderDeliveryOptions,
   ): Promise<string>;
   download?(
     file: EntityFile,
     clientOptions: T,
     options: O,
-    deliveryOptions?: IFileDeliveryOptions,
+    deliveryOptions?: IFileProviderDeliveryOptions,
   ): Promise<IFileDownloadResult>;
 }
 

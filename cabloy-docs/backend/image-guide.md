@@ -170,7 +170,7 @@ If neither is provided, Vona falls back to the configured default variant, which
 
 Vona supports signed delivery in two forms:
 
-- **proxy-signed delivery**: Vona creates a temporary delivery token and redirects through `/image/delivery/:imageId`
+- **proxy-signed delivery**: Vona creates a temporary delivery token and redirects through `/image/delivery?imageId=...`
 - **provider-signed delivery**: the provider generates the final signed URL directly
 
 The built-in defaults differ:
@@ -196,7 +196,7 @@ Representative methods are:
 
 A useful practical boundary is:
 
-- use `BeanImageUploadPolicy` when you need scene resolution and upload-token policy
+- use `BeanImageUploadPolicy` when you need scene resolution and upload policy
 - use `app.bean.image` when you need the actual image lifecycle and delivery behavior
 
 ## Persistence model
@@ -231,43 +231,43 @@ If a provider-client record does not exist yet, `BeanImageProvider` can lazily r
 
 ## Operational flows
 
-## Upload-token + multipart upload
+## Authenticated multipart upload
 
-The tokened upload flow is the most important request path.
+Ordinary image upload is one authenticated multipart request:
 
-The flow is:
-
-1. call `POST /image/upload-token`
-2. Vona resolves the image scene and validates the declared `size` and `mimeType`
-3. Vona issues a temporary upload token that is bound to the upload path
-4. submit `POST /image/upload` as multipart form data
-5. send:
-   - `token`
+1. submit `POST /image/upload` as multipart form data
+2. send:
+   - `imageScene`
    - `image`
-6. the controller verifies the token, re-checks file size, MIME type, and extension, then uploads through the resolved provider
+3. Vona reads the received file's actual size and MIME type
+4. Vona resolves the image scene, provider, visibility, and metadata server-side
+5. Vona validates actual size, MIME type, and extension against the scene policy, then uploads through the resolved provider
 
 Representative controller shape:
 
 ```typescript
-@Web.post('upload-token')
-async createUploadToken(@Arg.body() data: DtoImageUploadTokenRequest) {
-  return await this.bean.imageUploadPolicy.createUploadToken(data);
-}
-
 @Web.post('upload')
-@Core.fileUpload()
+@Core.fileUpload({
+  busboy: {
+    limits: { fields: 1, files: 1, parts: 3 },
+  },
+})
 @Api.contentType('application/json')
-async upload(@Arg.field('token') token: string, @Arg.file('image') file: IUploadFile) {
-  const payload = await this.bean.imageUploadPolicy.verifyUploadToken(
-    token,
-    this.ctx.route.routePathRaw,
-  );
-  await this._validateUploadFile(file, payload);
+async upload(
+  @Arg.field('imageScene', v.required(), z.string()) imageScene: string,
+  @Arg.file('image', v.required()) file: IUploadFile,
+) {
+  const policy = await this.bean.imageUploadPolicy.resolveUploadPolicy({
+    imageScene,
+    size: (await fse.stat(file.file)).size,
+    mimeType: file.info.mimeType,
+  });
+  await this.bean.imageUploadPolicy.validateUploadFile(...);
   return await this.bean.image.upload(...);
 }
 ```
 
-This flow reuses the normal Vona upload model from [Upload Guide](/backend/upload-guide), but adds image-scene policy and a path-bound temporary token.
+The normal passport guard remains the authorization boundary. Temporary tokens are still used for signed delivery where needed, but ordinary image upload does not issue or accept an upload token.
 
 ## Direct upload
 
@@ -279,14 +279,13 @@ The shared flow is:
 2. call `app.bean.image.createDirectUpload(...)`
 3. let the provider create the direct-upload resource
 4. persist the draft image record
-5. return provider information plus `uploadUrl`
+5. return the public direct-upload session: Cabloy image `id`, provider-hosted `uploadUrl`, and optional presentation fields
 6. upload bytes to the returned `uploadUrl`
-7. finalize through `POST /image/direct-upload/finalize`
+7. finalize through `POST /image/direct-upload/finalize` using the Cabloy image `id`; the finalized response has the normal public image action shape
 
-The built-in providers currently support this flow in two different ways:
+The built-in Cloudflare provider supports this flow by returning a provider-hosted upload target.
 
-- `image-cloudflare:cloudflare` returns a provider-hosted upload target
-- `image-native:native` returns an app-local upload target under `/image-native/direct-upload/:resourceId`, stores the uploaded bytes as a draft file, and promotes that draft into the final native storage path during finalize
+The native provider does not support direct upload and should use the standard authenticated `/image/upload` flow instead.
 
 That provider difference is exactly why the shared API keeps direct upload split into create-upload-target and finalize steps.
 
@@ -310,12 +309,12 @@ The native provider does not implement `uploadUrl`.
 
 When delivery is signed and the provider uses proxy delivery, `BeanImage.getVariantUrl(...)` creates a temporary delivery token and returns a local delivery URL such as:
 
-- `/image/delivery/:imageId?token=...`
+- `/image/delivery?imageId=...&token=...`
 
 The delivery controller then:
 
-1. verifies the delivery token against the request path
-2. confirms the token image ID matches the request image ID
+1. verifies the delivery token against the fixed delivery endpoint path
+2. confirms the token image ID matches the request `imageId` query value
 3. redirects to the final target URL
 
 This is why native signed delivery behaves differently from Cloudflare signed delivery.
@@ -348,7 +347,7 @@ Practical behavior to know:
 
 - it defaults to proxy-signed delivery
 - it can return local static URLs under `/api/static/...`
-- it supports direct upload through an app-local upload target plus shared finalize
+- it does not support direct upload and uses the standard authenticated multipart upload flow
 - named variants produce stable variant files such as `__thumbnail`
 - ad hoc transforms produce stable hashed files such as `__t_<hash>`
 - repeated requests for the same custom transform reuse the same cached transformed output
@@ -489,7 +488,7 @@ A practical sequence is:
 1. create the scene bean
 2. define `upload` rules and optional provider/meta resolvers
 3. point entity or DTO metadata at the new scene name
-4. verify upload-token and serializer behavior end to end
+4. verify authenticated multipart upload and serializer behavior end to end
 
 ## Add a new image provider
 
@@ -508,8 +507,9 @@ A practical provider checklist is:
 
 1. implement the required methods
 2. decide whether to support `uploadUrl`, `createDirectUpload`, and `download`
-3. define sensible base options in the decorator
-4. verify variant URL behavior, signed delivery behavior, and delete behavior
+3. only implement `createDirectUpload` when the provider can hand the client a real external upload target instead of routing bytes back through the local app
+4. define sensible base options in the decorator
+5. verify variant URL behavior, signed delivery behavior, and delete behavior
 
 ## Test-backed reading map
 
@@ -519,8 +519,8 @@ The current repo already contains strong executable examples under:
 
 The most useful tests are:
 
-- `imageUpload.test.ts` for upload-token, upload, direct-upload, and upload-url request flows
-- `imageNative.test.ts` for local upload, native direct-upload/finalize, variant URLs, signed delivery, and delete behavior
+- `imageUpload.test.ts` for authenticated multipart upload, native direct-upload rejection, Cloudflare direct-upload, and upload-url request flows
+- `imageNative.test.ts` for local upload, variant URLs, signed delivery, and delete behavior
 - `imageCloudflareMapping.test.ts` for Cloudflare mapping, custom transforms, signed delivery, direct upload, and upload-by-URL behavior
 
 When the source and a prose explanation seem to disagree, prefer the current source and tests.

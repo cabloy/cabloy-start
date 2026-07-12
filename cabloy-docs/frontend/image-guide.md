@@ -7,7 +7,7 @@ Zova image is not only a file input. It is a frontend image layer built around:
 - the built-in form-field renderer `basic-image:formFieldImage`
 - the built-in table-cell renderer `basic-image:image`
 - resolved relation fields such as `image` and `sceneImages`
-- upload-token based upload through the generated image API
+- policy-selected ordinary or provider-hosted direct upload through the generated image API
 - optional crop and resize behavior in the browser
 - shared preview dialogs for form and table usage
 
@@ -58,7 +58,7 @@ Use this as the standard image field renderer for forms.
 It supports:
 
 - single-image and multi-image fields
-- upload-token based upload
+- policy-selected ordinary or direct upload
 - frontend file validation
 - optional crop
 - optional resize and re-encode before upload
@@ -121,9 +121,9 @@ v.serializerTransform('a-image:resolveView', {
 A practical rule is:
 
 - frontend validation, crop, and resize improve UX
-- backend image scenes and backend upload-token verification remain the true policy boundary
+- backend image scenes and authenticated multipart validation remain the true policy boundary
 
-For the backend side of that contract, read [Backend Image Guide](/backend/image-guide), especially the sections on image scenes, upload-token flow, and DTO-side image view resolution.
+For the backend side of that contract, read [Backend Image Guide](/backend/image-guide), especially the sections on image scenes, authenticated multipart upload, and DTO-side image view resolution.
 
 ## One running example through this guide: Student image
 
@@ -316,12 +316,15 @@ The built-in form field follows a consistent frontend flow.
 2. the frontend validates the file type and size
 3. if enabled, the crop dialog opens
 4. if configured, the browser resizes and re-encodes the image
-5. the frontend calls `scope.api.image.createUploadToken(...)`
-6. the frontend uploads multipart data with `token` and `image`
-7. the stored field value is updated to the uploaded image ID or image ID array
-8. the resolved relation field is synchronized so the form can preview the uploaded image immediately
+5. the frontend reads the server-provided upload-policy capability
+6. ordinary scenes call `scope.api.image.upload(...)` with multipart `imageScene` and `image`
+7. direct-capable scenes call `scope.api.image.createDirectUpload(...)`, upload multipart data to the returned provider URL without Cabloy credentials, then call `scope.api.image.finalizeDirectUpload(...)`
+8. the stored field value is updated from the ordinary upload response or the finalized direct-upload response
+9. the resolved relation field is synchronized so the form can preview the completed image immediately
 
-That last step is easy to miss, but it is one of the most important behaviors in the current implementation.
+The frontend does not select a provider by name. Vona resolves the scene and publishes only whether direct upload is available. A direct-upload draft ID is not written to the form until finalization succeeds.
+
+That finalization boundary is easy to miss, but it is one of the most important behaviors in the current implementation.
 
 The field value stores IDs.
 
@@ -347,6 +350,12 @@ In editable mode, the field shows:
 In readonly mode, the field still renders preview cards.
 
 If no images are available, it shows a lightweight empty-state message instead of a file input.
+
+### Private Admin delivery
+
+For a private Admin relation resolved with `deliveryOptions.audience: true`, the client obtains a short-lived passport code after hydration and appends it only to the Cabloy image delivery URL. The code is held in the passport model's in-memory, route-scoped cache and is never written into the resolved relation, SSR HTML, or dehydrated state. The backend still verifies the resource-bound delivery token and the issuing user, so another authenticated user cannot reuse a copied URL.
+
+User-bound delivery forces the Cabloy proxy path. A provider redirect after Cabloy authorization can still expose a separate short-lived provider URL; use a streaming proxy when that remaining provider-link window is unacceptable.
 
 ### Preview dialog
 

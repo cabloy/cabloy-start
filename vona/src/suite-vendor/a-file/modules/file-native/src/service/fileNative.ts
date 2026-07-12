@@ -1,6 +1,6 @@
 import type {
   EntityFile,
-  IFileDeliveryOptions,
+  IFileProviderDeliveryOptions,
   IFileProviderResource,
   IFileUploadInput,
 } from 'vona-module-a-file';
@@ -54,18 +54,17 @@ export class ServiceFileNative extends BeanBase {
   async getDownloadUrl(
     file: IFileNativeStoredFile,
     options: IFileProviderNativeClientOptions,
-    _deliveryOptions?: IFileDeliveryOptions,
+    _deliveryOptions?: IFileProviderDeliveryOptions,
   ) {
     if (!file.storagePath) {
       throw new Error(`File storage path missing: ${file.resourceId}`);
     }
     if (!(file.public ?? options.public)) {
-      const routePath = this.scope.util.combineApiPath(
-        `file/download/${file.id ?? file.resourceId}`,
-        false,
-        true,
-      );
-      return this.app.util.getAbsoluteUrlByApiPath(routePath);
+      const routePath = this.scope.util.combineApiPath('file/download', false, true);
+      const routeUrl = this.app.util.getAbsoluteUrlByApiPath(routePath);
+      const url = new URL(routeUrl);
+      url.searchParams.set('fileId', String(file.id ?? file.resourceId));
+      return url.toString();
     }
     return await this._buildUrl(file.storagePath, options.deliveryBaseUrl);
   }

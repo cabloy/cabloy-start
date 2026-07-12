@@ -4,8 +4,8 @@ import type { ServiceOnion, TypeOnionOptionsEnableSimple } from 'vona-module-a-o
 import type { EntityImage } from '../entity/image.ts';
 import type { EntityImageProvider } from '../entity/imageProvider.ts';
 import type {
-  IImageDeliveryOptions,
   IImageDirectUploadInput,
+  IImageProviderDeliveryOptions,
   IImageDownloadResult,
   IImageNamedVariants,
   IImageProviderDirectUploadResource,
@@ -29,7 +29,7 @@ export interface IImageProviderClientRecord {
 export interface IImageProviderClientOptions {
   deliveryBaseUrl?: string;
   variants?: IImageNamedVariants;
-  requireSignedURLs?: boolean;
+  public?: boolean;
   signedDeliveryKind?: 'proxy' | 'provider';
 }
 
@@ -108,14 +108,14 @@ export interface IImageProviderExecute<
     request: IImageVariantRequest,
     clientOptions: T,
     options: O,
-    deliveryOptions?: IImageDeliveryOptions,
+    deliveryOptions?: IImageProviderDeliveryOptions,
   ): Promise<string>;
   download?(
     image: EntityImage,
     request: IImageVariantRequest,
     clientOptions: T,
     options: O,
-    deliveryOptions?: IImageDeliveryOptions,
+    deliveryOptions?: IImageProviderDeliveryOptions,
   ): Promise<IImageDownloadResult>;
 }
 

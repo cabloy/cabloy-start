@@ -67,7 +67,9 @@ export class ServiceJwtClient extends BeanBase {
         [this.fieldClient]: this._clientName,
         [this.fieldData]: payloadData,
       };
-      if (options?.path) payload[this.fieldPath] = options.path;
+      if (options?.path) {
+        payload[this.fieldPath] = options.path;
+      }
       let signOptions = this._clientOptions.signOptions;
       if (options?.dev) {
         signOptions = Object.assign({}, signOptions, {
@@ -123,8 +125,9 @@ export class ServiceJwtClient extends BeanBase {
           // check field client
           if (payload[this.fieldClient] !== this._clientName) return this.app.throw(401);
           // check field path
-          if (!this._checkVerifyPath(payload[this.fieldPath], options?.path))
+          if (!this._checkVerifyPath(payload[this.fieldPath], options?.path)) {
             return this.app.throw(401);
+          }
           // passed
           resolve(payload[this.fieldData]);
         },
@@ -135,7 +138,9 @@ export class ServiceJwtClient extends BeanBase {
   _checkVerifyPath(pathTarget: string | string[] | undefined, pathReal: string | undefined) {
     if (!pathTarget) return true;
     const path = pathReal ?? String(this.ctx.route.routePathRaw);
-    if (Array.isArray(pathTarget) && !pathTarget.includes(path)) return false;
-    return pathTarget === path;
+    const targets = Array.isArray(pathTarget) ? pathTarget : [pathTarget];
+    return (
+      targets.every(target => typeof target === 'string') && targets.some(target => target === path)
+    );
   }
 }

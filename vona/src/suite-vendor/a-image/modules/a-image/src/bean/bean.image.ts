@@ -5,10 +5,12 @@ import { Bean } from 'vona-module-a-bean';
 
 import type { EntityImage } from '../entity/image.ts';
 import type {
+  IImageActionResponse,
   IImageDeliveryOptions,
   IImageDirectUploadInput,
-  IImageDirectUploadResult,
+  IImageDirectUploadResponse,
   IImageFinalizeDirectUploadResult,
+  IImageProviderDeliveryOptions,
   IImageProviderDirectUploadResource,
   IImageProviderResource,
   IImageResource,
@@ -35,11 +37,15 @@ interface IImageProviderContext<N extends keyof IImageProviderRecord = keyof IIm
   onionOptions: TypeImageProviderOptionsByName<N>;
 }
 
+interface IImageDeliveryOptionsResolved extends IImageProviderDeliveryOptions {
+  audience: boolean;
+}
+
 interface IImageDeliveryContext {
   image: EntityImage | IImageResource;
   providerImage: EntityImage;
   requestNormalized: IImageVariantRequest;
-  deliveryOptionsResolved: IImageDeliveryOptions;
+  deliveryOptionsResolved: IImageDeliveryOptionsResolved;
   providerContext: IImageProviderContext;
 }
 
@@ -105,10 +111,11 @@ export class BeanImage extends BeanBase {
     providerName: N,
     input: IImageDirectUploadInput,
     options?: IImageUploadOptions<TypeImageProviderClientOptionsByName<N>>,
-  ): Promise<IImageDirectUploadResult> {
+  ): Promise<IImageDirectUploadResponse> {
     const providerContext = await this._getProviderContextByInput(providerName, options);
     if (!providerContext.beanImageProvider.createDirectUpload) {
-      throw new Error(
+      return this.app.throw(
+        403,
         `Image provider does not support createDirectUpload: ${String(providerName)}`,
       );
     }
@@ -132,10 +139,11 @@ export class BeanImage extends BeanBase {
       },
     );
     return {
-      ...this._combineImageResource(image, imageProviderResource),
+      id: image.id,
       uploadUrl: imageProviderResource.uploadUrl,
-      draft: imageProviderResource.draft ?? true,
-    };
+      filename: imageProviderResource.filename,
+      public: imageProviderResource.public ?? image.public,
+    } satisfies IImageDirectUploadResponse;
   }
 
   async finalizeDirectUpload(imageId: TableIdentity): Promise<IImageFinalizeDirectUploadResult> {
@@ -154,7 +162,8 @@ export class BeanImage extends BeanBase {
       }
       const providerContext = await this._getProviderContext(image);
       if (!providerContext.beanImageProvider.finalizeDirectUpload) {
-        throw new Error(
+        return this.app.throw(
+          403,
           `Image provider does not support finalizeDirectUpload: ${String(image.providerName)}`,
         );
       }
@@ -240,28 +249,23 @@ export class BeanImage extends BeanBase {
         signed: true,
       };
     }
-    if (context.providerContext.beanImageProvider.download) {
-      return await context.providerContext.beanImageProvider.download(
-        context.providerImage,
-        context.requestNormalized,
-        context.providerContext.clientOptions,
-        context.providerContext.onionOptions,
-        context.deliveryOptionsResolved,
-      );
-    }
-    return {
-      kind: 'url' as const,
-      url: await context.providerContext.beanImageProvider.getVariantUrl(
-        context.providerImage,
-        context.requestNormalized,
-        context.providerContext.clientOptions,
-        context.providerContext.onionOptions,
-        context.deliveryOptionsResolved,
-      ),
-      filename: context.image.filename,
-      contentType: context.image.contentType,
-      signed: !!context.deliveryOptionsResolved.signed,
-    };
+    return await this._downloadFromProvider(context);
+  }
+
+  async downloadForDelivery(
+    imageId: TableIdentity,
+    request?: TypeImageVariantInput,
+    options?: { protected?: boolean },
+  ) {
+    const context = await this._getDeliveryContext(imageId, request, { responseMode: 'buffer' });
+    return await this._downloadFromProvider({
+      ...context,
+      deliveryOptionsResolved: {
+        protected: options?.protected ?? !context.image.public,
+        audience: false,
+        responseMode: 'buffer',
+      },
+    });
   }
 
   async resolveView(
@@ -369,13 +373,19 @@ export class BeanImage extends BeanBase {
     image: IImageResource,
     request?: TypeImageVariantInput,
     deliveryOptions?: IImageDeliveryOptions,
-  ) {
+  ): Promise<IImageActionResponse> {
     const context = await this._createDeliveryContext(image, request, deliveryOptions);
     return {
-      ...image,
+      id: image.id,
+      filename: image.filename,
+      contentType: image.contentType,
+      size: image.size,
+      width: image.width,
+      height: image.height,
+      public: image.public,
       url: await this._getVariantUrlByContext(context),
-      signed: !!context.deliveryOptionsResolved.signed,
-    };
+      signed: context.deliveryOptionsResolved.protected,
+    } satisfies IImageActionResponse;
   }
 
   private _resolveDirectUploadDraftExpiresAt(expiry?: IImageDirectUploadInput['expiry']) {
@@ -427,6 +437,31 @@ export class BeanImage extends BeanBase {
     };
   }
 
+  private async _downloadFromProvider(context: IImageDeliveryContext) {
+    if (context.providerContext.beanImageProvider.download) {
+      return await context.providerContext.beanImageProvider.download(
+        context.providerImage,
+        context.requestNormalized,
+        context.providerContext.clientOptions,
+        context.providerContext.onionOptions,
+        context.deliveryOptionsResolved,
+      );
+    }
+    return {
+      kind: 'url' as const,
+      url: await context.providerContext.beanImageProvider.getVariantUrl(
+        context.providerImage,
+        context.requestNormalized,
+        context.providerContext.clientOptions,
+        context.providerContext.onionOptions,
+        context.deliveryOptionsResolved,
+      ),
+      filename: context.image.filename,
+      contentType: context.image.contentType,
+      signed: context.deliveryOptionsResolved.protected,
+    };
+  }
+
   private async _getVariantUrlByContext(context: IImageDeliveryContext) {
     if (this._shouldUseProxySignedDelivery(context)) {
       return await this._createSignedDeliveryUrl(context);
@@ -447,22 +482,17 @@ export class BeanImage extends BeanBase {
       filename: image.filename,
       width: image.width,
       height: image.height,
-      provider: image.provider,
-      clientName: image.clientName,
-      imageScene: image.imageScene,
-      status: image.status,
-      draftExpiresAt: image.draftExpiresAt,
-      finalizedAt: image.finalizedAt,
-      uploadedAt: image.uploadedAt,
-      variants: image.variants,
-      signed: !!context.deliveryOptionsResolved.signed,
+      public: image.public,
+      signed: context.deliveryOptionsResolved.protected,
     } satisfies IImageView;
   }
 
   private _shouldUseProxySignedDelivery(context: IImageDeliveryContext) {
+    const { deliveryOptionsResolved, providerContext } = context;
     return (
-      context.deliveryOptionsResolved.signed &&
-      (context.providerContext.clientOptions.signedDeliveryKind ?? 'proxy') === 'proxy'
+      deliveryOptionsResolved.protected &&
+      (deliveryOptionsResolved.audience ||
+        (providerContext.clientOptions.signedDeliveryKind ?? 'proxy') === 'proxy')
     );
   }
 
@@ -486,48 +516,43 @@ export class BeanImage extends BeanBase {
   }
 
   private _mergeDeliveryOptions(
-    image: Pick<IImageResource, 'requireSignedURLs'>,
+    image: Pick<IImageResource, 'public'>,
     request: IImageVariantRequest,
     deliveryOptions?: IImageDeliveryOptions,
-  ): IImageDeliveryOptions {
-    const signed = deliveryOptions?.signed ?? request.signed ?? image.requireSignedURLs ?? false;
-    const expiresIn = deliveryOptions?.expiresIn ?? request.expiresIn;
-    const expiresAt = deliveryOptions?.expiresAt ?? request.expiresAt;
-    const responseMode = deliveryOptions?.responseMode ?? request.responseMode;
+  ): IImageDeliveryOptionsResolved {
+    const audience = deliveryOptions?.audience ?? request.audience ?? false;
     return {
-      signed,
-      expiresIn,
-      expiresAt,
-      responseMode,
+      protected: audience || !image.public,
+      expiresIn:
+        deliveryOptions?.expiresIn ??
+        request.expiresIn ??
+        (audience ? this.scope.config.image.delivery.audienceExpiresIn : undefined),
+      audience,
+      responseMode: deliveryOptions?.responseMode ?? request.responseMode,
     };
   }
 
   private async _createSignedDeliveryUrl(context: IImageDeliveryContext) {
-    const targetUrl = await context.providerContext.beanImageProvider.getVariantUrl(
-      context.providerImage,
-      context.requestNormalized,
-      context.providerContext.clientOptions,
-      context.providerContext.onionOptions,
-      {
-        signed: false,
-        responseMode: 'url',
-      },
-    );
-    const routePath = this.scope.util.combineApiPath(
-      `image/delivery/${context.image.id}`,
-      false,
-      true,
-    );
+    const routePath = this.scope.util.combineApiPath('image/delivery', false, true);
+    const audienceUserId = this._resolveAudienceUserId(context.deliveryOptionsResolved);
     const tokenPayload = await this.bean.imageUploadPolicy.createDeliveryToken({
       imageId: context.image.id,
       request: context.requestNormalized,
-      targetUrl,
       expiresIn: context.deliveryOptionsResolved.expiresIn,
+      audienceUserId,
     });
     const routeUrl = this.app.util.getAbsoluteUrlByApiPath(routePath);
     const url = new URL(routeUrl);
+    url.searchParams.set('imageId', String(context.image.id));
     url.searchParams.set('token', tokenPayload.token);
     return url.toString();
+  }
+
+  private _resolveAudienceUserId(deliveryOptions: IImageDeliveryOptionsResolved) {
+    if (!deliveryOptions.audience) return;
+    const user = this.bean.passport.currentUser;
+    if (!user || user.anonymous) return this.app.throw(401);
+    return user.id;
   }
 
   private _getProviderImage(image: EntityImage | IImageResource): EntityImage {
@@ -542,7 +567,7 @@ export class BeanImage extends BeanBase {
       size: image.size,
       width: image.width,
       height: image.height,
-      requireSignedURLs: image.requireSignedURLs,
+      public: image.public,
       variants: image.variants,
       meta: image.meta,
       storagePath: image.storagePath,
@@ -572,7 +597,7 @@ export class BeanImage extends BeanBase {
       size: imageProviderResource.size,
       width: imageProviderResource.width,
       height: imageProviderResource.height,
-      requireSignedURLs: imageProviderResource.requireSignedURLs,
+      public: imageProviderResource.public,
       variants: imageProviderResource.variants,
       meta: imageProviderResource.meta,
       storagePath: imageProviderResource.storagePath,
@@ -615,7 +640,7 @@ export class BeanImage extends BeanBase {
       size: imageProviderResource?.size ?? image.size,
       width: imageProviderResource?.width ?? image.width,
       height: imageProviderResource?.height ?? image.height,
-      requireSignedURLs: imageProviderResource?.requireSignedURLs ?? image.requireSignedURLs,
+      public: imageProviderResource?.public ?? image.public,
       variants: imageProviderResource?.variants ?? image.variants,
       meta: imageProviderResource?.meta ?? image.meta,
       storagePath: imageProviderResource?.storagePath ?? image.storagePath,

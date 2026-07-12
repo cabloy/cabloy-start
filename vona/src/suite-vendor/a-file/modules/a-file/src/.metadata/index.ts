@@ -9,16 +9,16 @@ import type { IEntityOptionsFile } from '../entity/file.ts';
 import type { IEntityOptionsFileProvider } from '../entity/fileProvider.ts';
 import 'vona-module-a-orm';
 declare module 'vona-module-a-orm' {
-  
+
     export interface IEntityRecord {
       'a-file:file': IEntityOptionsFile;
 'a-file:fileProvider': IEntityOptionsFileProvider;
     }
 
-  
+
 }
 declare module 'vona-module-a-file' {
-   
+
 }
 /** entity: end */
 /** entity: begin */
@@ -41,7 +41,7 @@ declare module 'vona-module-a-orm' {
   }
 }
 declare module 'vona-module-a-file' {
-  
+
     export interface IEntityOptionsFile {
       fields?: TypeEntityOptionsFields<EntityFile, IEntityOptionsFile[TypeSymbolKeyFieldsMore]>;
     }
@@ -58,16 +58,16 @@ import type { IModelOptionsFile } from '../model/file.ts';
 import type { IModelOptionsFileProvider } from '../model/fileProvider.ts';
 import 'vona-module-a-orm';
 declare module 'vona-module-a-orm' {
-  
+
     export interface IModelRecord {
       'a-file:file': IModelOptionsFile;
 'a-file:fileProvider': IModelOptionsFileProvider;
     }
 
-  
+
 }
 declare module 'vona-module-a-file' {
-  
+
         export interface ModelFile {
           /** @internal */
           get scope(): ScopeModuleAFile;
@@ -88,7 +88,7 @@ declare module 'vona-module-a-file' {
             get $beanFullName(): 'a-file.model.fileProvider';
             get $onionName(): 'a-file:fileProvider';
             get $onionOptions(): IModelOptionsFileProvider;
-          } 
+          }
 }
 /** model: end */
 /** model: begin */
@@ -113,7 +113,7 @@ declare module 'vona' {
 import type { IModelGetOptions, IModelMethodOptions, IModelSelectParams, TypeModelSelectAndCount, TypeModelRelationResult, TypeModelWhere, IModelInsertOptions, TypeModelMutateRelationData, IModelDeleteOptions, IModelUpdateOptions, IModelMutateOptions, IModelSelectCountParams, IModelIncrementParams, IModelSelectAggrParams, TypeModelAggrRelationResult, IModelSelectGroupParams, TypeModelGroupRelationResult } from 'vona-module-a-orm';
 import { SymbolKeyEntity, SymbolKeyEntityMeta, SymbolKeyModelOptions } from 'vona-module-a-orm';
 declare module 'vona-module-a-file' {
-  
+
   export interface ModelFile {
       [SymbolKeyEntity]: EntityFile;
       [SymbolKeyEntityMeta]: EntityFileMeta;
@@ -181,11 +181,11 @@ export * from '../bean/bean.fileUploadPolicy.ts';
 
 import 'vona';
 declare module 'vona' {
-  
-  
+
+
 }
 declare module 'vona-module-a-file' {
-  
+
         export interface BeanFile {
           /** @internal */
           get scope(): ScopeModuleAFile;
@@ -199,7 +199,7 @@ declare module 'vona-module-a-file' {
         export interface BeanFileUploadPolicy {
           /** @internal */
           get scope(): ScopeModuleAFile;
-        } 
+        }
 }
 /** bean: end */
 /** bean: begin */
@@ -216,21 +216,34 @@ declare module 'vona' {
 }
 /** bean: end */
 /** meta: begin */
+export * from '../bean/meta.index.ts';
 export * from '../bean/meta.redlock.ts';
 export * from '../bean/meta.version.ts';
-
+import type { IMetaOptionsIndex } from 'vona-module-a-index';
 import 'vona-module-a-meta';
 declare module 'vona-module-a-meta' {
-  
+
     export interface IMetaRecord {
-      'a-file:redlock': never;
+      'a-file:index': IMetaOptionsIndex;
+'a-file:redlock': never;
 'a-file:version': never;
     }
 
-  
+
 }
 declare module 'vona-module-a-file' {
-  
+
+        export interface MetaIndex {
+          /** @internal */
+          get scope(): ScopeModuleAFile;
+        }
+
+          export interface MetaIndex {
+            get $beanFullName(): 'a-file.meta.index';
+            get $onionName(): 'a-file:index';
+            get $onionOptions(): IMetaOptionsIndex;
+          }
+
         export interface MetaRedlock {
           /** @internal */
           get scope(): ScopeModuleAFile;
@@ -239,7 +252,7 @@ declare module 'vona-module-a-file' {
           export interface MetaRedlock {
             get $beanFullName(): 'a-file.meta.redlock';
             get $onionName(): 'a-file:redlock';
-            
+
           }
 
         export interface MetaVersion {
@@ -250,57 +263,151 @@ declare module 'vona-module-a-file' {
           export interface MetaVersion {
             get $beanFullName(): 'a-file.meta.version';
             get $onionName(): 'a-file:version';
-            
-          } 
+
+          }
 }
 /** meta: end */
 /** meta redlock: begin */
 import type { MetaRedlock } from '../bean/meta.redlock.ts';
 /** meta redlock: end */
+/** schedule: begin */
+export * from '../bean/schedule.fileDraftPrune.ts';
+
+import { type IDecoratorScheduleOptions } from 'vona-module-a-schedule';
+declare module 'vona-module-a-schedule' {
+
+    export interface IScheduleRecord {
+      'a-file:fileDraftPrune': IDecoratorScheduleOptions;
+    }
+
+
+}
+declare module 'vona-module-a-file' {
+
+        export interface ScheduleFileDraftPrune {
+          /** @internal */
+          get scope(): ScopeModuleAFile;
+        }
+
+          export interface ScheduleFileDraftPrune {
+            get $beanFullName(): 'a-file.schedule.fileDraftPrune';
+            get $onionName(): 'a-file:fileDraftPrune';
+            get $onionOptions(): IDecoratorScheduleOptions;
+          }
+}
+/** schedule: end */
+/** serializerTransform: begin */
+export * from '../bean/serializerTransform.resolveView.ts';
+export * from '../bean/serializerTransform.resolveViews.ts';
+import type { ISerializerTransformOptionsResolveView } from '../bean/serializerTransform.resolveView.ts';
+import type { ISerializerTransformOptionsResolveViews } from '../bean/serializerTransform.resolveViews.ts';
+import 'vona-module-a-serialization';
+declare module 'vona-module-a-serialization' {
+
+    export interface ISerializerTransformRecord {
+      'a-file:resolveView': ISerializerTransformOptionsResolveView;
+'a-file:resolveViews': ISerializerTransformOptionsResolveViews;
+    }
+
+
+}
+declare module 'vona-module-a-file' {
+
+        export interface SerializerTransformResolveView {
+          /** @internal */
+          get scope(): ScopeModuleAFile;
+        }
+
+          export interface SerializerTransformResolveView {
+            get $beanFullName(): 'a-file.serializerTransform.resolveView';
+            get $onionName(): 'a-file:resolveView';
+            get $onionOptions(): ISerializerTransformOptionsResolveView;
+          }
+
+        export interface SerializerTransformResolveViews {
+          /** @internal */
+          get scope(): ScopeModuleAFile;
+        }
+
+          export interface SerializerTransformResolveViews {
+            get $beanFullName(): 'a-file.serializerTransform.resolveViews';
+            get $onionName(): 'a-file:resolveViews';
+            get $onionOptions(): ISerializerTransformOptionsResolveViews;
+          }
+}
+/** serializerTransform: end */
 /** dto: begin */
+export * from '../dto/fileDirectUploadFinalizeRequest.ts';
+export * from '../dto/fileDirectUploadFinalizeResponse.ts';
 export * from '../dto/fileDirectUploadRequest.ts';
 export * from '../dto/fileDirectUploadResponse.ts';
 export * from '../dto/fileDownloadRequest.ts';
+export * from '../dto/fileUploadPolicyRequest.ts';
+export * from '../dto/fileUploadPolicyResponse.ts';
 export * from '../dto/fileUploadResponse.ts';
 export * from '../dto/fileUploadTokenRequest.ts';
 export * from '../dto/fileUploadTokenResponse.ts';
 export * from '../dto/fileUploadUrlRequest.ts';
+export * from '../dto/fileView.ts';
+import type { IDtoOptionsFileDirectUploadFinalizeRequest } from '../dto/fileDirectUploadFinalizeRequest.ts';
+import type { IDtoOptionsFileDirectUploadFinalizeResponse } from '../dto/fileDirectUploadFinalizeResponse.ts';
 import type { IDtoOptionsFileDirectUploadRequest } from '../dto/fileDirectUploadRequest.ts';
 import type { IDtoOptionsFileDirectUploadResponse } from '../dto/fileDirectUploadResponse.ts';
 import type { IDtoOptionsFileDownloadRequest } from '../dto/fileDownloadRequest.ts';
+import type { IDtoOptionsFileUploadPolicyRequest } from '../dto/fileUploadPolicyRequest.ts';
+import type { IDtoOptionsFileUploadPolicyResponse } from '../dto/fileUploadPolicyResponse.ts';
 import type { IDtoOptionsFileUploadResponse } from '../dto/fileUploadResponse.ts';
 import type { IDtoOptionsFileUploadTokenRequest } from '../dto/fileUploadTokenRequest.ts';
 import type { IDtoOptionsFileUploadTokenResponse } from '../dto/fileUploadTokenResponse.ts';
 import type { IDtoOptionsFileUploadUrlRequest } from '../dto/fileUploadUrlRequest.ts';
+import type { IDtoOptionsFileView } from '../dto/fileView.ts';
 import 'vona-module-a-web';
 declare module 'vona-module-a-web' {
-  
+
     export interface IDtoRecord {
-      'a-file:fileDirectUploadRequest': IDtoOptionsFileDirectUploadRequest;
+      'a-file:fileDirectUploadFinalizeRequest': IDtoOptionsFileDirectUploadFinalizeRequest;
+'a-file:fileDirectUploadFinalizeResponse': IDtoOptionsFileDirectUploadFinalizeResponse;
+'a-file:fileDirectUploadRequest': IDtoOptionsFileDirectUploadRequest;
 'a-file:fileDirectUploadResponse': IDtoOptionsFileDirectUploadResponse;
 'a-file:fileDownloadRequest': IDtoOptionsFileDownloadRequest;
+'a-file:fileUploadPolicyRequest': IDtoOptionsFileUploadPolicyRequest;
+'a-file:fileUploadPolicyResponse': IDtoOptionsFileUploadPolicyResponse;
 'a-file:fileUploadResponse': IDtoOptionsFileUploadResponse;
 'a-file:fileUploadTokenRequest': IDtoOptionsFileUploadTokenRequest;
 'a-file:fileUploadTokenResponse': IDtoOptionsFileUploadTokenResponse;
 'a-file:fileUploadUrlRequest': IDtoOptionsFileUploadUrlRequest;
+'a-file:fileView': IDtoOptionsFileView;
     }
 
-  
+
 }
 declare module 'vona-module-a-file' {
-   
+
 }
 /** dto: end */
 /** dto: begin */
+import type { DtoFileDirectUploadFinalizeRequest } from '../dto/fileDirectUploadFinalizeRequest.ts';
+import type { DtoFileDirectUploadFinalizeResponse } from '../dto/fileDirectUploadFinalizeResponse.ts';
 import type { DtoFileDirectUploadRequest } from '../dto/fileDirectUploadRequest.ts';
 import type { DtoFileDirectUploadResponse } from '../dto/fileDirectUploadResponse.ts';
 import type { DtoFileDownloadRequest } from '../dto/fileDownloadRequest.ts';
+import type { DtoFileUploadPolicyRequest } from '../dto/fileUploadPolicyRequest.ts';
+import type { DtoFileUploadPolicyResponse } from '../dto/fileUploadPolicyResponse.ts';
 import type { DtoFileUploadResponse } from '../dto/fileUploadResponse.ts';
 import type { DtoFileUploadTokenRequest } from '../dto/fileUploadTokenRequest.ts';
 import type { DtoFileUploadTokenResponse } from '../dto/fileUploadTokenResponse.ts';
 import type { DtoFileUploadUrlRequest } from '../dto/fileUploadUrlRequest.ts';
+import type { DtoFileView } from '../dto/fileView.ts';
 declare module 'vona-module-a-file' {
-  
+
+    export interface IDtoOptionsFileDirectUploadFinalizeRequest {
+      fields?: TypeEntityOptionsFields<DtoFileDirectUploadFinalizeRequest, IDtoOptionsFileDirectUploadFinalizeRequest[TypeSymbolKeyFieldsMore]>;
+    }
+
+    export interface IDtoOptionsFileDirectUploadFinalizeResponse {
+      fields?: TypeEntityOptionsFields<DtoFileDirectUploadFinalizeResponse, IDtoOptionsFileDirectUploadFinalizeResponse[TypeSymbolKeyFieldsMore]>;
+    }
+
     export interface IDtoOptionsFileDirectUploadRequest {
       fields?: TypeEntityOptionsFields<DtoFileDirectUploadRequest, IDtoOptionsFileDirectUploadRequest[TypeSymbolKeyFieldsMore]>;
     }
@@ -311,6 +418,14 @@ declare module 'vona-module-a-file' {
 
     export interface IDtoOptionsFileDownloadRequest {
       fields?: TypeEntityOptionsFields<DtoFileDownloadRequest, IDtoOptionsFileDownloadRequest[TypeSymbolKeyFieldsMore]>;
+    }
+
+    export interface IDtoOptionsFileUploadPolicyRequest {
+      fields?: TypeEntityOptionsFields<DtoFileUploadPolicyRequest, IDtoOptionsFileUploadPolicyRequest[TypeSymbolKeyFieldsMore]>;
+    }
+
+    export interface IDtoOptionsFileUploadPolicyResponse {
+      fields?: TypeEntityOptionsFields<DtoFileUploadPolicyResponse, IDtoOptionsFileUploadPolicyResponse[TypeSymbolKeyFieldsMore]>;
     }
 
     export interface IDtoOptionsFileUploadResponse {
@@ -328,6 +443,10 @@ declare module 'vona-module-a-file' {
     export interface IDtoOptionsFileUploadUrlRequest {
       fields?: TypeEntityOptionsFields<DtoFileUploadUrlRequest, IDtoOptionsFileUploadUrlRequest[TypeSymbolKeyFieldsMore]>;
     }
+
+    export interface IDtoOptionsFileView {
+      fields?: TypeEntityOptionsFields<DtoFileView, IDtoOptionsFileView[TypeSymbolKeyFieldsMore]>;
+    }
 }
 /** dto: end */
 /** controller: begin */
@@ -335,15 +454,15 @@ export * from '../controller/file.ts';
 import type { IControllerOptionsFile } from '../controller/file.ts';
 import 'vona-module-a-web';
 declare module 'vona-module-a-web' {
-  
+
     export interface IControllerRecord {
       'a-file:file': IControllerOptionsFile;
     }
 
-  
+
 }
 declare module 'vona-module-a-file' {
-  
+
         export interface ControllerFile {
           /** @internal */
           get scope(): ScopeModuleAFile;
@@ -353,27 +472,28 @@ declare module 'vona-module-a-file' {
             get $beanFullName(): 'a-file.controller.file';
             get $onionName(): 'a-file:file';
             get $onionOptions(): IControllerOptionsFile;
-          } 
+          }
 }
 /** controller: end */
 /** controller: begin */
 // @ts-ignore ignore
 import type { ControllerFile } from '../controller/file.ts';
 declare module 'vona-module-a-file' {
-  
+
     export interface IControllerOptionsFile {
       actions?: TypeControllerOptionsActions<ControllerFile>;
     }
 }
 declare module 'vona-module-a-web' {
   export interface IApiPathPostRecord{
-        '/file/upload-token': undefined;
+        '/file/upload-policy': undefined;
 '/file/upload': undefined;
 '/file/direct-upload': undefined;
+'/file/direct-upload/finalize': undefined;
 '/file/upload-url': undefined;
     }
 export interface IApiPathGetRecord{
-        '/file/download/:fileId': undefined;
+        '/file/download': undefined;
     }
 
 }
@@ -411,7 +531,7 @@ declare module 'vona' {
   export interface IBeanScopeContainer {
     file: ScopeModuleAFile;
   }
-  
+
   export interface IBeanScopeConfig {
     'a-file': ReturnType<typeof config>;
   }
@@ -420,6 +540,6 @@ declare module 'vona' {
     'a-file': (typeof locales)[TypeLocaleBase];
   }
 
-  
+
 }
 /** scope: end */

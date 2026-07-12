@@ -37,14 +37,19 @@ export type TypeImageVariantName = keyof IImageVariantNameRecord;
 
 export type IImageNamedVariants = Partial<Record<TypeImageVariantName, IImageTransformOptions>>;
 
-export type TypeImageDeliveryExpiry = Date | string | number;
+export type TypeImageDirectUploadExpiry = Date | string | number;
 
 export type TypeImageStatus = 'draft' | 'ready' | 'expired';
 
 export interface IImageDeliveryOptions {
-  signed?: boolean;
   expiresIn?: number;
-  expiresAt?: TypeImageDeliveryExpiry;
+  audience?: boolean;
+  responseMode?: 'auto' | 'buffer' | 'url';
+}
+
+export interface IImageProviderDeliveryOptions {
+  protected: boolean;
+  expiresIn?: number;
   responseMode?: 'auto' | 'buffer' | 'url';
 }
 
@@ -73,7 +78,7 @@ export interface IImageUploadInput<TMeta extends TypeImageMeta = TypeImageMeta> 
   filename?: string;
   contentType?: string;
   size?: number;
-  requireSignedURLs?: boolean;
+  public?: boolean;
   meta?: TMeta;
 }
 
@@ -81,16 +86,16 @@ export interface IImageUploadUrlInput<TMeta extends TypeImageMeta = TypeImageMet
   url: string;
   filename?: string;
   contentType?: string;
-  requireSignedURLs?: boolean;
+  public?: boolean;
   meta?: TMeta;
 }
 
 export interface IImageDirectUploadInput<TMeta extends TypeImageMeta = TypeImageMeta> {
   filename?: string;
   contentType?: string;
-  requireSignedURLs?: boolean;
+  public?: boolean;
   meta?: TMeta;
-  expiry?: TypeImageDeliveryExpiry;
+  expiry?: TypeImageDirectUploadExpiry;
   customId?: string;
 }
 
@@ -98,6 +103,7 @@ export interface IImageUploadContextResolved<TMeta extends TypeImageMeta = TypeI
   imageScene: keyof IImageSceneRecord;
   providerName: keyof IImageProviderRecord;
   clientName: string;
+  public?: boolean;
   meta?: TMeta;
 }
 
@@ -120,7 +126,7 @@ export interface IImageProviderResource<
   size?: number;
   width?: number;
   height?: number;
-  requireSignedURLs?: boolean;
+  public?: boolean;
   variants?: IImageNamedVariants;
   meta?: TMeta;
   storagePath?: string;
@@ -163,21 +169,33 @@ export interface IImageFinalizeDirectUploadResult<
   TRaw = unknown,
 > extends IImageResource<TMeta, TRaw> {}
 
+export interface IImageActionResponse {
+  id: TableIdentity;
+  filename?: string;
+  contentType?: string;
+  size?: number;
+  width?: number;
+  height?: number;
+  public?: boolean;
+  url: string;
+  signed: boolean;
+}
+
+export interface IImageDirectUploadResponse {
+  id: TableIdentity;
+  uploadUrl: string;
+  filename?: string;
+  public?: boolean;
+}
+
 export interface IImageView {
   id: TableIdentity;
   url: string;
   filename?: string;
   width?: number;
   height?: number;
-  provider: keyof IImageProviderRecord;
-  clientName: string;
-  imageScene?: keyof IImageSceneRecord | string;
-  status?: TypeImageStatus;
-  draftExpiresAt?: Date;
-  finalizedAt?: Date;
-  uploadedAt?: Date;
-  variants?: IImageNamedVariants;
-  signed?: boolean;
+  public?: boolean;
+  signed: boolean;
 }
 
 export interface IImageUploadOptions<
@@ -201,22 +219,11 @@ export interface IImageUploadPolicyResolved<
   mimeType: string;
 }
 
-export interface IImageUploadTokenPayload<
-  TMeta extends TypeImageMeta = TypeImageMeta,
-> extends IImageUploadPolicyResolved<TMeta> {
-  kind: 'imageUpload';
-}
-
-export interface IImageDirectUploadTokenPayload {
-  kind: 'imageDirectUpload';
-  resourceId: string;
-}
-
 export interface IImageDeliveryTokenPayload {
   kind: 'imageDelivery';
   imageId: TableIdentity;
   request: IImageVariantRequest;
-  targetUrl: string;
+  audienceUserId?: TableIdentity;
 }
 
 declare module 'vona' {

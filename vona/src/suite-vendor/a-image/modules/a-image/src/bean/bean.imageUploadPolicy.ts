@@ -4,11 +4,10 @@ import { Bean } from 'vona-module-a-bean';
 
 import type {
   IImageDeliveryTokenPayload,
-  IImageDirectUploadTokenPayload,
   IImageUploadContextResolved,
   IImageUploadPolicyResolved,
-  IImageUploadTokenPayload,
 } from '../types/image.ts';
+import type { IImageProviderExecute } from '../types/imageProvider.ts';
 import type {
   IDecoratorImageSceneOptions,
   IDecoratorImageSceneOptionsProvider,
@@ -19,55 +18,19 @@ import { getImageExtension, matchesImageMimeType } from '../lib/imageUploadValid
 
 @Bean()
 export class BeanImageUploadPolicy extends BeanBase {
-  async createUploadToken(data: {
-    imageScene: keyof IImageSceneRecord;
-    size: number;
-    mimeType: string;
-    expiresIn?: number;
-  }) {
-    const payload = await this.resolveUploadPolicy(data);
-    const path = this.scope.util.combineApiPath('image/upload', false, true);
-    const token = await this.bean.jwt.createTempAuthToken(
-      {
-        kind: 'imageUpload',
-        ...payload,
-      } as IImageUploadTokenPayload,
-      {
-        path,
-        expiresIn: data.expiresIn,
-      },
-    );
-    return { token, expiresIn: data.expiresIn };
-  }
-
-  async createDirectUploadToken(data: { resourceId: string; path: string; expiresIn?: number }) {
-    const path = data.path;
-    const token = await this.bean.jwt.createTempAuthToken(
-      {
-        kind: 'imageDirectUpload',
-        resourceId: data.resourceId,
-      } as IImageDirectUploadTokenPayload,
-      {
-        path,
-        expiresIn: data.expiresIn,
-      },
-    );
-    return { token, expiresIn: data.expiresIn };
-  }
-
   async createDeliveryToken(data: {
     imageId: number | string;
     request: IImageDeliveryTokenPayload['request'];
-    targetUrl: string;
     expiresIn?: number;
+    audienceUserId?: IImageDeliveryTokenPayload['audienceUserId'];
   }) {
-    const path = this.scope.util.combineApiPath(`image/delivery/${data.imageId}`, false, true);
+    const path = this.scope.util.combineApiPath('image/delivery', false, true);
     const token = await this.bean.jwt.createTempAuthToken(
       {
         kind: 'imageDelivery',
         imageId: data.imageId,
         request: data.request,
-        targetUrl: data.targetUrl,
+        audienceUserId: data.audienceUserId,
       } as IImageDeliveryTokenPayload,
       {
         path,
@@ -75,26 +38,6 @@ export class BeanImageUploadPolicy extends BeanBase {
       },
     );
     return { token, expiresIn: data.expiresIn };
-  }
-
-  async verifyUploadToken(token: string | undefined, routePathRaw: string) {
-    const payload = (await this.bean.jwt.get('access').verify(token, {
-      path: routePathRaw,
-    })) as IImageUploadTokenPayload | undefined;
-    if (!payload || payload.kind !== 'imageUpload') {
-      return this.app.throw(401);
-    }
-    return payload;
-  }
-
-  async verifyDirectUploadToken(token: string | undefined, routePathRaw: string) {
-    const payload = (await this.bean.jwt.get('access').verify(token, {
-      path: routePathRaw,
-    })) as IImageDirectUploadTokenPayload | undefined;
-    if (!payload || payload.kind !== 'imageDirectUpload') {
-      return this.app.throw(401);
-    }
-    return payload;
   }
 
   async verifyDeliveryToken(token: string | undefined, routePathRaw: string) {
@@ -113,10 +56,15 @@ export class BeanImageUploadPolicy extends BeanBase {
     const imageScene = data.imageScene;
     const sceneOptions = this._getSceneOptions(imageScene);
     const { providerName, clientName } = await this._resolveProvider(sceneOptions);
+    const { clientOptions } = await this.bean.imageProvider.getClientOptions({
+      providerName,
+      clientName,
+    });
     return {
       imageScene,
       providerName,
       clientName,
+      public: this._resolvePublic(clientOptions, sceneOptions),
       meta: await this._resolveSceneMeta(sceneOptions),
     };
   }
@@ -126,13 +74,22 @@ export class BeanImageUploadPolicy extends BeanBase {
     const imageScene = data.imageScene;
     const sceneOptions = this._getSceneOptions(imageScene);
     const { providerName, clientName } = await this._resolveProvider(sceneOptions);
-    const { entityImageProvider, disabled } = await this.bean.imageProvider.getClientOptions({
+    const {
+      entityImageProvider,
+      disabled,
+      beanFullName,
+      clientOptions: _clientOptions,
+    } = await this.bean.imageProvider.getClientOptions({
       providerName,
       clientName,
     });
     if (!entityImageProvider || disabled) {
       return this.app.throw(403, `Image provider unavailable: ${providerName}.${clientName}`);
     }
+    const imageProvider = this.app.bean._getBean<IImageProviderExecute>(beanFullName as never);
+    const directUpload =
+      typeof imageProvider.createDirectUpload === 'function' &&
+      typeof imageProvider.finalizeDirectUpload === 'function';
     const uploadOptions = {
       ...(imageConfig.upload ?? {}),
       ...(sceneOptions.upload ?? {}),
@@ -145,6 +102,8 @@ export class BeanImageUploadPolicy extends BeanBase {
       mimeTypes: mimeTypes.length > 0 ? mimeTypes : undefined,
       extensions: extensions.length > 0 ? extensions : undefined,
       multiple: uploadOptions.multiple,
+      public: this._resolvePublic(_clientOptions, sceneOptions),
+      directUpload,
     };
   }
 
@@ -201,16 +160,10 @@ export class BeanImageUploadPolicy extends BeanBase {
   ) {
     const stat = await fse.stat(file.file);
     const fileSize = Number(stat.size);
-    if (fileSize !== payload.fileSize) {
-      return this.app.throw(403, `image size mismatch: size=${fileSize}`);
-    }
     if (payload.maxSize && fileSize > payload.maxSize) {
       return this.app.throw(403, `image too large: maxSize=${payload.maxSize}`);
     }
     const mimeType = file.mimeType.toLowerCase();
-    if (mimeType !== payload.mimeType) {
-      return this.app.throw(403, `image mimeType mismatch: mimeType=${mimeType}`);
-    }
     if (payload.mimeTypes?.length && !matchesImageMimeType(mimeType, payload.mimeTypes)) {
       return this.app.throw(403, `unsupported image mimeType: ${mimeType}`);
     }
@@ -245,5 +198,12 @@ export class BeanImageUploadPolicy extends BeanBase {
       return await meta(this.ctx);
     }
     return meta;
+  }
+
+  private _resolvePublic(
+    clientOptions: { public?: boolean } | undefined,
+    sceneOptions: IDecoratorImageSceneOptions,
+  ) {
+    return sceneOptions.public ?? clientOptions?.public ?? this.scope.config.image.public ?? false;
   }
 }

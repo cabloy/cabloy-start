@@ -1,21 +1,18 @@
 import type { SharpConstructor } from 'sharp';
 import type {
   EntityImage,
-  IImageDeliveryOptions,
-  IImageDirectUploadInput,
-  IImageProviderDirectUploadResource,
+  IImageProviderDeliveryOptions,
   IImageProviderResolvedVariant,
   IImageProviderResource,
   IImageTransformOptions,
   IImageUploadInput,
   IImageVariantRequest,
 } from 'vona-module-a-image';
-import type { IUploadFile } from 'vona-module-a-upload';
 
 import fse from 'fs-extra';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
-import { BeanBase, uuidv4 } from 'vona';
+import { BeanBase, getRuntimePathPhysicalRoot, uuidv4 } from 'vona';
 import { Service } from 'vona-module-a-bean';
 import { resolveImageVariantRequestToTransform } from 'vona-module-a-image';
 
@@ -23,21 +20,7 @@ import type { IImageProviderNativeClientOptions } from '../bean/imageProvider.na
 
 type IImageNativeStoredImage = Pick<
   EntityImage,
-  'resourceId' | 'filename' | 'storagePath' | 'variants'
->;
-
-type IImageNativeDraftImage = Pick<
-  EntityImage,
-  | 'resourceId'
-  | 'filename'
-  | 'contentType'
-  | 'meta'
-  | 'imageScene'
-  | 'requireSignedURLs'
-  | 'storagePath'
-  | 'deliveryBaseUrl'
-  | 'variants'
-  | 'clientName'
+  'id' | 'resourceId' | 'filename' | 'contentType' | 'public' | 'storagePath' | 'variants'
 >;
 
 @Service()
@@ -56,80 +39,24 @@ export class ServiceImageNative extends BeanBase {
     options: IImageProviderNativeClientOptions,
   ): Promise<IImageProviderResource> {
     const resourceId = uuidv4();
-    const targetPath = await this._getFinalPath(resourceId, input.filename, options, input.file);
+    const isPublic = input.public ?? options.public;
+    const targetPath = await this._getFinalPath(
+      resourceId,
+      input.filename,
+      isPublic,
+      options,
+      input.file,
+    );
+    await fse.ensureDir(path.dirname(targetPath));
     await fse.copy(input.file, targetPath);
     return await this._buildStoredResource(targetPath, {
       resourceId,
       filename: input.filename,
       contentType: input.contentType,
       meta: input.meta,
-      requireSignedURLs: input.requireSignedURLs ?? options.requireSignedURLs,
+      public: isPublic,
       variants: options.variants ?? this.scope.config.imageNative.variants,
       deliveryBaseUrl: options.deliveryBaseUrl,
-    });
-  }
-
-  async createDirectUpload(
-    input: IImageDirectUploadInput,
-    options: IImageProviderNativeClientOptions,
-  ): Promise<IImageProviderDirectUploadResource> {
-    const resourceId = this._sanitizeResourceId(input.customId) ?? uuidv4();
-    const storagePath = await this._getFinalPath(resourceId, input.filename, options);
-    const routePath = this.scope.util.combineApiPath(
-      `image-native/direct-upload/${encodeURIComponent(resourceId)}`,
-      false,
-      true,
-    );
-    const tokenPath = this.scope.util.combineApiPath(
-      'image-native/direct-upload/:resourceId',
-      false,
-      true,
-    );
-    const tokenPayload = await this.bean.imageUploadPolicy.createDirectUploadToken({
-      resourceId,
-      path: tokenPath,
-    });
-    const uploadUrl = new URL(this.app.util.getAbsoluteUrlByApiPath(routePath));
-    uploadUrl.searchParams.set('token', tokenPayload.token);
-    return {
-      resourceId,
-      filename: input.filename,
-      contentType: input.contentType,
-      meta: input.meta,
-      requireSignedURLs: input.requireSignedURLs ?? options.requireSignedURLs,
-      variants: options.variants ?? this.scope.config.imageNative.variants,
-      deliveryBaseUrl: options.deliveryBaseUrl,
-      storagePath,
-      uploadUrl: uploadUrl.toString(),
-      draft: true,
-    };
-  }
-
-  async uploadDirectFile(image: IImageNativeDraftImage, file: IUploadFile) {
-    const draftPath = this._getDraftPath(image.storagePath, image.resourceId);
-    await fse.ensureDir(path.dirname(draftPath));
-    await fse.move(file.file, draftPath, { overwrite: true });
-    return draftPath;
-  }
-
-  async finalizeDirectUpload(
-    image: IImageNativeDraftImage,
-    options: IImageProviderNativeClientOptions,
-  ): Promise<IImageProviderResource | undefined> {
-    const storagePath =
-      image.storagePath ?? (await this._getFinalPath(image.resourceId, image.filename, options));
-    const draftPath = this._getDraftPath(storagePath, image.resourceId);
-    if (!(await fse.pathExists(draftPath))) return undefined;
-    await fse.ensureDir(path.dirname(storagePath));
-    await fse.move(draftPath, storagePath, { overwrite: true });
-    return await this._buildStoredResource(storagePath, {
-      resourceId: image.resourceId,
-      filename: image.filename,
-      contentType: image.contentType,
-      meta: image.meta,
-      requireSignedURLs: image.requireSignedURLs ?? options.requireSignedURLs,
-      variants: image.variants ?? options.variants ?? this.scope.config.imageNative.variants,
-      deliveryBaseUrl: image.deliveryBaseUrl ?? options.deliveryBaseUrl,
     });
   }
 
@@ -137,8 +64,6 @@ export class ServiceImageNative extends BeanBase {
     if (!image.storagePath) return;
     const dir = path.dirname(image.storagePath);
     if (!(await fse.pathExists(dir))) return;
-    const draftPath = this._getDraftPath(image.storagePath, image.resourceId);
-    await fse.remove(draftPath);
     const entries = await fse.readdir(dir);
     await Promise.all(
       entries
@@ -154,8 +79,13 @@ export class ServiceImageNative extends BeanBase {
     image: IImageNativeStoredImage,
     request: IImageVariantRequest,
     options: IImageProviderNativeClientOptions,
-    _deliveryOptions?: IImageDeliveryOptions,
+    _deliveryOptions?: IImageProviderDeliveryOptions,
   ) {
+    if (!(image.public ?? options.public)) {
+      throw new Error(
+        `Private image-native variant URL requires signed delivery: ${image.resourceId}`,
+      );
+    }
     const resolved = resolveImageVariantRequestToTransform(request, 'original', image.variants);
     if (
       resolved.variantName === 'original' &&
@@ -167,6 +97,34 @@ export class ServiceImageNative extends BeanBase {
     return await this._buildUrl(targetPath, options.deliveryBaseUrl);
   }
 
+  async downloadBuffer(
+    image: IImageNativeStoredImage,
+    request: IImageVariantRequest,
+  ): Promise<{
+    buffer: Buffer;
+    filename?: string;
+    contentType?: string;
+  } | null> {
+    if (!image.storagePath) {
+      throw new Error(`Image storage path missing: ${image.resourceId}`);
+    }
+    const resolved = resolveImageVariantRequestToTransform(request, 'original', image.variants);
+    const targetPath =
+      resolved.variantName === 'original' && this._isOriginalTransform(resolved.transformOptions)
+        ? image.storagePath
+        : await this._ensureVariantFile(image, resolved);
+    if (!(await fse.pathExists(targetPath))) return null;
+    return {
+      buffer: await fse.readFile(targetPath),
+      filename: image.filename,
+      contentType: this._resolveContentType(
+        targetPath,
+        image.contentType,
+        resolved.transformOptions,
+      ),
+    };
+  }
+
   private async _buildStoredResource(
     targetPath: string,
     data: {
@@ -174,7 +132,7 @@ export class ServiceImageNative extends BeanBase {
       filename?: string;
       contentType?: string;
       meta?: Record<string, unknown>;
-      requireSignedURLs?: boolean;
+      public?: boolean;
       variants?: EntityImage['variants'];
       deliveryBaseUrl?: string;
     },
@@ -189,7 +147,7 @@ export class ServiceImageNative extends BeanBase {
       size: Number(stat.size),
       width: metadata.width,
       height: metadata.height,
-      requireSignedURLs: data.requireSignedURLs,
+      public: data.public,
       variants: data.variants,
       meta: data.meta,
       storagePath: targetPath,
@@ -200,24 +158,34 @@ export class ServiceImageNative extends BeanBase {
   private async _getFinalPath(
     resourceId: string,
     filename: string | undefined,
+    isPublic: boolean | undefined,
     options: IImageProviderNativeClientOptions,
     filePath?: string,
   ) {
-    const publicPath = await this.app.util.getPublicPathPhysical(
-      path.join('image-native', options.subdir ?? 'default'),
-      true,
-    );
+    const basePath = await this._getBasePath(isPublic, options);
     const ext = this._getOriginalExt(filename, filePath ?? resourceId);
-    return path.join(publicPath, `${resourceId}${ext}`);
+    return path.join(basePath, `${resourceId}${ext}`);
   }
 
-  private _getDraftPath(storagePath: string | undefined, resourceId: string) {
-    if (!storagePath) {
-      throw new Error(`Image storage path missing: ${resourceId}`);
+  private async _getBasePath(
+    isPublic: boolean | undefined,
+    options: IImageProviderNativeClientOptions,
+  ) {
+    if (isPublic) {
+      return await this.app.util.getPublicPathPhysical(
+        path.join('image-native', options.subdir ?? 'default'),
+        true,
+      );
     }
-    const dir = path.dirname(storagePath);
-    const ext = path.extname(storagePath) || '.bin';
-    return path.join(dir, `${resourceId}__draft${ext}`);
+    const runtimeRoot = getRuntimePathPhysicalRoot(this.app);
+    const basePath = path.join(
+      runtimeRoot,
+      this.ctx.instance.id.toString(),
+      'image-native',
+      options.subdir ?? 'default',
+    );
+    await fse.ensureDir(basePath);
+    return basePath;
   }
 
   private async _ensureVariantFile(
@@ -308,8 +276,15 @@ export class ServiceImageNative extends BeanBase {
 
   private async _getVariantStaticPath(targetPath: string) {
     const publicRoot = await this.app.util.getPublicPathPhysical(undefined, true);
-    const relativePath = path.relative(publicRoot, targetPath).split(path.sep).join(path.posix.sep);
-    return path.posix.join('public', this.ctx.instance.id.toString(), relativePath);
+    const relativePath = path.relative(publicRoot, targetPath);
+    if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
+      throw new Error(`Image target path is not publicly accessible: ${targetPath}`);
+    }
+    return path.posix.join(
+      'public',
+      this.ctx.instance.id.toString(),
+      relativePath.split(path.sep).join(path.posix.sep),
+    );
   }
 
   private async _getVariantAbsolutePath(
@@ -323,8 +298,8 @@ export class ServiceImageNative extends BeanBase {
       const variantName = this._sanitizeVariantName(resolved.variantName);
       return path.join(dir, `${image.resourceId}__${variantName}${ext}`);
     }
-    const cacheKey = this._buildTransformCacheKey(resolved.transformOptions);
-    return path.join(dir, `${image.resourceId}__t_${cacheKey}${ext}`);
+    const transformKey = this._buildTransformKey(resolved.transformOptions);
+    return path.join(dir, `${image.resourceId}__t_${transformKey}${ext}`);
   }
 
   private _getVariantExt(
@@ -348,7 +323,25 @@ export class ServiceImageNative extends BeanBase {
     return format === 'jpeg' ? 'jpeg' : format;
   }
 
-  private _buildTransformCacheKey(transformOptions: IImageTransformOptions) {
+  private _resolveContentType(
+    targetPath: string,
+    contentType: string | undefined,
+    transformOptions: IImageTransformOptions,
+  ) {
+    const format = this._normalizeFormat(transformOptions.format);
+    if (format === 'jpeg') return 'image/jpeg';
+    if (format === 'png') return 'image/png';
+    if (format === 'webp') return 'image/webp';
+    if (format === 'avif') return 'image/avif';
+    const ext = path.extname(targetPath).toLowerCase();
+    if (ext === '.jpg' || ext === '.jpeg') return 'image/jpeg';
+    if (ext === '.png') return 'image/png';
+    if (ext === '.webp') return 'image/webp';
+    if (ext === '.avif') return 'image/avif';
+    return contentType;
+  }
+
+  private _buildTransformKey(transformOptions: IImageTransformOptions) {
     const stable = this._stableStringify(transformOptions);
     return createHash('sha1').update(stable).digest('hex').slice(0, 12);
   }
@@ -366,12 +359,6 @@ export class ServiceImageNative extends BeanBase {
         .join(',')}}`;
     }
     return JSON.stringify(value);
-  }
-
-  private _sanitizeResourceId(resourceId: string | undefined) {
-    if (!resourceId) return undefined;
-    const sanitized = resourceId.replace(/[^\w.-]/g, '-');
-    return sanitized || undefined;
   }
 
   private _sanitizeVariantName(variantName: string) {

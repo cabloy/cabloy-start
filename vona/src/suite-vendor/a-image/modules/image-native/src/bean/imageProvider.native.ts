@@ -1,8 +1,7 @@
 import type {
   IDecoratorImageProviderOptions,
-  IImageDeliveryOptions,
-  IImageDirectUploadInput,
   IImageDownloadResult,
+  IImageProviderDeliveryOptions,
   IImageProviderClientOptions,
   IImageProviderClientRecord,
   IImageProviderExecute,
@@ -12,7 +11,6 @@ import type {
 } from 'vona-module-a-image';
 import type { EntityImage } from 'vona-module-a-image';
 
-import fse from 'fs-extra';
 import { BeanBase } from 'vona';
 import { ImageProvider } from 'vona-module-a-image';
 
@@ -20,8 +18,6 @@ export interface IImageProviderNativeClientRecord extends IImageProviderClientRe
 
 export interface IImageProviderNativeClientOptions extends IImageProviderClientOptions {
   subdir?: string;
-  signingKey?: string;
-  tokenName?: string;
 }
 
 export interface IImageProviderOptionsNative extends IDecoratorImageProviderOptions<
@@ -32,6 +28,7 @@ export interface IImageProviderOptionsNative extends IDecoratorImageProviderOpti
 @ImageProvider<IImageProviderOptionsNative>({
   base: {
     subdir: 'default',
+    public: false,
     signedDeliveryKind: 'proxy',
   },
 })
@@ -53,22 +50,6 @@ export class ImageProviderNative
     };
   }
 
-  async createDirectUpload(
-    input: IImageDirectUploadInput,
-    clientOptions: IImageProviderNativeClientOptions,
-    _options: IImageProviderOptionsNative,
-  ) {
-    return await this.scope.service.imageNative.createDirectUpload(input, clientOptions);
-  }
-
-  async finalizeDirectUpload(
-    image: EntityImage,
-    clientOptions: IImageProviderNativeClientOptions,
-    _options: IImageProviderOptionsNative,
-  ) {
-    return await this.scope.service.imageNative.finalizeDirectUpload(image, clientOptions);
-  }
-
   async get(
     image: EntityImage,
     clientOptions: IImageProviderNativeClientOptions,
@@ -81,7 +62,7 @@ export class ImageProviderNative
       size: image.size,
       width: image.width,
       height: image.height,
-      requireSignedURLs: image.requireSignedURLs,
+      public: image.public ?? clientOptions.public,
       variants: image.variants,
       meta: image.meta,
       storagePath: image.storagePath,
@@ -102,7 +83,7 @@ export class ImageProviderNative
     request: IImageVariantRequest,
     clientOptions: IImageProviderNativeClientOptions,
     _options: IImageProviderOptionsNative,
-    deliveryOptions?: IImageDeliveryOptions,
+    deliveryOptions?: IImageProviderDeliveryOptions,
   ) {
     return await this.scope.service.imageNative.getVariantUrl(
       image,
@@ -111,6 +92,7 @@ export class ImageProviderNative
         ...clientOptions,
         subdir: clientOptions.subdir ?? 'default',
         deliveryBaseUrl: image.deliveryBaseUrl ?? clientOptions.deliveryBaseUrl,
+        public: image.public ?? clientOptions.public,
       },
       deliveryOptions,
     );
@@ -121,21 +103,16 @@ export class ImageProviderNative
     request: IImageVariantRequest,
     clientOptions: IImageProviderNativeClientOptions,
     options: IImageProviderOptionsNative,
-    deliveryOptions?: IImageDeliveryOptions,
+    deliveryOptions?: IImageProviderDeliveryOptions,
   ): Promise<IImageDownloadResult> {
-    if (
-      (deliveryOptions?.responseMode ?? 'auto') !== 'url' &&
-      !deliveryOptions?.signed &&
-      request.variantName === 'original' &&
-      !request.transformOptions
-    ) {
-      const buffer = image.storagePath ? await fse.readFile(image.storagePath) : undefined;
-      if (buffer) {
+    if ((deliveryOptions?.responseMode ?? 'auto') !== 'url') {
+      const result = await this.scope.service.imageNative.downloadBuffer(image, request);
+      if (result) {
         return {
           kind: 'buffer',
-          buffer,
-          filename: image.filename,
-          contentType: image.contentType,
+          buffer: result.buffer,
+          filename: result.filename,
+          contentType: result.contentType,
           signed: false,
         };
       }
@@ -145,7 +122,7 @@ export class ImageProviderNative
       url: await this.getVariantUrl(image, request, clientOptions, options, deliveryOptions),
       filename: image.filename,
       contentType: image.contentType,
-      signed: !!deliveryOptions?.signed,
+      signed: !!deliveryOptions?.protected,
     };
   }
 }

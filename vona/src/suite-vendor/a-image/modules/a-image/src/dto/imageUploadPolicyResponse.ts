@@ -24,4 +24,10 @@ export class DtoImageUploadPolicyResponse {
 
   @Api.field(v.optional(), z.boolean())
   multiple?: boolean;
+
+  @Api.field(v.optional(), z.boolean())
+  public?: boolean;
+
+  @Api.field(v.optional(), z.boolean())
+  directUpload?: boolean;
 }

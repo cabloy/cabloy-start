@@ -220,6 +220,60 @@ The better middle ground is:
 
 That is very different from rebuilding a second fetch lifecycle.
 
+### Choose the wait semantic: loaded versus fresh
+
+Waiting for an existing query can mean two different things:
+
+- **Loaded** means a value exists.
+  `$QueryEnsureLoaded(...)` waits only when `query.data === undefined`, so it can continue with an older cached value.
+- **Fresh** means the model's domain-specific validity rule accepts the value.
+  `$QueryGetFresh(...)` and `$QueryEnsureFresh(...)` receive an `isStale(query)` predicate, so the model decides whether loaded data is still safe to consume.
+
+| Need                                 | Helper                          | Missing or stale behavior                                                | Return shape                |
+| ------------------------------------ | ------------------------------- | ------------------------------------------------------------------------ | --------------------------- |
+| An interaction needs any loaded data | `await $QueryEnsureLoaded(...)` | Waits only while `query.data === undefined`                              | Query object or `undefined` |
+| Render may consume only fresh data   | `$QueryGetFresh(...)`           | Starts `query.suspense()` and returns no data for the current render     | `TData \| undefined`        |
+| An interaction requires fresh data   | `await $QueryEnsureFresh(...)`  | Waits for `query.suspense()` and throws a query error when refresh fails | `TData \| undefined`        |
+
+Loaded is an availability condition. Fresh is a validity condition defined by the model; it might use `dataUpdatedAt`, response expiry metadata, or another business rule. `a-model` accepts the predicate and does not prescribe that policy.
+
+For example, `ModelPassport` keeps the temporary-token query and its 30-second reuse rule in the model, while the generic helpers provide the consumption mechanics:
+
+```ts
+import { $QueryEnsureFresh, $QueryGetFresh, BeanModelBase, Model } from 'zova-module-a-model';
+
+@Model()
+export class ModelPassport extends BeanModelBase {
+  getFreshTempAuthToken(options: TempTokenOptions): string | undefined {
+    return $QueryGetFresh(
+      () => this.getTempAuthToken(options),
+      query => this._isTempAuthTokenExpired(query.data, query.dataUpdatedAt, options.staleTime),
+    );
+  }
+
+  async ensureFreshTempAuthToken(options: TempTokenOptions): Promise<string | undefined> {
+    return await $QueryEnsureFresh(
+      () => this.getTempAuthToken(options),
+      query => this._isTempAuthTokenExpired(query.data, query.dataUpdatedAt, options.staleTime),
+    );
+  }
+}
+```
+
+Use the non-blocking facade during render, where stale data should not build a protected URL:
+
+```ts
+const passportCode = this.$passport.getFreshTempAuthToken(options);
+```
+
+Use the awaited facade at an interaction boundary, where a download or preview must not continue with an expired token:
+
+```ts
+const passportCode = await this.$passport.ensureFreshTempAuthToken(options);
+```
+
+Both paths reuse the same model-owned query. When `$QueryGetFresh(...)` finds stale data, it starts `query.suspense()` and returns `undefined` for the current render; reactive query state provides the replacement value on a later render. `$QueryEnsureFresh(...)` instead waits for that refresh and propagates query errors to the interaction flow.
+
 ## Practical rule 7: derive render-time state once per render when possible
 
 Even when the query object is reused, a controller can still become noisy if it repeatedly derives the same values in several helper calls.
@@ -347,15 +401,16 @@ Representative files in the Cabloy Basic frontend:
 - `getUploadPolicy(...)` stays in the model
 - the query is created as formal state instead of a one-off click helper
 - `disableSuspenseOnInit: true` skips the automatic init-time `query.suspense()` kick while preserving the query as formal state
-- render derives `acceptAttr`, `multiple`, and `pending`
-- interaction reuses that state
+- upload policy still uses normal async freshness semantics here because the model method does not set `staleTime: Infinity`
+- render establishes and derives `acceptAttr`, `multiple`, and `pending` from that query-backed state
+- interaction reuses that same state
 - interaction may still `await query.suspense()` on the already-created query if an edge timing window requires it
 
 Why this is a good fit:
 
 - upload policy is a real query-backed state
-- it is relatively stable within the current frontend process
-- every first consumer does not need to auto-kick one eager init-time refresh semantic
+- it is stable enough that every first consumer does not need to auto-kick one eager init-time refresh semantic
+- it should still keep normal async freshness behavior rather than being frozen through `staleTime: Infinity`
 - the strict-ready moment is the interaction boundary, not every initial render consumer
 
 Taken together, Example A and Example B show the most important design contrast on this page:

@@ -6,20 +6,19 @@ import type {
 import { BeanBase } from 'vona';
 import { SerializerTransform } from 'vona-module-a-serialization';
 
-import type { DtoImageView } from '../dto/imageView.ts';
-import type { IImageDeliveryOptions } from '../types/image.ts';
-import type { IImageSceneRecord } from '../types/imageScene.ts';
+import type { IFileDeliveryOptions, IFileView } from '../types/file.ts';
+import type { IFileSceneRecord } from '../types/fileScene.ts';
 
 export type TypeSerializerTransformResolveViewValue = unknown;
 
 export type TypeSerializerTransformResolveViewData = object;
 
-export type TypeSerializerTransformResolveViewResult = DtoImageView | undefined;
+export type TypeSerializerTransformResolveViewResult = IFileView | undefined;
 
 export interface ISerializerTransformOptionsResolveView extends IDecoratorSerializerTransformOptions {
   fieldName: string;
-  imageScene?: keyof IImageSceneRecord;
-  deliveryOptions?: IImageDeliveryOptions;
+  fileScene?: keyof IFileSceneRecord;
+  deliveryOptions?: IFileDeliveryOptions;
 }
 
 @SerializerTransform<ISerializerTransformOptionsResolveView>()
@@ -37,10 +36,9 @@ export class SerializerTransformResolveView
     data: TypeSerializerTransformResolveViewData,
     options: ISerializerTransformOptionsResolveView,
   ): Promise<TypeSerializerTransformResolveViewResult> {
-    return await this.bean.image.resolveView(
+    return await this.bean.file.resolveView(
       data[options.fieldName],
-      undefined,
-      options.imageScene,
+      options.fileScene,
       options.deliveryOptions,
     );
   }

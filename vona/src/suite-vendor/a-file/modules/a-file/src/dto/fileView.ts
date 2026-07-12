@@ -3,11 +3,12 @@ import type { IDecoratorDtoOptions } from 'vona-module-a-web';
 
 import { Api, v } from 'vona-module-a-openapiutils';
 import { Dto } from 'vona-module-a-web';
+import z from 'zod';
 
-export interface IDtoOptionsImageUploadResponse extends IDecoratorDtoOptions {}
+export interface IDtoOptionsFileView extends IDecoratorDtoOptions {}
 
-@Dto<IDtoOptionsImageUploadResponse>()
-export class DtoImageUploadResponse {
+@Dto<IDtoOptionsFileView>()
+export class DtoFileView {
   @Api.field(v.tableIdentity())
   id: TableIdentity;
 
@@ -21,17 +22,14 @@ export class DtoImageUploadResponse {
   size?: number;
 
   @Api.field(v.optional())
-  width?: number;
-
-  @Api.field(v.optional())
-  height?: number;
-
-  @Api.field(v.optional())
   public?: boolean;
 
   @Api.field(v.optional())
-  url?: string;
+  uploadedAt?: Date;
 
-  @Api.field(v.optional())
-  signed?: boolean;
+  @Api.field(z.string())
+  downloadUrl: string;
+
+  @Api.field(v.default(true))
+  signed: boolean;
 }
