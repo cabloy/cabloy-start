@@ -675,6 +675,7 @@ export interface components {
       id: number | string;
       /** @description Role Name */
       name: string;
+      siteIds: string[];
     };
     'home-user.dto.passportJwt': {
       passport: components['schemas']['home-user.dto.passport'];
