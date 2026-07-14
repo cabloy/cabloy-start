@@ -85,14 +85,23 @@ export class MonkeySys
       return app.$gotoPage(pagePath, { ...options, params: undefined });
     };
     app.$gotoLogin = (returnTo?: string, cause?: string) => {
-      if (!returnTo && cast(app.meta.$router.currentRoute)?.path === app.sys.env.ROUTER_PAGE_LOGIN)
+      if (
+        !returnTo &&
+        cast(app.meta.$router.currentRoute)?.path === app.sys.env.ROUTER_PAGE_LOGIN
+      ) {
         return;
+      }
       const query: any = {};
       if (cause) {
         query.cause = cause;
       }
       const returnTo2 = returnTo === app.sys.env.ROUTER_PAGE_LOGIN ? undefined : (returnTo ?? true);
       return app.$gotoPage(app.sys.env.ROUTER_PAGE_LOGIN, { query, returnTo: returnTo2 });
+    };
+    app.$gotoAccessDenied = () => {
+      const pagePath = '/home/base/errorAccessDenied';
+      if (cast(app.meta.$router.currentRoute)?.path === pagePath) return;
+      return app.$gotoPage(pagePath, { replace: true });
     };
     app.$gotoReturnTo = (returnTo?: string) => {
       const pagePath = app.$getReturnTo(returnTo);

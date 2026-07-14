@@ -86,7 +86,34 @@ The important point is architectural:
 
 ## The main helper families
 
-The current source organizes model state around these helper families.
+The current source organizes model state around these helper families. They share model-owned query-key and cache infrastructure, but differ in the surface returned to callers and in their persistence and restore lifecycle.
+
+### Choose the state helper by ownership and lifecycle
+
+Choose a helper by the state surface, persistence, restore, and SSR behavior it needs, not only by whether its value should survive a reload.
+
+| Helper                     | Use it when                                                                       | Caller-facing surface                                                     | Persistence and restore                                                                      |
+| -------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `$useStateData(...)`       | The model owns remote or query-style async state and consumers need query status  | Full query wrapper, including `data`, `error`, and readiness/status state | Normal query lifecycle; may participate in query hydration subject to metadata               |
+| `$useStateMem(...)`        | The model owns reusable runtime state without a browser persistence backend       | Assignable state value                                                    | No browser persistence; eligible successful state can transfer through initial SSR hydration |
+| `$useStateLocal(...)`      | The model owns a small browser value that should restore synchronously            | Assignable state value                                                    | Synchronous `localStorage` restore                                                           |
+| `$useStateCookie(...)`     | The state needs cookie persistence or request-aware handling                      | Assignable state value                                                    | Synchronous cookie restore                                                                   |
+| `$useStateLocalAsync(...)` | The model owns longer-lived browser-local state whose restore may be asynchronous | Assignable state value                                                    | Asynchronous `localforage` restore                                                           |
+| `$useStateComputed(...)`   | The model exposes derived state                                                   | Computed value                                                            | No query fetch or persistence                                                                |
+
+### Data, local, and async-local behavior
+
+`$useStateData(...)`, `$useStateLocal(...)`, and `$useStateLocalAsync(...)` use the same model-owned cache foundation, but they are not interchangeable.
+
+| Concern              | `$useStateData(...)`                                      | `$useStateLocal(...)`                                         | `$useStateLocalAsync(...)`                                                                            |
+| -------------------- | --------------------------------------------------------- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Return surface       | A memoized query wrapper                                  | An assignable state value                                     | An assignable state value                                                                             |
+| Source or storage    | `queryFn`, query cache, and query configuration           | `localStorage`                                                | `localforage`                                                                                         |
+| Initial availability | Follows the query lifecycle                               | Restores synchronously, then falls back to `meta.defaultData` | Restores asynchronously, then falls back to `meta.defaultData`                                        |
+| Intended write flow  | Mutation, cache update, and invalidation policy           | Replace or assign the model field                             | Replace or assign the model field                                                                     |
+| SSR behavior         | Can follow ordinary query dehydration and hydration rules | Browser storage is unavailable on the server                  | Browser storage is unavailable on the server and async-local state explicitly opts out of dehydration |
+
+Use the detailed [`$useStateData` Best Practices](/frontend/use-state-data-best-practices) guide for render-versus-interaction placement, `disableSuspenseOnInit`, freshness utilities, and explicit readiness boundaries.
 
 ### 1. `$useStateData(...)`
 
@@ -155,16 +182,62 @@ The pattern to notice is that the model owns both the mutation and the follow-up
 
 ## 3. `$useStateMem(...)`
 
-Use this when the state should stay only in memory.
+Use this for reusable runtime state that belongs to a Model but does not need a browser persistence backend. It returns an assignable value, rather than a query wrapper, while retaining Model-owned Query Cache identity.
 
 Current-source characteristics:
 
-- no persistence
-- `enabled: false`
+- `enabled: false`, so it does not define a normal remote-fetch lifecycle
 - `staleTime: Infinity`
-- still uses model-owned query cache semantics under the hood
+- `meta.persister: false`, so it does not read or write `localStorage`, cookies, or `localforage`
+- reads from existing Query Cache first, then `meta.defaultData`, then `undefined`
+- assignments update the Query Cache without a persister save
+- automatic key prefixing isolates the state by Model identity and, when enabled, selector identity
 
-This is useful when you want model ownership and query-key identity without local persistence.
+This is useful when several consumers or Model methods need the same business state during the current frontend runtime, but the browser should not restore it from storage. For structured values, replace or assign the Model field so its custom-ref setter updates the Query Cache:
+
+```typescript
+this.selectedIds = nextSelectedIds;
+```
+
+A plain Controller field is usually clearer when the state belongs only to that one Controller. Choose `$useStateLocal(...)`, `$useStateCookie(...)`, or `$useStateLocalAsync(...)` when browser persistence is part of the requirement. Choose `$useStateData(...)` when consumers need query status, errors, freshness, or a remote-fetch lifecycle.
+
+### SSR transfer is not persistence
+
+`meta.persister: false` means no browser persistence backend. It does not, by itself, exclude the state from the initial SSR server-to-client Query Cache handoff.
+
+After server rendering, a successful eligible memory-state query can be dehydrated with the shared Query Cache. During client SSR pre-hydration, the snapshot is hydrated into the client QueryClient. A later `$useStateMem(...)` read can therefore receive the transferred value directly from cache when its effective key matches: the same Model, the same selector when selector mode is enabled, and the same logical `queryKey`.
+
+This transfer has limits:
+
+- it applies only to entries accepted by the normal dehydration policy; `meta.ssr.dehydrate: false` opts a state out
+- it is not a replacement for `localStorage`, cookies, or async-local persistence
+- it does not make the value survive a later browser reload without a new SSR handoff
+- it does not make an empty or unsuccessful cache entry transfer automatically
+
+The router-tabs Model uses memory state for current navigation keys and for tabs when tab caching is disabled. The page-data Model uses memory slots keyed by page path. Read [SSR Init Data](/frontend/ssr-init-data) for the page-side flow, or [A-Model Under the Hood](/frontend/a-model-under-the-hood) for the Query Cache and dehydration mechanics.
+
+### SSR/CSR bridge: `ModelPassport`
+
+`ModelPassport` shows that the state helper selected on the server and the one selected on the client do not have to be the same. Its application initialization creates the same logical state differently by environment:
+
+```typescript
+this.passport = process.env.CLIENT
+  ? this.$useStateLocal({ queryKey: ['passport'] })
+  : this.$useStateMem({ queryKey: ['passport'] });
+```
+
+On the SSR server, authenticated work can assign the current passport to the memory-backed Query Cache entry. If that entry is successful and eligible, it is dehydrated with the server QueryClient. During client SSR pre-hydration, the snapshot restores the entry before the client Model consumes it.
+
+The client then creates a `$useStateLocal(...)` wrapper for the same effective key. Its read order is Query Cache first, then `localStorage`, then `meta.defaultData`. The hydrated server passport therefore wins on the initial client read; synchronous local-storage restoration is a fallback only when the transferred cache entry is absent.
+
+This gives authentication state two complementary properties:
+
+- SSR uses the request-confirmed passport to keep the initial HTML and client hydration consistent.
+- CSR-only entry and later browser sessions can restore the client-local passport value from `localStorage`.
+
+The server `$useStateMem(...)` entry is the entry that is dehydrated. The client `$useStateLocal(...)` call is a new client-side wrapper that reuses hydrated cache because its effective key matches. Matching requires the same Model, the same selector when selector mode is enabled, and the same logical `queryKey`; the short logical key alone is not global identity.
+
+Reading the hydrated value does not save it back to `localStorage`. A later assignment through the client local-state wrapper updates Query Cache and writes the local-storage record. This is an initial SSR cache handoff plus client persistence fallback, not automatic persistence of the SSR snapshot.
 
 ## 4. `$useStateLocal(...)`
 
@@ -195,9 +268,9 @@ Current-source characteristics:
 
 This is particularly relevant for state that must participate in request-aware or SSR-adjacent flows.
 
-## 6. `$useStateDb(...)`
+## 6. `$useStateLocalAsync(...)`
 
-Use this when the model state should persist asynchronously in db-style client storage.
+Use this when the model state should persist asynchronously in browser-local storage backed by `localforage`.
 
 Current-source characteristics:
 
@@ -205,9 +278,39 @@ Current-source characteristics:
 - `enabled: false`
 - `staleTime: Infinity`
 - explicit `ssr.dehydrate = false`
-- getters may need async restore flow before data is available
+- the first unresolved read may need async restore before the state is available
 
 This is useful for larger persisted client state that should outlive a page session without being stored in cookies or plain local storage.
+
+### Initialize and ensure async-local state
+
+Assign the state property before awaiting it. When later initialization depends on the restored value, establish an explicit restore boundary with `$ensureStateLocalAsync(...)`. It waits for the pending initial restore to settle; it does not force another load and does not guarantee a defined result:
+
+```typescript
+protected async __init__() {
+  this.tabs = this.$useStateLocalAsync({
+    queryKey: ['tabs'],
+    meta: {
+      defaultData: [],
+    },
+  });
+
+  await this.$ensureStateLocalAsync(this.tabs);
+
+  // Continue only after persisted tabs, or the fallback default, is available.
+  this.initializeTabs();
+}
+```
+
+`meta.defaultData` is a fallback: it initializes the state only when no persisted value is restored. If neither provides a value, the ensured result can still be `undefined`. The router-tabs model follows this assign-then-ensure sequence before it continues with route initialization.
+
+Persisted local and async-local state should be updated by replacing or assigning the model field so its custom-ref setter can update query state and persist the new value:
+
+```typescript
+this.tabs = nextTabs;
+```
+
+Do not rely on an in-place nested mutation alone to persist the change. Assigning `undefined` removes the persisted value.
 
 ## 7. `$useStateComputed(...)`
 
@@ -233,6 +336,8 @@ that logical key is prefixed internally with model identity, and with selector w
 
 That means model code can use short business-facing keys while still getting namespace isolation.
 
+Automatic model namespacing does not make every varying runtime value part of the logical key. Logical keys still describe stable resource inputs. Do not add a user or role fingerprint solely because a backend response is evaluated through the current Passport; use the normal authentication lifecycle for login/logout and explicitly invalidate or refetch affected stable keys for an in-session policy change. See [use-state-data-best-practices.md](./use-state-data-best-practices.md) for the full rule.
+
 ## Persistence and restore behavior
 
 Current source treats persistence as part of the model-state runtime.
@@ -252,16 +357,17 @@ Model state choices can affect SSR behavior.
 
 Current-source behaviors to remember:
 
-- query state can be dehydrated on server and hydrated on client
+- successful eligible Query Cache state can be dehydrated on the server and hydrated on the client
+- `$useStateMem(...)` has no browser persister but can participate in that initial SSR handoff unless excluded by metadata
 - mutations are not dehydrated
-- `db` state is explicitly not dehydrated
-- server cannot use local-storage or db persistence backends
-- cookie state is special because cookie access can still exist through the app cookie surface
+- `$useStateLocalAsync(...)` explicitly opts out of dehydration
+- server-side sync local and cookie persister-backed Query Cache entries are excluded by the default dehydration policy; this does not prevent a client `$useStateLocal(...)` or `$useStateCookie(...)` wrapper from reusing a hydrated entry that the server created with a different eligible helper
+- server cannot use local-storage or async-local persistence backends; cookie state is special because cookie access can still exist through the app cookie surface
 
 Practical implication:
 
-- do not assume every persisted model state behaves the same during SSR
-- choose `mem`, `local`, `cookie`, `db`, or `data` based on ownership and hydration requirements, not only convenience
+- do not equate browser persistence with SSR transfer, or assume every state family behaves the same during SSR
+- choose `mem`, `local`, `cookie`, `localAsync`, or `data` based on ownership, persistence, and hydration requirements, not only convenience
 
 ## Real examples to read
 
@@ -289,7 +395,7 @@ This file shows:
 
 - `@Model({ enableSelector: true, ... })`
 - richer model initialization in `__init__`
-- mixed use of `$useStateMem(...)` and `$useStateDb(...)`
+- mixed use of `$useStateMem(...)` and `$useStateLocalAsync(...)`
 - model-owned tab state with cache and persistence decisions
 
 ### SSR-sensitive auth model

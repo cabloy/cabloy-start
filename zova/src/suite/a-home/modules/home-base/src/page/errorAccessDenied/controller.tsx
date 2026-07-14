@@ -1,0 +1,40 @@
+import { VBtn } from 'vuetify/components';
+import { BeanControllerPageBase } from 'zova';
+import { Controller } from 'zova-module-a-bean';
+
+@Controller()
+export class ControllerPageErrorAccessDenied extends BeanControllerPageBase {
+  cTitle: string;
+  cDescription: string;
+
+  protected async __init__() {
+    this.cTitle = this.$style({
+      fontSize: '60px',
+    });
+    this.cDescription = this.$style({
+      fontSize: '30px',
+      lineHeight: '2',
+      opacity: '0.4',
+    });
+  }
+
+  protected render() {
+    return (
+      <div class="text-center q-pa-md">
+        <div>
+          <div class={this.cTitle}>403</div>
+          <div class={this.cDescription}>Access denied.</div>
+          <VBtn
+            rounded
+            elevation={12}
+            ripple
+            text={this.scope.locale.GoHome()}
+            nativeOnClick={() => {
+              this.app.$gotoHome();
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+}

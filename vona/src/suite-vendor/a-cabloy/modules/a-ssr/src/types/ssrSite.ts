@@ -46,12 +46,13 @@ export interface SSRContextState {
   pageData?: unknown;
 }
 
+export interface ISsrSiteIdRecord {}
+
 export interface ISsrSitePublicPathRecord {}
 
 export interface ISsrSiteRecord {}
 
 export interface ISsrSiteDiagnosticsOptions {
-  siteName?: string;
   buildCommand?: string;
 }
 
@@ -68,6 +69,7 @@ export interface IDecoratorSsrSiteOptions<
   extends
     IOnionOptionsEnable,
     IOnionOptionsMatch<TypeOnionOptionsMatchRule<keyof IInstanceRecord>> {
+  siteId: keyof ISsrSiteIdRecord;
   publicPath: keyof ISsrSitePublicPathRecord;
   bundlePath: string;
   diagnostics?: ISsrSiteDiagnosticsOptions;
