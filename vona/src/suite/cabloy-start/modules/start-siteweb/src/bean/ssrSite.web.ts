@@ -4,6 +4,10 @@ import type { IIconRecord, IPagePathRecord } from 'zova-rest-cabloy-start-web';
 import { BeanSsrSiteBase, SsrSite } from 'vona-module-a-ssr';
 
 declare module 'vona-module-a-ssr' {
+  export interface ISsrSiteIdRecord {
+    web: never;
+  }
+
   export interface ISsrSitePublicPathRecord {
     '': never;
   }
@@ -20,10 +24,10 @@ export interface ISsrSiteOptionsWeb extends IDecoratorSsrSiteOptions<
 > {}
 
 @SsrSite<ISsrSiteOptionsWeb>({
+  siteId: 'web',
   publicPath: '',
   bundlePath: 'ssr-cabloyStartWeb-5.0.0',
   diagnostics: {
-    siteName: 'web',
     buildCommand: 'npm run build:zova:web',
   },
 })
