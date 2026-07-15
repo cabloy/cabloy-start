@@ -90,11 +90,11 @@ A practical fallback rule is:
 
 With that default, Vona derives the instance name from the remaining labels:
 
-| Hostname | Derived instance name |
-| --- | --- |
-| `cabloy.test` | `''` |
-| `acme.cabloy.test` | `acme` |
-| `eu.acme.cabloy.test` | `acme.eu` |
+| Hostname              | Derived instance name |
+| --------------------- | --------------------- |
+| `cabloy.test`         | `''`                  |
+| `acme.cabloy.test`    | `acme`                |
+| `eu.acme.cabloy.test` | `acme.eu`             |
 
 The last example is intentionally `acme.eu`: Koa reverses the remaining hostname labels before Vona joins `ctx.subdomains` with `.`.
 

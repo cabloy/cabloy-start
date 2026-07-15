@@ -31,12 +31,12 @@ These affect areas such as cookie-driven SSR behavior, theme defaults, body-load
 - `SSR_TRANSFERCACHE_EXPIRES=0` emits `Cache-Control: no-cache, no-store, must-revalidate`.
 - A positive number of seconds or an `ms`-style duration such as `10m` emits `Cache-Control: public, max-age=<seconds>`.
 
-Cabloy Start uses different flavor defaults:
+Cabloy Basic uses different flavor defaults:
 
-| Flavor | Settings | SSR response header |
-| --- | --- | --- |
-| `cabloyStartWeb` | `SSR_TRANSFERCACHE=true`, `SSR_TRANSFERCACHE_EXPIRES=10m` | `public, max-age=600` |
-| `cabloyStartAdmin` | `SSR_TRANSFERCACHE=true`, `SSR_TRANSFERCACHE_EXPIRES=0` | `no-cache, no-store, must-revalidate` |
+| Flavor | Settings                                                  | SSR response header                   |
+| ------ | --------------------------------------------------------- | ------------------------------------- |
+| Web    | `SSR_TRANSFERCACHE=true`, `SSR_TRANSFERCACHE_EXPIRES=10m` | `public, max-age=600`                 |
+| Admin  | `SSR_TRANSFERCACHE=true`, `SSR_TRANSFERCACHE_EXPIRES=0`   | `no-cache, no-store, must-revalidate` |
 
 A route can override the flavor default through its SSR route metadata. For Cloudflare cache-rule alignment that preserves these origin headers, see [Docker + Cloudflare Deployment](/fullstack/deploy-cloudflare-docker).
 
