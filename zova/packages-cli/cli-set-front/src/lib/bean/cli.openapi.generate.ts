@@ -606,6 +606,10 @@ function _patchOpenapiTSOptions(options?: OpenAPITSOptions) {
           const res = transformCustom(schemaObject, options);
           if (res !== undefined) return res;
         }
+        // // null
+        // if (schemaObject.type === 'null') {
+        //   return NULL;
+        // }
         // multipart
         if (schemaObject.format === 'binary') {
           if (
