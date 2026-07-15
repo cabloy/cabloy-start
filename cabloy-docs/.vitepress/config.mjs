@@ -42,6 +42,10 @@ const fullstackGroups = [
     ],
   },
   {
+    text: 'Fullstack / Deployment',
+    items: [{ text: 'Docker + Cloudflare Deployment', link: '/fullstack/deploy-cloudflare-docker' }],
+  },
+  {
     text: 'Fullstack / Tutorials',
     items: [
       { text: 'Tutorials Overview', link: '/fullstack/tutorials-overview' },
