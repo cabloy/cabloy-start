@@ -66,7 +66,6 @@ export class ControllerBlockFilter extends BeanControllerBase {
     return (
       <ZForm
         class={this.$props.class}
-        inline={true}
         data={$$page.queryFilterData}
         schema={this.schemaFilter}
         schemaScene="filter"

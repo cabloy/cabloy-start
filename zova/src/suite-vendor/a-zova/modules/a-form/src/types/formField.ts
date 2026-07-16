@@ -17,7 +17,7 @@ import { types } from 'typestyle';
 
 import type { ControllerForm } from '../component/form/controller.jsx';
 import type { ControllerFormField } from '../component/formField/controller.jsx';
-import type { TypeBehaviorFormFieldOptions } from './form.js';
+import type { IFormScope, TypeBehaviorFormFieldOptions } from './form.js';
 
 export type HTMLInputElementType =
   | 'text'
@@ -139,7 +139,10 @@ export interface IJsxRenderContextFormField<
   $$form: ControllerForm<TParentData, TSubmitMeta>;
 }
 
-export interface IJsxRenderContextForm<TParentData extends {} = {}> extends IJsxRenderContextBase {
-  $celScope: IFormFieldScope<TParentData>;
-  $$form: ControllerForm<TParentData>;
+export interface IJsxRenderContextForm<
+  TParentData extends {} = {},
+  TSubmitMeta = never,
+> extends IJsxRenderContextBase {
+  $celScope: IFormScope;
+  $$form: ControllerForm<TParentData, TSubmitMeta>;
 }

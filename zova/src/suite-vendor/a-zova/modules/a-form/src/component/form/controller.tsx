@@ -7,10 +7,10 @@ import {
   getBy,
   isGlobalFormValidationError,
   revalidateLogic,
-  useStore,
   ValidationCause,
   ValidationError,
 } from '@tanstack/vue-form';
+import { useSelector } from '@tanstack/vue-store';
 import { SchemaObject } from 'openapi3-ts/oas31';
 import { VNode } from 'vue';
 import { z } from 'zod';
@@ -22,6 +22,7 @@ import {
   IFormMeta,
   IFormProvider,
   IResourceFormFieldLayoutOptions,
+  IResourceRenderBlockOptionsBlock,
   ISchemaObjectExtensionField,
   renderFormFieldTopPropsSystem,
   ScopeModuleAOpenapi,
@@ -29,6 +30,8 @@ import {
   TypeFormFieldRenderComponentProvider,
   TypeFormSchemaScene,
 } from 'zova-module-a-openapi';
+
+import type { IResolvedFormLayoutNode, IResolvedFormLayoutTab } from '../../types/formLayout.js';
 
 import { BeanControllerFormBase } from '../../lib/beanControllerFormBase.js';
 import {
@@ -43,13 +46,13 @@ import {
   IFormFieldOptions,
   IFormFieldRenderContextPropsBucket,
   IFormFieldScope,
+  IJsxRenderContextForm,
   IJsxRenderContextFormField,
 } from '../../types/formField.js';
 import { ControllerFormField } from '../formField/controller.jsx';
 
 export interface ControllerFormProps<TFormData extends {} = {}, TSubmitMeta = never> {
   formTag?: string;
-  inline?: boolean;
   data?: TFormData;
   schema?: SchemaObject;
   schemaScene?: TypeFormSchemaScene;
@@ -60,6 +63,7 @@ export interface ControllerFormProps<TFormData extends {} = {}, TSubmitMeta = ne
   formProvider?: IFormProvider;
   formScope?: IFormScope;
   formFieldLayout?: IResourceFormFieldLayoutOptions;
+  blocks?: IResourceRenderBlockOptionsBlock[];
   onFormSubmit?: (e: SubmitEvent, form: ControllerForm<TFormData, TSubmitMeta>) => any;
   onSubmitInvalid?: TypeFormOnSubmitInvalid<TFormData, TSubmitMeta>;
   onSubmitData?: TypeFormOnSubmit<TFormData, TSubmitMeta>;
@@ -94,7 +98,7 @@ export class ControllerForm<
   protected async __init__() {
     this.bean._setBean('$$form', this);
     this.form = this._createForm();
-    this.formState = useStore(this.form.store, state => state) as any;
+    this.formState = useSelector(this.form.store, state => state) as any;
     this.formProvider = this.$computed(() => {
       const formProvider = this.$$scopeOpenapi.config.formProvider;
       return this.$props.formProvider
@@ -141,6 +145,14 @@ export class ControllerForm<
 
   public get formMeta() {
     return this.$props.formMeta;
+  }
+
+  public hasErrors(node: IResolvedFormLayoutNode | IResolvedFormLayoutTab) {
+    return this.getErrorFieldCount(node) > 0;
+  }
+
+  public getErrorFieldCount(node: IResolvedFormLayoutNode | IResolvedFormLayoutTab) {
+    return this._getFormLayoutErrorFieldCount(node);
   }
 
   public getFieldValue<K extends DeepKeys<TFormData>>(name: K) {
@@ -195,6 +207,12 @@ export class ControllerForm<
     });
   }
 
+  public getFormScope(scopeExtra?: {}): IFormScope {
+    return objectAssignReactive({}, this.$props.formScope, {
+      ...scopeExtra,
+    });
+  }
+
   public getFieldJsxRenderContext(
     $$formField: ControllerFormField<TFormData> | undefined,
     celScope: IFormFieldScope<TFormData>,
@@ -207,6 +225,20 @@ export class ControllerForm<
       $celScope: celScope,
       $jsx: this.zovaJsx,
       $$formField,
+      $$form: this,
+    };
+  }
+
+  public getFormJsxRenderContext(
+    celScope: IFormScope,
+  ): IJsxRenderContextForm<TFormData, TSubmitMeta> {
+    return {
+      app: this.app,
+      ctx: this.ctx,
+      $scene: 'form',
+      $host: this,
+      $celScope: celScope,
+      $jsx: this.zovaJsx,
       $$form: this,
     };
   }
@@ -373,6 +405,15 @@ export class ControllerForm<
 
   public isComponentFormField(renderProvider?: TypeFormFieldRenderComponentProvider) {
     return typeof renderProvider === 'string' && renderProvider.includes(':formField');
+  }
+
+  private _getFormLayoutErrorFieldCount(node: IResolvedFormLayoutNode | IResolvedFormLayoutTab) {
+    if (node.type === 'field') {
+      return this.formState.fieldMeta[node.name]?.errors?.length ? 1 : 0;
+    }
+    return node.children.reduce((count, child) => {
+      return count + this._getFormLayoutErrorFieldCount(child);
+    }, 0);
   }
 
   private _handleError422(error: Error, cause: ValidationCause = 'submit') {
