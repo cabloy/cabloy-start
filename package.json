@@ -38,6 +38,7 @@
     "start": "cd vona && npm run start",
     "start:one": "cd vona && npm run start:one",
     "test": "cd vona && npm run test",
+    "db:reset": "cd vona && npm run db:reset",
     "tsc": "npm run tsc:zova && pnpm --dir vona run tsc",
     "tsc:zova": "pnpm --dir zova run tsc",
     "deps:vona": "pnpm --dir vona run vona :tools:deps",
