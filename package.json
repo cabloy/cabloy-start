@@ -27,6 +27,7 @@
     "vona": "node ./vona/packages-cli/cli/src/bin/vona.ts --projectPath=vona",
     "zova": "node ./zova/packages-cli/cli/src/bin/zova.ts --projectPath=zova",
     "dev": "cd vona && npm run dev",
+    "dev:one": "cd vona && npm run dev:one",
     "dev:zova:admin": "cd zova && npm run dev:ssr:cabloyStartAdmin",
     "dev:zova:web": "cd zova && npm run dev:ssr:cabloyStartWeb",
     "build": "npm run build:zova && pnpm --dir vona run build",
