@@ -28,7 +28,62 @@ npm run dev:zova:web
 npm run build:zova
 ```
 
-These map to Basic-specific Zova flavors in this repository.
+These map to Basic-specific Zova flavors in this repository. Commerce follows the same aggregate-and-surface pattern:
+
+```bash
+# Customer Web or Operator Admin development server
+npm run dev:zova:commerce:web
+npm run dev:zova:commerce:admin
+
+# Both Commerce SSR/REST artifact pairs, or one surface only
+npm run build:zova:commerce
+npm run build:zova:commerce:web
+npm run build:zova:commerce:admin
+```
+
+## Basic SSR browser acceptance
+
+The default Basic Web and Admin sites have browser smoke commands that exercise Vona SSR dispatch at `7102`, not a standalone Zova development-server port.
+
+Prepare current artifacts explicitly when the relevant frontend SSR output changed:
+
+```bash
+# Web only
+npm run build:zova:web
+
+# Admin only
+npm run build:zova:admin
+
+# Both default Basic sites
+npm run build:zova
+npm run deps:vona
+```
+
+Then use the managed clean local acceptance command:
+
+```bash
+npm run test:e2e:basic:clean
+```
+
+It resets Vona-managed test data and the local Redis namespace, starts one development Vona worker, and runs the complete suite by default. The E2E commands consume already-built artifacts; they do not rebuild them.
+
+The suite command family is consistent across Basic and Commerce:
+
+```text
+test:e2e:<suite>          complete suite
+test:e2e:<suite>:web      all @web surface scenarios
+test:e2e:<suite>:admin    all @admin surface scenarios
+test:e2e:<suite>:clean      managed clean local suite run
+```
+
+Use Playwright tags after npm's argument delimiter for feature/category selection instead of adding one root script per scenario:
+
+```bash
+npm run test:e2e:basic:clean -- --grep @flow
+npm run test:e2e:basic -- --grep ATP-BASIC-FLOW-01
+```
+
+For the complete tag vocabulary, managed-runner argument boundaries, and externally managed-target examples, see [Repo Scripts](/reference/repo-scripts#ssr-browser-checks). For a separately managed Basic target, set `BASIC_E2E_BASE_URL`; the equivalent Commerce commands use `COMMERCE_E2E_BASE_URL`. The caller owns external-target data, cache, and artifact freshness.
 
 ## Zova script model
 
