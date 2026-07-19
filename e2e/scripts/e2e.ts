@@ -12,7 +12,7 @@ const e2eSuites = {
   start: {
     externalBaseUrlEnv: 'START_E2E_BASE_URL',
     configFile: resolve(E2E_CONFIG_DIR, 'playwright.start.config.ts'),
-    testDir: resolve(E2E_SPECS_DIR, 'a-start'),
+    testDir: resolve(E2E_SPECS_DIR, 'cabloy-start'),
     readinessPath: '/',
   },
 } as const;
