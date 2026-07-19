@@ -32,6 +32,7 @@
     "dev:zova:web": "cd zova && npm run dev:ssr:cabloyStartWeb",
     "build": "npm run build:zova && pnpm --dir vona run build",
     "build:docker": "npm run build:zova && pnpm --dir vona run build:docker",
+    "build:zova:all": "npm run build:zova",
     "build:zova": "pnpm --dir zova run build:ssr:cabloyStartBatch",
     "build:zova:admin": "pnpm --dir zova run build:ssr:cabloyStartAdmin && pnpm --dir zova run build:rest:cabloyStartAdmin",
     "build:zova:web": "pnpm --dir zova run build:ssr:cabloyStartWeb && pnpm --dir zova run build:rest:cabloyStartWeb",
