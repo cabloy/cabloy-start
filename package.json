@@ -43,6 +43,10 @@
     "tsc:zova": "pnpm --dir zova run tsc",
     "deps:vona": "pnpm --dir vona run vona :tools:deps",
     "deps:zova": "pnpm --dir zova run zova :tools:deps",
+    "test:e2e:start": "playwright test --config e2e/config/playwright.start.config.ts",
+    "test:e2e:start:web": "playwright test --config e2e/config/playwright.start.config.ts --grep @web",
+    "test:e2e:start:admin": "playwright test --config e2e/config/playwright.start.config.ts --grep @admin",
+    "test:e2e:start:clean": "node e2e/scripts/testE2eClean.ts start",
     "format": "oxfmt --check",
     "format:fix": "oxfmt --write",
     "lint": "oxlint",
@@ -52,6 +56,7 @@
   "devDependencies": {
     "@cabloy/lint": "^5.1.27",
     "@cabloy/process-helper": "^3.1.3",
+    "@playwright/test": "^1.61.1",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.19.17",
     "husky": "^9.1.7",
