@@ -51,15 +51,17 @@ const OVERWRITE_DIRS: string[] = [
 const OVERWRITE_DIRS_CABLOY_BASIC: string[] = [
   'vona/src/suite/cabloy-basic',
   'vona/src/suite/a-training',
+  'vona/src/suite/a-commerce',
   'zova/src/suite/cabloy-basic',
   'zova/src/suite/a-training',
+  'zova/src/suite/a-commerce',
   'zova/src/suite/a-devui',
 ];
 
 const FRAMEWORK_E2E_DIRS_CABLOY_BASIC: string[] = [
   'e2e/config',
   'e2e/scripts',
-  'e2e/specs/a-basic',
+  'e2e/specs/cabloy-basic',
   'e2e/specs/a-commerce',
 ];
 

@@ -109,19 +109,30 @@ npm run upgrade:dry-run
 npm run upgrade
 ```
 
-This Cabloy Start repository includes an SSR browser E2E baseline. The root `test:e2e:start*` commands and `@playwright/test` dependency are maintained in this repository; the current `npm run upgrade` flow does not synchronize or repair them from the public Cabloy package.
-
-Framework baseline files live in these repository-local paths:
+In Cabloy Basic, upgrade synchronizes the framework-owned SSR browser E2E baseline, its suite/surface root `test:e2e:*` commands, and the `@playwright/test` development dependency. It does not add a root script for each individual E2E scenario. The framework reserves these paths:
 
 ```text
 e2e/config/
 e2e/scripts/
-e2e/specs/a-start/
+e2e/specs/cabloy-basic/
+e2e/specs/a-commerce/
 ```
 
-Keep project-owned browser tests outside those paths, for example under `e2e/specs/my-project/`.
+Keep project-owned browser tests outside those reserved paths, for example under `e2e/specs/my-project/`; upgrade overlays framework files without deleting project test paths. Projects whose previous upgrader predates this E2E synchronization may need to run `npm run upgrade` once more: the updated upgrader recognizes an incomplete Basic E2E baseline even when the version marker is already current.
 
-To prepare and run the managed local baseline:
+### Cabloy Start repository baseline
+
+Cabloy Start is checked out from the licensed private repository rather than created through `npm create cabloy`. Its E2E baseline is maintained in that repository:
+
+```text
+e2e/config/
+e2e/scripts/
+e2e/specs/cabloy-start/
+```
+
+The public Cabloy upgrade flow does not synchronize or repair those Start E2E files, the `test:e2e:start*` scripts, or `@playwright/test`. Keep project-owned browser scenarios outside the baseline paths, for example under `e2e/specs/my-project/`.
+
+Prepare and run the managed Start baseline locally with:
 
 ```bash
 npm run build:zova
@@ -129,7 +140,7 @@ npm run deps:vona
 npm run test:e2e:start:clean
 ```
 
-The clean command resets local test data, requires port `7102` to be available, and manages the local Vona worker. For a target managed elsewhere, set `START_E2E_BASE_URL` and use `test:e2e:start`, `test:e2e:start:web`, or `test:e2e:start:admin`; those commands do not reset, build, start, or stop the target. Install Chromium once when needed with `npx playwright install chromium`.
+The managed command requires port `7102` to be available and owns the local reset and Vona worker lifecycle. For a separately managed target, set `START_E2E_BASE_URL` and use `test:e2e:start`, `test:e2e:start:web`, or `test:e2e:start:admin`; those commands do not reset, build, start, or stop the target. Install Chromium once when needed with `npx playwright install chromium`. See [Repo Scripts](/reference/repo-scripts#ssr-browser-checks) for the complete command variants.
 
 ## 7. Next steps for framework-aware development
 

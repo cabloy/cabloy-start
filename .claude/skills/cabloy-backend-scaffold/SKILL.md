@@ -140,7 +140,35 @@ Check whether the feature needs:
 - `meta.version`
 - field indexes
 - relation definitions
-- datasource or cache considerations
+- datasource or cache considerations, including cross-Model query-cache dependencies
+
+For normal resource persistence, preserve Vona's default active-instance scope:
+
+- in the current tenancy model, a tenant corresponds to an instance and ordinary model CRUD handles the current `iid`
+- do not expose caller-controlled `iid` or tenant selection in ordinary resource DTOs or controller logic
+- treat a record absent from an ordinary scoped model lookup as absent; do not use raw cross-instance probes merely to choose between `403` and not-found behavior
+- use `disableInstance`, plain builders, or raw SQL only for an explicit global/system or otherwise authorized contract
+- model a future multi-merchant requirement as a separate boundary within an instance, with its own ownership and authorization rules
+
+For the canonical explanation, read [Multi-Instance and Instance Resolution](../../../cabloy-docs/backend/multi-instance-and-instance-resolution.md) and [Model Guide](../../../cabloy-docs/backend/model-guide.md).
+
+### Cross-module resource lookup
+
+Choose the narrowest lookup form before evaluating module dependency intent:
+
+- use `this.scope` for resources owned by the current `BeanBase` module
+- use `this.$scope.<fixedModule>` when the target module is statically known and the typed shorthand is available
+- use `app.scope('<module-name>')` in tests or standalone code with an application reference instead of BeanBase shorthands
+- use `this.app.scope(moduleName)` or `app.scope(moduleName)` when the module name is genuinely selected at runtime; do not replace a fixed module target with a dynamic string lookup merely for style
+
+Then distinguish runtime lookup from a true module dependency:
+
+- lookup resolves a resource from a module already composed into the application; it does not by itself require a `vonaModule.dependencies` entry or create a circular dependency edge
+- add `vonaModule.dependencies` only when the feature genuinely requires the target module's availability, dependency-first ordering, or minimum compatible version
+- do not add a dependency declaration merely because code looks up another module's service, model, config, locale, or other resource
+- scope lookup cannot make an absent module available; validate application/suite composition separately when the target must exist
+
+For the canonical distinction, read [Backend Foundation](../../../cabloy-docs/backend/foundation.md#scope-lookup-vs-module-dependencies) and [Package Map](../../../cabloy-docs/reference/package-map.md).
 
 ### Verification
 
