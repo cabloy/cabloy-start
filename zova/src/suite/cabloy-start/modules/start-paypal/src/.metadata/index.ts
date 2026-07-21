@@ -249,5 +249,5 @@ declare module 'zova' {
 
 export function locale<K extends keyof (typeof locales)[TypeLocaleBase]>(key: K): `start-paypal::${K}` {
   return `start-paypal::${key}`;
-}  
+}
 /** scope: end */

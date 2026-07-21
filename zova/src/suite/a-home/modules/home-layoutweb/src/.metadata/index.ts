@@ -204,5 +204,5 @@ declare module 'zova' {
 
 export function locale<K extends keyof (typeof locales)[TypeLocaleBase]>(key: K): `home-layoutweb::${K}` {
   return `home-layoutweb::${key}`;
-}  
+}
 /** scope: end */

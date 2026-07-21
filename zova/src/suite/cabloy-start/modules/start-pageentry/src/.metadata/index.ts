@@ -99,5 +99,5 @@ declare module 'zova' {
 
 export function locale<K extends keyof (typeof locales)[TypeLocaleBase]>(key: K): `start-pageentry::${K}` {
   return `start-pageentry::${key}`;
-}  
+}
 /** scope: end */
