@@ -40,17 +40,21 @@ export class ControllerLayoutAdmin extends BeanControllerBase {
   leftDrawerOpen: boolean;
   leftDrawerOpenMobile: boolean = false;
   belowBreakpoint: boolean;
+  private viewportWidth: number = 0;
+  private _windowResizeHandler?: () => void;
 
   protected async __init__() {
+    // viewport
+    if (process.env.CLIENT) {
+      this._windowResizeHandler = () => {
+        this.viewportWidth = document.documentElement.clientWidth;
+      };
+      this._windowResizeHandler();
+      window.addEventListener('resize', this._windowResizeHandler);
+    }
     // belowBreakpoint
     this.belowBreakpoint = this.$computed(() => {
-      let width;
-      if (process.env.SERVER) {
-        width = 0;
-      } else {
-        width = document.documentElement.clientWidth;
-      }
-      return width <= this.sys.config.layout.sidebar.breakpoint;
+      return this.viewportWidth <= this.sys.config.layout.sidebar.breakpoint;
     });
     // leftDrawerOpen
     this.leftDrawerOpen = this.$customRef(() => {
@@ -80,6 +84,16 @@ export class ControllerLayoutAdmin extends BeanControllerBase {
     await $QueryEnsureLoaded(() => this.$$modelMenu.retrieveMenus());
     // tabs
     await this._initTabs();
+  }
+
+  protected __dispose__() {
+    if (this._windowResizeHandler) {
+      window.removeEventListener('resize', this._windowResizeHandler);
+    }
+    if (this.layoutConfigTimeout) {
+      window.clearTimeout(this.layoutConfigTimeout);
+      this.layoutConfigTimeout = 0;
+    }
   }
 
   toggleLeftDrawer() {
@@ -130,6 +144,7 @@ export class ControllerLayoutAdmin extends BeanControllerBase {
       if (process.env.CLIENT) {
         if (!this.layoutConfigTimeout) {
           this.layoutConfigTimeout = window.setTimeout(() => {
+            this.layoutConfigTimeout = 0;
             layoutConfigRef.value = undefined;
           }, 100);
         }

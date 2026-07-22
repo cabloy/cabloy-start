@@ -114,3 +114,33 @@ test(
     expect(pageErrors).toEqual([]);
   },
 );
+
+test(
+  'ATP-START-LAYOUT-01: Admin drawer follows viewport breakpoint changes',
+  { tag: ['@admin', '@layout'] },
+  async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    const pageErrors = collectPageErrors(page);
+    const captchaCreated = waitForCaptchaCreate(page);
+    const documentResponse = await page.goto('/admin/login', { waitUntil: 'load' });
+    expect(documentResponse?.ok()).toBeTruthy();
+    await captchaCreated;
+
+    await page.getByLabel('Your Username').fill('admin');
+    await page.getByLabel('Your Password').fill('123456');
+    await expect(page.getByLabel('Please input captcha')).not.toHaveValue('');
+    await page.getByRole('button', { name: 'Login', exact: true }).click();
+
+    await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+    await expect(page.getByText('Dashboard')).toBeVisible();
+    const drawer = page.locator('.v-navigation-drawer--left');
+    await expect(drawer).toHaveClass(/\bv-navigation-drawer--active\b/);
+
+    await page.setViewportSize({ width: 700, height: 900 });
+    await expect(drawer).not.toHaveClass(/\bv-navigation-drawer--active\b/);
+
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await expect(drawer).toHaveClass(/\bv-navigation-drawer--active\b/);
+    expect(pageErrors).toEqual([]);
+  },
+);
