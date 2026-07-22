@@ -62,5 +62,5 @@ declare module 'zova' {
 
 export function locale<K extends keyof (typeof locales)[TypeLocaleBase]>(key: K): `a-zod::${K}` {
   return `a-zod::${key}`;
-}
+}  
 /** scope: end */
