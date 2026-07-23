@@ -82,6 +82,7 @@ Representative examples include:
 
 - `a-logger:log`
 - `a-orm:transaction`
+- `a-retryable:retryable`
 - `a-caching:cachingGet`
 - `a-caching:cachingSet`
 - `a-caching:cachingDel`
@@ -92,8 +93,42 @@ These built-ins also expose shorthand decorators such as:
 ```typescript
 @Core.log({ level: 'info' })
 @Core.transaction({ isolationLevel: 'READ_COMMITTED', propagation: 'REQUIRED' })
+@Core.retryable({
+  retries: 1,
+  minTimeout: 0,
+  maxTimeout: 0,
+  errorCodes: ['40001'],
+})
 @Caching.get({ cacheName: 'module-name:xxx' })
 ```
+
+`@Core.retryable(...)` retries only errors whose string `code` is explicitly listed in `errorCodes`. It replays the downstream AOP suffix; to retry a complete transaction, place `@Core.retryable(...)` closest to the method so it runs outside the transaction decorator:
+
+```typescript
+@Core.transaction({ isolationLevel: 'SERIALIZABLE' })
+@Core.retryable({ retries: 1, minTimeout: 0, maxTimeout: 0, errorCodes: ['40001'] })
+async reserve() {
+  // transactional writes
+}
+```
+
+Use `ownerOnly: true` for a dual-role leaf method that may either own a transaction when called directly or join an aggregate transaction owned by its caller. It retries only when no current-datasource transaction existed when the method began; when nested, it executes once and lets the aggregate owner decide whether to replay the complete unit of work:
+
+```typescript
+@Core.transaction({ isolationLevel: 'SERIALIZABLE' })
+@Core.retryable({
+  retries: 1,
+  minTimeout: 0,
+  maxTimeout: 0,
+  errorCodes: ['40001'],
+  ownerOnly: true,
+})
+async reserveLeaf() {
+  // transactional writes
+}
+```
+
+Retried methods must be replay-safe: defer external side effects until commit, and do not use this helper to imply cross-datasource or independent `REQUIRES_NEW` retry semantics.
 
 For the broader logger-client, rotation, and level model behind `@Core.log(...)`, see [Logger Guide](/backend/logger-guide).
 

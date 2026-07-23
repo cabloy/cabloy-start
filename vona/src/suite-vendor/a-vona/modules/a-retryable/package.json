@@ -1,15 +1,15 @@
 {
-  "name": "vona-mock",
-  "version": "6.1.33",
-  "gitHead": "a79189b882c17af5911573896a781bbb0046d37d",
-  "description": "vona mock",
+  "name": "vona-module-a-retryable",
+  "version": "5.0.1",
+  "description": "",
   "keywords": [
-    "cabloy",
-    "framework"
+    "Vona Module"
   ],
-  "author": "zhennann",
+  "author": "",
   "files": [
-    "dist"
+    "assets",
+    "dist",
+    "src"
   ],
   "type": "module",
   "exports": {
@@ -23,21 +23,14 @@
     },
     "./package.json": "./package.json"
   },
-  "publishConfig": {
-    "access": "public"
-  },
   "scripts": {
-    "clean": "rimraf dist tsconfig.tsbuildinfo",
-    "tsc:publish": "npm run clean && node ../../packages-cli/cli/src/bin/vona.ts :bin:buildGeneral && tsc",
+    "clean": "rimraf dist tsconfig.build.tsbuildinfo",
+    "tsc:publish": "npm run clean && node ../../../../../packages-cli/cli/src/bin/vona.ts :bin:buildModule --sourcemap && tsc -p tsconfig.build.json",
     "prepublishOnly": "npm run tsc:publish",
     "prepack": "clean-package",
     "postpack": "clean-package restore"
   },
-  "dependencies": {
-    "@cabloy/module-info": "^2.0.3",
-    "@cabloy/module-info-pro": "workspace:^",
-    "vona-core": "workspace:^"
-  },
+  "dependencies": {},
   "devDependencies": {
     "clean-package": "^2.2.0",
     "rimraf": "^6.1.3"
@@ -49,5 +42,9 @@
       "devDependencies",
       "exports.\\..import"
     ]
+  },
+  "title": "a-retryable",
+  "vonaModule": {
+    "dependencies": {}
   }
 }

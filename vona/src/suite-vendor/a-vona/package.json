@@ -1,6 +1,6 @@
 {
   "name": "vona-suite-a-vona",
-  "version": "5.1.71",
+  "version": "5.1.72",
   "gitHead": "a79189b882c17af5911573896a781bbb0046d37d",
   "description": "",
   "author": "",
@@ -44,6 +44,7 @@
     "vona-module-a-queue": "workspace:^",
     "vona-module-a-redis": "workspace:^",
     "vona-module-a-redlock": "workspace:^",
+    "vona-module-a-retryable": "workspace:^",
     "vona-module-a-runtime": "workspace:^",
     "vona-module-a-schedule": "workspace:^",
     "vona-module-a-security": "workspace:^",

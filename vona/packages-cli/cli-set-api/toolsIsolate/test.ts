@@ -7,6 +7,7 @@ import { globby } from 'globby';
 import { createWriteStream } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { pipeline } from 'node:stream/promises';
 import { run } from 'node:test';
 import { lcov, spec } from 'node:test/reporters';
 import { fileURLToPath } from 'node:url';
@@ -104,18 +105,24 @@ async function testRun(projectPath: string, coverage: boolean, patterns: string[
         }
       });
     const summaryPromise = waitForTestSummary(testStream);
-    if (coverage) {
-      const reporterDir = path.join(projectPath, 'coverage');
-      fse.ensureDirSync(reporterDir);
-      const reporterLcov = createWriteStream(path.join(reporterDir, 'lcov.info'));
-      testStream.compose(lcov).pipe(reporterLcov);
-    } else {
-      testStream.compose(spec).pipe(process.stdout);
-    }
+    const reporterPromise = coverage
+      ? (() => {
+          const reporterDir = path.join(projectPath, 'coverage');
+          fse.ensureDirSync(reporterDir);
+          const reporterLcov = createWriteStream(path.join(reporterDir, 'lcov.info'));
+          return pipeline(testStream.compose(lcov), reporterLcov);
+        })()
+      : pipeline(testStream.compose(spec), process.stdout, { end: false });
 
-    const summarySuccess = await summaryPromise;
+    const [summarySuccess, [, reporterError]] = await Promise.all([
+      summaryPromise,
+      catchError(() => reporterPromise),
+    ]);
     if (!summarySuccess) {
       throw new Error('node:test reported failed tests');
+    }
+    if (reporterError) {
+      throw reporterError;
     }
   } catch (error) {
     testError = error;
@@ -143,13 +150,19 @@ function waitForTestSummary(testStream: ReturnType<typeof run>) {
 
 async function prepareConcurrency(app: VonaApplication) {
   // check
+  const configured = process.env.TEST_CONCURRENCY;
   let concurrency = 1;
-  if (process.env.TEST_CONCURRENCY === 'true') {
-    concurrency = os.cpus().length;
-  } else if (process.env.TEST_CONCURRENCY === 'false') {
+  if (configured === 'false') {
     concurrency = 1;
+  } else if (configured === undefined || configured === 'true') {
+    concurrency = Math.max(1, os.cpus().length);
   } else {
-    concurrency = Number.parseInt(process.env.TEST_CONCURRENCY!);
+    concurrency = Number.parseInt(configured, 10);
+    if (!Number.isSafeInteger(concurrency) || concurrency < 1) {
+      throw new Error(
+        `TEST_CONCURRENCY must be true, false, or a positive integer; received ${configured}`,
+      );
+    }
   }
   if (concurrency === 1) return concurrency;
   // check again

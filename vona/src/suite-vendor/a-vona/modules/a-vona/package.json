@@ -1,6 +1,6 @@
 {
   "name": "vona-module-a-vona",
-  "version": "5.1.12",
+  "version": "5.1.13",
   "gitHead": "a79189b882c17af5911573896a781bbb0046d37d",
   "description": "",
   "keywords": [
@@ -84,6 +84,7 @@
       "a-queue": "5.0.0",
       "a-redis": "5.0.0",
       "a-redlock": "5.0.0",
+      "a-retryable": "5.0.0",
       "a-runtime": "5.0.0",
       "a-schedule": "5.0.0",
       "a-security": "5.0.0",

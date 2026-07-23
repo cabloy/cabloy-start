@@ -22,8 +22,8 @@ importers:
   .:
     dependencies:
       '@cabloy/compose':
-        specifier: ^2.1.8
-        version: 2.1.8
+        specifier: ^2.1.9
+        version: 2.1.9
       '@cabloy/deps':
         specifier: ^1.1.8
         version: 1.1.8
@@ -127,7 +127,7 @@ importers:
         specifier: workspace:^
         version: link:packages-zova/zova
       zova-jsx:
-        specifier: ^1.1.78
+        specifier: ^1.1.79
         version: link:packages-utils/zova-jsx
       zova-module-a-api:
         specifier: workspace:^
@@ -675,8 +675,8 @@ importers:
   packages-utils/zova-jsx:
     dependencies:
       '@cabloy/compose':
-        specifier: ^2.1.8
-        version: 2.1.8
+        specifier: ^2.1.9
+        version: 2.1.9
       '@cabloy/utils':
         specifier: ^2.1.26
         version: 2.1.26
@@ -690,7 +690,7 @@ importers:
         specifier: ^3.5.38
         version: 3.5.38(typescript@5.9.3)
       zova-core:
-        specifier: ^5.1.78
+        specifier: ^5.1.79
         version: link:../../packages-zova/zova-core
     devDependencies:
       clean-package:
@@ -831,10 +831,10 @@ importers:
   packages-zova/zova:
     dependencies:
       zova-core:
-        specifier: ^5.1.78
+        specifier: ^5.1.79
         version: link:../zova-core
       zova-suite-a-zova:
-        specifier: ^5.1.138
+        specifier: ^5.1.139
         version: link:../../src/suite-vendor/a-zova
     devDependencies:
       clean-package:
@@ -847,8 +847,8 @@ importers:
   packages-zova/zova-core:
     dependencies:
       '@cabloy/compose':
-        specifier: ^2.1.8
-        version: 2.1.8
+        specifier: ^2.1.9
+        version: 2.1.9
       '@cabloy/extend':
         specifier: ^3.2.8
         version: 3.2.8
@@ -1019,7 +1019,7 @@ importers:
         specifier: ^5.1.36
         version: link:modules/a-zod
       zova-module-a-zova:
-        specifier: ^5.1.93
+        specifier: ^5.1.94
         version: link:modules/a-zova
 
   src/suite-vendor/a-zova/modules/a-api:
@@ -1334,8 +1334,8 @@ importers:
   src/suite-vendor/a-zova/modules/a-zova:
     dependencies:
       '@cabloy/compose':
-        specifier: ^2.1.8
-        version: 2.1.8
+        specifier: ^2.1.9
+        version: 2.1.9
       '@cabloy/deps':
         specifier: ^1.1.8
         version: 1.1.8
@@ -1361,7 +1361,7 @@ importers:
         specifier: ^3.7.2
         version: 3.7.2
       zova-jsx:
-        specifier: ^1.1.78
+        specifier: ^1.1.79
         version: link:../../../../../packages-utils/zova-jsx
     devDependencies:
       '@cabloy/cli':
@@ -2078,8 +2078,8 @@ packages:
   '@cabloy/cli@3.1.28':
     resolution: {integrity: sha512-wZO0cZsi6UbQ4tQt3uIPmBr6GA0xbF0EMHSsqoe2NHtGZFsEQPU9Vb0uAyGjo7GXUtM5nR/9cTs5BCz6ehtfdA==}
 
-  '@cabloy/compose@2.1.8':
-    resolution: {integrity: sha512-TdEr9BY54BYoIlTjkrOKkzK8yJWmP07OrRTh4punJMnWzM+oDExQ2EGCGAHXnEHjLWqdhyMGm/ejmxnVgBmraQ==}
+  '@cabloy/compose@2.1.9':
+    resolution: {integrity: sha512-b+EB7EDQz7dDdrvFEmRIpGpW0jvDEmYGChSbKx0wzki6AGCj0z3lNm4qnkgM5+CTQIKBU2FmvDcQjU5r6Cj6SA==}
 
   '@cabloy/deps@1.1.8':
     resolution: {integrity: sha512-CWaVGSwPI5qLSuRF+WmB+1CwbRe9+PR+nkUmKc9/Dj7sB75qPXLTYACn23T/jIylbDbWCL82LoOa455Vgseyeg==}
@@ -8147,7 +8147,7 @@ snapshots:
       - supports-color
       - vue
 
-  '@cabloy/compose@2.1.8': {}
+  '@cabloy/compose@2.1.9': {}
 
   '@cabloy/deps@1.1.8': {}
 
