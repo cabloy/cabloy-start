@@ -89,6 +89,10 @@ const fullstackGroups = [
       { text: 'Vona + Zova Integration', link: '/fullstack/vona-zova-integration' },
       { text: 'Contract Loop Playbook', link: '/fullstack/contract-loop-playbook' },
       {
+        text: 'Admin Resource and Web Self-Service',
+        link: '/fullstack/admin-resource-and-web-self-service',
+      },
+      {
         text: 'Backend Metadata to Frontend Table Actions',
         link: '/fullstack/backend-metadata-to-frontend-table-actions',
       },
@@ -225,6 +229,7 @@ export default defineConfig({
           items: [
             { text: 'Auth Guide', link: '/backend/auth-guide' },
             { text: 'Captcha Guide', link: '/backend/captcha-guide' },
+            { text: 'Rate Limit Guide', link: '/backend/rate-limit-guide' },
             { text: 'User Access Guide', link: '/backend/user-access-guide' },
             { text: 'JWT Guide', link: '/backend/jwt-guide' },
             { text: 'Validation Guide', link: '/backend/validation-guide' },
@@ -238,6 +243,7 @@ export default defineConfig({
             { text: 'Error Guide', link: '/backend/error-guide' },
             { text: 'Event Guide', link: '/backend/event-guide' },
             { text: 'Logger Guide', link: '/backend/logger-guide' },
+            { text: 'Telemetry Guide', link: '/backend/telemetry-guide' },
             { text: 'Upload Guide', link: '/backend/upload-guide' },
             { text: 'Image Guide', link: '/backend/image-guide' },
             { text: 'File Guide', link: '/backend/file-guide' },
