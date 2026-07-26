@@ -1,0 +1,60 @@
+import { $protocolKey } from 'zova';
+
+import type { IFilePreviewItem } from '../types/file.js';
+
+export function inferFileRelationName(
+  fieldName?: string,
+  relationName?: string,
+): string | undefined {
+  if (relationName) return relationName;
+  if (!fieldName) return undefined;
+  if (fieldName.endsWith('Ids')) return `${fieldName.slice(0, -3)}s`;
+  if (fieldName.endsWith('Id')) return fieldName.slice(0, -2);
+  return undefined;
+}
+
+export function resolveFileDownloadUrl(
+  url: string | undefined,
+  baseURL?: string,
+  passportCode?: string,
+): string | undefined {
+  if (!url) return url;
+  const resolvedUrl =
+    url.startsWith('/api/') && baseURL ? `${baseURL.replace(/\/$/, '')}${url}` : url;
+  if (!passportCode) return resolvedUrl;
+  const apiBaseUrl = new URL(baseURL ?? 'http://localhost', 'http://localhost');
+  const parsedUrl = new URL(resolvedUrl, apiBaseUrl);
+  if (parsedUrl.origin !== apiBaseUrl.origin || !parsedUrl.pathname.startsWith('/api/')) {
+    return resolvedUrl;
+  }
+  const passportCodeKey = $protocolKey('x-vona-passport-code');
+  if (!parsedUrl.searchParams.has(passportCodeKey)) {
+    parsedUrl.searchParams.set(passportCodeKey, passportCode);
+  }
+  if (!baseURL) return `${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
+  return parsedUrl.toString();
+}
+
+export function collectFileRelationPreviewItems(value: unknown): IFilePreviewItem[] {
+  const values = Array.isArray(value) ? value : [value];
+  return values.filter(isFilePreviewItem);
+}
+
+export function isFilePreviewItem(value: unknown): value is IFilePreviewItem {
+  if (!value || typeof value !== 'object' || !('id' in value)) return false;
+  return Boolean(value.id);
+}
+
+export function formatFileSize(size?: number): string {
+  if (size === undefined || size === null || Number.isNaN(size)) return '-';
+  if (size >= 1024 * 1024) return `${(size / 1024 / 1024).toFixed(1)} MB`;
+  if (size >= 1024) return `${Math.round(size / 1024)} KB`;
+  return `${size} B`;
+}
+
+export function formatFileDate(value?: string | Date): string {
+  if (!value) return '-';
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return '-';
+  return date.toLocaleString();
+}
