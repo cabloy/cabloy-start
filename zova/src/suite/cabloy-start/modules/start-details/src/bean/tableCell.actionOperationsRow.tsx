@@ -42,15 +42,7 @@ export class TableCellActionOperationsRow extends BeanBase implements ITableCell
       const actionRender = action.render;
       const permissionHint = action.options?.permission;
       const $$details = $celScope.$$details;
-      if (
-        checkPermission(
-          this,
-          $$details?.permissions,
-          actionName,
-          permissionHint,
-          $$details?.formScene,
-        )
-      ) {
+      if (checkPermission($$details!.formScene, permissionHint)) {
         if (!actionRender) throw new Error(`should specify action render: ${actionName}`);
         renders.push(actionRender);
       }
@@ -71,17 +63,7 @@ export class TableCellActionOperationsRow extends BeanBase implements ITableCell
     actions.forEach((action, index) => {
       const permissionHint = action.options?.permission;
       const $$details = $celScope.$$details;
-      if (
-        !checkPermission(
-          this,
-          $$details?.permissions,
-          action.name,
-          permissionHint,
-          $$details?.formScene,
-        )
-      ) {
-        return;
-      }
+      if (!checkPermission($$details!.formScene, permissionHint)) return;
       const actionOptions = Object.assign({ key: index }, action.options);
       domActions.push($$table.cellRender(action.render!, actionOptions, renderContext));
     });
