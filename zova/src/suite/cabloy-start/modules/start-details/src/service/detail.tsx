@@ -1,0 +1,217 @@
+import { celEnvBase } from '@cabloy/utils';
+import { VNode } from 'vue';
+import { VBtn, VProgressCircular } from 'vuetify/components';
+import { BeanBase, deepExtend, UseScope } from 'zova';
+import { ZovaJsx } from 'zova-jsx';
+import { Service } from 'zova-module-a-bean';
+import {
+  BeanControllerFormBase,
+  formMetaFromFormScene,
+  TypeFormOnSubmitData,
+} from 'zova-module-a-form';
+import {
+  IDetailScope,
+  IFormMeta,
+  IFormProvider,
+  IJsxRenderContextDetail,
+  ISchemaObjectExtensionField,
+  ScopeModuleAOpenapi,
+  TypeFormScene,
+  TypeFormSchemaScene,
+} from 'zova-module-a-openapi';
+import { AppModalItem } from 'zova-module-start-app';
+
+import { IDialogFormOptions } from '../types/dialogForm.js';
+
+@Service()
+export class ServiceDetail<TData extends {} = {}> extends BeanBase {
+  private options: IDialogFormOptions<TData>;
+  private dialogInstance: AppModalItem | undefined;
+
+  formRef: BeanControllerFormBase<TData> | undefined;
+
+  formScene: TypeFormScene;
+  schemaScene: TypeFormSchemaScene;
+
+  formMeta: IFormMeta;
+  formProvider: IFormProvider;
+  formSchema?: ISchemaObjectExtensionField;
+  formData?: TData;
+
+  jsxZova: ZovaJsx;
+  jsxCelScope: IDetailScope;
+  jsxRenderContext: IJsxRenderContextDetail<TData>;
+
+  @UseScope()
+  $$scopeOpenapi: ScopeModuleAOpenapi;
+
+  protected async __init__(options: IDialogFormOptions<TData>) {
+    this.options = options;
+    this.formScene = options.formScene;
+    this.schemaScene = options.schemaScene;
+    this.formMeta = formMetaFromFormScene(this.formScene);
+    this.formProvider = this.$$scopeOpenapi.config.formProvider;
+    this.formSchema = options.schema;
+    this.formData = options.data;
+    this._prepareJsx();
+  }
+
+  private _prepareJsx() {
+    const jsxCelEnv = celEnvBase.clone();
+    this.jsxZova = this.bean._newBeanSimple(
+      ZovaJsx,
+      false,
+      this.formProvider.components,
+      jsxCelEnv,
+    );
+    this.jsxCelScope = this._prepareJsxCelScope();
+    this.jsxRenderContext = {
+      app: this.app,
+      ctx: this.ctx,
+      $scene: 'detail',
+      $host: this,
+      $celScope: this.jsxCelScope,
+      $jsx: this.jsxZova,
+      $$detail: this,
+    };
+  }
+
+  private _prepareJsxCelScope(): IDetailScope {
+    // eslint-disable-next-line
+    const self = this;
+    const $$detail = this.$customRef(() => {
+      return {
+        get() {
+          return self;
+        },
+        set(_value) {},
+      };
+    }) as any;
+    return {
+      formMeta: this.formMeta,
+      $$detail,
+    };
+  }
+
+  private _renderBlocks() {
+    const blocks = this.formSchema?.rest?.blocks;
+    if (!blocks || blocks.length === 0) return;
+    const domBlocks: VNode[] = [];
+    blocks.forEach((block, index) => {
+      const options = Object.assign({ key: index }, block.options);
+      const domBlock = this.jsxZova.render(
+        block.render!,
+        options,
+        this.jsxCelScope,
+        this.jsxRenderContext,
+      );
+      if (!domBlock) return;
+      if (Array.isArray(domBlock)) {
+        domBlocks.push(...domBlock);
+      } else {
+        domBlocks.push(domBlock);
+      }
+    });
+    return domBlocks;
+  }
+
+  public closeDialog() {
+    if (!this.dialogInstance) return;
+    this.dialogInstance.close();
+    this.dialogInstance = undefined;
+  }
+
+  public buildSubmittedDetailItem(data: TypeFormOnSubmitData<TData>, dataOld?: TData) {
+    const detailItem = deepExtend({}, dataOld ?? {}, data.value) as Record<string, any>;
+    const properties = this.$sdk.loadSchemaProperties(this.formSchema, this.schemaScene);
+    if (!properties || properties.length === 0 || !this.formRef) return detailItem as TData;
+    for (const property of properties) {
+      this._hydrateDetailItemRelation(detailItem, property, data);
+    }
+    return detailItem as TData;
+  }
+
+  public submitData(data: TypeFormOnSubmitData<TData>) {
+    this.options.onSubmitData?.(data, this.dialogInstance!);
+  }
+
+  private _hydrateDetailItemRelation(
+    detailItem: Record<string, any>,
+    property: ISchemaObjectExtensionField,
+    data: TypeFormOnSubmitData<TData>,
+  ) {
+    const relationName = this._getRelationNameOfField(property, property.rest);
+    if (!relationName) return;
+    const relationValue = data.formApi.getFieldValue(relationName as never);
+    if (relationValue === undefined) return;
+    detailItem[relationName] = this._cloneRelationValue(relationValue);
+  }
+
+  private _getRelationNameOfField(
+    property: ISchemaObjectExtensionField,
+    options?: Record<string, any>,
+  ) {
+    return this._inferRelationName(property.key, options?.relationName as string | undefined);
+  }
+
+  private _inferRelationName(fieldName?: string, relationName?: string) {
+    if (relationName) return relationName;
+    if (!fieldName) return undefined;
+    if (fieldName.endsWith('Ids')) {
+      return `${fieldName.slice(0, -3)}s`;
+    }
+    if (fieldName.endsWith('Id')) {
+      return fieldName.slice(0, -2);
+    }
+    return undefined;
+  }
+
+  private _cloneRelationValue(relationValue: unknown) {
+    if (Array.isArray(relationValue)) {
+      return deepExtend([], relationValue);
+    }
+    if (relationValue && typeof relationValue === 'object') {
+      return deepExtend({}, relationValue as Record<string, any>);
+    }
+    return relationValue;
+  }
+
+  openDialogForm() {
+    const options = this.options;
+    this.dialogInstance = this.$appModal.dialog(
+      {
+        icon: options.icon,
+        title: options.title,
+        slotDefault: () => {
+          return <>{this._renderBlocks()}</>;
+        },
+        slotActions: () => {
+          const isSubmitting = this.formRef?.formState.isSubmitting ?? false;
+          return (
+            <>
+              {isSubmitting && (
+                <VProgressCircular indeterminate color="primary" size={20}></VProgressCircular>
+              )}
+              <VBtn variant="text" nativeOnClick={() => this.closeDialog()}>
+                {options.locale.Cancel()}
+              </VBtn>
+              {this.formScene !== 'view' && (
+                <VBtn
+                  color="primary"
+                  loading={isSubmitting}
+                  nativeOnClick={async () => {
+                    if (isSubmitting) return;
+                    await this.formRef?.submit();
+                  }}
+                >
+                  {options.locale.OK()}
+                </VBtn>
+              )}
+            </>
+          );
+        },
+      },
+      options.dialogOptions,
+    );
+  }
+}
