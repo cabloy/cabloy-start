@@ -1,4 +1,3 @@
-import { VDialog } from 'vuetify/components';
 import { BeanBase } from 'zova';
 import { Service } from 'zova-module-a-bean';
 
@@ -6,7 +5,10 @@ import { AppModalItem } from '../lib/appModalItem.js';
 import {
   IModalAlertOptions,
   IModalConfirmOptions,
+  IModalDialogOptions,
+  IModalDialogRenderOptions,
   IModalItem,
+  IModalMessageOptions,
   IModalPromptOptions,
 } from '../types/appModal.js';
 
@@ -21,7 +23,7 @@ export class ServiceAppModal extends BeanBase {
     return ++this.modalItemIdCounter;
   }
 
-  public alert(options?: IModalAlertOptions, dialogOptions?: VDialog['$props']) {
+  public alert(options?: IModalAlertOptions, dialogOptions?: IModalMessageOptions) {
     const id = this.newModalItemId();
     const modalItem: IModalItem = {
       id,
@@ -35,7 +37,7 @@ export class ServiceAppModal extends BeanBase {
 
   public confirm(
     options?: IModalConfirmOptions,
-    dialogOptions?: VDialog['$props'],
+    dialogOptions?: IModalMessageOptions,
   ): Promise<boolean> {
     return new Promise(resolve => {
       const id = this.newModalItemId();
@@ -56,7 +58,7 @@ export class ServiceAppModal extends BeanBase {
 
   public prompt(
     options?: IModalPromptOptions,
-    dialogOptions?: VDialog['$props'],
+    dialogOptions?: IModalMessageOptions,
   ): Promise<string | undefined> {
     return new Promise(resolve => {
       const id = this.newModalItemId();
@@ -75,10 +77,26 @@ export class ServiceAppModal extends BeanBase {
     });
   }
 
+  public dialog(options?: IModalDialogRenderOptions, dialogOptions?: IModalDialogOptions) {
+    const id = this.newModalItemId();
+    const modalItem: IModalItem = {
+      id,
+      type: 'dialog',
+      options,
+      dialogOptions,
+    };
+    this.modalItems.push(modalItem);
+    return new AppModalItem(this, modalItem);
+  }
+
   public close(id: number) {
-    const [index] = this.findModalItem(id);
-    if (index === -1) return;
+    const [index, modalItem] = this.findModalItem(id);
+    if (index === -1 || !modalItem) return;
     this.modalItems.splice(index, 1);
+    if (modalItem.type === 'dialog') {
+      const options = modalItem.options as IModalDialogRenderOptions | undefined;
+      options?.onClose?.();
+    }
   }
 
   protected findModalItem(id: number): [number, IModalItem | undefined] {

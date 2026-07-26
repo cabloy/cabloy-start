@@ -31,6 +31,15 @@ export const config = (_sys: ZovaSys) => {
           maxWidth: 360,
         },
       },
+      dialog: {
+        default: {
+          maxWidth: 640,
+          maxHeight: 'calc(100vh - 2rem)',
+          closeOnBackdrop: false,
+          closeOnEscape: true,
+          showCloseButton: true,
+        },
+      },
     },
   };
 };

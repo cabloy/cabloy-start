@@ -3,10 +3,14 @@ import type { IDecoratorBehaviorOptions, NextBehavior } from 'zova-module-a-beha
 
 import { VBtn, VCard, VCardActions, VCardText, VDialog, VTextField } from 'vuetify/components';
 import { BeanBehaviorBase, Behavior } from 'zova-module-a-behavior';
+import { $iconName } from 'zova-module-a-icon';
 
 import {
   IModalAlertOptions,
   IModalConfirmOptionsInner,
+  IModalDialogOptions,
+  IModalDialogRenderContext,
+  IModalDialogRenderOptions,
   IModalItem,
   IModalPromptOptionsInner,
 } from '../types/appModal.js';
@@ -47,6 +51,8 @@ export class BehaviorAppModal extends BeanBehaviorBase<
         domModalItem = this._renderAppModalConfirm(modalItem);
       } else if (modalItem.type === 'prompt') {
         domModalItem = this._renderAppModalPrompt(modalItem);
+      } else if (modalItem.type === 'dialog') {
+        domModalItem = this._renderAppModalDialog(modalItem);
       }
       if (domModalItem) {
         children.push(domModalItem);
@@ -104,7 +110,7 @@ export class BehaviorAppModal extends BeanBehaviorBase<
   }
 
   private _renderAppModalConfirm(modalItem: IModalItem) {
-    const options: IModalConfirmOptionsInner | undefined = modalItem.options;
+    const options = modalItem.options as IModalConfirmOptionsInner | undefined;
     let dialogOptions: VDialog['$props'] | undefined = modalItem.dialogOptions;
     // icon
     const iconName = options?.icon ?? this.scope.config.model.confirm.icons.confirm;
@@ -161,7 +167,7 @@ export class BehaviorAppModal extends BeanBehaviorBase<
   }
 
   private _renderAppModalPrompt(modalItem: IModalItem) {
-    const options: IModalPromptOptionsInner | undefined = modalItem.options;
+    const options = modalItem.options as IModalPromptOptionsInner | undefined;
     let dialogOptions: VDialog['$props'] | undefined = modalItem.dialogOptions;
     // icon
     const iconName = options?.icon ?? this.scope.config.model.prompt.icons.prompt;
@@ -225,5 +231,71 @@ export class BehaviorAppModal extends BeanBehaviorBase<
         </VCard>
       </VDialog>
     );
+  }
+
+  private _renderAppModalDialog(modalItem: IModalItem) {
+    const options = modalItem.options as IModalDialogRenderOptions | undefined;
+    const dialogOptions = this._prepareDialogOptions(modalItem.dialogOptions);
+    const dialog: IModalDialogRenderContext = {
+      id: modalItem.id,
+      close: () => {
+        this.$appModal.close(modalItem.id);
+      },
+    };
+    const slots = dialogOptions.showCloseButton
+      ? {
+          append: () => (
+            <VBtn icon={$iconName('::close')} variant="text" nativeOnClick={dialog.close}></VBtn>
+          ),
+        }
+      : undefined;
+    return (
+      <VDialog
+        key={modalItem.id}
+        modelValue={true}
+        maxWidth={dialogOptions.maxWidth}
+        maxHeight={dialogOptions.maxHeight}
+        scrollable={true}
+        persistent={!dialogOptions.closeOnBackdrop || !dialogOptions.closeOnEscape}
+        closeOnBack={false}
+        {...{
+          'onClick:outside': () => {
+            if (dialogOptions.closeOnBackdrop) {
+              dialog.close();
+            }
+          },
+          'onKeydown': (event: KeyboardEvent) => {
+            if (event.key === 'Escape' && dialogOptions.closeOnEscape) {
+              dialog.close();
+            }
+          },
+        }}
+        onUpdate:modelValue={value => {
+          if (value === false) {
+            dialog.close();
+          }
+        }}
+      >
+        <VCard
+          prependIcon={options?.icon ? $iconName(options.icon) : undefined}
+          title={options?.title ?? this.sys.env.APP_TITLE}
+          v-slots={slots}
+        >
+          {options?.slotDefault && <VCardText>{options.slotDefault(dialog)}</VCardText>}
+          {options?.slotActions && <VCardActions>{options.slotActions(dialog)}</VCardActions>}
+        </VCard>
+      </VDialog>
+    );
+  }
+
+  private _prepareDialogOptions(options?: IModalDialogOptions) {
+    const defaults = this.scope.config.model.dialog.default;
+    return {
+      maxWidth: options?.maxWidth ?? defaults.maxWidth,
+      maxHeight: options?.maxHeight ?? defaults.maxHeight,
+      closeOnBackdrop: options?.closeOnBackdrop ?? defaults.closeOnBackdrop,
+      closeOnEscape: options?.closeOnEscape ?? defaults.closeOnEscape,
+      showCloseButton: options?.showCloseButton ?? defaults.showCloseButton,
+    };
   }
 }
