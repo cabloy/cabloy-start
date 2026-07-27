@@ -73,9 +73,8 @@ export class TableCellFile extends BeanBase implements ITableCellRender {
               variant="text"
               density="compact"
               class="text-none"
-              nativeOnClick={(event: MouseEvent) => {
+              nativeOnMousedown={(event: MouseEvent) => {
                 event.stopPropagation();
-                props.onClick?.(event);
               }}
             >
               {label} (+{items.length - 1})
@@ -89,8 +88,7 @@ export class TableCellFile extends BeanBase implements ITableCellRender {
                   variant="text"
                   density="compact"
                   disabled={!item.downloadUrl}
-                  nativeOnClick={(event: MouseEvent) => {
-                    event.stopPropagation();
+                  nativeOnClick={() => {
                     if (item.downloadUrl) void this._openDownloadUrl(item.downloadUrl);
                   }}
                 >

@@ -361,7 +361,7 @@ export class ControllerFormFieldFile extends BeanControllerBase {
     if (!relationName) return;
     const relationItems = this._getRelationPreviewMap();
     const value = fileIds.map(
-      id => relationItems[String(id)] ?? this.uploadedPreviewMap[String(id)] ?? { id },
+      id => this.uploadedPreviewMap[String(id)] ?? relationItems[String(id)] ?? { id },
     );
     this.$$renderContext.$$form.setFieldValue(
       relationName as never,
@@ -375,7 +375,7 @@ export class ControllerFormFieldFile extends BeanControllerBase {
     const relationItems = this._getRelationPreviewMap();
     if (!fileIds.length) return Object.values(relationItems);
     return fileIds.map(
-      id => relationItems[String(id)] ?? this.uploadedPreviewMap[String(id)] ?? { id },
+      id => this.uploadedPreviewMap[String(id)] ?? relationItems[String(id)] ?? { id },
     );
   }
 
