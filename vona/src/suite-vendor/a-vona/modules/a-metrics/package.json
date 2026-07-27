@@ -1,9 +1,11 @@
 {
-  "name": "vona-module-a-instance",
-  "version": "5.1.13",
-  "gitHead": "a79189b882c17af5911573896a781bbb0046d37d",
+  "name": "vona-module-a-metrics",
+  "version": "5.0.1",
   "description": "",
-  "author": "zhennann",
+  "keywords": [
+    "Vona Module"
+  ],
+  "author": "",
   "files": [
     "assets",
     "dist",
@@ -29,7 +31,10 @@
     "postpack": "clean-package restore"
   },
   "dependencies": {
-    "async": "^3.2.6"
+    "@opentelemetry/api": "^1.9.1",
+    "@opentelemetry/exporter-metrics-otlp-proto": "^0.221.0",
+    "@opentelemetry/resources": "^2.10.0",
+    "@opentelemetry/sdk-metrics": "^2.10.0"
   },
   "devDependencies": {
     "clean-package": "^2.2.0",
@@ -39,12 +44,19 @@
     "indent": 2,
     "remove": [
       "clean-package",
+      "devDependencies",
       "exports.\\..import"
     ]
   },
-  "title": "Instance",
+  "title": "a-metrics",
   "vonaModule": {
-    "fileVersion": 1,
-    "dependencies": {}
+    "dependencies": {
+      "a-aspect": "5.0.0",
+      "a-election": "5.0.0",
+      "a-orm": "5.0.0",
+      "a-queue": "5.0.0",
+      "a-redis": "5.0.0",
+      "a-worker": "5.0.0"
+    }
   }
 }
