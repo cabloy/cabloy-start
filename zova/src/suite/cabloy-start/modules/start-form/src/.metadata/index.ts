@@ -2,6 +2,7 @@
 /** controller: begin */
 export * from '../component/actionBack/controller.jsx';
 export * from '../component/actionSubmit/controller.jsx';
+export * from '../component/blockFormLayout/controller.jsx';
 
 import 'zova';
 declare module 'zova' {
@@ -18,17 +19,24 @@ declare module 'zova-module-start-form' {
         export interface ControllerActionSubmit {
           /** @internal */
           get scope(): ScopeModuleStartForm;
+        }
+
+        export interface ControllerBlockFormLayout {
+          /** @internal */
+          get scope(): ScopeModuleStartForm;
         } 
 }
 /** controller: end */
 /** controller: begin */
 import { ControllerActionBack } from '../component/actionBack/controller.jsx';
 import { ControllerActionSubmit } from '../component/actionSubmit/controller.jsx';
+import { ControllerBlockFormLayout } from '../component/blockFormLayout/controller.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
     'start-form.controller.actionBack': ControllerActionBack;
 'start-form.controller.actionSubmit': ControllerActionSubmit;
+'start-form.controller.blockFormLayout': ControllerBlockFormLayout;
   }
 }
 /** controller: end */
@@ -38,19 +46,24 @@ export * from './component/actionBack.js';
 import { ZActionBack } from './component/actionBack.js';
 export * from './component/actionSubmit.js';
 import { ZActionSubmit } from './component/actionSubmit.js';
+export * from './component/blockFormLayout.js';
+import { ZBlockFormLayout } from './component/blockFormLayout.js';
 export const components = {
   'actionBack': ZActionBack,
 'actionSubmit': ZActionSubmit,
+'blockFormLayout': ZBlockFormLayout,
 };
 import 'zova';
 declare module 'zova' {
 export interface IComponentRecord {
   'start-form:actionBack': ControllerActionBack;
 'start-form:actionSubmit': ControllerActionSubmit;
+'start-form:blockFormLayout': ControllerBlockFormLayout;
 }
 export interface IZovaComponentRecord {
   'start-form:actionBack': typeof ZActionBack;
 'start-form:actionSubmit': typeof ZActionSubmit;
+'start-form:blockFormLayout': typeof ZBlockFormLayout;
 }
 }
 /** components: end */
