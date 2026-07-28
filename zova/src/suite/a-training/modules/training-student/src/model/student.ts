@@ -1,0 +1,39 @@
+import type { TableIdentity } from 'table-identity';
+import type { IDecoratorModelOptions } from 'zova-module-a-model';
+import type { ModelResource } from 'zova-module-rest-resource';
+
+import { Use, usePrepareArg } from 'zova';
+import { BeanModelBase, Model } from 'zova-module-a-model';
+
+export interface IModelOptionsStudent extends IDecoratorModelOptions {}
+
+const StudentResource = 'training-student:student';
+
+@Model<IModelOptionsStudent>()
+export class ModelStudent extends BeanModelBase {
+  @Use({ beanFullName: 'rest-resource.model.resource' })
+  protected get $$modelResource(): ModelResource {
+    return usePrepareArg(StudentResource, true);
+  }
+
+  summary(id: TableIdentity) {
+    return this.$$modelResource.queryItem({
+      id,
+      action: 'summary',
+      queryFn: async () => {
+        return (await this.scope.api.trainingStudent.summary({ params: { id } })) ?? null;
+      },
+      meta: { disableSuspenseOnInit: true },
+    });
+  }
+
+  deleteForce(id: TableIdentity) {
+    return this.$$modelResource.mutationItem<void, void>({
+      id,
+      action: 'deleteForce',
+      mutationFn: async () => {
+        await (this.scope.api.trainingStudent.deleteForce({ params: { id } }) as Promise<void>);
+      },
+    });
+  }
+}
