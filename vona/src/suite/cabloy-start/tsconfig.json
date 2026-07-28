@@ -7,6 +7,9 @@
     },
     {
       "path": "modules/start-siteweb/tsconfig.build.json"
+    },
+    {
+      "path": "modules/start-metrics/tsconfig.build.json"
     }
   ],
   "exclude": ["modules"]

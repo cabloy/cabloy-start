@@ -6,6 +6,7 @@
   "files": [],
   "type": "module",
   "dependencies": {
+    "vona-module-start-metrics": "^5.0.0",
     "vona-module-start-siteadmin": "^5.1.1",
     "vona-module-start-siteweb": "^5.1.1",
     "vona-suite-a-cabloy": "^5.1.4"
