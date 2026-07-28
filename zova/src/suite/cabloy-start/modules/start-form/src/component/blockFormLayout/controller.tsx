@@ -2,7 +2,9 @@ import type { IComponentOptions } from 'zova';
 import type {
   IJsxRenderContextForm,
   IResolvedFormLayout,
+  IResolvedFormLayoutBlock,
   IResolvedFormLayoutField,
+  IResolvedFormLayoutLeaf,
   IResolvedFormLayoutGroup,
   IResolvedFormLayoutNode,
   IResolvedFormLayoutSection,
@@ -67,6 +69,8 @@ export class ControllerBlockFormLayout extends BeanControllerBase {
     switch (node.type) {
       case 'field':
         return this._renderField(node);
+      case 'block':
+        return this._renderBlock(node);
       case 'group':
         return this._renderGroup(node);
       case 'section':
@@ -76,13 +80,30 @@ export class ControllerBlockFormLayout extends BeanControllerBase {
     }
   }
 
-  private _renderField(node: IResolvedFormLayoutField, sectionLayout?: 'grid' | 'flow') {
-    const { $$form } = this.$$renderContext;
+  private _renderLeaf(node: IResolvedFormLayoutLeaf, sectionLayout?: 'grid' | 'flow') {
     if (sectionLayout === 'grid') {
-      return <VCol {...this._gridColumns(node.span)}>{$$form.renderField(node.name)}</VCol>;
+      return <VCol {...this._gridColumns(node.span)}>{this._renderLeafContent(node)}</VCol>;
     }
     const style = sectionLayout === 'flow' ? { minWidth: 0, maxWidth: '100%' } : undefined;
-    return <div style={style}>{$$form.renderField(node.name)}</div>;
+    return <div style={style}>{this._renderLeafContent(node)}</div>;
+  }
+
+  private _renderLeafContent(node: IResolvedFormLayoutLeaf) {
+    if (node.type === 'field') return this.$$renderContext.$$form.renderField(node.name);
+    return this._renderBlockContent(node);
+  }
+
+  private _renderField(node: IResolvedFormLayoutField) {
+    return this._renderLeaf(node);
+  }
+
+  private _renderBlock(node: IResolvedFormLayoutBlock) {
+    return this._renderLeaf(node);
+  }
+
+  private _renderBlockContent(node: IResolvedFormLayoutBlock) {
+    const { $celScope, $jsx } = this.$$renderContext;
+    return $jsx.render(node.block.render!, node.block.options, $celScope, this.$$renderContext);
   }
 
   private _renderGroup(node: IResolvedFormLayoutGroup) {
@@ -107,10 +128,10 @@ export class ControllerBlockFormLayout extends BeanControllerBase {
         )}
         {layout === 'flow' ? (
           <div class="d-flex flex-wrap align-start ga-4">
-            {node.children.map(child => this._renderField(child, layout))}
+            {node.children.map(child => this._renderLeaf(child, layout))}
           </div>
         ) : (
-          <VRow>{node.children.map(child => this._renderField(child, layout))}</VRow>
+          <VRow>{node.children.map(child => this._renderLeaf(child, layout))}</VRow>
         )}
       </section>
     );
