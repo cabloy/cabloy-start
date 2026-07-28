@@ -14,7 +14,29 @@ export interface IDtoOptions<%=argv.resourceNameCapitalize%>SelectResItem extend
   blocks: [
     ZovaRender.block('basic-page:blockPage', {
       blocks: [
-        ZovaRender.block('basic-page:blockFilter'),
+        ZovaRender.block('basic-page:blockFilter', {
+          formFieldLayout: { inline: true },
+          blocks: [
+            ZovaRender.block('basic-form:blockFormLayout', {
+              formLayout: {
+                children: [
+                  {
+                    type: 'section',
+                    layout: 'flow',
+                    children: [
+                      { type: 'field', name: 'name' },
+                      { type: 'field', name: 'createdAt' },
+                      {
+                        type: 'block',
+                        block: ZovaRender.block('basic-page:blockFilterActions'),
+                      },
+                    ],
+                  },
+                ],
+              },
+            }),
+          ],
+        }),
         ZovaRender.block('basic-page:blockToolbarBulk', {
           actions: [ZovaRender.tableActionBulk('basic-table:actionCreate')],
         }),
@@ -29,7 +51,10 @@ export class Dto<%=argv.resourceNameCapitalize%>SelectResItem extends $Dto.get((
     v.title($locale('Operations')),
     ZovaRender.order(1, 'max'),
     ZovaRender.cell('basic-table:actionOperationsRow', {
-      actions: [ZovaRender.tableActionRow('basic-table:actionUpdate'), ZovaRender.tableActionRow('basic-table:actionDelete')],
+      actions: [
+        ZovaRender.tableActionRow('basic-table:actionUpdate'),
+        ZovaRender.tableActionRow('basic-table:actionDelete'),
+      ],
     }),
   )
   _operationsRow?: unknown;
