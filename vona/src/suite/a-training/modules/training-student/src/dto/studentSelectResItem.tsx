@@ -24,6 +24,7 @@ export interface IDtoOptionsStudentSelectResItem extends IDecoratorDtoOptions {}
                   {
                     type: 'section',
                     layout: 'flow',
+                    // columns: { default: 1, md: 2 },
                     children: [
                       { type: 'field', name: 'name' },
                       { type: 'field', name: 'level' },
