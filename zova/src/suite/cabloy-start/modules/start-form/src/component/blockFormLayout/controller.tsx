@@ -54,7 +54,9 @@ export class ControllerBlockFormLayout extends BeanControllerBase {
   }
 
   protected render() {
-    return <>{this.formLayoutPlan!.children.map(node => this._renderNode(node))}</>;
+    return (
+      <VCol cols={12}>{this.formLayoutPlan!.children.map(node => this._renderNode(node))}</VCol>
+    );
   }
 
   private _renderNode(node: IResolvedFormLayoutNode) {
@@ -87,8 +89,8 @@ export class ControllerBlockFormLayout extends BeanControllerBase {
     const style =
       sectionLayout === 'flow'
         ? node.type === 'field'
-          ? { flex: '1 1 320px', minWidth: 0, maxWidth: '100%' }
-          : { minWidth: 0, maxWidth: '100%' }
+          ? { flex: '1 1 240px', minWidth: 0, maxWidth: '100%' }
+          : { flex: '0 0 auto', minWidth: 0, maxWidth: '100%' }
         : undefined;
     return <div style={style}>{this._renderLeafContent(node)}</div>;
   }

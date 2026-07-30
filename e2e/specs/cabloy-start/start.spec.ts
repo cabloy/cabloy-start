@@ -62,6 +62,20 @@ interface IGridGeometry {
 }
 
 interface IFlowGeometry {
+  rootColumn: {
+    left: number;
+    right: number;
+    width: number;
+    clientWidth: number;
+    scrollWidth: number;
+  };
+  row: {
+    left: number;
+    right: number;
+    width: number;
+    clientWidth: number;
+    scrollWidth: number;
+  };
   flow: {
     display: string;
     flexWrap: string;
@@ -117,11 +131,29 @@ async function getGridGeometry(row: Locator): Promise<IGridGeometry> {
 async function getFlowGeometry(flow: Locator): Promise<IFlowGeometry> {
   return await flow.evaluate(element => {
     const flowRect = element.getBoundingClientRect();
+    const rootColumn = element.closest('.v-col')!;
+    const row = rootColumn.parentElement!;
+    const rootColumnRect = rootColumn.getBoundingClientRect();
+    const rowRect = row.getBoundingClientRect();
     const style = getComputedStyle(element);
     const leaves = Array.from(element.querySelectorAll(':scope > div'));
     const form = element.closest('form')!;
     const documentElement = document.documentElement;
     return {
+      rootColumn: {
+        left: rootColumnRect.left,
+        right: rootColumnRect.right,
+        width: rootColumnRect.width,
+        clientWidth: rootColumn.clientWidth,
+        scrollWidth: rootColumn.scrollWidth,
+      },
+      row: {
+        left: rowRect.left,
+        right: rowRect.right,
+        width: rowRect.width,
+        clientWidth: row.clientWidth,
+        scrollWidth: row.scrollWidth,
+      },
       flow: {
         display: style.display,
         flexWrap: style.flexWrap,
@@ -156,6 +188,13 @@ async function getFlowGeometry(flow: Locator): Promise<IFlowGeometry> {
 }
 
 function expectFlowGeometry(geometry: IFlowGeometry, tolerance: number) {
+  expect(geometry.rootColumn.left).toBeCloseTo(geometry.row.left, 0);
+  expect(geometry.rootColumn.right).toBeCloseTo(geometry.row.right, 0);
+  expect(geometry.rootColumn.width).toBeGreaterThan(geometry.row.width - tolerance);
+  expect(geometry.rootColumn.scrollWidth).toBeLessThanOrEqual(
+    geometry.rootColumn.clientWidth + tolerance,
+  );
+  expect(geometry.row.scrollWidth).toBeLessThanOrEqual(geometry.row.clientWidth + tolerance);
   expect(geometry.flow.display).toBe('flex');
   expect(geometry.flow.flexWrap).toBe('wrap');
   for (const leaf of geometry.leaves) {
@@ -346,7 +385,7 @@ test(
   { tag: ['@admin', '@layout'] },
   async ({ page }) => {
     const tolerance = 4;
-    const fieldMinimumWidth = 320;
+    const fieldPreferredWidth = 240;
     await page.setViewportSize({ width: 1440, height: 900 });
     const pageErrors = collectPageErrors(page);
     await loginAsAdmin(page);
@@ -368,9 +407,11 @@ test(
 
     const wide = await getFlowGeometry(flow);
     expectFlowGeometry(wide, tolerance);
+    expect(new Set(wide.leaves.map(leaf => Math.round(leaf.top))).size).toBe(1);
     for (const field of wide.leaves.slice(0, 3)) {
-      expect(field.width).toBeGreaterThanOrEqual(fieldMinimumWidth - tolerance);
+      expect(field.width).toBeGreaterThanOrEqual(fieldPreferredWidth - tolerance);
     }
+    expect(wide.leaves[3]!.width).toBeLessThan(wide.leaves[0]!.width - tolerance);
 
     await page.setViewportSize({ width: 700, height: 900 });
     await expect
@@ -390,7 +431,7 @@ test(
     expectFlowGeometry(narrow, tolerance);
     for (const field of narrow.leaves.slice(0, 3)) {
       expect(field.width).toBeGreaterThanOrEqual(
-        Math.min(fieldMinimumWidth, narrow.flow.width) - tolerance,
+        Math.min(fieldPreferredWidth, narrow.flow.width) - tolerance,
       );
     }
     expect(pageErrors).toEqual([]);
