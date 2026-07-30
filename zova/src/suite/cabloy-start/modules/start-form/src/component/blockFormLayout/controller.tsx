@@ -18,7 +18,7 @@ import type {
 } from 'zova-module-a-openapi';
 
 import { useId } from 'vue';
-import { VCol, VRow, VTab, VTabs } from 'vuetify/components';
+import { VBadge, VCol, VRow, VTab, VTabs } from 'vuetify/components';
 import { BeanControllerBase, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { resolveFormLayout } from 'zova-module-a-form';
@@ -180,11 +180,12 @@ export class ControllerBlockFormLayout extends BeanControllerBase {
                 {...tabAttrs}
                 aria-label={invalid ? `${tab.title}: ${errorFieldCount} invalid fields` : undefined}
               >
-                {tab.title}
-                {invalid && (
-                  <span class="ml-1 text-error" aria-hidden="true">
-                    {errorFieldCount}
-                  </span>
+                {invalid ? (
+                  <VBadge content={errorFieldCount} color="error" inline aria-hidden="true">
+                    {tab.title}
+                  </VBadge>
+                ) : (
+                  tab.title
                 )}
               </VTab>
             );
