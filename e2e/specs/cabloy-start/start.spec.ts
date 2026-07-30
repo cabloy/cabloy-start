@@ -54,6 +54,42 @@ async function openStudentCreatePage(page: Page) {
   await expect(page.getByRole('group', { name: 'Student Profile' })).toBeVisible();
 }
 
+async function overrideStudentFilterBlocks(page: Page, mode: 'omit' | 'empty'): Promise<void> {
+  await page.route('**/api/training/student**', async route => {
+    const request = route.request();
+    if (request.method() !== 'GET' || request.headers()['x-vona-openapi-schema'] !== 'true') {
+      await route.continue();
+      return;
+    }
+    const response = await route.fetch();
+    const payload = await response.json();
+    const schemas = payload.data.doc.components.schemas as Record<string, any>;
+    const component = Object.values(schemas).find(item => item.properties?._operationsRow) as any;
+    const filterBlock = component.rest.blocks[0].options.blocks[0];
+    if (mode === 'omit') {
+      delete filterBlock.options.blocks;
+    } else {
+      filterBlock.options.blocks = [];
+    }
+    await route.fulfill({ response, json: payload });
+  });
+}
+
+async function expectStudentFilterFallback(page: Page) {
+  const filterForm = page.locator('form').filter({
+    has: page.getByLabel('Student Name', { exact: true }),
+  });
+  const container = filterForm.locator(':scope > .v-container');
+  await expect(filterForm).toHaveCount(1);
+  await expect(container).toHaveCount(1);
+  await expect(container.locator(':scope > .v-row')).toHaveCount(1);
+  await expect(page.getByLabel('Student Name', { exact: true })).toBeVisible();
+  await expect(page.getByLabel('Training Stage', { exact: true })).toBeVisible();
+  await expect(page.getByLabel('Created At', { exact: true })).toBeVisible();
+  await expect(filterForm.getByRole('button', { name: 'Search', exact: true })).toHaveCount(1);
+  await expect(filterForm.getByRole('button', { name: 'Reset', exact: true })).toHaveCount(1);
+}
+
 interface IGridGeometry {
   row: { left: number; right: number; top: number; width: number };
   columns: Array<{ left: number; right: number; top: number; bottom: number; width: number }>;
@@ -62,14 +98,7 @@ interface IGridGeometry {
 }
 
 interface IFlowGeometry {
-  rootColumn: {
-    left: number;
-    right: number;
-    width: number;
-    clientWidth: number;
-    scrollWidth: number;
-  };
-  row: {
+  container: {
     left: number;
     right: number;
     width: number;
@@ -131,28 +160,19 @@ async function getGridGeometry(row: Locator): Promise<IGridGeometry> {
 async function getFlowGeometry(flow: Locator): Promise<IFlowGeometry> {
   return await flow.evaluate(element => {
     const flowRect = element.getBoundingClientRect();
-    const rootColumn = element.closest('.v-col')!;
-    const row = rootColumn.parentElement!;
-    const rootColumnRect = rootColumn.getBoundingClientRect();
-    const rowRect = row.getBoundingClientRect();
+    const container = element.closest('.v-container')!;
+    const containerRect = container.getBoundingClientRect();
     const style = getComputedStyle(element);
     const leaves = Array.from(element.querySelectorAll(':scope > div'));
     const form = element.closest('form')!;
     const documentElement = document.documentElement;
     return {
-      rootColumn: {
-        left: rootColumnRect.left,
-        right: rootColumnRect.right,
-        width: rootColumnRect.width,
-        clientWidth: rootColumn.clientWidth,
-        scrollWidth: rootColumn.scrollWidth,
-      },
-      row: {
-        left: rowRect.left,
-        right: rowRect.right,
-        width: rowRect.width,
-        clientWidth: row.clientWidth,
-        scrollWidth: row.scrollWidth,
+      container: {
+        left: containerRect.left,
+        right: containerRect.right,
+        width: containerRect.width,
+        clientWidth: container.clientWidth,
+        scrollWidth: container.scrollWidth,
       },
       flow: {
         display: style.display,
@@ -188,13 +208,11 @@ async function getFlowGeometry(flow: Locator): Promise<IFlowGeometry> {
 }
 
 function expectFlowGeometry(geometry: IFlowGeometry, tolerance: number) {
-  expect(geometry.rootColumn.left).toBeCloseTo(geometry.row.left, 0);
-  expect(geometry.rootColumn.right).toBeCloseTo(geometry.row.right, 0);
-  expect(geometry.rootColumn.width).toBeGreaterThan(geometry.row.width - tolerance);
-  expect(geometry.rootColumn.scrollWidth).toBeLessThanOrEqual(
-    geometry.rootColumn.clientWidth + tolerance,
+  expect(geometry.flow.left).toBeGreaterThanOrEqual(geometry.container.left - tolerance);
+  expect(geometry.flow.right).toBeLessThanOrEqual(geometry.container.right + tolerance);
+  expect(geometry.container.scrollWidth).toBeLessThanOrEqual(
+    geometry.container.clientWidth + tolerance,
   );
-  expect(geometry.row.scrollWidth).toBeLessThanOrEqual(geometry.row.clientWidth + tolerance);
   expect(geometry.flow.display).toBe('flex');
   expect(geometry.flow.flexWrap).toBe('wrap');
   for (const leaf of geometry.leaves) {
@@ -381,6 +399,32 @@ test(
 );
 
 test(
+  'ATP-START-FILTER-01: Student filter form uses schema fallback when blocks are omitted',
+  { tag: ['@admin', '@layout'] },
+  async ({ page }) => {
+    const pageErrors = collectPageErrors(page);
+    await loginAsAdmin(page);
+    await overrideStudentFilterBlocks(page, 'omit');
+    await openStudentListPage(page);
+    await expectStudentFilterFallback(page);
+    expect(pageErrors).toEqual([]);
+  },
+);
+
+test(
+  'ATP-START-FILTER-02: Student filter form uses schema fallback when blocks are empty',
+  { tag: ['@admin', '@layout'] },
+  async ({ page }) => {
+    const pageErrors = collectPageErrors(page);
+    await loginAsAdmin(page);
+    await overrideStudentFilterBlocks(page, 'empty');
+    await openStudentListPage(page);
+    await expectStudentFilterFallback(page);
+    expect(pageErrors).toEqual([]);
+  },
+);
+
+test(
   'ATP-START-LAYOUT-03: Student filter form preserves flow layout across viewports',
   { tag: ['@admin', '@layout'] },
   async ({ page }) => {
@@ -394,9 +438,12 @@ test(
     const filterForm = page.locator('form').filter({
       has: page.getByLabel('Student Name', { exact: true }),
     });
+    const container = filterForm.locator(':scope > .v-container');
     const flow = filterForm.locator('section > .d-flex.flex-wrap.align-start.ga-4');
     const leaves = flow.locator(':scope > div');
     await expect(filterForm).toHaveCount(1);
+    await expect(container).toHaveCount(1);
+    await expect(container.locator(':scope > .v-row')).toHaveCount(0);
     await expect(flow).toHaveCount(1);
     await expect(leaves).toHaveCount(4);
     await expect(leaves.nth(0).getByLabel('Student Name', { exact: true })).toBeVisible();

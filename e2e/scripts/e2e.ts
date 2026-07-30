@@ -2,7 +2,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export const E2E_ROOT_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
-export const E2E_PORT = 7102;
+export const E2E_PORT = 7103;
 export const E2E_LOCAL_BASE_URL = `http://127.0.0.1:${E2E_PORT}`;
 
 const E2E_CONFIG_DIR = resolve(E2E_ROOT_DIR, 'e2e', 'config');

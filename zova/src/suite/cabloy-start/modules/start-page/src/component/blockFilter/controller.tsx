@@ -98,15 +98,11 @@ export class ControllerBlockFilter extends BeanControllerBase {
         schemaScene="filter"
         formMeta={this.formMeta}
         formFieldLayout={formFieldLayout}
-        blocks={blocks}
+        blocks={hasBlocks ? blocks : undefined}
         formScope={this.formScope}
         onSubmitData={data => this.submitData(data as never)}
         slotWrapper={children => {
-          return (
-            <VContainer>
-              <VRow>{children}</VRow>
-            </VContainer>
-          );
+          return <VContainer>{hasBlocks ? children : <VRow>{children}</VRow>}</VContainer>;
         }}
         slotFooter={hasBlocks ? undefined : $$form => this._renderActions($$form)}
       ></ZForm>

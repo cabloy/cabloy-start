@@ -54,9 +54,7 @@ export class ControllerBlockFormLayout extends BeanControllerBase {
   }
 
   protected render() {
-    return (
-      <VCol cols={12}>{this.formLayoutPlan!.children.map(node => this._renderNode(node))}</VCol>
-    );
+    return <>{this.formLayoutPlan!.children.map(node => this._renderNode(node))}</>;
   }
 
   private _renderNode(node: IResolvedFormLayoutNode) {
