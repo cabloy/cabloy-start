@@ -15,7 +15,6 @@ import type {
   IFormLayout,
   IFormLayoutResponsiveColumns,
   IResourceBlockOptionsBase,
-  TypeFormLayoutColumns,
 } from 'zova-module-a-openapi';
 
 import { useId } from 'vue';
@@ -23,13 +22,6 @@ import { VCol, VRow } from 'vuetify/components';
 import { BeanControllerBase, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { resolveFormLayout } from 'zova-module-a-form';
-
-const vuetifyColumns: Record<TypeFormLayoutColumns, number> = {
-  1: 12,
-  2: 6,
-  3: 4,
-  4: 3,
-};
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceBlockRecord {
@@ -80,9 +72,17 @@ export class ControllerBlockFormLayout extends BeanControllerBase {
     }
   }
 
-  private _renderLeaf(node: IResolvedFormLayoutLeaf, sectionLayout?: 'grid' | 'flow') {
+  private _renderLeaf(
+    node: IResolvedFormLayoutLeaf,
+    sectionLayout?: 'grid' | 'flow',
+    sectionColumns?: IFormLayoutResponsiveColumns,
+  ) {
     if (sectionLayout === 'grid') {
-      return <VCol {...this._gridColumns(node.span)}>{this._renderLeafContent(node)}</VCol>;
+      return (
+        <VCol {...this._gridColumns(sectionColumns, node.span)}>
+          {this._renderLeafContent(node)}
+        </VCol>
+      );
     }
     const style = sectionLayout === 'flow' ? { minWidth: 0, maxWidth: '100%' } : undefined;
     return <div style={style}>{this._renderLeafContent(node)}</div>;
@@ -131,7 +131,7 @@ export class ControllerBlockFormLayout extends BeanControllerBase {
             {node.children.map(child => this._renderLeaf(child, layout))}
           </div>
         ) : (
-          <VRow>{node.children.map(child => this._renderLeaf(child, layout))}</VRow>
+          <VRow>{node.children.map(child => this._renderLeaf(child, layout, node.columns))}</VRow>
         )}
       </section>
     );
@@ -202,12 +202,22 @@ export class ControllerBlockFormLayout extends BeanControllerBase {
     );
   }
 
-  private _gridColumns(columns?: IFormLayoutResponsiveColumns) {
-    const defaultColumns = columns?.default ?? 1;
+  private _gridColumns(
+    sectionColumns?: IFormLayoutResponsiveColumns,
+    leafSpan?: IFormLayoutResponsiveColumns,
+  ) {
+    const columnsDefault = sectionColumns?.default ?? 1;
+    const spanDefault = leafSpan?.default ?? 1;
+    const columnsMd = sectionColumns?.md ?? columnsDefault;
+    const spanMd = leafSpan?.md ?? spanDefault;
+    const columnsLg = sectionColumns?.lg ?? columnsMd;
+    const spanLg = leafSpan?.lg ?? spanMd;
+    const resolveWidth = (columns: number, span: number) =>
+      (12 * Math.min(span, columns)) / columns;
     return {
-      cols: vuetifyColumns[defaultColumns],
-      md: columns?.md ? vuetifyColumns[columns.md] : undefined,
-      lg: columns?.lg ? vuetifyColumns[columns.lg] : undefined,
+      cols: resolveWidth(columnsDefault, spanDefault),
+      md: resolveWidth(columnsMd, spanMd),
+      lg: resolveWidth(columnsLg, spanLg),
     };
   }
 }
