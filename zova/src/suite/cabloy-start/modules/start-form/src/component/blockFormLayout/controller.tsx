@@ -84,7 +84,12 @@ export class ControllerBlockFormLayout extends BeanControllerBase {
         </VCol>
       );
     }
-    const style = sectionLayout === 'flow' ? { minWidth: 0, maxWidth: '100%' } : undefined;
+    const style =
+      sectionLayout === 'flow'
+        ? node.type === 'field'
+          ? { flex: '1 1 320px', minWidth: 0, maxWidth: '100%' }
+          : { minWidth: 0, maxWidth: '100%' }
+        : undefined;
     return <div style={style}>{this._renderLeafContent(node)}</div>;
   }
 
