@@ -18,7 +18,7 @@ import type {
 } from 'zova-module-a-openapi';
 
 import { useId } from 'vue';
-import { VCol, VRow } from 'vuetify/components';
+import { VCol, VRow, VTab, VTabs } from 'vuetify/components';
 import { BeanControllerBase, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { resolveFormLayout } from 'zova-module-a-form';
@@ -160,34 +160,36 @@ export class ControllerBlockFormLayout extends BeanControllerBase {
     const domIdBase = `${this.formLayoutDomIdPrefix}-${node.id}`;
     return (
       <div class="mb-6">
-        <div role="tablist" class="d-flex border-b">
+        <VTabs
+          modelValue={activeTabId}
+          onUpdate:modelValue={value => {
+            if (typeof value === 'string') this.setActiveTab(node.id, value);
+          }}
+        >
           {node.children.map(tab => {
-            const active = tab.id === activeTabId;
             const errorFieldCount = $$form.getErrorFieldCount(tab);
             const invalid = errorFieldCount > 0;
+            const tabAttrs = {
+              'id': `${domIdBase}-${tab.id}-tab`,
+              'aria-controls': `${domIdBase}-${tab.id}-panel`,
+            };
             return (
-              <button
-                id={`${domIdBase}-${tab.id}-tab`}
-                role="tab"
-                type="button"
-                class={active ? 'text-primary font-weight-medium' : undefined}
-                aria-selected={active}
-                aria-controls={`${domIdBase}-${tab.id}-panel`}
-                onClick={() => this.setActiveTab(node.id, tab.id)}
+              <VTab
+                key={tab.id}
+                value={tab.id}
+                {...tabAttrs}
+                aria-label={invalid ? `${tab.title}: ${errorFieldCount} invalid fields` : undefined}
               >
                 {tab.title}
                 {invalid && (
-                  <span
-                    class="ml-1 text-error"
-                    aria-label={`${tab.title}: ${errorFieldCount} invalid fields`}
-                  >
+                  <span class="ml-1 text-error" aria-hidden="true">
                     {errorFieldCount}
                   </span>
                 )}
-              </button>
+              </VTab>
             );
           })}
-        </div>
+        </VTabs>
         {node.children.map(tab => this._renderTabPanel(domIdBase, tab, tab.id === activeTabId))}
       </div>
     );

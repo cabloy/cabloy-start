@@ -399,6 +399,41 @@ test(
 );
 
 test(
+  'ATP-START-LAYOUT-03: Student create tabs use Vuetify selection behavior',
+  { tag: ['@admin', '@layout'] },
+  async ({ page }) => {
+    const pageErrors = collectPageErrors(page);
+    await loginAsAdmin(page);
+    await openStudentCreatePage(page);
+
+    const basicInformationTab = page.getByRole('tab', { name: 'Basic Information', exact: true });
+    const trainingRecordsTab = page.getByRole('tab', {
+      name: 'Student Training Records',
+      exact: true,
+    });
+    const basicInformationPanel = page
+      .locator('[role="tabpanel"]')
+      .filter({ has: page.getByRole('group', { name: 'Student Profile' }) });
+    const trainingRecordsPanel = page
+      .locator('[role="tabpanel"]')
+      .filter({ has: page.getByLabel('Training Stage', { exact: true }) });
+
+    await expect(basicInformationTab).toHaveAttribute('aria-selected', 'true');
+    await expect(trainingRecordsTab).toHaveAttribute('aria-selected', 'false');
+    await expect(basicInformationPanel).toBeVisible();
+    await expect(trainingRecordsPanel).toBeHidden();
+
+    await trainingRecordsTab.click();
+
+    await expect(basicInformationTab).toHaveAttribute('aria-selected', 'false');
+    await expect(trainingRecordsTab).toHaveAttribute('aria-selected', 'true');
+    await expect(basicInformationPanel).toBeHidden();
+    await expect(trainingRecordsPanel).toBeVisible();
+    expect(pageErrors).toEqual([]);
+  },
+);
+
+test(
   'ATP-START-FILTER-01: Student filter form uses schema fallback when blocks are omitted',
   { tag: ['@admin', '@layout'] },
   async ({ page }) => {
