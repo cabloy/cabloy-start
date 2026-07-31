@@ -66,6 +66,9 @@ function renderBody(
     <div
       class="d-flex flex-column ga-3"
       tabindex={0}
+      onVnodeMounted={vnode => {
+        requestAnimationFrame(() => (vnode.el as HTMLElement | null)?.focus());
+      }}
       onKeydown={event => {
         if (items.length < 2) return;
         if (event.key === 'ArrowLeft') state.activeIndex = (state.activeIndex + items.length - 1) % items.length;
