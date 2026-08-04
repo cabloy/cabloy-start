@@ -608,6 +608,54 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/payment-session/{id}/start': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['PaymentSession_start'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/payment-session/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['PaymentSession_view'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/pay/mock/payment-session/{id}/complete': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['PayMockPayment_complete'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/paypal/getRecord/{recordId}': {
     parameters: {
       query?: never;
@@ -884,7 +932,7 @@ export interface components {
       /** @description Description */
       description?: string | undefined;
       /** @description # */
-      _lineNumber: number;
+      _lineNumber?: number | undefined;
       /** @description Operations */
       _operationsRow?: unknown;
     };
@@ -939,6 +987,12 @@ export interface components {
       dossierFileIds?: (number | string)[] | undefined;
       /** @description Description */
       description?: string | undefined;
+      student?: {
+        /** @description ID */
+        id: number | string;
+        /** @description Student Name */
+        name: string;
+      };
       sceneImages?: components['schemas']['a-image.dto.imageView'][] | undefined;
       /** @description Dossier Files */
       dossierFiles?: components['schemas']['a-file.dto.fileView'][] | undefined;
@@ -1012,6 +1066,12 @@ export interface components {
           dossierFileIds?: (number | string)[] | undefined;
           /** @description Description */
           description?: string | undefined;
+          student?: {
+            /** @description ID */
+            id: number | string;
+            /** @description Student Name */
+            name: string;
+          };
           /** @description Student Training Record Details */
           trainingRecordSubjects: {
             /**
@@ -1224,7 +1284,7 @@ export interface components {
           }[]
         | undefined;
       /** @description # */
-      _lineNumber: number;
+      _lineNumber?: number | undefined;
       /** @description Operations */
       _operationsRow?: unknown;
     };
@@ -1495,17 +1555,18 @@ export interface components {
     };
     'training-student.dto.studentSummary_2d063d28bc7243bed02ebd8bddf1212a93c6305b':
       | {
+          /** @description ID */
           id: number | string;
           /** @description Student Name */
           name: string;
+          /** @description Description */
+          description?: string | undefined;
           /** @description Mobile */
           mobile: string;
           /** @description Training Stage */
-          level: number;
+          level: 1 | 2 | 3;
           /** @description Level Title */
           levelTitle: string;
-          /** @description Description */
-          description?: string | undefined;
           /** @description Description Length */
           descriptionLength: number;
           /** @description Summary */
@@ -1685,6 +1746,57 @@ export interface components {
           sharpen?: number | undefined;
         }
       | undefined;
+    'a-pay.dto.paymentSessionView': {
+      id: number | string;
+      /** @enum {string} */
+      state:
+        | 'created'
+        | 'starting'
+        | 'requires_action'
+        | 'processing'
+        | 'succeeded'
+        | 'failed'
+        | 'cancelled'
+        | 'expired';
+      providerName: string;
+      nextAction?:
+        | {
+            /** @enum {string} */
+            kind: 'redirect';
+            /** Format: uri */
+            url: string;
+          }
+        | {
+            /** @enum {string} */
+            kind: 'embedded';
+            clientToken: string;
+            publishableConfig?:
+              | {
+                  [key: string]: string;
+                }
+              | undefined;
+          }
+        | {
+            /** @enum {string} */
+            kind: 'pending';
+            retryAfterSeconds?: number | undefined;
+          }
+        | {
+            /** @enum {string} */
+            kind: 'completed';
+          }
+        | undefined;
+      amountMinor: number;
+      currency: string;
+    };
+    'pay-mock.dto.mockPaymentReceipt': {
+      paymentSessionId: number | string;
+      accepted: boolean;
+    };
+    'pay-mock.dto.mockPaymentComplete': {
+      /** @enum {string} */
+      outcome: 'succeeded' | 'failed' | 'cancelled';
+    };
     'a-paypal.entity.paypalRecord': {
       /**
        * Format: date-time
@@ -2990,6 +3102,88 @@ export interface operations {
         };
       };
     };
+  };
+  PaymentSession_start: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['a-pay.dto.paymentSessionView'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  PaymentSession_view: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['a-pay.dto.paymentSessionView'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  PayMockPayment_complete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['pay-mock.dto.mockPaymentComplete'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['pay-mock.dto.mockPaymentReceipt'];
+          };
+        };
+      };
+    };
+    authToken: true;
   };
   Paypal_getRecord: {
     parameters: {

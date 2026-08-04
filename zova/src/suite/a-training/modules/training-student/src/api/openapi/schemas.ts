@@ -183,6 +183,17 @@ export type ApiSchemaAImageDtoImageTransformOptions_2d063d28bc7243bed02ebd8bddf1
   components['schemas']['a-image.dto.imageTransformOptions_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
 export type ApiSchemaAImageDtoImageTransformOptions_2d063d28bc7243bed02ebd8bddf1212a93c6305bPartial =
   Partial<ApiSchemaAImageDtoImageTransformOptions_2d063d28bc7243bed02ebd8bddf1212a93c6305b>;
+export type ApiSchemaAPayDtoPaymentSessionView =
+  components['schemas']['a-pay.dto.paymentSessionView'];
+export type ApiSchemaAPayDtoPaymentSessionViewPartial = Partial<ApiSchemaAPayDtoPaymentSessionView>;
+export type ApiSchemaPayMockDtoMockPaymentReceipt =
+  components['schemas']['pay-mock.dto.mockPaymentReceipt'];
+export type ApiSchemaPayMockDtoMockPaymentReceiptPartial =
+  Partial<ApiSchemaPayMockDtoMockPaymentReceipt>;
+export type ApiSchemaPayMockDtoMockPaymentComplete =
+  components['schemas']['pay-mock.dto.mockPaymentComplete'];
+export type ApiSchemaPayMockDtoMockPaymentCompletePartial =
+  Partial<ApiSchemaPayMockDtoMockPaymentComplete>;
 export type ApiSchemaAPaypalEntityPaypalRecord =
   components['schemas']['a-paypal.entity.paypalRecord'];
 export type ApiSchemaAPaypalEntityPaypalRecordPartial = Partial<ApiSchemaAPaypalEntityPaypalRecord>;

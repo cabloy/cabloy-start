@@ -6,12 +6,83 @@ import assert from 'node:assert';
 import os from 'node:os';
 import path from 'node:path';
 import { describe, it } from 'node:test';
+import { appResource } from 'vona';
 import { app } from 'vona-mock';
+import { $Dto } from 'vona-module-a-orm';
+
+import { DtoDetailRecordSubjectResItem } from '../src/dto/detailRecordSubjectResItem.tsx';
+import { DtoRecordSelectResItem } from '../src/dto/recordSelectResItem.tsx';
+import { DtoRecordView } from '../src/dto/recordView.tsx';
+import { ModelRecord } from '../src/model/record.ts';
 
 const dossierTextAttendance = Buffer.from('attendance dossier file');
 const dossierTextAssessment = Buffer.from('assessment dossier file');
 
 describe('record.test.ts', () => {
+  it('action:record:resolvesNamedRelationLazily', async () => {
+    await app.bean.executor.mockCtx(async () => {
+      const ModelRecordRef = appResource.getBean('training-record.model.record')!
+        .beanClass as typeof ModelRecord;
+      const modelOptions = appResource.getBean(ModelRecordRef)!.options as any;
+      const originalStudent = modelOptions.relations.student;
+      modelOptions.relations.student = {
+        ...originalStudent,
+        model: 'training-student:missingStudent',
+      };
+      try {
+        assert.doesNotThrow(() => {
+          $Dto.get(ModelRecordRef, { include: { student: true } });
+        });
+      } finally {
+        modelOptions.relations.student = originalStudent;
+      }
+
+      const DtoRecord = $Dto.get(ModelRecordRef, { include: { student: true } });
+      const apiJson = await app.bean.openapi.generateJsonOfClass(DtoRecord);
+      const component = Object.values(apiJson.components!.schemas as any).find(item => {
+        return (item as any).properties?.student;
+      }) as any;
+      assert.ok(component?.properties?.student);
+    });
+  });
+
+  it('action:record:emittedDtoSchemas', async () => {
+    await app.bean.executor.mockCtx(async () => {
+      const subjectApiJson = await app.bean.openapi.generateJsonOfClass(
+        DtoDetailRecordSubjectResItem,
+      );
+      const subjectComponent = Object.values(subjectApiJson.components!.schemas as any).find(
+        item => (item as any).properties?._lineNumber,
+      ) as any;
+      assert.ok(subjectComponent?.properties?._lineNumber);
+      assert.equal(subjectComponent.required?.includes('_lineNumber'), false);
+
+      for (const [DtoClass, hasTrainingRecordSubjects] of [
+        [DtoRecordSelectResItem, false],
+        [DtoRecordView, true],
+      ] as const) {
+        const apiJson = await app.bean.openapi.generateJsonOfClass(DtoClass);
+        const component = Object.values(apiJson.components!.schemas as any).find(item => {
+          const properties = (item as any).properties;
+          return (
+            properties?.student &&
+            Boolean(properties?.trainingRecordSubjects) === hasTrainingRecordSubjects
+          );
+        }) as any;
+        assert.ok(component);
+        assert.ok(component.properties.student);
+        assert.equal(
+          Boolean(component.properties.trainingRecordSubjects),
+          hasTrainingRecordSubjects,
+        );
+        assert.deepEqual(Object.keys(component.properties.student.properties).sort(), [
+          'id',
+          'name',
+        ]);
+      }
+    });
+  });
+
   it('action:record', async () => {
     await app.bean.executor.mockCtx(async () => {
       const studentData: DtoStudentCreate = {
@@ -80,6 +151,8 @@ describe('record.test.ts', () => {
         assert.equal(!!recordItem, true);
         assert.equal(recordItem!.name, recordData.name);
         assert.equal(String(recordItem!.studentId), String(studentId));
+        assert.equal(String(recordItem!.student?.id), String(studentId));
+        assert.equal(recordItem!.student?.name, studentData.name);
         assert.equal(recordItem!.dossierFiles?.length, 1);
         assert.equal(recordItem!.dossierFiles?.[0]?.filename, 'attendance.txt');
 
@@ -90,6 +163,8 @@ describe('record.test.ts', () => {
         const recordDossierFile = record.dossierFiles?.[0];
         assert.equal(record.name, recordData.name);
         assert.equal(String(record.studentId), String(studentId));
+        assert.equal(String(record.student?.id), String(studentId));
+        assert.equal(record.student?.name, studentData.name);
         assert.equal(record.subjectCount, recordData.subjectCount);
         assert.equal(record.totalScore, recordData.totalScore);
         assert.equal(Number(record.averageScore), recordData.averageScore);
