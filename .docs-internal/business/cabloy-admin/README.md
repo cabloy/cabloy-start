@@ -14,13 +14,13 @@ The second documentation batch will add the SRS, work breakdown structure, test 
 | Concern | Decision |
 | --- | --- |
 | Suite | `cabloy-admin` (`providerId = cabloy`, `suiteName = admin`) |
-| Planned modules | `admin-user`, `admin-role`, and `admin-organization` |
+| Planned modules | `admin-user`, `admin-role`, and `admin-department` |
 | Account scope | Manage all existing accounts through the established identity model rather than duplicate account persistence |
 | Role scope | Manage ordinary `homeRole` records and user-role assignments; defer a dynamic permission matrix |
-| Organization scope | Support multiple Organizations, each with an independent Department tree |
-| Membership | A user may hold multiple Organization/Department memberships; one membership may later be marked primary |
+| Department scope | Model one Department forest inside each active Vona instance; the instance remains the tenant boundary |
+| Membership | A user may hold multiple Department memberships; one membership may later be marked primary |
 | Position | Store an optional textual `position` on the membership in phase one; defer `admin-position` and `positionId` |
-| Department root | Represent a root Department with `parentId = null`, not `0` |
+| Department root | Represent each top-level Department with `parentId = null`, not `0` |
 | Department manager | Include a Department manager concept; the manager is expected to be an active Department member |
 | Recovery authority | Treat `systemAdmin` as a protected break-glass role and preserve at least one activated `systemAdmin` in the active instance |
 
