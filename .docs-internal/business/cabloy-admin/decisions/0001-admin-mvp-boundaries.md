@@ -1,0 +1,116 @@
+# ADR 0001: Establish Cabloy Admin MVP Boundaries
+
+## Status
+
+Accepted.
+
+## Background
+
+Cabloy Start already provides the framework-level identity, authentication, Passport, role, active-instance, Admin site, SSR menu, Resource, and generated-contract mechanisms needed by operational applications. It does not yet provide a Start-specific system-management domain for maintaining all accounts, ordinary roles, Organizations, Department trees, and Department memberships.
+
+Without an explicit boundary, this work could duplicate `home-user` identity persistence, confuse Organizations with Vona tenants, treat menu visibility as authorization, or make the framework recovery role an ordinary mutable business record. The first phase therefore needs a durable decision before suite scaffolding or generated-contract work starts.
+
+## Problem
+
+The phase-one system-management domain has several cross-cutting boundaries that must remain stable as capabilities expand:
+
+- framework identity and role facts versus management use cases;
+- the Vona instance tenant boundary versus in-instance Organization structures;
+- ordinary role administration versus a recovery-level `systemAdmin` role;
+- conventional Start Admin Resource UI versus competing page/cache implementations;
+- phase-one account, role, Organization, Department, and membership capabilities versus deferred dynamic authorization and employment-management features.
+
+If those boundaries are not fixed now, later additions can silently create duplicate identities, conflicting authorization semantics, unsafe administrator revocation, or incompatible resource contracts.
+
+## Decision
+
+### Establish a suite-first Cabloy Admin domain
+
+Create `cabloy-admin` as a Start-internal, suite-first business domain. Its planned phase-one modules are:
+
+- `admin-user` for account-management use cases and integration with the existing identity model;
+- `admin-role` for ordinary role management and user-role membership use cases;
+- `admin-organization` for Organization, Department, Department membership, position text, and Department-manager use cases.
+
+The suite will use the normal suite-contained layout in both Vona and Zova:
+
+```text
+vona/src/suite/cabloy-admin/modules/
+zova/src/suite/cabloy-admin/modules/
+```
+
+### Reuse identity and role facts instead of duplicating them
+
+`admin-user` and `admin-role` own management use cases, Resource APIs, and Admin composition. They do not create another identity, Passport, role, or user-role persistence model.
+
+The established framework and project surfaces remain authoritative:
+
+- `bean.user`, `bean.role`, and `bean.passport` remain the stable business-facing entry points;
+- `homeUser` remains the account persistence implementation;
+- `homeRole` and `homeRoleUser` remain the role and membership facts that Passport consumes.
+
+Ordinary roles retain a stable, locale-neutral role name for authorization. Their title, locales, and site admission remain separate concerns. The detailed CRUD, membership-replacement, and adapter/service contracts will be defined by the SRS.
+
+### Use the existing Start Admin application and Resource owner
+
+Phase one integrates with the existing Start Admin site rather than introducing a new SSR site, public path, or flavor.
+
+Admin navigation will use the established `@SsrMenu` and `presetResource` approach. Conventional Admin resource state remains selector-scoped under `rest-resource.model.resource`; a module-local model can be a thin semantic façade for custom actions but must not become a competing CRUD/cache owner.
+
+### Separate ordinary roles from protected system administrator recovery authority
+
+Phase one supports ordinary `homeRole` CRUD and ordinary user-role assignments. It defers a dynamic role-to-menu, role-to-Resource, role-to-action, and role-to-data-scope policy matrix.
+
+`systemAdmin` is a protected break-glass role. Generic role APIs must not rename, delete, alter the site admission of, or bulk-replace membership for that role. A separate sensitive command owns `systemAdmin` grant and revoke.
+
+For every operation that can remove `systemAdmin`, deactivate a System Administrator, delete an administrator account, or otherwise make a System Administrator unable to authenticate or be authorized, server-side behavior must preserve at least one activated `systemAdmin` within the active Vona instance. The sensitive workflow requires server-side authorization, reauthentication, transaction and locking behavior, session invalidation, and immutable audit evidence. The exact API, transaction, error, lock, and audit contracts belong to the SRS.
+
+The current bootstrap assignment of `systemAdmin` to the activated `admin` account is implementation background, not the phase-one product API or the only recovery mechanism.
+
+### Model Organizations, Departments, and memberships explicitly
+
+Organization is an explicit business entity so the active instance can contain multiple independent Department trees. It is not a replacement for the Vona instance tenant boundary.
+
+A Department belongs to one Organization and has nullable `parentId`:
+
+```text
+Department root: parentId = null
+Department child: parentId = an actual Department identity in the same Organization
+```
+
+`0` is not used as a root sentinel. A Department may not be attached below a parent in another Organization.
+
+Organization/Department membership is a separate domain relation. A user may hold multiple memberships. In phase one, each membership can hold optional textual `position` information and can participate in a future primary-membership rule. A Department manager is an explicit phase-one business concept and is expected to be an active member of the Department. Detailed uniqueness, lifecycle, manager replacement, and removal semantics belong to the SRS.
+
+### Preserve active-instance scope and contract-loop ownership
+
+Every new Cabloy Admin business record remains in the normal Vona active-instance scope. Organization, Department, and membership services must not set `disableInstance` or accept a browser-controlled tenant identity.
+
+Backend entity, DTO, controller, validation, and OpenAPI changes are Vona contract truth and follow the forward contract loop. When a frontend-owned route, renderer, metadata resource, or other reverse-chain input changes, the matching Start Admin SSR and REST artifacts are built together before `npm run deps:vona`.
+
+## Alternatives Deferred
+
+- **Duplicate admin account and role tables:** rejected because Passport and existing role guards consume `homeUser`, `homeRole`, and `homeRoleUser` facts.
+- **Use `parentId = 0` for Department roots:** rejected because it is a magic non-entity identity and does not express the Organization tree boundary.
+- **Introduce `admin-position` in phase one:** deferred. A textual membership `position` is sufficient until positions require their own reusable lifecycle, code, status, headcount, or authorization semantics.
+- **Introduce dynamic RBAC and data scopes in phase one:** deferred. A future policy domain must provide server-side authorization truth rather than only frontend configuration.
+- **Treat `systemAdmin` as an ordinary role:** rejected because recovery authority needs distinct mutation, concurrency, session, and audit safeguards.
+- **Create a new independent Start Admin SSR application:** deferred. The existing Start Admin site and generic Resource infrastructure are the phase-one operational surface.
+- **Treat an Organization as a tenant:** rejected. A Vona instance remains the tenant; Organizations are in-instance business structures.
+
+## Consequences
+
+- The implementation must add managed façades and protected services around existing identity and role ownership rather than duplicate their persistence.
+- Role mutations, administrator activation changes, and protected administrator changes require explicit transactional safety, concurrency tests, and session invalidation behavior.
+- Organization, Department, and membership rules require a future SRS to define persistence contracts, tree movement, deletion/disable behavior, primary-membership semantics, manager lifecycle, and indexes.
+- Every resource slice must use the Vona-first forward contract loop and the Start Admin paired SSR/REST reverse handoff where applicable.
+- The second documentation batch must add the SRS, delivery work breakdown, test plan, and progress record before implementation begins.
+
+## Related Records
+
+- [Cabloy Admin internal planning index](../README.md)
+- [Cabloy Admin Product Requirements Document](../prd.md)
+- [Suites and Modules](../../../../cabloy-docs/fullstack/suites-and-modules.md)
+- [User Access Guide](../../../../cabloy-docs/backend/user-access-guide.md)
+- [Admin Resource and Web Self-Service](../../../../cabloy-docs/fullstack/admin-resource-and-web-self-service.md)
+- [Contract Loop Playbook](../../../../cabloy-docs/fullstack/contract-loop-playbook.md)
