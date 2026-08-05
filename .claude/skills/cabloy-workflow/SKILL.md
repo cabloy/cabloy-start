@@ -100,9 +100,11 @@ The reason is simple: these files are where Cabloy already encodes its real work
 
 ### Parallel worktree environment setup
 
-When a request involves a second worktree, concurrent Vona/Zova development, isolated ordinary tests, or managed clean E2E, classify it as fullstack workflow setup. Read [Parallel Worktree Environment](../../../cabloy-docs/fullstack/parallel-worktree-environment.md) for the canonical Cabloy Basic recipe.
+When a request involves a second worktree, concurrent Vona/Zova development, isolated ordinary tests, or managed clean E2E, classify it as fullstack workflow setup. Read [Parallel Worktree Environment](../../../cabloy-docs/fullstack/parallel-worktree-environment.md), the canonical shared recipe maintained in Cabloy Basic for both editions.
 
-Before applying the broad `.env.local` recipe, check for more-specific `.env.*.local` overrides. Keep Vona and Zova `APP_NAME` values aligned, use the required matching API target, and add database, Redis, external-service, mock, or SSR-preview isolation only when the work actually uses those shared resources. For Cabloy Start, inspect the active Start repository rather than reusing the Basic recipe unchanged.
+This routing skill provides read-only guidance only. Do not infer an `APP_NAME` or ports, edit local overrides, or run `npm run init` from a generic worktree request. When the user wants confirmation-gated local environment setup, ask them to explicitly invoke `/cabloy-worktree-environment`.
+
+The invoked skill detects Basic or Start to select the active root scripts and managed clean-E2E command. It uses Git worktree metadata, fixed Vona/Zova port baselines, and the worktree basename to recommend the complete standard tuple for confirmation: `APP_NAME`, `SERVER_LISTEN_PORT`, `DEV_SERVER_PORT`, `DEV_SERVER_HMR_PORT`, and an `API_BASE_URL` derived from the Vona port. After confirmation, it writes both `vona/env/.env.local` and `zova/env/.env.local`; never use flavor-, mode-, app-mode-, or runtime-specific `.env.*.local` files. It does not inspect environment-file content or allocate/reserve a live port. The shared environment is Vona + Zova development: Admin and Web are alternative commands using the same configuration, and they must not run concurrently in one worktree. Concurrent use requires separately configured linked worktrees.
 
 ## Step 4: Prefer CLI-first workflows
 

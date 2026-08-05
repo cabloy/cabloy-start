@@ -1915,16 +1915,16 @@ importers:
   src/suite-vendor/a-pay:
     dependencies:
       vona-module-a-pay:
-        specifier: ^5.0.2
+        specifier: ^5.0.3
         version: link:modules/a-pay
       vona-module-pay-mock:
-        specifier: ^5.0.2
+        specifier: ^5.0.3
         version: link:modules/pay-mock
       vona-module-pay-paypal:
-        specifier: ^5.0.2
+        specifier: ^5.0.3
         version: link:modules/pay-paypal
       vona-module-pay-stripe:
-        specifier: ^5.0.2
+        specifier: ^5.0.3
         version: link:modules/pay-stripe
 
   src/suite-vendor/a-pay/modules/a-pay:
@@ -1951,6 +1951,9 @@ importers:
 
   src/suite-vendor/a-pay/modules/pay-paypal:
     dependencies:
+      '@cabloy/paypal-server-sdk':
+        specifier: 2.2.0
+        version: 2.2.0(supports-color@5.5.0)
       vona-module-a-pay:
         specifier: workspace:*
         version: link:../a-pay
@@ -8651,7 +8654,7 @@ snapshots:
       '@apimatic/http-query': 0.3.9
       '@apimatic/json-bigint': 1.2.0
       '@apimatic/proxy': 0.1.4(supports-color@5.5.0)
-      axios: 1.16.1
+      axios: 1.18.1
       detect-browser: 5.3.0
       detect-node: 2.1.0
       form-data: 4.0.5

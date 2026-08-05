@@ -14,6 +14,12 @@ After generating or extending a backend thread, check which follow-up layers app
 - validation rules
 - OpenAPI metadata
 - inferred DTO opportunities
+- treat `$Dto.get(...)` as the complete model-aware read shape by default; use `columns` or `dtoClass` only for a genuine business/query/response projection, not solely to remove `iid` or `deleted`
+- treat the top-level `$Dto.create(...)` / `$Dto.update(...)` default omissions as a write-input authorization boundary, not as a reason to mechanically narrow ordinary `$Dto.get(...)` contracts
+- when a narrowed DTO or OpenAPI schema is expected to remove physical response fields, separately shape and verify the action response; declaration narrowing alone does not guarantee runtime field stripping
+- when stable Entity, Model, relation, or query truth exists, define the DTO projection first with `$Dto.*` and, where needed, `columns`, `include`, or `dtoClass`
+- for an inferred field, use `$makeMetadata(...)` for metadata-only refinement and `$makeSchema(...)` for schema or validation refinement; use a class-body `@Api.field(...)` member only for a genuinely new field
+- when inference cannot express the contract clearly, choose an explicit DTO deliberately; see [Default-first three-layer DTO authoring](../../../../cabloy-docs/backend/dto-infer-generation.md#default-first-three-layer-dto-authoring)
 - frontend contract impact
 - `@Api.field(...)` / `$makeSchema(...)` ordering: framework guards now preserve previously attached OpenAPI metadata across schema rebuilds, but structure-shaping schemaLike is still order-sensitive
 - when an explicit zod/custom schema or other structure-defining schemaLike is present, put that structure-defining schemaLike last because `makeSchemaLikes(...)` applies arguments right-to-left and later structure changes can otherwise alter or replace the intended schema
@@ -50,10 +56,13 @@ After generating or extending a backend thread, check which follow-up layers app
 
 ## Module composition and dependency intent
 
-- target module is already composed into the application when code uses cross-module scope lookup
-- cross-module `this.$scope.<module>` or `app.scope(...)` lookup alone does not require `vonaModule.dependencies`
-- `vonaModule.dependencies` is added only for a genuine target-module availability, dependency-first ordering, or minimum-version requirement
-- do not create speculative dependency edges or circular declarations merely to document a lookup
+- confirm package, suite, or application composition already supplies a target before using cross-module lookup; lookup cannot compose an absent module
+- choose the narrowest lookup form first: `this.scope` for local resources, `this.$scope.<module>` for a fixed cross-module target, and `app.scope(...)` when an application reference or genuinely dynamic target is required
+- cross-module scope lookup, a named ORM relation, or `$Dto.get(..., { include })` alone does not require `vonaModule.dependencies`
+- add `vonaModule.dependencies` only for a genuine target-module availability, dependency-first ordering, or minimum-version requirement
+- startup, lifecycle, or `monkey.ts` integration can require dependency-first ordering, but are not the only valid dependency case
+- when adding an edge, verify package/suite composition, the target relative module name, the minimum compatible version, and that the graph remains acyclic
+- do not create speculative dependency edges or circular declarations merely to document a lookup; read [Vona Module Dependencies](../../../../cabloy-docs/backend/module-dependencies.md) for the canonical decision guide
 
 ## Verification follow-up
 
