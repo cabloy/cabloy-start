@@ -170,18 +170,21 @@ The phase-one Cabloy Admin baseline is ready for acceptance when:
 
 ## Requirement Traceability
 
-| Product area | PRD requirements | Boundary decision | Future technical contract |
-| --- | --- | --- | --- |
-| Account management | `PRD-ADM-USR-*` | ADR 0001: identity ownership | Pending SRS |
-| Ordinary role management | `PRD-ADM-ROL-*` | ADR 0001: role reuse and deferred policy matrix | Pending SRS |
-| Protected administrator authority | `PRD-ADM-SUP-*` | ADR 0001: protected break-glass role | Pending SRS |
-| Departments | `PRD-ADM-DEP-*` | ADR 0001: in-instance Department forest | Pending SRS |
-| Membership | `PRD-ADM-MEM-*` | ADR 0001: multi-membership and textual position | Pending SRS |
-| Security and operational UI | `PRD-ADM-SEC-*`, `PRD-ADM-UI-*` | ADR 0001: tenant and Admin Resource boundaries | Pending SRS |
+| Product area | PRD requirements | SRS contracts | Delivery work | Acceptance scenarios |
+| --- | --- | --- | --- | --- |
+| Account management | `PRD-ADM-USR-*` | `SRS-ADM-USR-*` | `WBS-ADM-30-*` | `ATP-ADM-USR-01` |
+| Ordinary role management | `PRD-ADM-ROL-*` | `SRS-ADM-ROL-*` | `WBS-ADM-30-*` | `ATP-ADM-ROL-01` |
+| Protected administrator authority | `PRD-ADM-SUP-*` | `SRS-ADM-SUP-*`, `SRS-ADM-TXN-*`, `SRS-ADM-AUD-*` | `WBS-ADM-40-*` | `ATP-ADM-SUP-*` |
+| Departments | `PRD-ADM-DEP-*` | `SRS-ADM-DEP-*` | `WBS-ADM-50-*` | `ATP-ADM-DEP-*` |
+| Membership | `PRD-ADM-MEM-*` | `SRS-ADM-MEM-*` | `WBS-ADM-60-*` | `ATP-ADM-MEM-*`, `ATP-ADM-MGR-01` |
+| Security and operational UI | `PRD-ADM-SEC-*`, `PRD-ADM-UI-*` | `SRS-ADM-TEN-*`, `SRS-ADM-AUT-*`, `SRS-ADM-API-*`, `SRS-ADM-UI-*` | `WBS-ADM-20-*`, `WBS-ADM-70-*` | `ATP-ADM-TEN-01`, `ATP-ADM-AUT-01`, `ATP-ADM-CTR-01`, `ATP-ADM-RES-01`, `ATP-ADM-SSR-01` |
 
-The second documentation batch will expand this table into PRD requirement → SRS contract → delivery task → acceptance scenario → observed evidence.
+The complete traceability chain is PRD requirement → SRS contract → delivery task → acceptance scenario → observed evidence.
 
 ## Related Records
 
 - [Cabloy Admin internal planning index](./README.md)
+- [Software Requirements Specification](./srs.md)
+- [Product Delivery Plan and Work Breakdown Structure](./pdp-wbs.md)
+- [Test Strategy and Acceptance Plan](./test-plan.md)
 - [ADR 0001: Establish Cabloy Admin MVP Boundaries](./decisions/0001-admin-mvp-boundaries.md)

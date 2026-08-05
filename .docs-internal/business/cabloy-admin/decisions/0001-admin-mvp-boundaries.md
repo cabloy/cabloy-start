@@ -69,7 +69,7 @@ The current bootstrap assignment of `systemAdmin` to the activated `admin` accou
 
 ### Model Departments and memberships directly inside the active instance
 
-The active Vona instance contains one Department forest. Multiple root Departments are permitted; an additional Organization entity is not part of phase one.
+The active Vona instance contains one Department forest. Multiple root Departments are permitted. Phase one has no Organization entity, module, `organizationId`, or Organization-scoped authorization/query dimension.
 
 A Department has nullable `parentId`:
 
@@ -92,7 +92,7 @@ Backend entity, DTO, controller, validation, and OpenAPI changes are Vona contra
 
 - **Duplicate admin account and role tables:** rejected because Passport and existing role guards consume `homeUser`, `homeRole`, and `homeRoleUser` facts.
 - **Use `parentId = 0` for Department roots:** rejected because it is a magic non-entity identity rather than a natural tree root.
-- **Introduce multiple Organizations in phase one:** deferred. The active Vona instance provides the tenant boundary, and a Department forest meets the phase-one need without adding a persistent organization dimension to every future permission and query rule.
+- **Introduce an Organization model:** excluded from phase one. The active Vona instance provides the tenant boundary, and a Department forest meets the phase-one need without adding a persistent organization dimension to every permission and query rule. A future proposal requires a superseding ADR before it changes the model.
 - **Introduce `admin-position` in phase one:** deferred. A textual membership `position` is sufficient until positions require their own reusable lifecycle, code, status, headcount, or authorization semantics.
 - **Introduce dynamic RBAC and data scopes in phase one:** deferred. A future policy domain must provide server-side authorization truth rather than only frontend configuration.
 - **Treat `systemAdmin` as an ordinary role:** rejected because recovery authority needs distinct mutation, concurrency, session, and audit safeguards.
@@ -103,15 +103,19 @@ Backend entity, DTO, controller, validation, and OpenAPI changes are Vona contra
 
 - The implementation must add managed façades and protected services around existing identity and role ownership rather than duplicate their persistence.
 - Role mutations, administrator activation changes, and protected administrator changes require explicit transactional safety, concurrency tests, and session invalidation behavior.
-- Department and membership rules require a future SRS to define persistence contracts, tree movement, cycle protection, deletion/disable behavior, primary-membership semantics, manager lifecycle, and indexes.
-- A future multi-Organization requirement must be introduced as a dedicated evolution: create one default Organization per instance, backfill Departments and memberships, then define organization-aware scope and authorization behavior before enabling multiple Organizations.
+- Department and membership persistence, tree movement, cycle protection, deletion/disable behavior, primary-membership semantics, manager lifecycle, and indexes are owned by the [SRS](../srs.md).
+- An Organization model is not an anticipated implementation path. Any future proposal must introduce a superseding ADR and separately define migration, scope, authorization, and query consequences before changing the Department-only model.
 - Every resource slice must use the Vona-first forward contract loop and the Start Admin paired SSR/REST reverse handoff where applicable.
-- The second documentation batch must add the SRS, delivery work breakdown, test plan, and progress record before implementation begins.
+- Delivery sequencing is owned by the [PDP/WBS](../pdp-wbs.md), executable proof by the [test plan](../test-plan.md), and derived execution status by [progress](../progress.md).
 
 ## Related Records
 
 - [Cabloy Admin internal planning index](../README.md)
 - [Cabloy Admin Product Requirements Document](../prd.md)
+- [Software Requirements Specification](../srs.md)
+- [Product Delivery Plan and Work Breakdown Structure](../pdp-wbs.md)
+- [Test Strategy and Acceptance Plan](../test-plan.md)
+- [Delivery Progress](../progress.md)
 - [Suites and Modules](../../../../cabloy-docs/fullstack/suites-and-modules.md)
 - [User Access Guide](../../../../cabloy-docs/backend/user-access-guide.md)
 - [Admin Resource and Web Self-Service](../../../../cabloy-docs/fullstack/admin-resource-and-web-self-service.md)

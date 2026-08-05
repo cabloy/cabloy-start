@@ -4,10 +4,12 @@ This directory records the agreed phase-one product and architecture baseline fo
 
 ## Reading Order
 
-1. [Product Requirements Document](./prd.md) defines the phase-one product outcomes, users, scope, business rules, and acceptance expectations.
-2. [ADR 0001: Establish Cabloy Admin MVP Boundaries](./decisions/0001-admin-mvp-boundaries.md) records the accepted suite, ownership, security, and scope-boundary decisions.
-
-The second documentation batch will add the SRS, work breakdown structure, test plan, and delivery progress record after this first baseline has been reviewed.
+1. [Product Requirements Document](./prd.md) defines phase-one product outcomes, users, scope, business rules, and business acceptance.
+2. [ADR 0001: Establish Cabloy Admin MVP Boundaries](./decisions/0001-admin-mvp-boundaries.md) records accepted suite, ownership, security, and scope-boundary decisions.
+3. [Software Requirements Specification](./srs.md) defines data, authorization, API, transaction, lifecycle, and technical acceptance contracts.
+4. [Product Delivery Plan and Work Breakdown Structure](./pdp-wbs.md) defines delivery sequencing, dependencies, tasks, and completion checks.
+5. [Test Strategy and Acceptance Plan](./test-plan.md) defines executable acceptance scenarios and retained evidence.
+6. [Delivery Progress](./progress.md) records derived status, blockers, and evidence pointers only.
 
 ## Confirmed Phase-One Baseline
 
@@ -18,6 +20,7 @@ The second documentation batch will add the SRS, work breakdown structure, test 
 | Account scope | Manage all existing accounts through the established identity model rather than duplicate account persistence |
 | Role scope | Manage ordinary `homeRole` records and user-role assignments; defer a dynamic permission matrix |
 | Department scope | Model one Department forest inside each active Vona instance; the instance remains the tenant boundary |
+| Organization boundary | No Organization entity, module, `organizationId`, or Organization-scoped authorization/query rule exists in phase one |
 | Membership | A user may hold multiple Department memberships; one membership may later be marked primary |
 | Position | Store an optional textual `position` on the membership in phase one; defer `admin-position` and `positionId` |
 | Department root | Represent each top-level Department with `parentId = null`, not `0` |
@@ -43,11 +46,11 @@ The suite provides management use cases and Admin Resource contracts. It does no
 
 - The [PRD](./prd.md) owns product outcomes, personas, scope, business rules, and business acceptance.
 - [ADR 0001](./decisions/0001-admin-mvp-boundaries.md) owns accepted phase-one architecture, ownership, and security-boundary decisions.
-- This README is an index and baseline summary. It does not redefine either authoritative document.
-- The future SRS will own data, authorization, API, transaction, and invariant contracts.
-- The future delivery plan will own sequencing and completion checks.
-- The future test plan will own executable acceptance scenarios and retained evidence.
-- The future progress record will be derived execution status only; it must not redefine requirements or architecture.
+- The [SRS](./srs.md) owns data, authorization, API, transaction, lifecycle, invariant, and contract-loop rules.
+- The [PDP/WBS](./pdp-wbs.md) owns delivery sequencing, dependencies, tasks, and completion checks.
+- The [test plan](./test-plan.md) owns executable acceptance scenarios, verification procedures, and retained evidence.
+- [Progress](./progress.md) is derived execution status only; it must not redefine requirements or architecture.
+- This README is an index and baseline summary. It does not redefine any authoritative document.
 
 If documents disagree, update the authoritative document first, then update downstream summaries and references.
 
