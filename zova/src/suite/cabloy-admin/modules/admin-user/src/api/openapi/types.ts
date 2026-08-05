@@ -1755,40 +1755,71 @@ export interface components {
       roleIds: (number | string)[];
     };
     'admin-user.dto.userSelectRes': {
-      list: components['schemas']['admin-user.dto.userItem'][];
+      list: components['schemas']['admin-user.dto.userSelectResItem'][];
       total: string;
       pageCount: number;
       pageSize: number;
       pageNo: number;
     };
-    'admin-user.dto.userItem': {
+    'admin-user.dto.userSelectResItem': {
+      /** @description ID */
       id: number | string;
+      /** @description User Name */
       name: string;
+      /** @description Avatar */
       avatar?: string | undefined;
+      /** @description Email */
       email?: string | undefined;
+      /** @description Mobile */
       mobile?: string | undefined;
-      activated?: boolean | undefined;
+      /**
+       * @description Activated
+       * @default false
+       */
+      activated?: boolean;
+      /** @description Locale */
       locale?: string | undefined;
+      /** @description Time Zone */
       tz?: string | undefined;
+      /** @description Operations */
+      _operationsRow?: unknown;
     };
-    'admin-user.dto.userItem_2d063d28bc7243bed02ebd8bddf1212a93c6305b':
+    'admin-user.dto.userView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_b80966b69b47651ce13598cbf58a332cfaff27b8':
       | {
+          /** @description ID */
           id: number | string;
+          /** @description User Name */
           name: string;
+          /** @description Avatar */
           avatar?: string | undefined;
+          /** @description Email */
           email?: string | undefined;
+          /** @description Mobile */
           mobile?: string | undefined;
-          activated?: boolean | undefined;
+          /**
+           * @description Activated
+           * @default false
+           */
+          activated?: boolean;
+          /** @description Locale */
           locale?: string | undefined;
+          /** @description Time Zone */
           tz?: string | undefined;
         }
       | undefined;
     'admin-user.dto.userUpdate': {
+      /** @description Avatar */
       avatar?: string | undefined;
-      /** Format: email */
+      /**
+       * Format: email
+       * @description Email
+       */
       email?: string | undefined;
+      /** @description Mobile */
       mobile?: string | undefined;
+      /** @description Locale */
       locale?: string | undefined;
+      /** @description Time Zone */
       tz?: string | undefined;
     };
     'start-metrics.dto.metricsSnapshot': {
@@ -3194,7 +3225,7 @@ export interface operations {
           'application/json': {
             code: string;
             message: string;
-            data?: components['schemas']['admin-user.dto.userItem_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
+            data?: components['schemas']['admin-user.dto.userView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_b80966b69b47651ce13598cbf58a332cfaff27b8'];
           };
         };
       };

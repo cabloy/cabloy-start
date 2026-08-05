@@ -1,5 +1,14 @@
 export default {
-  User: '用户',
   EmailAlreadyInUse: '该邮箱地址已被使用',
+  Operations: '操作',
   ProtectedSystemAdminTransition: '系统管理员只能通过受保护的管理员流程停用',
+  User: '用户',
+  UserActivated: '已激活',
+  UserAvatar: '头像',
+  UserEmail: '邮箱',
+  UserLocale: '区域设置',
+  UserMobile: '手机号码',
+  UserName: '用户名',
+  UserProfile: '用户资料',
+  UserTz: '时区',
 };

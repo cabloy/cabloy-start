@@ -5,6 +5,19 @@ import { app } from 'vona-mock';
 
 const userPath = '/admin/user';
 
+function assertUserProjection(user: Record<string, unknown>) {
+  assert.deepEqual(Object.keys(user).sort(), [
+    'activated',
+    'avatar',
+    'email',
+    'id',
+    'locale',
+    'mobile',
+    'name',
+    'tz',
+  ]);
+}
+
 describe('user.test.ts', { concurrency: false }, () => {
   it('action:user:operationalProfileAndActivationCommands', async () => {
     const userIds: string[] = [];
@@ -36,6 +49,8 @@ describe('user.test.ts', { concurrency: false }, () => {
               avatar: ':emoji:rocket',
               email: updatedEmail,
               name: 'must-not-be-updated',
+              activated: true,
+              password: 'must-not-be-updated',
             },
           });
           assert.equal(updateResult, null);
@@ -43,11 +58,20 @@ describe('user.test.ts', { concurrency: false }, () => {
           let view = await app.bean.executor.performAction('get', '/admin/user/:id', {
             params: { id: userId },
           });
+          assertUserProjection(view);
           assert.equal(view.name, user.name);
           assert.equal(view.avatar, ':emoji:rocket');
           assert.equal(view.email, updatedEmail);
-          assert.equal('password' in view, false);
           assert.equal(view.activated, false);
+
+          const users = await app.bean.executor.performAction('get', userPath, {
+            query: { where: { name: { _eq_: user.name } } },
+          });
+          assert.deepEqual(
+            users.list.map(item => item.id),
+            [userId],
+          );
+          assertUserProjection(users.list[0]);
 
           const [emailConflictResult, emailConflictError] = await catchError(() => {
             return app.bean.executor.performAction('patch', '/admin/user/:id', {

@@ -43,22 +43,28 @@ declare module 'vona' {
 }
 /** service: end */
 /** dto: begin */
-export * from '../dto/userItem.ts';
-export * from '../dto/userSelectReq.ts';
-export * from '../dto/userSelectRes.ts';
-export * from '../dto/userUpdate.ts';
-import type { IDtoOptionsUserItem } from '../dto/userItem.ts';
-import type { IDtoOptionsUserSelectReq } from '../dto/userSelectReq.ts';
-import type { IDtoOptionsUserSelectRes } from '../dto/userSelectRes.ts';
-import type { IDtoOptionsUserUpdate } from '../dto/userUpdate.ts';
+export * from '../dto/userBase.tsx';
+export * from '../dto/userSelectReq.tsx';
+export * from '../dto/userSelectRes.tsx';
+export * from '../dto/userSelectResItem.tsx';
+export * from '../dto/userUpdate.tsx';
+export * from '../dto/userView.tsx';
+import type { IDtoOptionsUserBase } from '../dto/userBase.tsx';
+import type { IDtoOptionsUserSelectReq } from '../dto/userSelectReq.tsx';
+import type { IDtoOptionsUserSelectRes } from '../dto/userSelectRes.tsx';
+import type { IDtoOptionsUserSelectResItem } from '../dto/userSelectResItem.tsx';
+import type { IDtoOptionsUserUpdate } from '../dto/userUpdate.tsx';
+import type { IDtoOptionsUserView } from '../dto/userView.tsx';
 import 'vona-module-a-web';
 declare module 'vona-module-a-web' {
   
     export interface IDtoRecord {
-      'admin-user:userItem': IDtoOptionsUserItem;
+      'admin-user:userBase': IDtoOptionsUserBase;
 'admin-user:userSelectReq': IDtoOptionsUserSelectReq;
 'admin-user:userSelectRes': IDtoOptionsUserSelectRes;
+'admin-user:userSelectResItem': IDtoOptionsUserSelectResItem;
 'admin-user:userUpdate': IDtoOptionsUserUpdate;
+'admin-user:userView': IDtoOptionsUserView;
     }
 
   
@@ -68,14 +74,16 @@ declare module 'vona-module-admin-user' {
 }
 /** dto: end */
 /** dto: begin */
-import type { DtoUserItem } from '../dto/userItem.ts';
-import type { DtoUserSelectReq } from '../dto/userSelectReq.ts';
-import type { DtoUserSelectRes } from '../dto/userSelectRes.ts';
-import type { DtoUserUpdate } from '../dto/userUpdate.ts';
+import type { DtoUserBase } from '../dto/userBase.tsx';
+import type { DtoUserSelectReq } from '../dto/userSelectReq.tsx';
+import type { DtoUserSelectRes } from '../dto/userSelectRes.tsx';
+import type { DtoUserSelectResItem } from '../dto/userSelectResItem.tsx';
+import type { DtoUserUpdate } from '../dto/userUpdate.tsx';
+import type { DtoUserView } from '../dto/userView.tsx';
 declare module 'vona-module-admin-user' {
   
-    export interface IDtoOptionsUserItem {
-      fields?: TypeEntityOptionsFields<DtoUserItem, IDtoOptionsUserItem[TypeSymbolKeyFieldsMore]>;
+    export interface IDtoOptionsUserBase {
+      fields?: TypeEntityOptionsFields<DtoUserBase, IDtoOptionsUserBase[TypeSymbolKeyFieldsMore]>;
     }
 
     export interface IDtoOptionsUserSelectReq {
@@ -86,8 +94,16 @@ declare module 'vona-module-admin-user' {
       fields?: TypeEntityOptionsFields<DtoUserSelectRes, IDtoOptionsUserSelectRes[TypeSymbolKeyFieldsMore]>;
     }
 
+    export interface IDtoOptionsUserSelectResItem {
+      fields?: TypeEntityOptionsFields<DtoUserSelectResItem, IDtoOptionsUserSelectResItem[TypeSymbolKeyFieldsMore]>;
+    }
+
     export interface IDtoOptionsUserUpdate {
       fields?: TypeEntityOptionsFields<DtoUserUpdate, IDtoOptionsUserUpdate[TypeSymbolKeyFieldsMore]>;
+    }
+
+    export interface IDtoOptionsUserView {
+      fields?: TypeEntityOptionsFields<DtoUserView, IDtoOptionsUserView[TypeSymbolKeyFieldsMore]>;
     }
 }
 /** dto: end */
