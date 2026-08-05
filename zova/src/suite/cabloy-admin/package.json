@@ -1,0 +1,14 @@
+{
+  "name": "zova-suite-cabloy-admin",
+  "version": "5.0.0",
+  "description": "",
+  "author": "",
+  "files": [],
+  "type": "module",
+  "dependencies": {
+    "zova-module-admin-department": "^5.0.0",
+    "zova-module-admin-role": "^5.0.0",
+    "zova-module-admin-user": "^5.0.0"
+  },
+  "title": "cabloy-admin"
+}

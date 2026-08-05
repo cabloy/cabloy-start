@@ -1,0 +1,40 @@
+import type { IApiSchemaOptions } from 'zova-module-a-api';
+
+import { BeanBase } from 'zova';
+import { ApiSchema } from 'zova-module-a-api';
+
+import {
+  ApiApiAdminRoleselectPath,
+  ApiApiAdminRolecreatePath,
+  ApiApiAdminRoleviewPath,
+  ApiApiAdminRoledeletePath,
+  ApiApiAdminRoleupdatePath,
+  ApiApiAdminRolereplaceUserRolesPath,
+} from '../api/adminRole.js';
+
+@ApiSchema()
+export class ApiSchemaAdminRole extends BeanBase {
+  select(options?: IApiSchemaOptions) {
+    return this.$sdk.createApiSchemas(ApiApiAdminRoleselectPath, 'get', options);
+  }
+
+  create(options?: IApiSchemaOptions) {
+    return this.$sdk.createApiSchemas(ApiApiAdminRolecreatePath, 'post', options);
+  }
+
+  view(options?: IApiSchemaOptions) {
+    return this.$sdk.createApiSchemas(ApiApiAdminRoleviewPath, 'get', options);
+  }
+
+  delete(options?: IApiSchemaOptions) {
+    return this.$sdk.createApiSchemas(ApiApiAdminRoledeletePath, 'delete', options);
+  }
+
+  update(options?: IApiSchemaOptions) {
+    return this.$sdk.createApiSchemas(ApiApiAdminRoleupdatePath, 'patch', options);
+  }
+
+  replaceUserRoles(options?: IApiSchemaOptions) {
+    return this.$sdk.createApiSchemas(ApiApiAdminRolereplaceUserRolesPath, 'put', options);
+  }
+}

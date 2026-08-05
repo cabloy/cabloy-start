@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.base",
+  "compilerOptions": {},
+  "references": [
+    {
+      "path": "modules/admin-user/tsconfig.build.json"
+    },
+    {
+      "path": "modules/admin-role/tsconfig.build.json"
+    },
+    {
+      "path": "modules/admin-department/tsconfig.build.json"
+    }
+  ],
+  "exclude": ["modules"]
+}
