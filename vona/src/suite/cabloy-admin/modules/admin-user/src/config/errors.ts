@@ -1,4 +1,4 @@
 export const errors = {
-  EmailAlreadyInUse: 1001,
-  ProtectedSystemAdminTransition: 1002,
+  EmailAlreadyInUse: { code: 1001, status: 409 },
+  ProtectedSystemAdminTransition: { code: 1002, status: 409 },
 } as const;

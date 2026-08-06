@@ -46,7 +46,7 @@ export class ServiceUser extends BeanBase {
     if (user.email) {
       const existing = await this.$scope.homeUser.model.user.getByEmailEqI(user.email);
       if (existing && String(existing.id) !== String(id)) {
-        this.throwConflict(() => this.scope.error.EmailAlreadyInUse.throw());
+        this.scope.error.EmailAlreadyInUse.throw();
       }
     }
     await this.$scope.homeUser.model.user.updateById(id, user);
@@ -66,17 +66,8 @@ export class ServiceUser extends BeanBase {
     });
     if (!user) this.app.throw(404, 'User not found');
     if (user.roles?.some(role => role.name === 'systemAdmin')) {
-      this.throwConflict(() => this.scope.error.ProtectedSystemAdminTransition.throw());
+      this.scope.error.ProtectedSystemAdminTransition.throw();
     }
     await this.$scope.homeUser.service.userAdapter.setActivated(id, false);
-  }
-
-  private throwConflict(throwError: () => never): never {
-    try {
-      return throwError();
-    } catch (error) {
-      (error as Error & { status?: number }).status = 409;
-      throw error;
-    }
   }
 }
