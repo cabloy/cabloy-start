@@ -5,12 +5,21 @@ import { app } from 'vona-mock';
 
 const rolePath = '/admin/role';
 
+function assertRoleProjection(role: Record<string, unknown>) {
+  assert.deepEqual(Object.keys(role).sort(), ['id', 'locales', 'name', 'siteIds', 'title']);
+}
+
 describe('role.test.ts', { concurrency: false }, () => {
   it('action:role:ordinaryLifecycleAndMembershipReplacement', async () => {
     let roleId: string | undefined;
+    const userIds: string[] = [];
     try {
       await app.bean.executor.mockCtx(async () => {
         const roleName = `admin-role-test-${crypto.randomUUID()}`;
+        const ordinaryUser = await app.bean.user.register({
+          name: `admin-role-user-${crypto.randomUUID()}`,
+        });
+        userIds.push(ordinaryUser.id as string);
         const [_, unauthenticatedError] = await catchError(() => {
           return app.bean.executor.performAction('post', rolePath, {
             innerAccess: false,
@@ -25,6 +34,7 @@ describe('role.test.ts', { concurrency: false }, () => {
             body: { name: roleName, title: 'Admin role test', siteIds: ['web'] },
           });
           roleId = role.id;
+          assertRoleProjection(role);
           assert.equal(role.name, roleName);
 
           const [duplicateResult, duplicateError] = await catchError(() => {
@@ -60,13 +70,29 @@ describe('role.test.ts', { concurrency: false }, () => {
           const view = await app.bean.executor.performAction('get', '/admin/role/:id', {
             params: { id: roleId },
           });
+          assertRoleProjection(view);
           assert.equal(view.name, roleName);
 
           const updateResult = await app.bean.executor.performAction('patch', '/admin/role/:id', {
             params: { id: roleId },
-            body: { title: 'Updated admin role test', siteIds: ['web', 'admin'] },
+            body: {
+              id: 'must-not-be-updated',
+              iid: -1,
+              deleted: true,
+              createdAt: '2026-01-01T00:00:00.000Z',
+              name: 'must-not-be-updated',
+              title: 'Updated admin role test',
+              siteIds: ['web', 'admin'],
+            },
           });
           assert.equal(updateResult, null);
+
+          const updatedRole = await app.bean.executor.performAction('get', '/admin/role/:id', {
+            params: { id: roleId },
+          });
+          assertRoleProjection(updatedRole);
+          assert.equal(updatedRole.name, roleName);
+          assert.equal(updatedRole.title, 'Updated admin role test');
 
           const admin = await app.bean.user.findOneByName('admin');
           assert.ok(admin);
@@ -138,6 +164,18 @@ describe('role.test.ts', { concurrency: false }, () => {
             selected.list.map(item => item.id),
             [roleId],
           );
+          assertRoleProjection(selected.list[0]);
+        } finally {
+          await app.bean.passport.signout();
+        }
+
+        await app.bean.passport.signinSystem('mock', -10001 as any, ordinaryUser.name);
+        try {
+          const [forbiddenResult, forbiddenError] = await catchError(() => {
+            return app.bean.executor.performAction('get', rolePath, { innerAccess: false });
+          });
+          assert.equal(forbiddenResult, undefined);
+          assert.equal(forbiddenError?.code, 403);
         } finally {
           await app.bean.passport.signout();
         }
@@ -173,6 +211,15 @@ describe('role.test.ts', { concurrency: false }, () => {
             await homeUser.model.roleUser.deleteBulk(memberships.map(item => item.id));
           }
           await homeUser.model.role.deleteById(roleId!);
+        });
+      }
+      if (userIds.length) {
+        await app.bean.executor.mockCtx(async () => {
+          const homeUser = app.scope('home-user');
+          await homeUser.model.roleUser.delete({ userId: { _in_: userIds } });
+          for (const userId of userIds.reverse()) {
+            await app.bean.user.removeById(userId);
+          }
         });
       }
     }

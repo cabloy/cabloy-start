@@ -72,27 +72,33 @@ declare module 'vona-module-admin-role' {
 import type { MetaRedlock } from '../bean/meta.redlock.ts';
 /** meta redlock: end */
 /** dto: begin */
-export * from '../dto/roleCreate.ts';
-export * from '../dto/roleItem.ts';
-export * from '../dto/roleSelectReq.ts';
-export * from '../dto/roleSelectRes.ts';
-export * from '../dto/roleUpdate.ts';
+export * from '../dto/roleBase.tsx';
+export * from '../dto/roleCreate.tsx';
+export * from '../dto/roleSelectReq.tsx';
+export * from '../dto/roleSelectRes.tsx';
+export * from '../dto/roleSelectResItem.tsx';
+export * from '../dto/roleUpdate.tsx';
+export * from '../dto/roleView.tsx';
 export * from '../dto/userRoleReplace.ts';
-import type { IDtoOptionsRoleCreate } from '../dto/roleCreate.ts';
-import type { IDtoOptionsRoleItem } from '../dto/roleItem.ts';
-import type { IDtoOptionsRoleSelectReq } from '../dto/roleSelectReq.ts';
-import type { IDtoOptionsRoleSelectRes } from '../dto/roleSelectRes.ts';
-import type { IDtoOptionsRoleUpdate } from '../dto/roleUpdate.ts';
+import type { IDtoOptionsRoleBase } from '../dto/roleBase.tsx';
+import type { IDtoOptionsRoleCreate } from '../dto/roleCreate.tsx';
+import type { IDtoOptionsRoleSelectReq } from '../dto/roleSelectReq.tsx';
+import type { IDtoOptionsRoleSelectRes } from '../dto/roleSelectRes.tsx';
+import type { IDtoOptionsRoleSelectResItem } from '../dto/roleSelectResItem.tsx';
+import type { IDtoOptionsRoleUpdate } from '../dto/roleUpdate.tsx';
+import type { IDtoOptionsRoleView } from '../dto/roleView.tsx';
 import type { IDtoOptionsUserRoleReplace } from '../dto/userRoleReplace.ts';
 import 'vona-module-a-web';
 declare module 'vona-module-a-web' {
   
     export interface IDtoRecord {
-      'admin-role:roleCreate': IDtoOptionsRoleCreate;
-'admin-role:roleItem': IDtoOptionsRoleItem;
+      'admin-role:roleBase': IDtoOptionsRoleBase;
+'admin-role:roleCreate': IDtoOptionsRoleCreate;
 'admin-role:roleSelectReq': IDtoOptionsRoleSelectReq;
 'admin-role:roleSelectRes': IDtoOptionsRoleSelectRes;
+'admin-role:roleSelectResItem': IDtoOptionsRoleSelectResItem;
 'admin-role:roleUpdate': IDtoOptionsRoleUpdate;
+'admin-role:roleView': IDtoOptionsRoleView;
 'admin-role:userRoleReplace': IDtoOptionsUserRoleReplace;
     }
 
@@ -103,20 +109,22 @@ declare module 'vona-module-admin-role' {
 }
 /** dto: end */
 /** dto: begin */
-import type { DtoRoleCreate } from '../dto/roleCreate.ts';
-import type { DtoRoleItem } from '../dto/roleItem.ts';
-import type { DtoRoleSelectReq } from '../dto/roleSelectReq.ts';
-import type { DtoRoleSelectRes } from '../dto/roleSelectRes.ts';
-import type { DtoRoleUpdate } from '../dto/roleUpdate.ts';
+import type { DtoRoleBase } from '../dto/roleBase.tsx';
+import type { DtoRoleCreate } from '../dto/roleCreate.tsx';
+import type { DtoRoleSelectReq } from '../dto/roleSelectReq.tsx';
+import type { DtoRoleSelectRes } from '../dto/roleSelectRes.tsx';
+import type { DtoRoleSelectResItem } from '../dto/roleSelectResItem.tsx';
+import type { DtoRoleUpdate } from '../dto/roleUpdate.tsx';
+import type { DtoRoleView } from '../dto/roleView.tsx';
 import type { DtoUserRoleReplace } from '../dto/userRoleReplace.ts';
 declare module 'vona-module-admin-role' {
   
-    export interface IDtoOptionsRoleCreate {
-      fields?: TypeEntityOptionsFields<DtoRoleCreate, IDtoOptionsRoleCreate[TypeSymbolKeyFieldsMore]>;
+    export interface IDtoOptionsRoleBase {
+      fields?: TypeEntityOptionsFields<DtoRoleBase, IDtoOptionsRoleBase[TypeSymbolKeyFieldsMore]>;
     }
 
-    export interface IDtoOptionsRoleItem {
-      fields?: TypeEntityOptionsFields<DtoRoleItem, IDtoOptionsRoleItem[TypeSymbolKeyFieldsMore]>;
+    export interface IDtoOptionsRoleCreate {
+      fields?: TypeEntityOptionsFields<DtoRoleCreate, IDtoOptionsRoleCreate[TypeSymbolKeyFieldsMore]>;
     }
 
     export interface IDtoOptionsRoleSelectReq {
@@ -127,8 +135,16 @@ declare module 'vona-module-admin-role' {
       fields?: TypeEntityOptionsFields<DtoRoleSelectRes, IDtoOptionsRoleSelectRes[TypeSymbolKeyFieldsMore]>;
     }
 
+    export interface IDtoOptionsRoleSelectResItem {
+      fields?: TypeEntityOptionsFields<DtoRoleSelectResItem, IDtoOptionsRoleSelectResItem[TypeSymbolKeyFieldsMore]>;
+    }
+
     export interface IDtoOptionsRoleUpdate {
       fields?: TypeEntityOptionsFields<DtoRoleUpdate, IDtoOptionsRoleUpdate[TypeSymbolKeyFieldsMore]>;
+    }
+
+    export interface IDtoOptionsRoleView {
+      fields?: TypeEntityOptionsFields<DtoRoleView, IDtoOptionsRoleView[TypeSymbolKeyFieldsMore]>;
     }
 
     export interface IDtoOptionsUserRoleReplace {

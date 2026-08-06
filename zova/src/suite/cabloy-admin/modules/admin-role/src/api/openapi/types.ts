@@ -1701,94 +1701,160 @@ export interface components {
           summaryText: string;
         }
       | undefined;
-    'admin-role.dto.roleItem': {
+    'admin-role.dto.roleView': {
+      /** @description ID */
       id: number | string;
+      /** @description Role Name */
       name: string;
+      /** @description Role Title */
       title: string;
+      /** @description Locales */
       locales?:
         | {
             [key: string]: string;
           }
         | undefined;
+      /** @description Site IDs */
       siteIds: string[];
     };
     'admin-role.dto.roleCreate': {
+      /** @description Role Name */
       name: string;
+      /** @description Role Title */
       title: string;
+      /** @description Locales */
       locales?:
         | {
             [key: string]: string;
           }
         | undefined;
+      /** @description Site IDs */
       siteIds: string[];
     };
     'admin-role.dto.roleSelectRes': {
-      list: components['schemas']['admin-role.dto.roleItem'][];
+      list: components['schemas']['admin-role.dto.roleSelectResItem'][];
       total: string;
       pageCount: number;
       pageSize: number;
       pageNo: number;
     };
-    'admin-role.dto.roleItem_2d063d28bc7243bed02ebd8bddf1212a93c6305b':
-      | {
-          id: number | string;
-          name: string;
-          title: string;
-          locales?:
-            | {
-                [key: string]: string;
-              }
-            | undefined;
-          siteIds: string[];
-        }
-      | undefined;
-    'admin-role.dto.roleUpdate': {
-      title?: string | undefined;
+    'admin-role.dto.roleSelectResItem': {
+      /** @description ID */
+      id: number | string;
+      /** @description Role Name */
+      name: string;
+      /** @description Role Title */
+      title: string;
+      /** @description Locales */
       locales?:
         | {
             [key: string]: string;
           }
         | undefined;
+      /** @description Site IDs */
+      siteIds: string[];
+      /** @description Operations */
+      _operationsRow?: unknown;
+    };
+    'admin-role.dto.roleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_256e92e385807a174e0ea948d3c26213e71ae297':
+      | {
+          /** @description ID */
+          id: number | string;
+          /** @description Role Name */
+          name: string;
+          /** @description Role Title */
+          title: string;
+          /** @description Locales */
+          locales?:
+            | {
+                [key: string]: string;
+              }
+            | undefined;
+          /** @description Site IDs */
+          siteIds: string[];
+        }
+      | undefined;
+    'admin-role.dto.roleUpdate': {
+      /** @description Role Title */
+      title?: string | undefined;
+      /** @description Locales */
+      locales?:
+        | {
+            [key: string]: string;
+          }
+        | undefined;
+      /** @description Site IDs */
       siteIds?: string[] | undefined;
     };
     'admin-role.dto.userRoleReplace': {
       roleIds: (number | string)[];
     };
     'admin-user.dto.userSelectRes': {
-      list: components['schemas']['admin-user.dto.userItem'][];
+      list: components['schemas']['admin-user.dto.userSelectResItem'][];
       total: string;
       pageCount: number;
       pageSize: number;
       pageNo: number;
     };
-    'admin-user.dto.userItem': {
+    'admin-user.dto.userSelectResItem': {
+      /** @description ID */
       id: number | string;
+      /** @description User Name */
       name: string;
+      /** @description Avatar */
       avatar?: string | undefined;
+      /** @description Email */
       email?: string | undefined;
+      /** @description Mobile */
       mobile?: string | undefined;
-      activated?: boolean | undefined;
+      /**
+       * @description Activated
+       * @default false
+       */
+      activated?: boolean;
+      /** @description Locale */
       locale?: string | undefined;
+      /** @description Time Zone */
       tz?: string | undefined;
+      /** @description Operations */
+      _operationsRow?: unknown;
     };
-    'admin-user.dto.userItem_2d063d28bc7243bed02ebd8bddf1212a93c6305b':
+    'admin-user.dto.userView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_b80966b69b47651ce13598cbf58a332cfaff27b8':
       | {
+          /** @description ID */
           id: number | string;
+          /** @description User Name */
           name: string;
+          /** @description Avatar */
           avatar?: string | undefined;
+          /** @description Email */
           email?: string | undefined;
+          /** @description Mobile */
           mobile?: string | undefined;
-          activated?: boolean | undefined;
+          /**
+           * @description Activated
+           * @default false
+           */
+          activated?: boolean;
+          /** @description Locale */
           locale?: string | undefined;
+          /** @description Time Zone */
           tz?: string | undefined;
         }
       | undefined;
     'admin-user.dto.userUpdate': {
+      /** @description Avatar */
       avatar?: string | undefined;
-      /** Format: email */
+      /**
+       * Format: email
+       * @description Email
+       */
       email?: string | undefined;
+      /** @description Mobile */
       mobile?: string | undefined;
+      /** @description Locale */
       locale?: string | undefined;
+      /** @description Time Zone */
       tz?: string | undefined;
     };
     'start-metrics.dto.metricsSnapshot': {
@@ -3020,7 +3086,7 @@ export interface operations {
           'application/json': {
             code: string;
             message: string;
-            data: components['schemas']['admin-role.dto.roleItem'];
+            data: components['schemas']['admin-role.dto.roleView'];
           };
         };
       };
@@ -3046,7 +3112,7 @@ export interface operations {
           'application/json': {
             code: string;
             message: string;
-            data?: components['schemas']['admin-role.dto.roleItem_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
+            data?: components['schemas']['admin-role.dto.roleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_256e92e385807a174e0ea948d3c26213e71ae297'];
           };
         };
       };
@@ -3194,7 +3260,7 @@ export interface operations {
           'application/json': {
             code: string;
             message: string;
-            data?: components['schemas']['admin-user.dto.userItem_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
+            data?: components['schemas']['admin-user.dto.userView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_b80966b69b47651ce13598cbf58a332cfaff27b8'];
           };
         };
       };
