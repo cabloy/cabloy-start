@@ -8,4 +8,6 @@ export default {
   RoleTitle: '角色标题',
   BuiltinRoleProtected: '配置的内置角色不能通过普通角色管理修改',
   InvalidRoleMembership: '请求的普通角色成员关系无效',
+  SiteIdsUnavailable: '站点 %s 不可用',
+  SiteIdsUnavailable_1: '站点 %s 不可用',
 };

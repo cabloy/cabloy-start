@@ -154,14 +154,25 @@ export class ServiceRole extends BeanBase {
     this.ensureOrdinaryRoleName(role.name);
   }
 
-  private validateSiteIds(siteIds: string[]): void {
+  getUnavailableSiteIds(siteIds: string[]): string[] {
     const availableSiteIds = new Set(
       this.bean.onion.ssrSite
         .getOnionsEnabled(this.ctx.instanceName ?? undefined)
         .map(item => (item.beanOptions.options as { siteId: string }).siteId),
     );
-    if (siteIds.some(siteId => !availableSiteIds.has(siteId))) {
-      this.app.throw(422, 'Role siteIds contain an unavailable site');
+    return siteIds.filter(siteId => !availableSiteIds.has(siteId));
+  }
+
+  private validateSiteIds(siteIds: string[]): void {
+    const unavailableSiteIds = this.getUnavailableSiteIds(siteIds);
+    if (unavailableSiteIds.length) {
+      this.app.throw(
+        422,
+        this.scope.locale.SiteIdsUnavailable(
+          unavailableSiteIds.map(siteId => JSON.stringify(siteId)).join(', '),
+          unavailableSiteIds.length,
+        ),
+      );
     }
   }
 

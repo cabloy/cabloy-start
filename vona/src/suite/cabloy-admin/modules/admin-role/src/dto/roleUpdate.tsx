@@ -55,7 +55,11 @@ export interface IDtoOptionsRoleUpdate extends IDecoratorDtoOptions {}
   fields: {
     title: $makeSchema(v.optional(), v.min(1), v.trim(), z.string()),
     locales: $makeSchema(v.optional(), z.record(z.string(), z.string())),
-    siteIds: $makeSchema(v.optional(), v.array(z.string())),
+    siteIds: $makeSchema(
+      v.optional(),
+      v.zodRefine('admin-role:siteIdsAvailable'),
+      v.array(z.string()),
+    ),
   },
 })
 export class DtoRoleUpdate extends $Dto.update(() => ModelRole, {

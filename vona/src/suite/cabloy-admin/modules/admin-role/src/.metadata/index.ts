@@ -214,6 +214,32 @@ import 'vona-module-a-openapi';
   }
   
 /** controller: end */
+/** zodRefine: begin */
+export * from '../bean/zodRefine.siteIdsAvailable.ts';
+import type { IZodRefineOptionsSiteIdsAvailable } from '../bean/zodRefine.siteIdsAvailable.ts';
+import 'vona-module-a-zod';
+declare module 'vona-module-a-zod' {
+  
+    export interface IZodRefineRecord {
+      'admin-role:siteIdsAvailable': IZodRefineOptionsSiteIdsAvailable;
+    }
+
+  
+}
+declare module 'vona-module-admin-role' {
+  
+        export interface ZodRefineSiteIdsAvailable {
+          /** @internal */
+          get scope(): ScopeModuleAdminRole;
+        }
+
+          export interface ZodRefineSiteIdsAvailable {
+            get $beanFullName(): 'admin-role.zodRefine.siteIdsAvailable';
+            get $onionName(): 'admin-role:siteIdsAvailable';
+            get $onionOptions(): IZodRefineOptionsSiteIdsAvailable;
+          } 
+}
+/** zodRefine: end */
 /** ssrMenu: begin */
 export * from '../bean/ssrMenu.role.ts';
 import type { ISsrMenuOptionsRole } from '../bean/ssrMenu.role.ts';

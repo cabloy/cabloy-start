@@ -9,4 +9,6 @@ export default {
   BuiltinRoleProtected:
     'Configured built-in roles cannot be changed by ordinary role administration',
   InvalidRoleMembership: 'The requested ordinary role membership is invalid',
+  SiteIdsUnavailable: 'Sites %s are unavailable',
+  SiteIdsUnavailable_1: 'Site %s is unavailable',
 };

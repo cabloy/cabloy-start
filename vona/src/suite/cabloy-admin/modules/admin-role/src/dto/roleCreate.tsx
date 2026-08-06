@@ -57,7 +57,7 @@ export interface IDtoOptionsRoleCreate extends IDecoratorDtoOptions {}
     name: $makeSchema(v.min(1), v.trim(), z.string()),
     title: $makeSchema(v.min(1), v.trim(), z.string()),
     locales: $makeSchema(v.optional(), z.record(z.string(), z.string())),
-    siteIds: $makeSchema(v.array(z.string())),
+    siteIds: $makeSchema(v.zodRefine('admin-role:siteIdsAvailable'), v.array(z.string())),
   },
 })
 export class DtoRoleCreate extends $Dto.create(() => ModelRole, {

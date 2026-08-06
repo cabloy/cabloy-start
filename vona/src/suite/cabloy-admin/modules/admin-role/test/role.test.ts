@@ -60,12 +60,18 @@ describe('role.test.ts', { concurrency: false }, () => {
               body: {
                 name: `${roleName}-invalid-site`,
                 title: 'Invalid site',
-                siteIds: ['missing'],
+                siteIds: ['invalid-a', 'invalid-b'],
               },
             });
           });
           assert.equal(invalidSiteResult, undefined);
           assert.equal(invalidSiteError?.code, 422);
+          assert.equal(invalidSiteError?.message?.[0]?.code, 'custom');
+          assert.equal(
+            invalidSiteError?.message?.[0]?.message,
+            'Sites "invalid-a", "invalid-b" are unavailable',
+          );
+          assert.deepEqual(invalidSiteError?.message?.[0]?.path, ['siteIds']);
 
           const view = await app.bean.executor.performAction('get', '/admin/role/:id', {
             params: { id: roleId },
