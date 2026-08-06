@@ -168,7 +168,7 @@ export class ServiceRole extends BeanBase {
     if (unavailableSiteIds.length) {
       this.app.throw(
         422,
-        this.scope.locale.SiteIdsUnavailable(
+        this.scope.locale.SiteIdsUnavailable_(
           unavailableSiteIds.map(siteId => JSON.stringify(siteId)).join(', '),
           unavailableSiteIds.length,
         ),

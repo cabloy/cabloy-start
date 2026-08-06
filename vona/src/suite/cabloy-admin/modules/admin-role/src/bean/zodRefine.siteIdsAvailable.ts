@@ -25,7 +25,7 @@ export class ZodRefineSiteIdsAvailable
     if (unavailableSiteIds.length) {
       refinementCtx.addIssue({
         code: 'custom',
-        message: this.scope.locale.SiteIdsUnavailable(
+        message: this.scope.locale.SiteIdsUnavailable_(
           unavailableSiteIds.map(siteId => JSON.stringify(siteId)).join(', '),
           unavailableSiteIds.length,
         ),

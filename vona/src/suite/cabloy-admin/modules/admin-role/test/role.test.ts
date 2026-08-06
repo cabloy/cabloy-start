@@ -71,6 +71,21 @@ describe('role.test.ts', { concurrency: false }, () => {
             invalidSiteError?.message?.[0]?.message,
             'Sites "invalid-a", "invalid-b" are unavailable',
           );
+
+          const [singleInvalidSiteResult, singleInvalidSiteError] = await catchError(() => {
+            return app.bean.executor.performAction('post', rolePath, {
+              body: {
+                name: `${roleName}-single-invalid-site`,
+                title: 'Single invalid site',
+                siteIds: ['invalid-single'],
+              },
+            });
+          });
+          assert.equal(singleInvalidSiteResult, undefined);
+          assert.equal(singleInvalidSiteError?.code, 422);
+          const singleInvalidSiteIssue = (singleInvalidSiteError?.message as any)?.[0];
+          assert.equal(singleInvalidSiteIssue?.message, 'Site "invalid-single" is unavailable');
+          assert.deepEqual(singleInvalidSiteIssue?.path, ['siteIds']);
           assert.deepEqual(invalidSiteError?.message?.[0]?.path, ['siteIds']);
 
           const view = await app.bean.executor.performAction('get', '/admin/role/:id', {
