@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@cabloy/lint": "workspace:^",
-    "oxfmt": "^0.45.0",
-    "oxlint": "^1.65.0"
+    "oxfmt": "^0.62.0",
+    "oxlint": "^1.77.0"
   }
 }
