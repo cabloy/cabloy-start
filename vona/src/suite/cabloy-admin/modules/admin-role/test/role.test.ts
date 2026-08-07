@@ -6,7 +6,14 @@ import { app } from 'vona-mock';
 const rolePath = '/admin/role';
 
 function assertRoleProjection(role: Record<string, unknown>) {
-  assert.deepEqual(Object.keys(role).sort(), ['id', 'locales', 'name', 'siteIds', 'title']);
+  assert.deepEqual(Object.keys(role).sort(), [
+    'id',
+    'locales',
+    'name',
+    'siteIds',
+    'sites',
+    'title',
+  ]);
 }
 
 describe('role.test.ts', { concurrency: false }, () => {
@@ -36,6 +43,7 @@ describe('role.test.ts', { concurrency: false }, () => {
           roleId = role.id;
           assertRoleProjection(role);
           assert.equal(role.name, roleName);
+          assert.deepEqual(role.sites, [{ siteId: 'web', title: 'Web' }]);
 
           const [duplicateResult, duplicateError] = await catchError(() => {
             return app.bean.executor.performAction('post', rolePath, {
@@ -104,6 +112,7 @@ describe('role.test.ts', { concurrency: false }, () => {
               name: 'must-not-be-updated',
               title: 'Updated admin role test',
               siteIds: ['web', 'admin'],
+              sites: [{ siteId: 'invalid', title: 'Untrusted' }],
             },
           });
           assert.equal(updateResult, null);
@@ -114,6 +123,10 @@ describe('role.test.ts', { concurrency: false }, () => {
           assertRoleProjection(updatedRole);
           assert.equal(updatedRole.name, roleName);
           assert.equal(updatedRole.title, 'Updated admin role test');
+          assert.deepEqual(updatedRole.sites, [
+            { siteId: 'web', title: 'Web' },
+            { siteId: 'admin', title: 'Admin' },
+          ]);
 
           const admin = await app.bean.user.findOneByName('admin');
           assert.ok(admin);
@@ -186,6 +199,10 @@ describe('role.test.ts', { concurrency: false }, () => {
             [roleId],
           );
           assertRoleProjection(selected.list[0]);
+          assert.deepEqual(selected.list[0].sites, [
+            { siteId: 'web', title: 'Web' },
+            { siteId: 'admin', title: 'Admin' },
+          ]);
         } finally {
           await app.bean.passport.signout();
         }

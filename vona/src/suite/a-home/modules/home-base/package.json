@@ -45,6 +45,7 @@
   "title": "home-base",
   "vonaModule": {
     "dependencies": {
+      "a-ssr": "5.0.0",
       "a-vona": "5.0.0"
     }
   }
