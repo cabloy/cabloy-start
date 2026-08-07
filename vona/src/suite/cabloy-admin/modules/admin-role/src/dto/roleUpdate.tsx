@@ -54,8 +54,8 @@ export interface IDtoOptionsRoleUpdate extends IDecoratorDtoOptions {}
     }),
   ],
   fields: {
-    name: $makeSchema(ZovaRender.readonly(), z.string()),
-    title: $makeSchema(v.optional(), v.min(1), v.trim(), z.string()),
+    name: $makeSchema(v.required(), ZovaRender.readonly(), z.string()),
+    title: $makeSchema(v.required(), v.min(1), v.trim(), z.string()),
     locales: $makeSchema(v.optional(), z.record(z.string(), z.string())),
     siteIds: $makeSchema(
       v.optional(),
