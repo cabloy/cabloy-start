@@ -81,4 +81,9 @@ export class DtoRoleCreateBase extends $Class.pick(DtoRoleBase, [
   'siteIds',
 ]) {}
 
-export class DtoRoleUpdateBase extends $Class.pick(DtoRoleBase, ['title', 'locales', 'siteIds']) {}
+export class DtoRoleUpdateBase extends $Class.pick(DtoRoleBase, [
+  'name',
+  'title',
+  'locales',
+  'siteIds',
+]) {}

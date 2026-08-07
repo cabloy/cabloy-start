@@ -3,6 +3,8 @@ import assert from 'node:assert';
 import { describe, it } from 'node:test';
 import { app } from 'vona-mock';
 
+import { DtoRoleUpdate } from '../src/dto/roleUpdate.tsx';
+
 const rolePath = '/admin/role';
 
 function assertRoleProjection(role: Record<string, unknown>) {
@@ -17,6 +19,22 @@ function assertRoleProjection(role: Record<string, unknown>) {
 }
 
 describe('role.test.ts', { concurrency: false }, () => {
+  it('dto:role:update emits name readonly metadata', async () => {
+    await app.bean.executor.mockCtx(async () => {
+      const apiJson = await app.bean.openapi.generateJsonOfClass(DtoRoleUpdate);
+      const component = Object.values(apiJson.components!.schemas as any).find(item => {
+        return (item as any).properties?.name;
+      }) as any;
+      assert.ok(component, JSON.stringify(apiJson.components?.schemas));
+      assert.equal(component.properties.name.rest?.readonly, true);
+      assert.equal(component.required?.includes('name'), true);
+      const rootMetadata = Object.values(apiJson.components!.schemas as any).find(item => {
+        return (item as any).rest?.schemaScene === 'form';
+      });
+      assert.ok(rootMetadata);
+    });
+  });
+
   it('action:role:ordinaryLifecycleAndMembershipReplacement', async () => {
     let roleId: string | undefined;
     const userIds: string[] = [];
