@@ -30,9 +30,13 @@ export class Monkey
   async appInitialize() {
     this.app.meta.event.on('a-router:routerGuards', async (router, next) => {
       if (process.env.CLIENT) {
-        router.afterEach((to, _from, failure) => {
-          if (!failure) {
-            this.ctx.meta.$ssr._setProfile(to.meta.ssrProfile, to.meta.ssrProfileOptions);
+        // Server profile state is prepared before appInitialize; this synchronizes client navigation.
+        router.beforeEach(to => {
+          this.ctx.meta.$ssr._setProfile(to.meta.ssrProfile, to.meta.ssrProfileOptions);
+        });
+        router.afterEach((_to, from, failure) => {
+          if (failure) {
+            this.ctx.meta.$ssr._setProfile(from.meta.ssrProfile, from.meta.ssrProfileOptions);
           }
         });
       }
