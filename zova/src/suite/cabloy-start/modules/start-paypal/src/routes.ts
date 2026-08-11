@@ -4,6 +4,6 @@ import { ZPagePaypalCancel } from './.metadata/page/paypalCancel.js';
 import { ZPagePaypalReturn } from './.metadata/page/paypalReturn.js';
 
 export const routes: IModuleRoute[] = [
-  { path: 'paypalReturn', component: ZPagePaypalReturn },
-  { path: 'paypalCancel', component: ZPagePaypalCancel },
+  { path: 'paypalReturn', component: ZPagePaypalReturn, meta: { ssrProfile: 'session' } },
+  { path: 'paypalCancel', component: ZPagePaypalCancel, meta: { ssrProfile: 'session' } },
 ];

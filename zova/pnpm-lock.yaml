@@ -936,6 +936,9 @@ importers:
       '@types/js-cookie':
         specifier: ^3.0.6
         version: 3.0.6
+      '@types/ms':
+        specifier: ^2.1.0
+        version: 2.1.0
       '@vue/shared':
         specifier: 3.5.13
         version: 3.5.13

@@ -34,7 +34,10 @@ async function loginAsAdmin(page: Page) {
 
   await expect(page).not.toHaveURL(/\/admin\/login(?:\?|$)/);
   await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+  const dashboardResponse = await page.goto('/admin/', { waitUntil: 'load' });
+  await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
   await expect(page.getByText('Dashboard')).toBeVisible();
+  return dashboardResponse;
 }
 
 async function openStudentListPage(page: Page) {
@@ -255,9 +258,16 @@ test(
   async ({ page, request }) => {
     const response = await request.get('/');
     expect(response.ok()).toBeTruthy();
+    expect(response.headers()['cache-control']).toBe('public, max-age=600');
     const html = await response.text();
     expect(html).toContain('data-server-rendered');
     expect(html.toLowerCase()).not.toContain('data-zova-hydrated');
+    expect(html).not.toContain('ssr-body-ready-observer');
+    expect(html).not.toContain('__leftDrawerOpenJS');
+
+    const routeOverrideResponse = await request.get('/demo/basic/component');
+    expect(routeOverrideResponse.ok()).toBeTruthy();
+    expect(routeOverrideResponse.headers()['cache-control']).toBe('public, max-age=300');
 
     const pageErrors = collectPageErrors(page);
     const documentResponse = await page.goto('/', { waitUntil: 'load' });
@@ -294,6 +304,7 @@ test(
   async ({ page, request }) => {
     const response = await request.get('/admin/', { maxRedirects: 0 });
     expect(response.status()).toBe(302);
+    expect(response.headers()['cache-control']).toBe('private, no-store');
     const loginPath = response.headers().location;
     expect(loginPath).toMatch(/^\/admin\/login(?:\?|$)/);
 
@@ -302,6 +313,8 @@ test(
     const html = await loginResponse.text();
     expect(html).toContain('data-server-rendered');
     expect(html.toLowerCase()).not.toContain('data-zova-hydrated');
+    expect(html).not.toContain('ssr-body-ready-observer');
+    expect(html).not.toContain('__leftDrawerOpenJS');
 
     const pageErrors = collectPageErrors(page);
     const documentResponse = await page.goto('/admin/', { waitUntil: 'load' });
@@ -334,14 +347,21 @@ test(
   async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     const pageErrors = collectPageErrors(page);
-    await loginAsAdmin(page);
+    const dashboardResponse = await loginAsAdmin(page);
+    expect(dashboardResponse?.ok()).toBeTruthy();
+    expect(dashboardResponse?.headers()['cache-control']).toBe('private, no-store');
+    const dashboardHtml = await dashboardResponse!.text();
+    expect(dashboardHtml).toMatch(/<body[^>]+style="[^"]*display:none;/);
+    expect(dashboardHtml).toContain('__leftDrawerOpenJS');
+    expect(dashboardHtml).toContain('ssr-body-ready-observer');
+
     const drawer = page.locator('.v-navigation-drawer--left');
     await expect(drawer).toHaveClass(/\bv-navigation-drawer--active\b/);
 
-    await page.setViewportSize({ width: 700, height: 900 });
+    await page.setViewportSize({ width: 1023, height: 900 });
     await expect(drawer).not.toHaveClass(/\bv-navigation-drawer--active\b/);
 
-    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.setViewportSize({ width: 1024, height: 900 });
     await expect(drawer).toHaveClass(/\bv-navigation-drawer--active\b/);
     expect(pageErrors).toEqual([]);
   },

@@ -13,7 +13,7 @@ export class RenderSidebar extends BeanRenderBase {
     return (
       <VNavigationDrawer
         v-model={this.leftDrawerOpen}
-        mobileBreakpoint={this.sys.config.layout.sidebar.breakpoint}
+        mobileBreakpoint={this.scope.config.layout.sidebar.breakpoint}
         width={this.layoutConfig.sidebar.width}
       >
         {this.$$r.$$renderMenu.render()}

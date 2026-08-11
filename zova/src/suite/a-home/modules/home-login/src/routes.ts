@@ -9,6 +9,7 @@ export const routes: IModuleRoute[] = [
     meta: {
       layout: 'empty',
       requiresAuth: false,
+      ssrProfile: 'public',
     },
   },
 ];

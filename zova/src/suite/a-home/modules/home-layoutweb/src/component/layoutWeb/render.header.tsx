@@ -23,7 +23,7 @@ export class RenderHeader extends BeanRenderBase {
         <VSpacer></VSpacer>
         {this.$$r.$$renderLocale.render()}
         {this.$$r.$$renderTheme.renderThemeDark()}
-        {this.sys.config.ssr.cookie && this.$$r.$$renderTheme.renderThemeName()}
+        {this.$ssr.profileOptions.useCookie && this.$$r.$$renderTheme.renderThemeName()}
       </VAppBar>
     );
   }

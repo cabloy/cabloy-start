@@ -27,7 +27,7 @@ export class MetaThemeHandler extends BeanBase implements IThemeHandler {
       });
     } else {
       // server
-      if (!this.sys.config.ssr.cookie) {
+      if (!this.$ssr.profileOptions.useCookie) {
         // donothing
       } else {
         this.$useMeta({
