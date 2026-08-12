@@ -127,6 +127,22 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/home/base/siteCatalog': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['HomeBaseSiteCatalog_select'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/': {
     parameters: {
       query?: never;
@@ -496,7 +512,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/admin/user/deactivate/{id}': {
+  '/api/admin/user/account-status/{id}': {
     parameters: {
       query?: never;
       header?: never;
@@ -504,8 +520,8 @@ export interface paths {
       cookie?: never;
     };
     get?: never;
-    put?: never;
-    post: operations['AdminUser_deactivate'];
+    put: operations['AdminUser_updateAccountStatus'];
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -720,7 +736,39 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/payment-session/{id}/start': {
+  '/api/pay/payment-callback/return': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['PayPaymentCallback_returned'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/pay/payment-callback/cancel': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['PayPaymentCallback_cancelled'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/pay/payment-session/{id}/start': {
     parameters: {
       query?: never;
       header?: never;
@@ -729,21 +777,37 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    post: operations['PaymentSession_start'];
+    post: operations['PayPaymentSession_start'];
     delete?: never;
     options?: never;
     head?: never;
     patch?: never;
     trace?: never;
   };
-  '/api/payment-session/{id}': {
+  '/api/pay/payment-session/{id}/reconcile': {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    get: operations['PaymentSession_view'];
+    get?: never;
+    put?: never;
+    post: operations['PayPaymentSession_reconcile'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/pay/payment-session/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['PayPaymentSession_view'];
     put?: never;
     post?: never;
     delete?: never;
@@ -761,7 +825,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    post: operations['PayMockPayment_complete'];
+    post: operations['PayMockMockPayment_complete'];
     delete?: never;
     options?: never;
     head?: never;
@@ -777,7 +841,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    post: operations['PayMockPayment_completeRefund'];
+    post: operations['PayMockMockPayment_completeRefund'];
     delete?: never;
     options?: never;
     head?: never;
@@ -879,6 +943,17 @@ export interface components {
       roleNames?: string[] | undefined;
       actions?: unknown;
     };
+    'home-base.dto.siteCatalogSelectRes': {
+      list: components['schemas']['home-base.dto.siteCatalogSelectResItem'][];
+      total: string;
+      pageCount: number;
+      pageSize: number;
+      pageNo: number;
+    };
+    'home-base.dto.siteCatalogSelectResItem': {
+      siteId: string;
+      title: string;
+    };
     'home-user.dto.passport_2d063d28bc7243bed02ebd8bddf1212a93c6305b':
       | {
           user: components['schemas']['home-user.entity.user'];
@@ -918,10 +993,16 @@ export interface components {
       /** @description Mobile */
       mobile?: string | undefined;
       /**
-       * @description Activated
+       * @description Identity Activated
        * @default false
        */
       activated?: boolean;
+      /**
+       * @description Account Status
+       * @default active
+       * @enum {string}
+       */
+      accountStatus?: 'active' | 'disabled';
       /** @description Language */
       locale?: string | undefined;
       /** @description Timezone */
@@ -966,7 +1047,7 @@ export interface components {
       /** @description Role Title */
       title: string;
       /** @description Role Locales */
-      locales?:
+      titleLocales?:
         | {
             [key: string]: string;
           }
@@ -1701,54 +1782,94 @@ export interface components {
           summaryText: string;
         }
       | undefined;
-    'admin-role.dto.roleItem': {
+    'admin-role.dto.roleView': {
+      /** @description ID */
       id: number | string;
+      /** @description Role Name */
       name: string;
+      /** @description Role Title */
       title: string;
-      locales?:
+      /** @description Role Locales */
+      titleLocales?:
         | {
             [key: string]: string;
           }
         | undefined;
+      /** @description Site IDs */
       siteIds: string[];
+      sites?: components['schemas']['home-base.dto.siteCatalogSelectResItem'][] | undefined;
     };
     'admin-role.dto.roleCreate': {
+      /** @description Role Name */
       name: string;
+      /** @description Role Title */
       title: string;
-      locales?:
+      /** @description Role Locales */
+      titleLocales?:
         | {
             [key: string]: string;
           }
         | undefined;
+      /** @description Site IDs */
       siteIds: string[];
     };
     'admin-role.dto.roleSelectRes': {
-      list: components['schemas']['admin-role.dto.roleItem'][];
+      list: components['schemas']['admin-role.dto.roleSelectResItem'][];
       total: string;
       pageCount: number;
       pageSize: number;
       pageNo: number;
     };
-    'admin-role.dto.roleItem_2d063d28bc7243bed02ebd8bddf1212a93c6305b':
-      | {
-          id: number | string;
-          name: string;
-          title: string;
-          locales?:
-            | {
-                [key: string]: string;
-              }
-            | undefined;
-          siteIds: string[];
-        }
-      | undefined;
-    'admin-role.dto.roleUpdate': {
-      title?: string | undefined;
-      locales?:
+    'admin-role.dto.roleSelectResItem': {
+      /** @description ID */
+      id: number | string;
+      /** @description Role Name */
+      name: string;
+      /** @description Role Title */
+      title: string;
+      /** @description Role Locales */
+      titleLocales?:
         | {
             [key: string]: string;
           }
         | undefined;
+      /** @description Site IDs */
+      siteIds: string[];
+      sites?: components['schemas']['home-base.dto.siteCatalogSelectResItem'][] | undefined;
+      /** @description Operations */
+      _operationsRow?: unknown;
+    };
+    'admin-role.dto.roleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_326f9a25887c080b975d143095eec57412beb745':
+      | {
+          /** @description ID */
+          id: number | string;
+          /** @description Role Name */
+          name: string;
+          /** @description Role Title */
+          title: string;
+          /** @description Role Locales */
+          titleLocales?:
+            | {
+                [key: string]: string;
+              }
+            | undefined;
+          /** @description Site IDs */
+          siteIds: string[];
+          sites?: components['schemas']['home-base.dto.siteCatalogSelectResItem'][] | undefined;
+        }
+      | undefined;
+    'admin-role.dto.roleUpdate': {
+      /** @description Role Name */
+      name: string;
+      /** @description Role Title */
+      title: string;
+      /** @description Role Locales */
+      titleLocales?:
+        | {
+            [key: string]: string;
+          }
+        | undefined;
+      /** @description Site IDs */
       siteIds?: string[] | undefined;
     };
     'admin-role.dto.userRoleReplace': {
@@ -1773,10 +1894,16 @@ export interface components {
       /** @description Mobile */
       mobile?: string | undefined;
       /**
-       * @description Activated
+       * @description Identity Activated
        * @default false
        */
       activated?: boolean;
+      /**
+       * @description Account Status
+       * @default active
+       * @enum {string}
+       */
+      accountStatus?: 'active' | 'disabled';
       /** @description Locale */
       locale?: string | undefined;
       /** @description Time Zone */
@@ -1784,7 +1911,7 @@ export interface components {
       /** @description Operations */
       _operationsRow?: unknown;
     };
-    'admin-user.dto.userView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_b80966b69b47651ce13598cbf58a332cfaff27b8':
+    'admin-user.dto.userView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_3af4868dbf0dab6a1b8727d55c4030f401fb2bc7':
       | {
           /** @description ID */
           id: number | string;
@@ -1797,10 +1924,16 @@ export interface components {
           /** @description Mobile */
           mobile?: string | undefined;
           /**
-           * @description Activated
+           * @description Identity Activated
            * @default false
            */
           activated?: boolean;
+          /**
+           * @description Account Status
+           * @default active
+           * @enum {string}
+           */
+          accountStatus?: 'active' | 'disabled';
           /** @description Locale */
           locale?: string | undefined;
           /** @description Time Zone */
@@ -1821,6 +1954,13 @@ export interface components {
       locale?: string | undefined;
       /** @description Time Zone */
       tz?: string | undefined;
+    };
+    'admin-user.dto.userAccountStatusUpdate': {
+      /**
+       * @description Account Status
+       * @enum {string}
+       */
+      accountStatus: 'active' | 'disabled';
     };
     'start-metrics.dto.metricsSnapshot': {
       enabled: boolean;
@@ -2345,6 +2485,30 @@ export interface operations {
             code: string;
             message: string;
             data: components['schemas']['a-permission.dto.permissions'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  HomeBaseSiteCatalog_select: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['home-base.dto.siteCatalogSelectRes'];
           };
         };
       };
@@ -3051,7 +3215,7 @@ export interface operations {
           'application/json': {
             code: string;
             message: string;
-            data: components['schemas']['admin-role.dto.roleItem'];
+            data: components['schemas']['admin-role.dto.roleView'];
           };
         };
       };
@@ -3077,7 +3241,7 @@ export interface operations {
           'application/json': {
             code: string;
             message: string;
-            data?: components['schemas']['admin-role.dto.roleItem_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
+            data?: components['schemas']['admin-role.dto.roleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_326f9a25887c080b975d143095eec57412beb745'];
           };
         };
       };
@@ -3184,6 +3348,7 @@ export interface operations {
         pageSize?: number;
         name?: string | undefined;
         activated?: boolean | undefined;
+        accountStatus?: 'active' | 'disabled' | null | undefined;
       };
       header?: never;
       path?: never;
@@ -3225,7 +3390,7 @@ export interface operations {
           'application/json': {
             code: string;
             message: string;
-            data?: components['schemas']['admin-user.dto.userView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_b80966b69b47651ce13598cbf58a332cfaff27b8'];
+            data?: components['schemas']['admin-user.dto.userView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_3af4868dbf0dab6a1b8727d55c4030f401fb2bc7'];
           };
         };
       };
@@ -3288,7 +3453,7 @@ export interface operations {
     };
     authToken: true;
   };
-  AdminUser_deactivate: {
+  AdminUser_updateAccountStatus: {
     parameters: {
       query?: never;
       header?: never;
@@ -3297,7 +3462,11 @@ export interface operations {
       };
       cookie?: never;
     };
-    requestBody?: never;
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-user.dto.userAccountStatusUpdate'];
+      };
+    };
     responses: {
       200: {
         headers: {
@@ -3680,7 +3849,57 @@ export interface operations {
       };
     };
   };
-  PaymentSession_start: {
+  PayPaymentCallback_returned: {
+    parameters: {
+      query: {
+        state: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data?: unknown;
+          };
+        };
+      };
+    };
+  };
+  PayPaymentCallback_cancelled: {
+    parameters: {
+      query: {
+        state: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data?: unknown;
+          };
+        };
+      };
+    };
+  };
+  PayPaymentSession_start: {
     parameters: {
       query?: never;
       header?: never;
@@ -3706,7 +3925,7 @@ export interface operations {
     };
     authToken: true;
   };
-  PaymentSession_view: {
+  PayPaymentSession_reconcile: {
     parameters: {
       query?: never;
       header?: never;
@@ -3732,7 +3951,33 @@ export interface operations {
     };
     authToken: true;
   };
-  PayMockPayment_complete: {
+  PayPaymentSession_view: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['a-pay.dto.paymentSessionView'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  PayMockMockPayment_complete: {
     parameters: {
       query?: never;
       header?: never;
@@ -3762,7 +4007,7 @@ export interface operations {
     };
     authToken: true;
   };
-  PayMockPayment_completeRefund: {
+  PayMockMockPayment_completeRefund: {
     parameters: {
       query?: never;
       header?: never;

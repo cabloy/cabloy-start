@@ -14,6 +14,11 @@ export interface IDtoOptionsUserSelectReq extends IDecoratorDtoOptions {}
   fields: {
     name: $makeSchema(v.optional(), v.trim(), z.string()),
     activated: $makeSchema(v.optional(), z.boolean()),
+    accountStatus: $makeSchema(v.optional(), z.enum(['active', 'disabled'])),
   },
 })
-export class DtoUserSelectReq extends $Dto.queryPage(DtoUserBase, ['name', 'activated']) {}
+export class DtoUserSelectReq extends $Dto.queryPage(DtoUserBase, [
+  'name',
+  'activated',
+  'accountStatus',
+]) {}

@@ -7,6 +7,7 @@ const userPath = '/admin/user';
 
 function assertUserProjection(user: Record<string, unknown>) {
   assert.deepEqual(Object.keys(user).sort(), [
+    'accountStatus',
     'activated',
     'avatar',
     'email',
@@ -50,6 +51,7 @@ describe('user.test.ts', { concurrency: false }, () => {
               email: updatedEmail,
               name: 'must-not-be-updated',
               activated: true,
+              accountStatus: 'disabled',
               password: 'must-not-be-updated',
             },
           });
@@ -63,6 +65,7 @@ describe('user.test.ts', { concurrency: false }, () => {
           assert.equal(view.avatar, ':emoji:rocket');
           assert.equal(view.email, updatedEmail);
           assert.equal(view.activated, false);
+          assert.equal(view.accountStatus, 'active');
 
           const users = await app.bean.executor.performAction('get', userPath, {
             query: { where: { name: { _eq_: user.name } } },
@@ -94,22 +97,35 @@ describe('user.test.ts', { concurrency: false }, () => {
           });
           assert.equal(view.activated, true);
 
-          const deactivateResult = await app.bean.executor.performAction(
-            'post',
-            '/admin/user/deactivate/:id',
-            { params: { id: userId } },
+          const disableResult = await app.bean.executor.performAction(
+            'put',
+            '/admin/user/account-status/:id',
+            { params: { id: userId }, body: { accountStatus: 'disabled' } },
           );
-          assert.equal(deactivateResult, null);
+          assert.equal(disableResult, null);
           view = await app.bean.executor.performAction('get', '/admin/user/:id', {
             params: { id: userId },
           });
-          assert.equal(view.activated, false);
+          assert.equal(view.activated, true);
+          assert.equal(view.accountStatus, 'disabled');
+
+          const enableResult = await app.bean.executor.performAction(
+            'put',
+            '/admin/user/account-status/:id',
+            { params: { id: userId }, body: { accountStatus: 'active' } },
+          );
+          assert.equal(enableResult, null);
+          view = await app.bean.executor.performAction('get', '/admin/user/:id', {
+            params: { id: userId },
+          });
+          assert.equal(view.accountStatus, 'active');
 
           const admin = await app.bean.user.findOneByName('admin');
           assert.ok(admin);
           const [__, protectedTransitionError] = await catchError(() => {
-            return app.bean.executor.performAction('post', '/admin/user/deactivate/:id', {
+            return app.bean.executor.performAction('put', '/admin/user/account-status/:id', {
               params: { id: admin.id },
+              body: { accountStatus: 'disabled' },
             });
           });
           assert.equal(protectedTransitionError?.code, 'admin-user:1002');

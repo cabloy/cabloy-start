@@ -4,7 +4,10 @@ export default {
   ProtectedSystemAdminTransition:
     'A system administrator can only be deactivated by the protected administrator workflow',
   User: 'User',
-  UserActivated: 'Activated',
+  UserActivated: 'Identity Activated',
+  UserAccountStatus: 'Account Status',
+  UserAccountStatusActive: 'Active',
+  UserAccountStatusDisabled: 'Disabled',
   UserAvatar: 'Avatar',
   UserEmail: 'Email',
   UserLocale: 'Locale',

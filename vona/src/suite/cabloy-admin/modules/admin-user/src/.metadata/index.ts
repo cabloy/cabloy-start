@@ -43,12 +43,14 @@ declare module 'vona' {
 }
 /** service: end */
 /** dto: begin */
+export * from '../dto/userAccountStatusUpdate.ts';
 export * from '../dto/userBase.tsx';
 export * from '../dto/userSelectReq.tsx';
 export * from '../dto/userSelectRes.tsx';
 export * from '../dto/userSelectResItem.tsx';
 export * from '../dto/userUpdate.tsx';
 export * from '../dto/userView.tsx';
+import type { IDtoOptionsUserAccountStatusUpdate } from '../dto/userAccountStatusUpdate.ts';
 import type { IDtoOptionsUserBase } from '../dto/userBase.tsx';
 import type { IDtoOptionsUserSelectReq } from '../dto/userSelectReq.tsx';
 import type { IDtoOptionsUserSelectRes } from '../dto/userSelectRes.tsx';
@@ -59,7 +61,8 @@ import 'vona-module-a-web';
 declare module 'vona-module-a-web' {
   
     export interface IDtoRecord {
-      'admin-user:userBase': IDtoOptionsUserBase;
+      'admin-user:userAccountStatusUpdate': IDtoOptionsUserAccountStatusUpdate;
+'admin-user:userBase': IDtoOptionsUserBase;
 'admin-user:userSelectReq': IDtoOptionsUserSelectReq;
 'admin-user:userSelectRes': IDtoOptionsUserSelectRes;
 'admin-user:userSelectResItem': IDtoOptionsUserSelectResItem;
@@ -74,6 +77,7 @@ declare module 'vona-module-admin-user' {
 }
 /** dto: end */
 /** dto: begin */
+import type { DtoUserAccountStatusUpdate } from '../dto/userAccountStatusUpdate.ts';
 import type { DtoUserBase } from '../dto/userBase.tsx';
 import type { DtoUserSelectReq } from '../dto/userSelectReq.tsx';
 import type { DtoUserSelectRes } from '../dto/userSelectRes.tsx';
@@ -82,6 +86,10 @@ import type { DtoUserUpdate } from '../dto/userUpdate.tsx';
 import type { DtoUserView } from '../dto/userView.tsx';
 declare module 'vona-module-admin-user' {
   
+    export interface IDtoOptionsUserAccountStatusUpdate {
+      fields?: TypeEntityOptionsFields<DtoUserAccountStatusUpdate, IDtoOptionsUserAccountStatusUpdate[TypeSymbolKeyFieldsMore]>;
+    }
+
     export interface IDtoOptionsUserBase {
       fields?: TypeEntityOptionsFields<DtoUserBase, IDtoOptionsUserBase[TypeSymbolKeyFieldsMore]>;
     }
@@ -152,7 +160,9 @@ export interface IApiPathPatchRecord{
     }
 export interface IApiPathPostRecord{
         '/admin/user/activate/:id': undefined;
-'/admin/user/deactivate/:id': undefined;
+    }
+export interface IApiPathPutRecord{
+        '/admin/user/account-status/:id': undefined;
     }
 
 }

@@ -43,14 +43,16 @@ export type ApiApiAdminUseractivateRequestParams =
 export type ApiApiAdminUseractivateResponseBody =
   paths[ApiApiAdminUseractivatePath][ApiApiAdminUseractivateMethod]['responses']['200']['content']['application/json']['data'];
 
-/** AdminUser_deactivate */
-export const ApiApiAdminUserdeactivatePath = '/api/admin/user/deactivate/{id}';
-export type ApiApiAdminUserdeactivatePath = '/api/admin/user/deactivate/{id}';
-export type ApiApiAdminUserdeactivateMethod = 'post';
-export type ApiApiAdminUserdeactivateRequestParams =
-  paths[ApiApiAdminUserdeactivatePath][ApiApiAdminUserdeactivateMethod]['parameters']['path'];
-export type ApiApiAdminUserdeactivateResponseBody =
-  paths[ApiApiAdminUserdeactivatePath][ApiApiAdminUserdeactivateMethod]['responses']['200']['content']['application/json']['data'];
+/** AdminUser_updateAccountStatus */
+export const ApiApiAdminUserupdateAccountStatusPath = '/api/admin/user/account-status/{id}';
+export type ApiApiAdminUserupdateAccountStatusPath = '/api/admin/user/account-status/{id}';
+export type ApiApiAdminUserupdateAccountStatusMethod = 'put';
+export type ApiApiAdminUserupdateAccountStatusRequestParams =
+  paths[ApiApiAdminUserupdateAccountStatusPath][ApiApiAdminUserupdateAccountStatusMethod]['parameters']['path'];
+export type ApiApiAdminUserupdateAccountStatusRequestBody =
+  components['schemas']['admin-user.dto.userAccountStatusUpdate'];
+export type ApiApiAdminUserupdateAccountStatusResponseBody =
+  paths[ApiApiAdminUserupdateAccountStatusPath][ApiApiAdminUserupdateAccountStatusMethod]['responses']['200']['content']['application/json']['data'];
 
 @Api()
 export class ApiAdminUser extends BeanApiBase {
@@ -102,14 +104,14 @@ export class ApiAdminUser extends BeanApiBase {
     );
   }
 
-  deactivate(
-    body: undefined,
+  updateAccountStatus(
+    body: ApiApiAdminUserupdateAccountStatusRequestBody,
     options: {
-      params: ApiApiAdminUserdeactivateRequestParams;
+      params: ApiApiAdminUserupdateAccountStatusRequestParams;
     } & IApiActionOptions,
   ) {
-    return this.$fetch.post<any, ApiApiAdminUserdeactivateResponseBody>(
-      this.$pathTranslate(ApiApiAdminUserdeactivatePath, options.params),
+    return this.$fetch.put<any, ApiApiAdminUserupdateAccountStatusResponseBody>(
+      this.$pathTranslate(ApiApiAdminUserupdateAccountStatusPath, options.params),
       body,
       this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
     );

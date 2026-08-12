@@ -1,6 +1,7 @@
 import type { TableIdentity } from 'table-identity';
 import type { IQueryParams } from 'vona-module-a-orm';
 import type { EntityUser, ModelUser } from 'vona-module-home-user';
+import type { TypeAccountStatus } from 'vona-module-a-user';
 
 import { BeanBase } from 'vona';
 import { Service } from 'vona-module-a-bean';
@@ -19,6 +20,7 @@ function toUserItem(user: EntityUser) {
     email: user.email,
     mobile: user.mobile,
     activated: user.activated,
+    accountStatus: user.accountStatus,
     locale: user.locale,
     tz: user.tz,
   };
@@ -60,14 +62,22 @@ export class ServiceUser extends BeanBase {
   }
 
   @Core.transaction()
-  async deactivate(id: TableIdentity): Promise<void> {
+  async updateAccountStatus(id: TableIdentity, accountStatus: TypeAccountStatus): Promise<void> {
     const user = await this.$scope.homeUser.model.user.getByIdForUpdate(id, {
       include: { roles: true },
     });
     if (!user) this.app.throw(404, 'User not found');
-    if (user.roles?.some(role => role.name === 'systemAdmin')) {
+    if (
+      accountStatus === 'disabled' &&
+      user.roles?.some(role => role.name === 'systemAdmin')
+    ) {
       this.scope.error.ProtectedSystemAdminTransition.throw();
     }
-    await this.$scope.homeUser.service.userAdapter.setActivated(id, false);
+    if (user.accountStatus === accountStatus) return;
+    await this.$scope.homeUser.service.userAdapter.setAccountStatus(id, accountStatus);
+    await this.bean.permission.clearAllCaches();
+    if (accountStatus === 'disabled') {
+      await this.bean.passport.kickOut(user);
+    }
   }
 }

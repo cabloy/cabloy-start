@@ -26,12 +26,17 @@ export class ModelUser extends BeanModelBase {
     });
   }
 
-  deactivate(id: TableIdentity) {
+  updateAccountStatus(id: TableIdentity, accountStatus: 'active' | 'disabled') {
     return this.$$modelResource.mutationItem<void, void>({
       id,
-      action: 'deactivate',
+      action: 'updateAccountStatus',
       mutationFn: async () => {
-        await (this.scope.api.adminUser.deactivate(undefined, { params: { id } }) as Promise<void>);
+        await (
+          this.scope.api.adminUser.updateAccountStatus(
+            { accountStatus },
+            { params: { id } },
+          ) as Promise<void>
+        );
       },
     });
   }

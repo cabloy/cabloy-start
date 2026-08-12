@@ -32,6 +32,7 @@ export interface IDtoOptionsUserView extends IDecoratorDtoOptions {}
                           { type: 'field', name: 'email' },
                           { type: 'field', name: 'mobile' },
                           { type: 'field', name: 'activated' },
+                          { type: 'field', name: 'accountStatus' },
                           { type: 'field', name: 'locale' },
                           { type: 'field', name: 'tz' },
                         ],

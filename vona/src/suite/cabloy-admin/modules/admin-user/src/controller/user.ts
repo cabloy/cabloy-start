@@ -10,6 +10,7 @@ import { Passport } from 'vona-module-a-user';
 import { Arg, Controller, Web } from 'vona-module-a-web';
 import { z } from 'zod';
 
+import { DtoUserAccountStatusUpdate } from '../dto/userAccountStatusUpdate.ts';
 import { DtoUserSelectReq } from '../dto/userSelectReq.tsx';
 import { DtoUserSelectRes } from '../dto/userSelectRes.tsx';
 import { DtoUserUpdate } from '../dto/userUpdate.tsx';
@@ -57,10 +58,13 @@ export class ControllerUser extends BeanBase {
     await this.scope.service.user.activate(id);
   }
 
-  @Web.post('deactivate/:id')
+  @Web.put('account-status/:id')
   @Api.body(z.null())
   @Passport.systemAdmin()
-  async deactivate(@Arg.param('id', v.tableIdentity()) id: TableIdentity): Promise<void> {
-    await this.scope.service.user.deactivate(id);
+  async updateAccountStatus(
+    @Arg.param('id', v.tableIdentity()) id: TableIdentity,
+    @Arg.body() command: DtoUserAccountStatusUpdate,
+  ): Promise<void> {
+    await this.scope.service.user.updateAccountStatus(id, command.accountStatus);
   }
 }

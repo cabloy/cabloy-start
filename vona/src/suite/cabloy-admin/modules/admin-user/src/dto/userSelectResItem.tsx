@@ -27,6 +27,7 @@ export interface IDtoOptionsUserSelectResItem extends IDecoratorDtoOptions {}
                     children: [
                       { type: 'field', name: 'name' },
                       { type: 'field', name: 'activated' },
+                      { type: 'field', name: 'accountStatus' },
                       {
                         type: 'block',
                         block: ZovaRender.block('start-page:blockFilterActions'),
@@ -50,7 +51,12 @@ export class DtoUserSelectResItem extends $Dto.get(() => ModelUser, {
     v.title($locale('Operations')),
     ZovaRender.order(1, 'max'),
     ZovaRender.cell('start-table:actionOperationsRow', {
-      actions: [ZovaRender.tableActionRow('start-table:actionUpdate')],
+      actions: [
+        ZovaRender.tableActionRow('admin-user:actionDisable', {
+          permission: { actionInherit: 'update' },
+        }),
+        ZovaRender.tableActionRow('start-table:actionUpdate'),
+      ],
     }),
   )
   _operationsRow?: unknown;

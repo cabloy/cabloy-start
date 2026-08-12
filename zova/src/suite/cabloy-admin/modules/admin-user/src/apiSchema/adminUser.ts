@@ -8,7 +8,7 @@ import {
   ApiApiAdminUserviewPath,
   ApiApiAdminUserupdatePath,
   ApiApiAdminUseractivatePath,
-  ApiApiAdminUserdeactivatePath,
+  ApiApiAdminUserupdateAccountStatusPath,
 } from '../api/adminUser.js';
 
 @ApiSchema()
@@ -29,7 +29,7 @@ export class ApiSchemaAdminUser extends BeanBase {
     return this.$sdk.createApiSchemas(ApiApiAdminUseractivatePath, 'post', options);
   }
 
-  deactivate(options?: IApiSchemaOptions) {
-    return this.$sdk.createApiSchemas(ApiApiAdminUserdeactivatePath, 'post', options);
+  updateAccountStatus(options?: IApiSchemaOptions) {
+    return this.$sdk.createApiSchemas(ApiApiAdminUserupdateAccountStatusPath, 'put', options);
   }
 }

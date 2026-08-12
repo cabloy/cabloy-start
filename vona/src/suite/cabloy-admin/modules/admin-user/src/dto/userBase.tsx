@@ -30,8 +30,9 @@ export interface IDtoOptionsUserBase extends IDecoratorDtoOptions {}
       ZovaRender.order(5),
       ZovaRender.cell('start-switch:switch', { color: 'success' }),
     ),
-    locale: $makeMetadata(v.title($locale('UserLocale')), ZovaRender.order(6)),
-    tz: $makeMetadata(v.title($locale('UserTz')), ZovaRender.order(7)),
+    accountStatus: $makeMetadata(v.title($locale('UserAccountStatus')), ZovaRender.order(6)),
+    locale: $makeMetadata(v.title($locale('UserLocale')), ZovaRender.order(7)),
+    tz: $makeMetadata(v.title($locale('UserTz')), ZovaRender.order(8)),
   },
 })
 export class DtoUserBase extends EntityUser {}
@@ -43,6 +44,7 @@ export class DtoUserRead extends $Class.pick(DtoUserBase, [
   'email',
   'mobile',
   'activated',
+  'accountStatus',
   'locale',
   'tz',
 ]) {}

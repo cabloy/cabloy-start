@@ -111,8 +111,42 @@ declare module 'zova' {
   }
 }
 /** apiSchema: end */
+/** tableCell: begin */
+export * from '../bean/tableCell.actionDisable.jsx';
+import { ITableCellOptionsActionDisable } from '../bean/tableCell.actionDisable.jsx';
+import 'zova-module-a-table';
+declare module 'zova-module-a-table' {
+  export interface ITableCellRecord {
+    'admin-user:actionDisable': ITableCellOptionsActionDisable;
+  }
+}
+declare module 'zova-module-admin-user' {
+  export interface TableCellActionDisable {
+    /** @internal */
+    get scope(): ScopeModuleAdminUser;
+  }
+
+  export interface TableCellActionDisable {
+    get $beanFullName(): 'admin-user.tableCell.actionDisable';
+    get $onionName(): 'admin-user:actionDisable';
+    get $onionOptions(): ITableCellOptionsActionDisable;
+  }
+}
+/** tableCell: end */
+/** tableCell: begin */
+import { TableCellActionDisable } from '../bean/tableCell.actionDisable.jsx';
+import 'zova';
+declare module 'zova' {
+  export interface IBeanRecordGeneral {
+    'admin-user.tableCell.actionDisable': TableCellActionDisable;
+  }
+}
+/** tableCell: end */
+/** locale: begin */
+import { locales } from './locales.js';
+/** locale: end */
 /** scope: begin */
-import { BeanScopeBase, type BeanScopeUtil } from 'zova';
+import { BeanScopeBase, type BeanScopeUtil, TypeModuleLocales, TypeLocaleBase } from 'zova';
 import { Scope } from 'zova-module-a-bean';
 
 @Scope()
@@ -120,6 +154,7 @@ export class ScopeModuleAdminUser extends BeanScopeBase {}
 
 export interface ScopeModuleAdminUser {
   util: BeanScopeUtil;
+locale: TypeModuleLocales<(typeof locales)[TypeLocaleBase]>;
 api: IModuleApi;
 apiSchema: IModuleApiSchema;
 }
@@ -132,9 +167,14 @@ declare module 'zova' {
   
   
 
-  
+  export interface IBeanScopeLocale {
+    'admin-user': (typeof locales)[TypeLocaleBase];
+  }
 
   
 }
 
+export function locale<K extends keyof (typeof locales)[TypeLocaleBase]>(key: K): `admin-user::${K}` {
+  return `admin-user::${key}`;
+}
 /** scope: end */
