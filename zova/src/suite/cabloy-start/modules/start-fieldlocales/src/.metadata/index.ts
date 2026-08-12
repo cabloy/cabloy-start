@@ -76,8 +76,11 @@ declare module 'zova' {
   }
 }
 /** tableCell: end */
+/** locale: begin */
+import { locales } from './locales.js';
+/** locale: end */
 /** scope: begin */
-import { BeanScopeBase, type BeanScopeUtil } from 'zova';
+import { BeanScopeBase, type BeanScopeUtil, TypeModuleLocales, TypeLocaleBase } from 'zova';
 import { Scope } from 'zova-module-a-bean';
 
 @Scope()
@@ -85,6 +88,7 @@ export class ScopeModuleStartFieldlocales extends BeanScopeBase {}
 
 export interface ScopeModuleStartFieldlocales {
   util: BeanScopeUtil;
+locale: TypeModuleLocales<(typeof locales)[TypeLocaleBase]>;
 }
 
 import 'zova';
@@ -95,9 +99,14 @@ declare module 'zova' {
   
   
 
-  
+  export interface IBeanScopeLocale {
+    'start-fieldlocales': (typeof locales)[TypeLocaleBase];
+  }
 
   
 }
 
+export function locale<K extends keyof (typeof locales)[TypeLocaleBase]>(key: K): `start-fieldlocales::${K}` {
+  return `start-fieldlocales::${key}`;
+}
 /** scope: end */

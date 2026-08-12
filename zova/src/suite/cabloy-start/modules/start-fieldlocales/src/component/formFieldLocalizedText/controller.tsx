@@ -67,7 +67,7 @@ export class ControllerFormFieldLocalizedText extends BeanControllerBase {
                     color="primary"
                     variant="text"
                     size="small"
-                    aria-label="Locales"
+                    aria-label={this.scope.locale.EditLocales()}
                     disabled={!localesField}
                     nativeOnClick={() => this.openLocalesDialog()}
                   ></VBtn>
@@ -89,16 +89,18 @@ export class ControllerFormFieldLocalizedText extends BeanControllerBase {
     const form = this.$$form;
     const draft = normalizeLocalizedTextMap(form.getFieldValue(localesField));
     const items = this.sys.config.locale.items;
-    const rows = [...new Set([...Object.keys(items), ...Object.keys(draft)])];
+    const rows = [...new Set([...Object.keys(items), ...Object.keys(draft)])].filter(
+      locale => locale !== this.sys.config.locale.default,
+    );
     const values = { ...draft };
     const dialog = this.$appModal.dialog({
-      title: 'Locales',
+      title: this.scope.locale.Locales(),
       slotDefault: () => (
-        <div class="d-flex flex-column ga-2">
+        <div class="d-flex flex-column ga-2 py-2">
           {rows.map(locale => (
             <VTextField
               key={locale}
-              label={items[locale] ?? locale}
+              label={items[locale] ? this.$scopeBase.locale[items[locale]]() : locale}
               modelValue={values[locale] ?? ''}
               readonly={!Object.prototype.hasOwnProperty.call(items, locale)}
               onUpdate:modelValue={value => {
@@ -111,7 +113,7 @@ export class ControllerFormFieldLocalizedText extends BeanControllerBase {
       slotActions: modal => (
         <>
           <VBtn variant="text" nativeOnClick={() => modal.close()}>
-            Cancel
+            {this.scope.locale.Cancel()}
           </VBtn>
           <VBtn
             color="primary"
@@ -120,7 +122,7 @@ export class ControllerFormFieldLocalizedText extends BeanControllerBase {
               modal.close();
             }}
           >
-            OK
+            {this.scope.locale.Ok()}
           </VBtn>
         </>
       ),

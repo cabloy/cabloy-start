@@ -2,6 +2,7 @@ import type { IDecoratorDtoOptions } from 'vona-module-a-web';
 
 import { $makeSchema, v } from 'vona-module-a-openapiutils';
 import { $Dto } from 'vona-module-a-orm';
+import { ZovaRender } from 'zova-rest-cabloy-start-admin';
 import { Dto } from 'vona-module-a-web';
 import { z } from 'zod';
 
@@ -13,7 +14,12 @@ export interface IDtoOptionsRoleSelectReq extends IDecoratorDtoOptions {}
   openapi: { filter: { table: 'homeRole' } },
   fields: {
     name: $makeSchema(v.optional(), v.trim(), z.string()),
-    title: $makeSchema(v.optional(), v.trim(), z.string()),
+    title: $makeSchema(
+      ZovaRender.field('start-input:formFieldInput'),
+      v.optional(),
+      v.trim(),
+      z.string(),
+    ),
   },
 })
 export class DtoRoleSelectReq extends $Dto.queryPage(DtoRoleBase, ['name', 'title']) {}
