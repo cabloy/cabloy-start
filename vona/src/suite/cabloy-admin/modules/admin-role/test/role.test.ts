@@ -10,11 +10,11 @@ const rolePath = '/admin/role';
 function assertRoleProjection(role: Record<string, unknown>) {
   assert.deepEqual(Object.keys(role).sort(), [
     'id',
-    'locales',
     'name',
     'siteIds',
     'sites',
     'title',
+    'titleLocales',
   ]);
 }
 
@@ -48,7 +48,12 @@ describe('role.test.ts', { concurrency: false }, () => {
         const [_, unauthenticatedError] = await catchError(() => {
           return app.bean.executor.performAction('post', rolePath, {
             innerAccess: false,
-            body: { name: roleName, title: 'Admin role test', siteIds: ['web'] },
+            body: {
+              name: roleName,
+              title: 'Admin role test',
+              titleLocales: { 'zh-cn': '管理员角色', 'retired-locale': 'Retired title' },
+              siteIds: ['web'],
+            },
           });
         });
         assert.equal(unauthenticatedError?.code, 401);
@@ -56,11 +61,17 @@ describe('role.test.ts', { concurrency: false }, () => {
         await app.bean.passport.signinMock();
         try {
           const role = await app.bean.executor.performAction('post', rolePath, {
-            body: { name: roleName, title: 'Admin role test', siteIds: ['web'] },
+            body: {
+              name: roleName,
+              title: 'Admin role test',
+              titleLocales: { 'zh-cn': '管理员角色', 'retired-locale': 'Retired title' },
+              siteIds: ['web'],
+            },
           });
           roleId = role.id;
           assertRoleProjection(role);
           assert.equal(role.name, roleName);
+          assert.deepEqual(role.titleLocales, { 'zh-cn': '管理员角色', 'retired-locale': 'Retired title' });
           assert.deepEqual(role.sites, [{ siteId: 'web', title: 'Web' }]);
 
           const [duplicateResult, duplicateError] = await catchError(() => {
@@ -129,6 +140,7 @@ describe('role.test.ts', { concurrency: false }, () => {
               createdAt: '2026-01-01T00:00:00.000Z',
               name: 'must-not-be-updated',
               title: 'Updated admin role test',
+              titleLocales: { 'zh-cn': '更新后的管理员角色', 'retired-locale': 'Retired title' },
               siteIds: ['web', 'admin'],
               sites: [{ siteId: 'invalid', title: 'Untrusted' }],
             },
@@ -141,6 +153,10 @@ describe('role.test.ts', { concurrency: false }, () => {
           assertRoleProjection(updatedRole);
           assert.equal(updatedRole.name, roleName);
           assert.equal(updatedRole.title, 'Updated admin role test');
+          assert.deepEqual(updatedRole.titleLocales, {
+            'zh-cn': '更新后的管理员角色',
+            'retired-locale': 'Retired title',
+          });
           assert.deepEqual(updatedRole.sites, [
             { siteId: 'web', title: 'Web' },
             { siteId: 'admin', title: 'Admin' },

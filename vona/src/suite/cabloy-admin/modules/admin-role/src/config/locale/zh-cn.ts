@@ -1,7 +1,7 @@
 export default {
   Operations: '操作',
   Role: '角色',
-  RoleLocales: '本地化',
+  RoleTitleLocales: '本地化',
   RoleName: '角色名称',
   RoleNameAlreadyInUse: '角色名称已被使用',
   RoleSiteIds: '站点标识',

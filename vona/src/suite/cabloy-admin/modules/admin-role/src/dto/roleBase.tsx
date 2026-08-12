@@ -23,8 +23,17 @@ export interface IDtoOptionsRoleBase extends IDecoratorDtoOptions {}
       ZovaRender.order(1),
       ZovaRender.cell('start-table:actionView'),
     ),
-    title: $makeMetadata(v.title($locale('RoleTitle')), ZovaRender.order(2)),
-    locales: $makeMetadata(v.title($locale('RoleLocales')), ZovaRender.order(3)),
+    title: $makeMetadata(
+      v.title($locale('RoleTitle')),
+      ZovaRender.order(2),
+      ZovaRender.field('start-fieldlocales:formFieldLocalizedText', {
+        localesField: 'titleLocales',
+      }),
+      ZovaRender.cell('start-fieldlocales:localizedText', {
+        localesField: 'titleLocales',
+      }),
+    ),
+    titleLocales: $makeMetadata(ZovaRender.visible(false)),
     siteIds: $makeMetadata(
       v.title($locale('RoleSiteIds')),
       ZovaRender.order(4),
@@ -56,7 +65,7 @@ export class DtoRoleRead extends $Class.pick(DtoRoleBase, [
   'id',
   'name',
   'title',
-  'locales',
+  'titleLocales',
   'siteIds',
 ]) {
   @Api.field(
@@ -77,13 +86,13 @@ export class DtoRoleRead extends $Class.pick(DtoRoleBase, [
 export class DtoRoleCreateBase extends $Class.pick(DtoRoleBase, [
   'name',
   'title',
-  'locales',
+  'titleLocales',
   'siteIds',
 ]) {}
 
 export class DtoRoleUpdateBase extends $Class.pick(DtoRoleBase, [
   'name',
   'title',
-  'locales',
+  'titleLocales',
   'siteIds',
 ]) {}

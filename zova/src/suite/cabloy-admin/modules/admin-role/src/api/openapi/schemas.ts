@@ -15,6 +15,14 @@ export type ApiSchemaAMenuDtoMenuGroupPartial = Partial<ApiSchemaAMenuDtoMenuGro
 export type ApiSchemaAPermissionDtoPermissions =
   components['schemas']['a-permission.dto.permissions'];
 export type ApiSchemaAPermissionDtoPermissionsPartial = Partial<ApiSchemaAPermissionDtoPermissions>;
+export type ApiSchemaHomeBaseDtoSiteCatalogSelectRes =
+  components['schemas']['home-base.dto.siteCatalogSelectRes'];
+export type ApiSchemaHomeBaseDtoSiteCatalogSelectResPartial =
+  Partial<ApiSchemaHomeBaseDtoSiteCatalogSelectRes>;
+export type ApiSchemaHomeBaseDtoSiteCatalogSelectResItem =
+  components['schemas']['home-base.dto.siteCatalogSelectResItem'];
+export type ApiSchemaHomeBaseDtoSiteCatalogSelectResItemPartial =
+  Partial<ApiSchemaHomeBaseDtoSiteCatalogSelectResItem>;
 export type ApiSchemaHomeUserDtoPassport_2d063d28bc7243bed02ebd8bddf1212a93c6305b =
   components['schemas']['home-user.dto.passport_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
 export type ApiSchemaHomeUserDtoPassport_2d063d28bc7243bed02ebd8bddf1212a93c6305bPartial =
@@ -114,10 +122,10 @@ export type ApiSchemaAdminRoleDtoRoleSelectResItem =
   components['schemas']['admin-role.dto.roleSelectResItem'];
 export type ApiSchemaAdminRoleDtoRoleSelectResItemPartial =
   Partial<ApiSchemaAdminRoleDtoRoleSelectResItem>;
-export type ApiSchemaAdminRoleDtoRoleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_256e92e385807a174e0ea948d3c26213e71ae297 =
-  components['schemas']['admin-role.dto.roleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_256e92e385807a174e0ea948d3c26213e71ae297'];
-export type ApiSchemaAdminRoleDtoRoleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_256e92e385807a174e0ea948d3c26213e71ae297Partial =
-  Partial<ApiSchemaAdminRoleDtoRoleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_256e92e385807a174e0ea948d3c26213e71ae297>;
+export type ApiSchemaAdminRoleDtoRoleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_326f9a25887c080b975d143095eec57412beb745 =
+  components['schemas']['admin-role.dto.roleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_326f9a25887c080b975d143095eec57412beb745'];
+export type ApiSchemaAdminRoleDtoRoleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_326f9a25887c080b975d143095eec57412beb745Partial =
+  Partial<ApiSchemaAdminRoleDtoRoleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_326f9a25887c080b975d143095eec57412beb745>;
 export type ApiSchemaAdminRoleDtoRoleUpdate = components['schemas']['admin-role.dto.roleUpdate'];
 export type ApiSchemaAdminRoleDtoRoleUpdatePartial = Partial<ApiSchemaAdminRoleDtoRoleUpdate>;
 export type ApiSchemaAdminRoleDtoUserRoleReplace =

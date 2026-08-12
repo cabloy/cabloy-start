@@ -17,7 +17,7 @@ function toRoleItem(role: EntityRole) {
     id: role.id,
     name: role.name,
     title: role.title,
-    locales: role.locales,
+    titleLocales: role.titleLocales,
     siteIds: role.siteIds,
   };
 }

@@ -29,7 +29,6 @@ export interface IDtoOptionsRoleView extends IDecoratorDtoOptions {}
                         children: [
                           { type: 'field', name: 'name' },
                           { type: 'field', name: 'title' },
-                          { type: 'field', name: 'locales' },
                           { type: 'field', name: 'siteIds' },
                         ],
                       },

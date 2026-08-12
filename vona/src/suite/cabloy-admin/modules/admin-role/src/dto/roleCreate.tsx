@@ -31,7 +31,6 @@ export interface IDtoOptionsRoleCreate extends IDecoratorDtoOptions {}
                         children: [
                           { type: 'field', name: 'name' },
                           { type: 'field', name: 'title' },
-                          { type: 'field', name: 'locales' },
                           { type: 'field', name: 'siteIds' },
                         ],
                       },
@@ -56,7 +55,7 @@ export interface IDtoOptionsRoleCreate extends IDecoratorDtoOptions {}
   fields: {
     name: $makeSchema(v.required(), v.min(1), v.trim(), z.string()),
     title: $makeSchema(v.required(), v.min(1), v.trim(), z.string()),
-    locales: $makeSchema(v.optional(), z.record(z.string(), z.string())),
+    titleLocales: $makeSchema(v.optional(), z.record(z.string(), z.string())),
     siteIds: $makeSchema(v.zodRefine('admin-role:siteIdsAvailable'), v.array(z.string())),
   },
 })

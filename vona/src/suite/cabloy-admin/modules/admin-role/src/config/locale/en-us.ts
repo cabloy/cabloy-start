@@ -1,7 +1,7 @@
 export default {
   Operations: 'Operations',
   Role: 'Role',
-  RoleLocales: 'Locales',
+  RoleTitleLocales: 'Locales',
   RoleName: 'Role Name',
   RoleNameAlreadyInUse: 'The role name is already in use',
   RoleSiteIds: 'Site IDs',
