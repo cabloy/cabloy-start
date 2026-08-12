@@ -127,6 +127,22 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/home/base/siteCatalog': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['HomeBaseSiteCatalog_select'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/': {
     parameters: {
       query?: never;
@@ -298,6 +314,230 @@ export interface paths {
     get?: never;
     put?: never;
     post: operations['HomeUserPassport_createTempAuthToken'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/training/record': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['TrainingRecord_select'];
+    put?: never;
+    post: operations['TrainingRecord_create'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/training/record/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['TrainingRecord_view'];
+    put?: never;
+    post?: never;
+    delete: operations['TrainingRecord_delete'];
+    options?: never;
+    head?: never;
+    patch: operations['TrainingRecord_update'];
+    trace?: never;
+  };
+  '/api/training/student': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['TrainingStudent_select'];
+    put?: never;
+    post: operations['TrainingStudent_create'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/training/student/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['TrainingStudent_view'];
+    put?: never;
+    post?: never;
+    delete: operations['TrainingStudent_delete'];
+    options?: never;
+    head?: never;
+    patch: operations['TrainingStudent_update'];
+    trace?: never;
+  };
+  '/api/training/student/summary/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['TrainingStudent_summary'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/training/student/deleteForce/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete: operations['TrainingStudent_deleteForce'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/role': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['AdminRole_select'];
+    put?: never;
+    post: operations['AdminRole_create'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/role/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['AdminRole_view'];
+    put?: never;
+    post?: never;
+    delete: operations['AdminRole_delete'];
+    options?: never;
+    head?: never;
+    patch: operations['AdminRole_update'];
+    trace?: never;
+  };
+  '/api/admin/role/user/{userId}/roles': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put: operations['AdminRole_replaceUserRoles'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/user': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['AdminUser_select'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/user/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['AdminUser_view'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch: operations['AdminUser_update'];
+    trace?: never;
+  };
+  '/api/admin/user/activate/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['AdminUser_activate'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/user/account-status/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put: operations['AdminUser_updateAccountStatus'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/start/metrics/snapshot': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['StartMetrics_snapshot'];
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -496,6 +736,118 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/pay/payment-callback/return': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['PayPaymentCallback_returned'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/pay/payment-callback/cancel': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['PayPaymentCallback_cancelled'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/pay/payment-session/{id}/start': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['PayPaymentSession_start'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/pay/payment-session/{id}/reconcile': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['PayPaymentSession_reconcile'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/pay/payment-session/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['PayPaymentSession_view'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/pay/mock/payment-session/{id}/complete': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['PayMockMockPayment_complete'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/pay/mock/payment-session/refund-operation/{id}/complete': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['PayMockMockPayment_completeRefund'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/paypal/getRecord/{recordId}': {
     parameters: {
       query?: never;
@@ -591,6 +943,17 @@ export interface components {
       roleNames?: string[] | undefined;
       actions?: unknown;
     };
+    'home-base.dto.siteCatalogSelectRes': {
+      list: components['schemas']['home-base.dto.siteCatalogSelectResItem'][];
+      total: string;
+      pageCount: number;
+      pageSize: number;
+      pageNo: number;
+    };
+    'home-base.dto.siteCatalogSelectResItem': {
+      siteId: string;
+      title: string;
+    };
     'home-user.dto.passport_2d063d28bc7243bed02ebd8bddf1212a93c6305b':
       | {
           user: components['schemas']['home-user.entity.user'];
@@ -630,10 +993,16 @@ export interface components {
       /** @description Mobile */
       mobile?: string | undefined;
       /**
-       * @description Activated
+       * @description Identity Activated
        * @default false
        */
       activated?: boolean;
+      /**
+       * @description Account Status
+       * @default active
+       * @enum {string}
+       */
+      accountStatus?: 'active' | 'disabled';
       /** @description Language */
       locale?: string | undefined;
       /** @description Timezone */
@@ -678,7 +1047,7 @@ export interface components {
       /** @description Role Title */
       title: string;
       /** @description Role Locales */
-      locales?:
+      titleLocales?:
         | {
             [key: string]: string;
           }
@@ -719,6 +1088,906 @@ export interface components {
     'a-captcha.dto.captchaVerify_42dbf1a77dd2259bc46e709048a4a5eaa5f766ef_f73253d699f0fd90b98fded80a123a0a180dbca2_521117d88e78d91bd8791d711d8297e186ca1540_626802c24df1498cec99aab0854fedf90c9b6dd3_c961397f84976b27de33206aaa32153d70a77381': {
       id: string;
       token: string;
+    };
+    'training-record.dto.recordCreate': {
+      /** @description Training Record Name */
+      name: string;
+      /** @description Student */
+      studentId: number | string;
+      /** @description Subject Count */
+      subjectCount?: number | undefined;
+      /** @description Total Score */
+      totalScore?: number | undefined;
+      /** @description Average Score */
+      averageScore?: number | undefined;
+      /**
+       * Format: date-time
+       * @description Training Time
+       */
+      trainingTime?: Date;
+      /** @description Scene Photos */
+      sceneImageIds?: (number | string)[] | undefined;
+      /** @description Dossier Files */
+      dossierFileIds?: (number | string)[] | undefined;
+      /** @description Description */
+      description?: string | undefined;
+      /** @description Student Training Record Details */
+      trainingRecordSubjects?:
+        | {
+            /** @description Subject Name */
+            name: string;
+            /** @description Subject Score */
+            score: number;
+            /** @description Description */
+            description?: string | undefined;
+          }[]
+        | undefined;
+      _trainingRecordSubjects?:
+        | components['schemas']['training-record.dto.detailRecordSubjectResItem'][]
+        | undefined;
+    };
+    'training-record.dto.detailRecordSubjectResItem': {
+      /**
+       * @description Deleted
+       * @default false
+       */
+      deleted?: boolean;
+      /** @description ID */
+      id: number | string;
+      /** @description Subject Name */
+      name: string;
+      /** @description Subject Score */
+      score: number;
+      /** @description Description */
+      description?: string | undefined;
+      /** @description # */
+      _lineNumber?: number | undefined;
+      /** @description Operations */
+      _operationsRow?: unknown;
+    };
+    'training-record.dto.recordSelectRes': {
+      list: components['schemas']['training-record.dto.recordSelectResItem'][];
+      total: string;
+      pageCount: number;
+      pageSize: number;
+      pageNo: number;
+    };
+    'training-record.dto.recordSelectResItem': {
+      /**
+       * Format: date-time
+       * @description Created At
+       */
+      createdAt: Date;
+      /**
+       * Format: date-time
+       * @description Updated At
+       */
+      updatedAt: Date;
+      /**
+       * @description Deleted
+       * @default false
+       */
+      deleted?: boolean;
+      /**
+       * @description Instance ID
+       * @default 0
+       */
+      iid?: number;
+      /** @description ID */
+      id: number | string;
+      /** @description Training Record Name */
+      name: string;
+      /** @description Student */
+      studentId: number | string;
+      /** @description Subject Count */
+      subjectCount?: number | undefined;
+      /** @description Total Score */
+      totalScore?: number | undefined;
+      /** @description Average Score */
+      averageScore?: number | undefined;
+      /**
+       * Format: date-time
+       * @description Training Time
+       */
+      trainingTime?: Date;
+      /** @description Scene Photos */
+      sceneImageIds?: (number | string)[] | undefined;
+      /** @description Dossier Files */
+      dossierFileIds?: (number | string)[] | undefined;
+      /** @description Description */
+      description?: string | undefined;
+      student?: {
+        /** @description ID */
+        id: number | string;
+        /** @description Student Name */
+        name: string;
+      };
+      sceneImages?: components['schemas']['a-image.dto.imageView'][] | undefined;
+      /** @description Dossier Files */
+      dossierFiles?: components['schemas']['a-file.dto.fileView'][] | undefined;
+      /** @description Operations */
+      _operationsRow?: unknown;
+    };
+    'a-image.dto.imageView': {
+      id: number | string;
+      url: string;
+      filename?: string | undefined;
+      width?: number | undefined;
+      height?: number | undefined;
+      public?: boolean | undefined;
+      /** @default true */
+      signed?: boolean;
+    };
+    'a-file.dto.fileView': {
+      id: number | string;
+      filename?: string | undefined;
+      contentType?: string | undefined;
+      size?: number | undefined;
+      public?: boolean | undefined;
+      /** Format: date-time */
+      uploadedAt?: Date;
+      downloadUrl: string;
+      /** @default true */
+      signed?: boolean;
+    };
+    'training-record.dto.recordView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_88947ca8c18d5d4ad1f377d379e77df5fe5c0ce5':
+      | {
+          /**
+           * Format: date-time
+           * @description Created At
+           */
+          createdAt: Date;
+          /**
+           * Format: date-time
+           * @description Updated At
+           */
+          updatedAt: Date;
+          /**
+           * @description Deleted
+           * @default false
+           */
+          deleted?: boolean;
+          /**
+           * @description Instance ID
+           * @default 0
+           */
+          iid?: number;
+          /** @description ID */
+          id: number | string;
+          /** @description Training Record Name */
+          name: string;
+          /** @description Student */
+          studentId: number | string;
+          /** @description Subject Count */
+          subjectCount?: number | undefined;
+          /** @description Total Score */
+          totalScore?: number | undefined;
+          /** @description Average Score */
+          averageScore?: number | undefined;
+          /**
+           * Format: date-time
+           * @description Training Time
+           */
+          trainingTime?: Date;
+          /** @description Scene Photos */
+          sceneImageIds?: (number | string)[] | undefined;
+          /** @description Dossier Files */
+          dossierFileIds?: (number | string)[] | undefined;
+          /** @description Description */
+          description?: string | undefined;
+          student?: {
+            /** @description ID */
+            id: number | string;
+            /** @description Student Name */
+            name: string;
+          };
+          /** @description Student Training Record Details */
+          trainingRecordSubjects: {
+            /**
+             * @description Deleted
+             * @default false
+             */
+            deleted?: boolean;
+            /** @description ID */
+            id: number | string;
+            /** @description Subject Name */
+            name: string;
+            /** @description Subject Score */
+            score: number;
+            /** @description Description */
+            description?: string | undefined;
+          }[];
+          sceneImages?: components['schemas']['a-image.dto.imageView'][] | undefined;
+          /** @description Dossier Files */
+          dossierFiles?: components['schemas']['a-file.dto.fileView'][] | undefined;
+          _trainingRecordSubjects?:
+            | components['schemas']['training-record.dto.detailRecordSubjectResItem'][]
+            | undefined;
+        }
+      | undefined;
+    'training-record.dto.recordUpdate': {
+      /** @description Training Record Name */
+      name: string;
+      /** @description Student */
+      studentId: number | string;
+      /** @description Subject Count */
+      subjectCount?: number | undefined;
+      /** @description Total Score */
+      totalScore?: number | undefined;
+      /** @description Average Score */
+      averageScore?: number | undefined;
+      /**
+       * Format: date-time
+       * @description Training Time
+       */
+      trainingTime?: Date;
+      /** @description Scene Photos */
+      sceneImageIds?: (number | string)[] | undefined;
+      /** @description Dossier Files */
+      dossierFileIds?: (number | string)[] | undefined;
+      /** @description Description */
+      description?: string | undefined;
+      /** @description Student Training Record Details */
+      trainingRecordSubjects?:
+        | {
+            /**
+             * @description Deleted
+             * @default false
+             */
+            deleted?: boolean | undefined;
+            /** @description ID */
+            id?: number | string | undefined;
+            /** @description Subject Name */
+            name: string;
+            /** @description Subject Score */
+            score: number;
+            /** @description Description */
+            description?: string | undefined;
+          }[]
+        | undefined;
+      _trainingRecordSubjects?:
+        | components['schemas']['training-record.dto.detailRecordSubjectResItem'][]
+        | undefined;
+    };
+    'training-student.dto.studentCreate': {
+      /** @description Student Name */
+      name: string;
+      /** @description Description */
+      description?: string | undefined;
+      /** @description Mobile */
+      mobile: string;
+      /** @description Student Image */
+      imageId?: number | string | undefined;
+      /** @description Training Stage */
+      level: 1 | 2 | 3;
+      /** @description Student Training Records */
+      trainingRecords?:
+        | {
+            /** @description Training Record Name */
+            name: string;
+            /** @description Subject Count */
+            subjectCount?: number | undefined;
+            /** @description Total Score */
+            totalScore?: number | undefined;
+            /** @description Average Score */
+            averageScore?: number | undefined;
+            /**
+             * Format: date-time
+             * @description Training Time
+             */
+            trainingTime?: Date;
+            /** @description Scene Photos */
+            sceneImageIds?: (number | string)[] | undefined;
+            /** @description Dossier Files */
+            dossierFileIds?: (number | string)[] | undefined;
+            /** @description Description */
+            description?: string | undefined;
+            /** @description Student Training Record Details */
+            trainingRecordSubjects?:
+              | {
+                  /**
+                   * @description Deleted
+                   * @default false
+                   */
+                  deleted?: boolean | undefined;
+                  /** @description ID */
+                  id?: number | string | undefined;
+                  /** @description Subject Name */
+                  name: string;
+                  /** @description Subject Score */
+                  score: number;
+                  /** @description Description */
+                  description?: string | undefined;
+                }[]
+              | undefined;
+            sceneImages?:
+              | {
+                  id?: number | string | undefined;
+                  url?: string | undefined;
+                  filename?: string | undefined;
+                  width?: number | undefined;
+                  height?: number | undefined;
+                  public?: boolean | undefined;
+                  /** @default true */
+                  signed?: boolean | undefined;
+                }[]
+              | undefined;
+            /** @description Dossier Files */
+            dossierFiles?:
+              | {
+                  id?: number | string | undefined;
+                  filename?: string | undefined;
+                  contentType?: string | undefined;
+                  size?: number | undefined;
+                  public?: boolean | undefined;
+                  /** Format: date-time */
+                  uploadedAt?: Date;
+                  downloadUrl?: string | undefined;
+                  /** @default true */
+                  signed?: boolean | undefined;
+                }[]
+              | undefined;
+            _trainingRecordSubjects?:
+              | components['schemas']['training-record.dto.detailRecordSubjectResItem'][]
+              | undefined;
+          }[]
+        | undefined;
+      _trainingRecords?:
+        | components['schemas']['training-student.dto.detailRecordResItem'][]
+        | undefined;
+    };
+    'training-student.dto.detailRecordResItem': {
+      /**
+       * @description Deleted
+       * @default false
+       */
+      deleted?: boolean;
+      /** @description ID */
+      id: number | string;
+      /** @description Training Record Name */
+      name: string;
+      /** @description Subject Count */
+      subjectCount?: number | undefined;
+      /** @description Total Score */
+      totalScore?: number | undefined;
+      /** @description Average Score */
+      averageScore?: number | undefined;
+      /**
+       * Format: date-time
+       * @description Training Time
+       */
+      trainingTime?: Date;
+      /** @description Scene Photos */
+      sceneImageIds?: (number | string)[] | undefined;
+      /** @description Dossier Files */
+      dossierFileIds?: (number | string)[] | undefined;
+      /** @description Description */
+      description?: string | undefined;
+      /** @description Student Training Record Details */
+      trainingRecordSubjects?: unknown;
+      sceneImages?:
+        | {
+            id?: number | string | undefined;
+            url?: string | undefined;
+            filename?: string | undefined;
+            width?: number | undefined;
+            height?: number | undefined;
+            public?: boolean | undefined;
+            /** @default true */
+            signed?: boolean | undefined;
+          }[]
+        | undefined;
+      /** @description Dossier Files */
+      dossierFiles?:
+        | {
+            id?: number | string | undefined;
+            filename?: string | undefined;
+            contentType?: string | undefined;
+            size?: number | undefined;
+            public?: boolean | undefined;
+            /** Format: date-time */
+            uploadedAt?: Date;
+            downloadUrl?: string | undefined;
+            /** @default true */
+            signed?: boolean | undefined;
+          }[]
+        | undefined;
+      /** @description # */
+      _lineNumber?: number | undefined;
+      /** @description Operations */
+      _operationsRow?: unknown;
+    };
+    'training-student.dto.studentSelectRes': {
+      list: components['schemas']['training-student.dto.studentSelectResItem'][];
+      total: string;
+      pageCount: number;
+      pageSize: number;
+      pageNo: number;
+    };
+    'training-student.dto.studentSelectResItem': {
+      /**
+       * Format: date-time
+       * @description Created At
+       */
+      createdAt: Date;
+      /**
+       * Format: date-time
+       * @description Updated At
+       */
+      updatedAt: Date;
+      /**
+       * @description Deleted
+       * @default false
+       */
+      deleted?: boolean;
+      /**
+       * @description Instance ID
+       * @default 0
+       */
+      iid?: number;
+      /** @description ID */
+      id: number | string;
+      /** @description Student Name */
+      name: string;
+      /** @description Description */
+      description?: string | undefined;
+      /** @description Mobile */
+      mobile: string;
+      /** @description Student Image */
+      imageId?: number | string | undefined;
+      /** @description Training Stage */
+      level: 1 | 2 | 3;
+      image?: components['schemas']['a-image.dto.imageView_a83c3e638bca4b30ec8675860cdc52d66f6a16d1_2d063d28bc7243bed02ebd8bddf1212a93c6305b_efb37794d7c03c65122279f90d79919f009c34e5_1816ff740d81c738ec055c7038bbd93beb9405a7_537cd6552a384183a9457fb6a920bbae337277f6'];
+      /** @description Operations */
+      _operationsRow?: unknown;
+    };
+    'a-image.dto.imageView_a83c3e638bca4b30ec8675860cdc52d66f6a16d1_2d063d28bc7243bed02ebd8bddf1212a93c6305b_efb37794d7c03c65122279f90d79919f009c34e5_1816ff740d81c738ec055c7038bbd93beb9405a7_537cd6552a384183a9457fb6a920bbae337277f6':
+      | {
+          id: number | string;
+          url: string;
+          filename?: string | undefined;
+          width?: number | undefined;
+          height?: number | undefined;
+          public?: boolean | undefined;
+          /** @default true */
+          signed?: boolean;
+        }
+      | undefined;
+    'training-student.dto.studentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_2ade7655a06636cfe9aa1cc76e9518982ec19f2e':
+      | {
+          /**
+           * Format: date-time
+           * @description Created At
+           */
+          createdAt: Date;
+          /**
+           * Format: date-time
+           * @description Updated At
+           */
+          updatedAt: Date;
+          /**
+           * @description Deleted
+           * @default false
+           */
+          deleted?: boolean;
+          /**
+           * @description Instance ID
+           * @default 0
+           */
+          iid?: number;
+          /** @description ID */
+          id: number | string;
+          /** @description Student Name */
+          name: string;
+          /** @description Description */
+          description?: string | undefined;
+          /** @description Mobile */
+          mobile: string;
+          /** @description Student Image */
+          imageId?: number | string | undefined;
+          /** @description Training Stage */
+          level: 1 | 2 | 3;
+          /** @description Student Training Records */
+          trainingRecords: {
+            /**
+             * @description Deleted
+             * @default false
+             */
+            deleted?: boolean;
+            /** @description ID */
+            id: number | string;
+            /** @description Training Record Name */
+            name: string;
+            /** @description Subject Count */
+            subjectCount?: number | undefined;
+            /** @description Total Score */
+            totalScore?: number | undefined;
+            /** @description Average Score */
+            averageScore?: number | undefined;
+            /**
+             * Format: date-time
+             * @description Training Time
+             */
+            trainingTime?: Date;
+            /** @description Scene Photos */
+            sceneImageIds?: (number | string)[] | undefined;
+            /** @description Dossier Files */
+            dossierFileIds?: (number | string)[] | undefined;
+            /** @description Description */
+            description?: string | undefined;
+            /** @description Student Training Record Details */
+            trainingRecordSubjects: {
+              /**
+               * @description Deleted
+               * @default false
+               */
+              deleted?: boolean;
+              /** @description ID */
+              id: number | string;
+              /** @description Subject Name */
+              name: string;
+              /** @description Subject Score */
+              score: number;
+              /** @description Description */
+              description?: string | undefined;
+            }[];
+            sceneImages?:
+              | {
+                  id?: number | string | undefined;
+                  url?: string | undefined;
+                  filename?: string | undefined;
+                  width?: number | undefined;
+                  height?: number | undefined;
+                  public?: boolean | undefined;
+                  /** @default true */
+                  signed?: boolean | undefined;
+                }[]
+              | undefined;
+            /** @description Dossier Files */
+            dossierFiles?:
+              | {
+                  id?: number | string | undefined;
+                  filename?: string | undefined;
+                  contentType?: string | undefined;
+                  size?: number | undefined;
+                  public?: boolean | undefined;
+                  /** Format: date-time */
+                  uploadedAt?: Date;
+                  downloadUrl?: string | undefined;
+                  /** @default true */
+                  signed?: boolean | undefined;
+                }[]
+              | undefined;
+            _trainingRecordSubjects?:
+              | components['schemas']['training-record.dto.detailRecordSubjectResItem'][]
+              | undefined;
+          }[];
+          image?: components['schemas']['a-image.dto.imageView_a83c3e638bca4b30ec8675860cdc52d66f6a16d1_2d063d28bc7243bed02ebd8bddf1212a93c6305b_efb37794d7c03c65122279f90d79919f009c34e5_1816ff740d81c738ec055c7038bbd93beb9405a7_537cd6552a384183a9457fb6a920bbae337277f6'];
+          _trainingRecords?:
+            | components['schemas']['training-student.dto.detailRecordResItem'][]
+            | undefined;
+        }
+      | undefined;
+    'training-student.dto.studentUpdate': {
+      /** @description Student Name */
+      name: string;
+      /** @description Description */
+      description?: string | undefined;
+      /** @description Mobile */
+      mobile: string;
+      /** @description Student Image */
+      imageId?: number | string | undefined;
+      /** @description Training Stage */
+      level: 1 | 2 | 3;
+      /** @description Student Training Records */
+      trainingRecords?:
+        | {
+            /**
+             * @description Deleted
+             * @default false
+             */
+            deleted?: boolean | undefined;
+            /** @description ID */
+            id?: number | string | undefined;
+            /** @description Training Record Name */
+            name: string;
+            /** @description Subject Count */
+            subjectCount?: number | undefined;
+            /** @description Total Score */
+            totalScore?: number | undefined;
+            /** @description Average Score */
+            averageScore?: number | undefined;
+            /**
+             * Format: date-time
+             * @description Training Time
+             */
+            trainingTime?: Date;
+            /** @description Scene Photos */
+            sceneImageIds?: (number | string)[] | undefined;
+            /** @description Dossier Files */
+            dossierFileIds?: (number | string)[] | undefined;
+            /** @description Description */
+            description?: string | undefined;
+            /** @description Student Training Record Details */
+            trainingRecordSubjects?:
+              | {
+                  /**
+                   * @description Deleted
+                   * @default false
+                   */
+                  deleted?: boolean | undefined;
+                  /** @description ID */
+                  id?: number | string | undefined;
+                  /** @description Subject Name */
+                  name: string;
+                  /** @description Subject Score */
+                  score: number;
+                  /** @description Description */
+                  description?: string | undefined;
+                }[]
+              | undefined;
+            sceneImages?:
+              | {
+                  id?: number | string | undefined;
+                  url?: string | undefined;
+                  filename?: string | undefined;
+                  width?: number | undefined;
+                  height?: number | undefined;
+                  public?: boolean | undefined;
+                  /** @default true */
+                  signed?: boolean | undefined;
+                }[]
+              | undefined;
+            /** @description Dossier Files */
+            dossierFiles?:
+              | {
+                  id?: number | string | undefined;
+                  filename?: string | undefined;
+                  contentType?: string | undefined;
+                  size?: number | undefined;
+                  public?: boolean | undefined;
+                  /** Format: date-time */
+                  uploadedAt?: Date;
+                  downloadUrl?: string | undefined;
+                  /** @default true */
+                  signed?: boolean | undefined;
+                }[]
+              | undefined;
+            _trainingRecordSubjects?:
+              | components['schemas']['training-record.dto.detailRecordSubjectResItem'][]
+              | undefined;
+          }[]
+        | undefined;
+      _trainingRecords?:
+        | components['schemas']['training-student.dto.detailRecordResItem'][]
+        | undefined;
+    };
+    'training-student.dto.studentSummary_2d063d28bc7243bed02ebd8bddf1212a93c6305b':
+      | {
+          /** @description ID */
+          id: number | string;
+          /** @description Student Name */
+          name: string;
+          /** @description Description */
+          description?: string | undefined;
+          /** @description Mobile */
+          mobile: string;
+          /** @description Training Stage */
+          level: 1 | 2 | 3;
+          /** @description Level Title */
+          levelTitle: string;
+          /** @description Description Length */
+          descriptionLength: number;
+          /** @description Summary */
+          summaryText: string;
+        }
+      | undefined;
+    'admin-role.dto.roleView': {
+      /** @description ID */
+      id: number | string;
+      /** @description Role Name */
+      name: string;
+      /** @description Role Title */
+      title: string;
+      /** @description Role Locales */
+      titleLocales?:
+        | {
+            [key: string]: string;
+          }
+        | undefined;
+      /** @description Site IDs */
+      siteIds: string[];
+      sites?: components['schemas']['home-base.dto.siteCatalogSelectResItem'][] | undefined;
+    };
+    'admin-role.dto.roleCreate': {
+      /** @description Role Name */
+      name: string;
+      /** @description Role Title */
+      title: string;
+      /** @description Role Locales */
+      titleLocales?:
+        | {
+            [key: string]: string;
+          }
+        | undefined;
+      /** @description Site IDs */
+      siteIds: string[];
+    };
+    'admin-role.dto.roleSelectRes': {
+      list: components['schemas']['admin-role.dto.roleSelectResItem'][];
+      total: string;
+      pageCount: number;
+      pageSize: number;
+      pageNo: number;
+    };
+    'admin-role.dto.roleSelectResItem': {
+      /** @description ID */
+      id: number | string;
+      /** @description Role Name */
+      name: string;
+      /** @description Role Title */
+      title: string;
+      /** @description Role Locales */
+      titleLocales?:
+        | {
+            [key: string]: string;
+          }
+        | undefined;
+      /** @description Site IDs */
+      siteIds: string[];
+      sites?: components['schemas']['home-base.dto.siteCatalogSelectResItem'][] | undefined;
+      /** @description Operations */
+      _operationsRow?: unknown;
+    };
+    'admin-role.dto.roleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_326f9a25887c080b975d143095eec57412beb745':
+      | {
+          /** @description ID */
+          id: number | string;
+          /** @description Role Name */
+          name: string;
+          /** @description Role Title */
+          title: string;
+          /** @description Role Locales */
+          titleLocales?:
+            | {
+                [key: string]: string;
+              }
+            | undefined;
+          /** @description Site IDs */
+          siteIds: string[];
+          sites?: components['schemas']['home-base.dto.siteCatalogSelectResItem'][] | undefined;
+        }
+      | undefined;
+    'admin-role.dto.roleUpdate': {
+      /** @description Role Name */
+      name: string;
+      /** @description Role Title */
+      title: string;
+      /** @description Role Locales */
+      titleLocales?:
+        | {
+            [key: string]: string;
+          }
+        | undefined;
+      /** @description Site IDs */
+      siteIds?: string[] | undefined;
+    };
+    'admin-role.dto.userRoleReplace': {
+      roleIds: (number | string)[];
+    };
+    'admin-user.dto.userSelectRes': {
+      list: components['schemas']['admin-user.dto.userSelectResItem'][];
+      total: string;
+      pageCount: number;
+      pageSize: number;
+      pageNo: number;
+    };
+    'admin-user.dto.userSelectResItem': {
+      /** @description ID */
+      id: number | string;
+      /** @description User Name */
+      name: string;
+      /** @description Avatar */
+      avatar?: string | undefined;
+      /** @description Email */
+      email?: string | undefined;
+      /** @description Mobile */
+      mobile?: string | undefined;
+      /**
+       * @description Identity Activated
+       * @default false
+       */
+      activated?: boolean;
+      /**
+       * @description Account Status
+       * @default active
+       * @enum {string}
+       */
+      accountStatus?: 'active' | 'disabled';
+      /** @description Locale */
+      locale?: string | undefined;
+      /** @description Time Zone */
+      tz?: string | undefined;
+      /** @description Operations */
+      _operationsRow?: unknown;
+    };
+    'admin-user.dto.userView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_3af4868dbf0dab6a1b8727d55c4030f401fb2bc7':
+      | {
+          /** @description ID */
+          id: number | string;
+          /** @description User Name */
+          name: string;
+          /** @description Avatar */
+          avatar?: string | undefined;
+          /** @description Email */
+          email?: string | undefined;
+          /** @description Mobile */
+          mobile?: string | undefined;
+          /**
+           * @description Identity Activated
+           * @default false
+           */
+          activated?: boolean;
+          /**
+           * @description Account Status
+           * @default active
+           * @enum {string}
+           */
+          accountStatus?: 'active' | 'disabled';
+          /** @description Locale */
+          locale?: string | undefined;
+          /** @description Time Zone */
+          tz?: string | undefined;
+        }
+      | undefined;
+    'admin-user.dto.userUpdate': {
+      /** @description Avatar */
+      avatar?: string | undefined;
+      /**
+       * Format: email
+       * @description Email
+       */
+      email?: string | undefined;
+      /** @description Mobile */
+      mobile?: string | undefined;
+      /** @description Locale */
+      locale?: string | undefined;
+      /** @description Time Zone */
+      tz?: string | undefined;
+    };
+    'admin-user.dto.userAccountStatusUpdate': {
+      /**
+       * @description Account Status
+       * @enum {string}
+       */
+      accountStatus: 'active' | 'disabled';
+    };
+    'start-metrics.dto.metricsSnapshot': {
+      enabled: boolean;
+      runtime: components['schemas']['start-metrics.dto.metricsRuntime'];
+      queues: components['schemas']['start-metrics.dto.metricsQueue'][];
+    };
+    'start-metrics.dto.metricsRuntime': {
+      state: string;
+      observedAt?: string | undefined;
+      uptimeSeconds?: number | undefined;
+      rssBytes?: number | undefined;
+      heapUsedBytes?: number | undefined;
+      heapTotalBytes?: number | undefined;
+      externalBytes?: number | undefined;
+      eventLoopDelayMaxSeconds?: number | undefined;
+      activeContexts?: number | undefined;
+    };
+    'start-metrics.dto.metricsQueue': {
+      name: string;
+      state: string;
+      observedAt?: string | undefined;
+      jobs?:
+        | {
+            [key: string]: number;
+          }
+        | undefined;
+      schedulers?: number | undefined;
     };
     'a-file.dto.fileUploadPolicyResponse': {
       fileScene: string;
@@ -866,6 +2135,65 @@ export interface components {
           sharpen?: number | undefined;
         }
       | undefined;
+    'a-pay.dto.paymentSessionView': {
+      id: number | string;
+      /** @enum {string} */
+      state:
+        | 'created'
+        | 'starting'
+        | 'requires_action'
+        | 'processing'
+        | 'succeeded'
+        | 'failed'
+        | 'cancelled'
+        | 'expired';
+      providerName: string;
+      nextAction?:
+        | {
+            /** @enum {string} */
+            kind: 'redirect';
+            /** Format: uri */
+            url: string;
+          }
+        | {
+            /** @enum {string} */
+            kind: 'embedded';
+            clientToken: string;
+            publishableConfig?:
+              | {
+                  [key: string]: string;
+                }
+              | undefined;
+          }
+        | {
+            /** @enum {string} */
+            kind: 'pending';
+            retryAfterSeconds?: number | undefined;
+          }
+        | {
+            /** @enum {string} */
+            kind: 'completed';
+          }
+        | undefined;
+      amountMinor: number;
+      currency: string;
+    };
+    'pay-mock.dto.mockPaymentReceipt': {
+      paymentSessionId: number | string;
+      accepted: boolean;
+    };
+    'pay-mock.dto.mockPaymentComplete': {
+      /** @enum {string} */
+      outcome: 'succeeded' | 'failed' | 'cancelled';
+    };
+    'pay-mock.dto.mockRefundReceipt': {
+      refundOperationId: number | string;
+      accepted: boolean;
+    };
+    'pay-mock.dto.mockRefundComplete': {
+      /** @enum {string} */
+      outcome: 'succeeded' | 'failed' | 'cancelled';
+    };
     'a-paypal.entity.paypalRecord': {
       /**
        * Format: date-time
@@ -1163,6 +2491,30 @@ export interface operations {
     };
     authToken: true;
   };
+  HomeBaseSiteCatalog_select: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['home-base.dto.siteCatalogSelectRes'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
   Home_index: {
     parameters: {
       query?: never;
@@ -1454,6 +2806,701 @@ export interface operations {
             code: string;
             message: string;
             data: string;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  TrainingRecord_select: {
+    parameters: {
+      query?: {
+        columns?: string[] | undefined;
+        where?:
+          | {
+              [key: string]: unknown;
+            }
+          | undefined;
+        orders?: string | string[][] | undefined;
+        pageNo?: number;
+        pageSize?: number;
+        createdAt?: string | undefined;
+        name?: string | undefined;
+        studentId?: number | undefined;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['training-record.dto.recordSelectRes'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  TrainingRecord_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['training-record.dto.recordCreate'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: number | string;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  TrainingRecord_view: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data?: components['schemas']['training-record.dto.recordView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_88947ca8c18d5d4ad1f377d379e77df5fe5c0ce5'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  TrainingRecord_delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  TrainingRecord_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['training-record.dto.recordUpdate'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  TrainingStudent_select: {
+    parameters: {
+      query?: {
+        columns?: string[] | undefined;
+        where?:
+          | {
+              [key: string]: unknown;
+            }
+          | undefined;
+        orders?: string | string[][] | undefined;
+        pageNo?: number;
+        pageSize?: number;
+        createdAt?: string | undefined;
+        name?: string | undefined;
+        level?: number | undefined;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['training-student.dto.studentSelectRes'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  TrainingStudent_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['training-student.dto.studentCreate'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: number | string;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  TrainingStudent_view: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data?: components['schemas']['training-student.dto.studentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_2ade7655a06636cfe9aa1cc76e9518982ec19f2e'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  TrainingStudent_delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  TrainingStudent_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['training-student.dto.studentUpdate'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  TrainingStudent_summary: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data?: components['schemas']['training-student.dto.studentSummary_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  TrainingStudent_deleteForce: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRole_select: {
+    parameters: {
+      query?: {
+        columns?: string[] | undefined;
+        where?:
+          | {
+              [key: string]: unknown;
+            }
+          | undefined;
+        orders?: string | string[][] | undefined;
+        pageNo?: number;
+        pageSize?: number;
+        name?: string | undefined;
+        title?: string | undefined;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['admin-role.dto.roleSelectRes'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRole_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-role.dto.roleCreate'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['admin-role.dto.roleView'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRole_view: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data?: components['schemas']['admin-role.dto.roleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_326f9a25887c080b975d143095eec57412beb745'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRole_delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRole_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-role.dto.roleUpdate'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRole_replaceUserRoles: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        userId: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-role.dto.userRoleReplace'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminUser_select: {
+    parameters: {
+      query?: {
+        columns?: string[] | undefined;
+        where?:
+          | {
+              [key: string]: unknown;
+            }
+          | undefined;
+        orders?: string | string[][] | undefined;
+        pageNo?: number;
+        pageSize?: number;
+        name?: string | undefined;
+        activated?: boolean | undefined;
+        accountStatus?: 'active' | 'disabled' | null | undefined;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['admin-user.dto.userSelectRes'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminUser_view: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data?: components['schemas']['admin-user.dto.userView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_3af4868dbf0dab6a1b8727d55c4030f401fb2bc7'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminUser_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-user.dto.userUpdate'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminUser_activate: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminUser_updateAccountStatus: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-user.dto.userAccountStatusUpdate'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  StartMetrics_snapshot: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['start-metrics.dto.metricsSnapshot'];
           };
         };
       };
@@ -1801,6 +3848,194 @@ export interface operations {
         };
       };
     };
+  };
+  PayPaymentCallback_returned: {
+    parameters: {
+      query: {
+        state: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data?: unknown;
+          };
+        };
+      };
+    };
+  };
+  PayPaymentCallback_cancelled: {
+    parameters: {
+      query: {
+        state: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data?: unknown;
+          };
+        };
+      };
+    };
+  };
+  PayPaymentSession_start: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['a-pay.dto.paymentSessionView'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  PayPaymentSession_reconcile: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['a-pay.dto.paymentSessionView'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  PayPaymentSession_view: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['a-pay.dto.paymentSessionView'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  PayMockMockPayment_complete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['pay-mock.dto.mockPaymentComplete'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['pay-mock.dto.mockPaymentReceipt'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  PayMockMockPayment_completeRefund: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['pay-mock.dto.mockRefundComplete'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['pay-mock.dto.mockRefundReceipt'];
+          };
+        };
+      };
+    };
+    authToken: true;
   };
   Paypal_getRecord: {
     parameters: {
