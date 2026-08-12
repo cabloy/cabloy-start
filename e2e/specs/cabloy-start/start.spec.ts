@@ -342,6 +342,31 @@ test(
 );
 
 test(
+  'ATP-START-FLOW-02: admin can access system management resources',
+  { tag: ['@admin', '@smoke'] },
+  async ({ page }) => {
+    const pageErrors = collectPageErrors(page);
+    await loginAsAdmin(page);
+
+    await expect(page.getByText('System Management', { exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'User', exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Role', exact: true })).toBeVisible();
+
+    await page.getByRole('link', { name: 'User', exact: true }).click();
+    await expect(page).toHaveURL(
+      /\/admin\/rest\/resource\/admin-user(?:%3A|:|%253A)user(?:[/?#]|$)/,
+    );
+
+    await page.goto('/admin/', { waitUntil: 'load' });
+    await page.getByRole('link', { name: 'Role', exact: true }).click();
+    await expect(page).toHaveURL(
+      /\/admin\/rest\/resource\/admin-role(?:%3A|:|%253A)role(?:[/?#]|$)/,
+    );
+    expect(pageErrors).toEqual([]);
+  },
+);
+
+test(
   'ATP-START-LAYOUT-01: Admin drawer follows viewport breakpoint changes',
   { tag: ['@admin', '@layout'] },
   async ({ page }) => {

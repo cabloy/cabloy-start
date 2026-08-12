@@ -53,12 +53,15 @@ declare module 'vona-module-start-siteadmin' {
 /** ssrMenu: end */
 /** ssrMenuGroup: begin */
 export * from '../bean/ssrMenuGroup.management.ts';
+export * from '../bean/ssrMenuGroup.systemManagement.ts';
 import type { ISsrMenuGroupOptionsManagement } from '../bean/ssrMenuGroup.management.ts';
+import type { ISsrMenuGroupOptionsSystemManagement } from '../bean/ssrMenuGroup.systemManagement.ts';
 import 'vona-module-a-ssr';
 declare module 'vona-module-a-ssr' {
   
     export interface ISsrMenuGroupRecord {
       'start-siteadmin:management': ISsrMenuGroupOptionsManagement;
+'start-siteadmin:systemManagement': ISsrMenuGroupOptionsSystemManagement;
     }
 
   
@@ -74,6 +77,17 @@ declare module 'vona-module-start-siteadmin' {
             get $beanFullName(): 'start-siteadmin.ssrMenuGroup.management';
             get $onionName(): 'start-siteadmin:management';
             get $onionOptions(): ISsrMenuGroupOptionsManagement;
+          }
+
+        export interface SsrMenuGroupSystemManagement {
+          /** @internal */
+          get scope(): ScopeModuleStartSiteadmin;
+        }
+
+          export interface SsrMenuGroupSystemManagement {
+            get $beanFullName(): 'start-siteadmin.ssrMenuGroup.systemManagement';
+            get $onionName(): 'start-siteadmin:systemManagement';
+            get $onionOptions(): ISsrMenuGroupOptionsSystemManagement;
           } 
 }
 /** ssrMenuGroup: end */

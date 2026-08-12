@@ -5,19 +5,20 @@ import { BeanBase } from 'vona';
 import { $order } from 'vona-module-a-openapiutils';
 import { SsrMenu } from 'vona-module-a-ssr';
 
+import { $locale } from '../.metadata/locales.ts';
+
 export interface ISsrMenuOptionsMetrics extends IDecoratorSsrMenuOptions<ISsrSiteOptionsAdmin> {}
 
 @SsrMenu<ISsrMenuOptionsMetrics>({
   items: {
     metrics: {
-      title: 'Metrics',
+      title: $locale('Metrics'),
       order: $order(90),
       icon: undefined,
       link: '/start/metrics/dashboard',
-      group: 'start-siteadmin:management',
+      group: 'start-siteadmin:systemManagement',
       roles: ['systemAdmin'],
     },
   },
-  site: ['start-siteadmin:admin'],
 })
 export class SsrMenuMetrics extends BeanBase {}

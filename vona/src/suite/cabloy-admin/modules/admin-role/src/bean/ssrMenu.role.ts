@@ -1,5 +1,4 @@
-import type { IDecoratorSsrMenuOptions } from 'vona-module-a-ssr';
-import type { ISsrSiteOptionsAdmin } from 'vona-module-start-siteadmin';
+import type { IDecoratorSsrMenuOptions, IDecoratorSsrSiteOptions } from 'vona-module-a-ssr';
 
 import { BeanBase } from 'vona';
 import { $order } from 'vona-module-a-openapiutils';
@@ -7,7 +6,9 @@ import { SsrMenu } from 'vona-module-a-ssr';
 
 import { $locale } from '../.metadata/locales.ts';
 
-export interface ISsrMenuOptionsRole extends IDecoratorSsrMenuOptions<ISsrSiteOptionsAdmin> {}
+export interface ISsrMenuOptionsRole extends IDecoratorSsrMenuOptions<
+  IDecoratorSsrSiteOptions<any, any, any>
+> {}
 
 @SsrMenu<ISsrMenuOptionsRole>({
   item: {
@@ -20,9 +21,8 @@ export interface ISsrMenuOptionsRole extends IDecoratorSsrMenuOptions<ISsrSiteOp
         resource: 'admin-role:role',
       },
     },
-    group: 'start-siteadmin:management',
+    group: 'start-siteadmin:systemManagement',
     roles: ['systemAdmin'],
   },
-  site: ['start-siteadmin:admin'],
 })
 export class SsrMenuRole extends BeanBase {}

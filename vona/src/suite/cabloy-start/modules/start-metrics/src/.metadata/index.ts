@@ -158,8 +158,11 @@ declare module 'vona-module-start-metrics' {
           } 
 }
 /** ssrMenu: end */
+/** locale: begin */
+import { locales } from './locales.ts';
+/** locale: end */
 /** scope: begin */
-import { BeanScopeBase, type BeanScopeUtil } from 'vona';
+import { BeanScopeBase, type BeanScopeUtil, type TypeModuleLocales, type TypeLocaleBase } from 'vona';
 import { Scope } from 'vona-module-a-bean';
 
 @Scope()
@@ -167,6 +170,7 @@ export class ScopeModuleStartMetrics extends BeanScopeBase {}
 
 export interface ScopeModuleStartMetrics {
   util: BeanScopeUtil;
+locale: TypeModuleLocales<(typeof locales)[TypeLocaleBase]>;
 service: IModuleService;
 }
 
@@ -182,7 +186,9 @@ declare module 'vona' {
   
   
 
-  
+  export interface IBeanScopeLocale {
+    'start-metrics': (typeof locales)[TypeLocaleBase];
+  }
 
   
 }
