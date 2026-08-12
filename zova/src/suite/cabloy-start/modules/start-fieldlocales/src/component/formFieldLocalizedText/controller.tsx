@@ -2,13 +2,14 @@ import type { IComponentOptions } from 'zova';
 import type { IFormFieldComponentOptions } from 'zova-module-a-form';
 import type { IResourceFormFieldOptionsBase } from 'zova-module-a-openapi';
 
+import { reactive } from 'vue';
 import { VBtn, VTextField } from 'vuetify/components';
 import { BeanControllerBase, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { ZFormField } from 'zova-module-a-form';
 import { $iconName } from 'zova-module-a-icon';
 
-import { normalizeLocalizedTextMap, resolveLocalizedText } from '../../lib/localizedText.ts';
+import { normalizeLocalizedTextMap, resolveLocalizedText } from '../../lib/localizedText.js';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceFormFieldRecord {
@@ -92,7 +93,7 @@ export class ControllerFormFieldLocalizedText extends BeanControllerBase {
     const rows = [...new Set([...Object.keys(items), ...Object.keys(draft)])].filter(
       locale => locale !== this.sys.config.locale.default,
     );
-    const values = { ...draft };
+    const values = reactive({ ...draft });
     const dialog = this.$appModal.dialog({
       title: this.scope.locale.Locales(),
       slotDefault: () => (
