@@ -8,12 +8,12 @@ describe('role.test.ts', () => {
       const scope = app.scope('home-user');
       const roleRegisteredUser = await scope.model.role.getByName('registeredUser');
       assert.equal(roleRegisteredUser?.title, 'Registered User');
-      assert.deepEqual(roleRegisteredUser?.locales, { 'zh-cn': '注册用户' });
+      assert.deepEqual(roleRegisteredUser?.titleLocales, { 'zh-cn': '注册用户' });
       assert.deepEqual(roleRegisteredUser?.siteIds, ['web']);
 
       const roleSystemAdmin = await scope.model.role.getByName('systemAdmin');
       assert.equal(roleSystemAdmin?.title, 'System Administrator');
-      assert.deepEqual(roleSystemAdmin?.locales, { 'zh-cn': '系统管理员' });
+      assert.deepEqual(roleSystemAdmin?.titleLocales, { 'zh-cn': '系统管理员' });
       assert.deepEqual(roleSystemAdmin?.siteIds, ['web', 'admin']);
 
       await app.bean.passport.signinMock();
@@ -22,20 +22,20 @@ describe('role.test.ts', () => {
         passport.roles.map(role => ({
           name: role.name,
           title: role.title,
-          locales: role.locales,
+          titleLocales: role.titleLocales,
           siteIds: role.siteIds,
         })),
         [
           {
             name: 'registeredUser',
             title: 'Registered User',
-            locales: { 'zh-cn': '注册用户' },
+            titleLocales: { 'zh-cn': '注册用户' },
             siteIds: ['web'],
           },
           {
             name: 'systemAdmin',
             title: 'System Administrator',
-            locales: { 'zh-cn': '系统管理员' },
+            titleLocales: { 'zh-cn': '系统管理员' },
             siteIds: ['web', 'admin'],
           },
         ],
