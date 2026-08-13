@@ -111,34 +111,96 @@ declare module 'zova' {
   }
 }
 /** apiSchema: end */
-/** tableCell: begin */
-export * from '../bean/tableCell.actionDisable.jsx';
-import { ITableCellOptionsActionDisable } from '../bean/tableCell.actionDisable.jsx';
-import 'zova-module-a-table';
-declare module 'zova-module-a-table' {
-  export interface ITableCellRecord {
-    'admin-user:actionDisable': ITableCellOptionsActionDisable;
-  }
+/** controller: begin */
+export * from '../component/formFieldAvatar/controller.jsx';
+
+import 'zova';
+declare module 'zova' {
+  
+  
 }
 declare module 'zova-module-admin-user' {
-  export interface TableCellActionDisable {
-    /** @internal */
-    get scope(): ScopeModuleAdminUser;
+  
+        export interface ControllerFormFieldAvatar {
+          /** @internal */
+          get scope(): ScopeModuleAdminUser;
+        } 
+}
+/** controller: end */
+/** controller: begin */
+import { ControllerFormFieldAvatar } from '../component/formFieldAvatar/controller.jsx';
+import 'zova';
+declare module 'zova' {
+  export interface IBeanRecordLocal {
+    'admin-user.controller.formFieldAvatar': ControllerFormFieldAvatar;
   }
+}
+/** controller: end */
 
-  export interface TableCellActionDisable {
-    get $beanFullName(): 'admin-user.tableCell.actionDisable';
-    get $onionName(): 'admin-user:actionDisable';
-    get $onionOptions(): ITableCellOptionsActionDisable;
-  }
+/** components: begin */
+export * from './component/formFieldAvatar.js';
+import { ZFormFieldAvatar } from './component/formFieldAvatar.js';
+export const components = {
+  'formFieldAvatar': ZFormFieldAvatar,
+};
+import 'zova';
+declare module 'zova' {
+export interface IComponentRecord {
+  'admin-user:formFieldAvatar': ControllerFormFieldAvatar;
+}
+export interface IZovaComponentRecord {
+  'admin-user:formFieldAvatar': typeof ZFormFieldAvatar;
+}
+}
+/** components: end */
+/** tableCell: begin */
+export * from '../bean/tableCell.actionDisable.jsx';
+export * from '../bean/tableCell.userName.jsx';
+import { ITableCellOptionsActionDisable } from '../bean/tableCell.actionDisable.jsx';
+import { ITableCellOptionsUserName } from '../bean/tableCell.userName.jsx';
+import 'zova-module-a-table';
+declare module 'zova-module-a-table' {
+  
+    export interface ITableCellRecord {
+      'admin-user:actionDisable': ITableCellOptionsActionDisable;
+'admin-user:userName': ITableCellOptionsUserName;
+    }
+
+  
+}
+declare module 'zova-module-admin-user' {
+  
+        export interface TableCellActionDisable {
+          /** @internal */
+          get scope(): ScopeModuleAdminUser;
+        }
+
+        export interface TableCellActionDisable {
+          get $beanFullName(): 'admin-user.tableCell.actionDisable';
+          get $onionName(): 'admin-user:actionDisable';
+          get $onionOptions(): ITableCellOptionsActionDisable;
+        }
+
+        export interface TableCellUserName {
+          /** @internal */
+          get scope(): ScopeModuleAdminUser;
+        }
+
+        export interface TableCellUserName {
+          get $beanFullName(): 'admin-user.tableCell.userName';
+          get $onionName(): 'admin-user:userName';
+          get $onionOptions(): ITableCellOptionsUserName;
+        } 
 }
 /** tableCell: end */
 /** tableCell: begin */
 import { TableCellActionDisable } from '../bean/tableCell.actionDisable.jsx';
+import { TableCellUserName } from '../bean/tableCell.userName.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
     'admin-user.tableCell.actionDisable': TableCellActionDisable;
+'admin-user.tableCell.userName': TableCellUserName;
   }
 }
 /** tableCell: end */

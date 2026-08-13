@@ -1941,6 +1941,8 @@ export interface components {
         }
       | undefined;
     'admin-user.dto.userUpdate': {
+      /** @description User Name */
+      name?: string | undefined;
       /** @description Avatar */
       avatar?: string | undefined;
       /**

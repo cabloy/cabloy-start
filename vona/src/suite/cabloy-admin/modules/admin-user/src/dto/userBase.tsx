@@ -20,9 +20,14 @@ export interface IDtoOptionsUserBase extends IDecoratorDtoOptions {}
     name: $makeMetadata(
       v.title($locale('UserName')),
       ZovaRender.order(1),
-      ZovaRender.cell('start-table:actionView'),
+      ZovaRender.cell('admin-user:userName'),
     ),
-    avatar: $makeMetadata(v.title($locale('UserAvatar')), ZovaRender.order(2)),
+    avatar: $makeMetadata(
+      v.title($locale('UserAvatar')),
+      ZovaRender.order(2),
+      ZovaRender.visible(false, 'table'),
+      ZovaRender.field('admin-user:formFieldAvatar'),
+    ),
     email: $makeMetadata(v.title($locale('UserEmail')), ZovaRender.order(3)),
     mobile: $makeMetadata(v.title($locale('UserMobile')), ZovaRender.order(4)),
     activated: $makeMetadata(
@@ -50,6 +55,7 @@ export class DtoUserRead extends $Class.pick(DtoUserBase, [
 ]) {}
 
 export class DtoUserUpdateBase extends $Class.pick(DtoUserBase, [
+  'name',
   'avatar',
   'email',
   'mobile',

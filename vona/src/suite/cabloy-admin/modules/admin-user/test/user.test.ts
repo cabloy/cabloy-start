@@ -3,6 +3,8 @@ import assert from 'node:assert';
 import { describe, it } from 'node:test';
 import { app } from 'vona-mock';
 
+import { DtoUserUpdate } from '../src/dto/userUpdate.tsx';
+
 const userPath = '/admin/user';
 
 function assertUserProjection(user: Record<string, unknown>) {
@@ -20,6 +22,22 @@ function assertUserProjection(user: Record<string, unknown>) {
 }
 
 describe('user.test.ts', { concurrency: false }, () => {
+  it('dto:user:update emits optional readonly name metadata', async () => {
+    await app.bean.executor.mockCtx(async () => {
+      const apiJson = await app.bean.openapi.generateJsonOfClass(DtoUserUpdate);
+      const component = Object.values(apiJson.components!.schemas as any).find(item => {
+        return (item as any).properties?.name;
+      }) as any;
+      assert.ok(component, JSON.stringify(apiJson.components?.schemas));
+      assert.equal(component.properties.name.rest?.readonly, true);
+      assert.equal(component.required?.includes('name'), false);
+      const rootMetadata = Object.values(apiJson.components!.schemas as any).find(item => {
+        return (item as any).rest?.schemaScene === 'form';
+      });
+      assert.ok(rootMetadata);
+    });
+  });
+
   it('action:user:operationalProfileAndActivationCommands', async () => {
     const userIds: string[] = [];
     let userId!: string;

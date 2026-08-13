@@ -29,6 +29,7 @@ export interface IDtoOptionsUserUpdate extends IDecoratorDtoOptions {}
                         type: 'section',
                         columns: { default: 1, md: 2 },
                         children: [
+                          { type: 'field', name: 'name' },
                           { type: 'field', name: 'avatar' },
                           { type: 'field', name: 'email' },
                           { type: 'field', name: 'mobile' },
@@ -55,6 +56,7 @@ export interface IDtoOptionsUserUpdate extends IDecoratorDtoOptions {}
     }),
   ],
   fields: {
+    name: $makeSchema(v.optional(), ZovaRender.readonly(), z.string()),
     avatar: $makeSchema(v.optional(), v.trim(), z.string()),
     email: $makeSchema(v.optional(), v.email(), v.trim(), z.string()),
     mobile: $makeSchema(v.optional(), v.trim(), z.string()),
