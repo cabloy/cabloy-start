@@ -132,6 +132,30 @@ export type ApiSchemaAdminRoleDtoUserRoleReplace =
   components['schemas']['admin-role.dto.userRoleReplace'];
 export type ApiSchemaAdminRoleDtoUserRoleReplacePartial =
   Partial<ApiSchemaAdminRoleDtoUserRoleReplace>;
+export type ApiSchemaAdminRoleDtoSystemAdminFreshProofIssueRes =
+  components['schemas']['admin-role.dto.systemAdminFreshProofIssueRes'];
+export type ApiSchemaAdminRoleDtoSystemAdminFreshProofIssueResPartial =
+  Partial<ApiSchemaAdminRoleDtoSystemAdminFreshProofIssueRes>;
+export type ApiSchemaAdminRoleDtoSystemAdminFreshProofIssue =
+  components['schemas']['admin-role.dto.systemAdminFreshProofIssue'];
+export type ApiSchemaAdminRoleDtoSystemAdminFreshProofIssuePartial =
+  Partial<ApiSchemaAdminRoleDtoSystemAdminFreshProofIssue>;
+export type ApiSchemaAdminRoleDtoSystemAdminGrant =
+  components['schemas']['admin-role.dto.systemAdminGrant'];
+export type ApiSchemaAdminRoleDtoSystemAdminGrantPartial =
+  Partial<ApiSchemaAdminRoleDtoSystemAdminGrant>;
+export type ApiSchemaAdminRoleDtoSystemAdminRevoke =
+  components['schemas']['admin-role.dto.systemAdminRevoke'];
+export type ApiSchemaAdminRoleDtoSystemAdminRevokePartial =
+  Partial<ApiSchemaAdminRoleDtoSystemAdminRevoke>;
+export type ApiSchemaAdminRoleDtoSystemAdminAccountStatus =
+  components['schemas']['admin-role.dto.systemAdminAccountStatus'];
+export type ApiSchemaAdminRoleDtoSystemAdminAccountStatusPartial =
+  Partial<ApiSchemaAdminRoleDtoSystemAdminAccountStatus>;
+export type ApiSchemaAdminRoleDtoSystemAdminActivation =
+  components['schemas']['admin-role.dto.systemAdminActivation'];
+export type ApiSchemaAdminRoleDtoSystemAdminActivationPartial =
+  Partial<ApiSchemaAdminRoleDtoSystemAdminActivation>;
 export type ApiSchemaAdminUserDtoUserSelectRes =
   components['schemas']['admin-user.dto.userSelectRes'];
 export type ApiSchemaAdminUserDtoUserSelectResPartial = Partial<ApiSchemaAdminUserDtoUserSelectRes>;
@@ -139,12 +163,16 @@ export type ApiSchemaAdminUserDtoUserSelectResItem =
   components['schemas']['admin-user.dto.userSelectResItem'];
 export type ApiSchemaAdminUserDtoUserSelectResItemPartial =
   Partial<ApiSchemaAdminUserDtoUserSelectResItem>;
-export type ApiSchemaAdminUserDtoUserView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_b80966b69b47651ce13598cbf58a332cfaff27b8 =
-  components['schemas']['admin-user.dto.userView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_b80966b69b47651ce13598cbf58a332cfaff27b8'];
-export type ApiSchemaAdminUserDtoUserView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_b80966b69b47651ce13598cbf58a332cfaff27b8Partial =
-  Partial<ApiSchemaAdminUserDtoUserView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_b80966b69b47651ce13598cbf58a332cfaff27b8>;
+export type ApiSchemaAdminUserDtoUserView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_3af4868dbf0dab6a1b8727d55c4030f401fb2bc7 =
+  components['schemas']['admin-user.dto.userView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_3af4868dbf0dab6a1b8727d55c4030f401fb2bc7'];
+export type ApiSchemaAdminUserDtoUserView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_3af4868dbf0dab6a1b8727d55c4030f401fb2bc7Partial =
+  Partial<ApiSchemaAdminUserDtoUserView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_3af4868dbf0dab6a1b8727d55c4030f401fb2bc7>;
 export type ApiSchemaAdminUserDtoUserUpdate = components['schemas']['admin-user.dto.userUpdate'];
 export type ApiSchemaAdminUserDtoUserUpdatePartial = Partial<ApiSchemaAdminUserDtoUserUpdate>;
+export type ApiSchemaAdminUserDtoUserAccountStatusUpdate =
+  components['schemas']['admin-user.dto.userAccountStatusUpdate'];
+export type ApiSchemaAdminUserDtoUserAccountStatusUpdatePartial =
+  Partial<ApiSchemaAdminUserDtoUserAccountStatusUpdate>;
 export type ApiSchemaStartMetricsDtoMetricsSnapshot =
   components['schemas']['start-metrics.dto.metricsSnapshot'];
 export type ApiSchemaStartMetricsDtoMetricsSnapshotPartial =

@@ -10,6 +10,11 @@ import {
   ApiApiAdminRoledeletePath,
   ApiApiAdminRoleupdatePath,
   ApiApiAdminRolereplaceUserRolesPath,
+  ApiApiAdminRoleissueSystemAdminFreshProofPath,
+  ApiApiAdminRolegrantSystemAdminPath,
+  ApiApiAdminRolerevokeSystemAdminPath,
+  ApiApiAdminRoleupdateSystemAdminAccountStatusPath,
+  ApiApiAdminRoleupdateSystemAdminActivationPath,
 } from '../api/adminRole.js';
 
 @ApiSchema()
@@ -36,5 +41,37 @@ export class ApiSchemaAdminRole extends BeanBase {
 
   replaceUserRoles(options?: IApiSchemaOptions) {
     return this.$sdk.createApiSchemas(ApiApiAdminRolereplaceUserRolesPath, 'put', options);
+  }
+
+  issueSystemAdminFreshProof(options?: IApiSchemaOptions) {
+    return this.$sdk.createApiSchemas(
+      ApiApiAdminRoleissueSystemAdminFreshProofPath,
+      'post',
+      options,
+    );
+  }
+
+  grantSystemAdmin(options?: IApiSchemaOptions) {
+    return this.$sdk.createApiSchemas(ApiApiAdminRolegrantSystemAdminPath, 'post', options);
+  }
+
+  revokeSystemAdmin(options?: IApiSchemaOptions) {
+    return this.$sdk.createApiSchemas(ApiApiAdminRolerevokeSystemAdminPath, 'post', options);
+  }
+
+  updateSystemAdminAccountStatus(options?: IApiSchemaOptions) {
+    return this.$sdk.createApiSchemas(
+      ApiApiAdminRoleupdateSystemAdminAccountStatusPath,
+      'put',
+      options,
+    );
+  }
+
+  updateSystemAdminActivation(options?: IApiSchemaOptions) {
+    return this.$sdk.createApiSchemas(
+      ApiApiAdminRoleupdateSystemAdminActivationPath,
+      'put',
+      options,
+    );
   }
 }

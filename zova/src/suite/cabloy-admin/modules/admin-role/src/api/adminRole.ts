@@ -62,6 +62,65 @@ export type ApiApiAdminRolereplaceUserRolesRequestBody =
 export type ApiApiAdminRolereplaceUserRolesResponseBody =
   paths[ApiApiAdminRolereplaceUserRolesPath][ApiApiAdminRolereplaceUserRolesMethod]['responses']['200']['content']['application/json']['data'];
 
+/** AdminRole_issueSystemAdminFreshProof */
+export const ApiApiAdminRoleissueSystemAdminFreshProofPath =
+  '/api/admin/role/system-admin/fresh-proof';
+export type ApiApiAdminRoleissueSystemAdminFreshProofPath =
+  '/api/admin/role/system-admin/fresh-proof';
+export type ApiApiAdminRoleissueSystemAdminFreshProofMethod = 'post';
+export type ApiApiAdminRoleissueSystemAdminFreshProofRequestBody =
+  components['schemas']['admin-role.dto.systemAdminFreshProofIssue'];
+export type ApiApiAdminRoleissueSystemAdminFreshProofResponseBody =
+  paths[ApiApiAdminRoleissueSystemAdminFreshProofPath][ApiApiAdminRoleissueSystemAdminFreshProofMethod]['responses']['200']['content']['application/json']['data'];
+
+/** AdminRole_grantSystemAdmin */
+export const ApiApiAdminRolegrantSystemAdminPath = '/api/admin/role/system-admin/grant/{userId}';
+export type ApiApiAdminRolegrantSystemAdminPath = '/api/admin/role/system-admin/grant/{userId}';
+export type ApiApiAdminRolegrantSystemAdminMethod = 'post';
+export type ApiApiAdminRolegrantSystemAdminRequestParams =
+  paths[ApiApiAdminRolegrantSystemAdminPath][ApiApiAdminRolegrantSystemAdminMethod]['parameters']['path'];
+export type ApiApiAdminRolegrantSystemAdminRequestBody =
+  components['schemas']['admin-role.dto.systemAdminGrant'];
+export type ApiApiAdminRolegrantSystemAdminResponseBody =
+  paths[ApiApiAdminRolegrantSystemAdminPath][ApiApiAdminRolegrantSystemAdminMethod]['responses']['200']['content']['application/json']['data'];
+
+/** AdminRole_revokeSystemAdmin */
+export const ApiApiAdminRolerevokeSystemAdminPath = '/api/admin/role/system-admin/revoke/{userId}';
+export type ApiApiAdminRolerevokeSystemAdminPath = '/api/admin/role/system-admin/revoke/{userId}';
+export type ApiApiAdminRolerevokeSystemAdminMethod = 'post';
+export type ApiApiAdminRolerevokeSystemAdminRequestParams =
+  paths[ApiApiAdminRolerevokeSystemAdminPath][ApiApiAdminRolerevokeSystemAdminMethod]['parameters']['path'];
+export type ApiApiAdminRolerevokeSystemAdminRequestBody =
+  components['schemas']['admin-role.dto.systemAdminRevoke'];
+export type ApiApiAdminRolerevokeSystemAdminResponseBody =
+  paths[ApiApiAdminRolerevokeSystemAdminPath][ApiApiAdminRolerevokeSystemAdminMethod]['responses']['200']['content']['application/json']['data'];
+
+/** AdminRole_updateSystemAdminAccountStatus */
+export const ApiApiAdminRoleupdateSystemAdminAccountStatusPath =
+  '/api/admin/role/system-admin/account-status/{userId}';
+export type ApiApiAdminRoleupdateSystemAdminAccountStatusPath =
+  '/api/admin/role/system-admin/account-status/{userId}';
+export type ApiApiAdminRoleupdateSystemAdminAccountStatusMethod = 'put';
+export type ApiApiAdminRoleupdateSystemAdminAccountStatusRequestParams =
+  paths[ApiApiAdminRoleupdateSystemAdminAccountStatusPath][ApiApiAdminRoleupdateSystemAdminAccountStatusMethod]['parameters']['path'];
+export type ApiApiAdminRoleupdateSystemAdminAccountStatusRequestBody =
+  components['schemas']['admin-role.dto.systemAdminAccountStatus'];
+export type ApiApiAdminRoleupdateSystemAdminAccountStatusResponseBody =
+  paths[ApiApiAdminRoleupdateSystemAdminAccountStatusPath][ApiApiAdminRoleupdateSystemAdminAccountStatusMethod]['responses']['200']['content']['application/json']['data'];
+
+/** AdminRole_updateSystemAdminActivation */
+export const ApiApiAdminRoleupdateSystemAdminActivationPath =
+  '/api/admin/role/system-admin/activation/{userId}';
+export type ApiApiAdminRoleupdateSystemAdminActivationPath =
+  '/api/admin/role/system-admin/activation/{userId}';
+export type ApiApiAdminRoleupdateSystemAdminActivationMethod = 'put';
+export type ApiApiAdminRoleupdateSystemAdminActivationRequestParams =
+  paths[ApiApiAdminRoleupdateSystemAdminActivationPath][ApiApiAdminRoleupdateSystemAdminActivationMethod]['parameters']['path'];
+export type ApiApiAdminRoleupdateSystemAdminActivationRequestBody =
+  components['schemas']['admin-role.dto.systemAdminActivation'];
+export type ApiApiAdminRoleupdateSystemAdminActivationResponseBody =
+  paths[ApiApiAdminRoleupdateSystemAdminActivationPath][ApiApiAdminRoleupdateSystemAdminActivationMethod]['responses']['200']['content']['application/json']['data'];
+
 @Api()
 export class ApiAdminRole extends BeanApiBase {
   select(
@@ -126,6 +185,69 @@ export class ApiAdminRole extends BeanApiBase {
   ) {
     return this.$fetch.put<any, ApiApiAdminRolereplaceUserRolesResponseBody>(
       this.$pathTranslate(ApiApiAdminRolereplaceUserRolesPath, options.params),
+      body,
+      this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
+    );
+  }
+
+  issueSystemAdminFreshProof(
+    body: ApiApiAdminRoleissueSystemAdminFreshProofRequestBody,
+    options?: IApiActionOptions,
+  ) {
+    return this.$fetch.post<any, ApiApiAdminRoleissueSystemAdminFreshProofResponseBody>(
+      ApiApiAdminRoleissueSystemAdminFreshProofPath,
+      body,
+      this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
+    );
+  }
+
+  grantSystemAdmin(
+    body: ApiApiAdminRolegrantSystemAdminRequestBody,
+    options: {
+      params: ApiApiAdminRolegrantSystemAdminRequestParams;
+    } & IApiActionOptions,
+  ) {
+    return this.$fetch.post<any, ApiApiAdminRolegrantSystemAdminResponseBody>(
+      this.$pathTranslate(ApiApiAdminRolegrantSystemAdminPath, options.params),
+      body,
+      this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
+    );
+  }
+
+  revokeSystemAdmin(
+    body: ApiApiAdminRolerevokeSystemAdminRequestBody,
+    options: {
+      params: ApiApiAdminRolerevokeSystemAdminRequestParams;
+    } & IApiActionOptions,
+  ) {
+    return this.$fetch.post<any, ApiApiAdminRolerevokeSystemAdminResponseBody>(
+      this.$pathTranslate(ApiApiAdminRolerevokeSystemAdminPath, options.params),
+      body,
+      this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
+    );
+  }
+
+  updateSystemAdminAccountStatus(
+    body: ApiApiAdminRoleupdateSystemAdminAccountStatusRequestBody,
+    options: {
+      params: ApiApiAdminRoleupdateSystemAdminAccountStatusRequestParams;
+    } & IApiActionOptions,
+  ) {
+    return this.$fetch.put<any, ApiApiAdminRoleupdateSystemAdminAccountStatusResponseBody>(
+      this.$pathTranslate(ApiApiAdminRoleupdateSystemAdminAccountStatusPath, options.params),
+      body,
+      this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
+    );
+  }
+
+  updateSystemAdminActivation(
+    body: ApiApiAdminRoleupdateSystemAdminActivationRequestBody,
+    options: {
+      params: ApiApiAdminRoleupdateSystemAdminActivationRequestParams;
+    } & IApiActionOptions,
+  ) {
+    return this.$fetch.put<any, ApiApiAdminRoleupdateSystemAdminActivationResponseBody>(
+      this.$pathTranslate(ApiApiAdminRoleupdateSystemAdminActivationPath, options.params),
       body,
       this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
     );

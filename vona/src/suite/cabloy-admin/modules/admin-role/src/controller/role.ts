@@ -15,6 +15,12 @@ import { DtoRoleSelectReq } from '../dto/roleSelectReq.tsx';
 import { DtoRoleSelectRes } from '../dto/roleSelectRes.tsx';
 import { DtoRoleUpdate } from '../dto/roleUpdate.tsx';
 import { DtoRoleView } from '../dto/roleView.tsx';
+import { DtoSystemAdminAccountStatus } from '../dto/systemAdminAccountStatus.ts';
+import { DtoSystemAdminActivation } from '../dto/systemAdminActivation.ts';
+import { DtoSystemAdminFreshProofIssue } from '../dto/systemAdminFreshProofIssue.ts';
+import { DtoSystemAdminFreshProofIssueRes } from '../dto/systemAdminFreshProofIssueRes.ts';
+import { DtoSystemAdminGrant } from '../dto/systemAdminGrant.ts';
+import { DtoSystemAdminRevoke } from '../dto/systemAdminRevoke.ts';
 import { DtoUserRoleReplace } from '../dto/userRoleReplace.ts';
 
 export interface IControllerOptionsRole extends IDecoratorControllerOptions {}
@@ -75,5 +81,55 @@ export class ControllerRole extends BeanBase {
     @Arg.body() command: DtoUserRoleReplace,
   ): Promise<void> {
     await this.scope.service.role.replaceUserRoles(userId, command);
+  }
+
+  @Web.post('system-admin/fresh-proof')
+  @Api.body(DtoSystemAdminFreshProofIssueRes)
+  @Core.serializer()
+  @Passport.systemAdmin()
+  async issueSystemAdminFreshProof(
+    @Arg.body() command: DtoSystemAdminFreshProofIssue,
+  ): Promise<DtoSystemAdminFreshProofIssueRes> {
+    return await this.scope.service.systemAdmin.issueFreshProof(command.password);
+  }
+
+  @Web.post('system-admin/grant/:userId')
+  @Api.body(z.null())
+  @Passport.systemAdmin()
+  async grantSystemAdmin(
+    @Arg.param('userId', v.tableIdentity()) userId: TableIdentity,
+    @Arg.body() command: DtoSystemAdminGrant,
+  ): Promise<void> {
+    await this.scope.service.systemAdmin.grant(userId, command);
+  }
+
+  @Web.post('system-admin/revoke/:userId')
+  @Api.body(z.null())
+  @Passport.systemAdmin()
+  async revokeSystemAdmin(
+    @Arg.param('userId', v.tableIdentity()) userId: TableIdentity,
+    @Arg.body() command: DtoSystemAdminRevoke,
+  ): Promise<void> {
+    await this.scope.service.systemAdmin.revoke(userId, command);
+  }
+
+  @Web.put('system-admin/account-status/:userId')
+  @Api.body(z.null())
+  @Passport.systemAdmin()
+  async updateSystemAdminAccountStatus(
+    @Arg.param('userId', v.tableIdentity()) userId: TableIdentity,
+    @Arg.body() command: DtoSystemAdminAccountStatus,
+  ): Promise<void> {
+    await this.scope.service.systemAdmin.updateAccountStatus(userId, command);
+  }
+
+  @Web.put('system-admin/activation/:userId')
+  @Api.body(z.null())
+  @Passport.systemAdmin()
+  async updateSystemAdminActivation(
+    @Arg.param('userId', v.tableIdentity()) userId: TableIdentity,
+    @Arg.body() command: DtoSystemAdminActivation,
+  ): Promise<void> {
+    await this.scope.service.systemAdmin.updateActivation(userId, command);
   }
 }

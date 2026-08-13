@@ -8,6 +8,11 @@ export default {
   RoleTitle: '角色标题',
   BuiltinRoleProtected: '配置的内置角色不能通过普通角色管理修改',
   InvalidRoleMembership: '请求的普通角色成员关系无效',
+  FreshProofInvalid: '新近认证凭据无效、已过期或已使用',
+  ProtectedCommandInvalid: '受保护管理员命令不符合当前状态',
+  FinalSystemAdminProtected: '当前实例必须保留至少一个激活的系统管理员',
+  InactiveSystemAdminTarget: '不能向未激活用户授予系统管理员权限',
+  InvalidProtectedReason: '受保护管理员操作必须提供非空原因',
   SiteIdsUnavailable_: '站点 %s 不可用',
   SiteIdsUnavailable_1_1: '站点 %s 不可用',
 };

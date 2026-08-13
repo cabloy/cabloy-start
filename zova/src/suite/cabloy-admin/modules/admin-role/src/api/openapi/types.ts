@@ -464,6 +464,86 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/admin/role/system-admin/fresh-proof': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['AdminRole_issueSystemAdminFreshProof'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/role/system-admin/grant/{userId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['AdminRole_grantSystemAdmin'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/role/system-admin/revoke/{userId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['AdminRole_revokeSystemAdmin'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/role/system-admin/account-status/{userId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put: operations['AdminRole_updateSystemAdminAccountStatus'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/role/system-admin/activation/{userId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put: operations['AdminRole_updateSystemAdminActivation'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/admin/user': {
     parameters: {
       query?: never;
@@ -512,7 +592,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/admin/user/deactivate/{id}': {
+  '/api/admin/user/account-status/{id}': {
     parameters: {
       query?: never;
       header?: never;
@@ -520,8 +600,8 @@ export interface paths {
       cookie?: never;
     };
     get?: never;
-    put?: never;
-    post: operations['AdminUser_deactivate'];
+    put: operations['AdminUser_updateAccountStatus'];
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -993,10 +1073,16 @@ export interface components {
       /** @description Mobile */
       mobile?: string | undefined;
       /**
-       * @description Activated
+       * @description Identity Activated
        * @default false
        */
       activated?: boolean;
+      /**
+       * @description Account Status
+       * @default active
+       * @enum {string}
+       */
+      accountStatus?: 'active' | 'disabled';
       /** @description Language */
       locale?: string | undefined;
       /** @description Timezone */
@@ -1869,6 +1955,33 @@ export interface components {
     'admin-role.dto.userRoleReplace': {
       roleIds: (number | string)[];
     };
+    'admin-role.dto.systemAdminFreshProofIssueRes': {
+      proof: string;
+      /** Format: date-time */
+      expiresAt: Date;
+    };
+    'admin-role.dto.systemAdminFreshProofIssue': {
+      password: string;
+    };
+    'admin-role.dto.systemAdminGrant': {
+      reason: string;
+      freshProof: string;
+    };
+    'admin-role.dto.systemAdminRevoke': {
+      reason: string;
+      freshProof: string;
+    };
+    'admin-role.dto.systemAdminAccountStatus': {
+      /** @enum {string} */
+      accountStatus: 'active' | 'disabled';
+      reason: string;
+      freshProof: string;
+    };
+    'admin-role.dto.systemAdminActivation': {
+      activated: boolean;
+      reason: string;
+      freshProof: string;
+    };
     'admin-user.dto.userSelectRes': {
       list: components['schemas']['admin-user.dto.userSelectResItem'][];
       total: string;
@@ -1888,10 +2001,16 @@ export interface components {
       /** @description Mobile */
       mobile?: string | undefined;
       /**
-       * @description Activated
+       * @description Identity Activated
        * @default false
        */
       activated?: boolean;
+      /**
+       * @description Account Status
+       * @default active
+       * @enum {string}
+       */
+      accountStatus?: 'active' | 'disabled';
       /** @description Locale */
       locale?: string | undefined;
       /** @description Time Zone */
@@ -1899,7 +2018,7 @@ export interface components {
       /** @description Operations */
       _operationsRow?: unknown;
     };
-    'admin-user.dto.userView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_b80966b69b47651ce13598cbf58a332cfaff27b8':
+    'admin-user.dto.userView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_3af4868dbf0dab6a1b8727d55c4030f401fb2bc7':
       | {
           /** @description ID */
           id: number | string;
@@ -1912,10 +2031,16 @@ export interface components {
           /** @description Mobile */
           mobile?: string | undefined;
           /**
-           * @description Activated
+           * @description Identity Activated
            * @default false
            */
           activated?: boolean;
+          /**
+           * @description Account Status
+           * @default active
+           * @enum {string}
+           */
+          accountStatus?: 'active' | 'disabled';
           /** @description Locale */
           locale?: string | undefined;
           /** @description Time Zone */
@@ -1923,6 +2048,8 @@ export interface components {
         }
       | undefined;
     'admin-user.dto.userUpdate': {
+      /** @description User Name */
+      name?: string | undefined;
       /** @description Avatar */
       avatar?: string | undefined;
       /**
@@ -1936,6 +2063,13 @@ export interface components {
       locale?: string | undefined;
       /** @description Time Zone */
       tz?: string | undefined;
+    };
+    'admin-user.dto.userAccountStatusUpdate': {
+      /**
+       * @description Account Status
+       * @enum {string}
+       */
+      accountStatus: 'active' | 'disabled';
     };
     'start-metrics.dto.metricsSnapshot': {
       enabled: boolean;
@@ -3309,6 +3443,154 @@ export interface operations {
     };
     authToken: true;
   };
+  AdminRole_issueSystemAdminFreshProof: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-role.dto.systemAdminFreshProofIssue'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['admin-role.dto.systemAdminFreshProofIssueRes'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRole_grantSystemAdmin: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        userId: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-role.dto.systemAdminGrant'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRole_revokeSystemAdmin: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        userId: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-role.dto.systemAdminRevoke'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRole_updateSystemAdminAccountStatus: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        userId: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-role.dto.systemAdminAccountStatus'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRole_updateSystemAdminActivation: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        userId: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-role.dto.systemAdminActivation'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
   AdminUser_select: {
     parameters: {
       query?: {
@@ -3323,6 +3605,7 @@ export interface operations {
         pageSize?: number;
         name?: string | undefined;
         activated?: boolean | undefined;
+        accountStatus?: 'active' | 'disabled' | null | undefined;
       };
       header?: never;
       path?: never;
@@ -3364,7 +3647,7 @@ export interface operations {
           'application/json': {
             code: string;
             message: string;
-            data?: components['schemas']['admin-user.dto.userView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_b80966b69b47651ce13598cbf58a332cfaff27b8'];
+            data?: components['schemas']['admin-user.dto.userView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_3af4868dbf0dab6a1b8727d55c4030f401fb2bc7'];
           };
         };
       };
@@ -3427,7 +3710,7 @@ export interface operations {
     };
     authToken: true;
   };
-  AdminUser_deactivate: {
+  AdminUser_updateAccountStatus: {
     parameters: {
       query?: never;
       header?: never;
@@ -3436,7 +3719,11 @@ export interface operations {
       };
       cookie?: never;
     };
-    requestBody?: never;
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-user.dto.userAccountStatusUpdate'];
+      };
+    };
     responses: {
       200: {
         headers: {

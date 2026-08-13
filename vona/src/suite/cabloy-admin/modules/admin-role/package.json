@@ -31,6 +31,7 @@
     "postpack": "clean-package restore"
   },
   "dependencies": {
+    "vona-module-auth-simple": "workspace:^",
     "vona-module-home-user": "workspace:^"
   },
   "devDependencies": {
@@ -47,9 +48,14 @@
   },
   "title": "admin-role",
   "vonaModule": {
+    "fileVersion": 1,
     "dependencies": {
+      "a-index": "5.0.0",
+      "a-queue": "5.0.0",
       "a-redlock": "5.0.0",
+      "a-schedule": "5.0.0",
       "a-vona": "5.0.0",
+      "auth-simple": "5.1.14",
       "home-base": "5.0.0",
       "home-user": "5.0.0"
     }
