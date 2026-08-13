@@ -5,6 +5,8 @@ import type { ModelResource } from 'zova-module-rest-resource';
 import { Use, usePrepareArg } from 'zova';
 import { BeanModelBase, Model } from 'zova-module-a-model';
 
+import type { ApiSchemaAdminDepartmentDtoDepartmentTree } from '../api/openapi/schemas.js';
+
 export interface IModelOptionsDepartment extends IDecoratorModelOptions {}
 
 const DepartmentResource = 'admin-department:department';
@@ -14,6 +16,15 @@ export class ModelDepartment extends BeanModelBase {
   @Use({ beanFullName: 'rest-resource.model.resource' })
   protected get $$modelResource(): ModelResource {
     return usePrepareArg(DepartmentResource, true);
+  }
+
+  tree() {
+    return this.$$modelResource.query<ApiSchemaAdminDepartmentDtoDepartmentTree>(
+      'department-tree',
+      async () => {
+        return await this.scope.api.adminDepartment.tree();
+      },
+    );
   }
 
   move(id: TableIdentity) {

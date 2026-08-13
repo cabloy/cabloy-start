@@ -1,6 +1,7 @@
 export default {
   Operations: '操作',
   Department: '部门',
+  AllDepartments: '全部部门',
   DepartmentName: '部门名称',
   ParentDepartment: '上级部门',
   PlaceBeforeDepartment: '排在该部门之前',

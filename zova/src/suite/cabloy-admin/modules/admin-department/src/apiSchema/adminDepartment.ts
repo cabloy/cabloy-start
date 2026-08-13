@@ -6,6 +6,7 @@ import { ApiSchema } from 'zova-module-a-api';
 import {
   ApiApiAdminDepartmentselectPath,
   ApiApiAdminDepartmentcreatePath,
+  ApiApiAdminDepartmenttreePath,
   ApiApiAdminDepartmentviewPath,
   ApiApiAdminDepartmentdeletePath,
   ApiApiAdminDepartmentupdatePath,
@@ -22,6 +23,10 @@ export class ApiSchemaAdminDepartment extends BeanBase {
 
   create(options?: IApiSchemaOptions) {
     return this.$sdk.createApiSchemas(ApiApiAdminDepartmentcreatePath, 'post', options);
+  }
+
+  tree(options?: IApiSchemaOptions) {
+    return this.$sdk.createApiSchemas(ApiApiAdminDepartmenttreePath, 'get', options);
   }
 
   view(options?: IApiSchemaOptions) {

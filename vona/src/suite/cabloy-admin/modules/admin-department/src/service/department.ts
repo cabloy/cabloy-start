@@ -10,6 +10,7 @@ import type { DtoDepartmentCreate } from '../dto/departmentCreate.tsx';
 import type { DtoDepartmentMove } from '../dto/departmentMove.ts';
 import type { DtoDepartmentReorder } from '../dto/departmentReorder.ts';
 import type { DtoDepartmentSelectRes } from '../dto/departmentSelectRes.tsx';
+import type { DtoDepartmentTree, DtoDepartmentTreeItem } from '../dto/departmentTree.ts';
 import type { DtoDepartmentUpdate } from '../dto/departmentUpdate.tsx';
 import type { DtoDepartmentView } from '../dto/departmentView.tsx';
 import type { EntityDepartment } from '../entity/department.tsx';
@@ -44,6 +45,36 @@ export class ServiceDepartment extends BeanBase {
         ['id', 'asc'],
       ],
     });
+  }
+
+  async tree(): Promise<DtoDepartmentTree> {
+    const departments = await this.scope.model.department.select({
+      orders: [
+        ['sortOrder', 'asc'],
+        ['id', 'asc'],
+      ],
+    });
+    const nodes = new Map<string, DtoDepartmentTreeItem>();
+    for (const department of departments) {
+      nodes.set(String(department.id), {
+        id: department.id,
+        name: department.name,
+        parentId: department.parentId ?? null,
+        enabled: department.enabled,
+        sortOrder: department.sortOrder,
+        children: [],
+      });
+    }
+    const roots: DtoDepartmentTreeItem[] = [];
+    for (const node of nodes.values()) {
+      const parent = node.parentId === null ? undefined : nodes.get(String(node.parentId));
+      if (parent) {
+        parent.children.push(node);
+      } else {
+        roots.push(node);
+      }
+    }
+    return { list: roots };
   }
 
   async view(id: TableIdentity): Promise<DtoDepartmentView | undefined> {

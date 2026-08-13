@@ -240,6 +240,7 @@ export * from '../dto/departmentReorder.ts';
 export * from '../dto/departmentSelectReq.tsx';
 export * from '../dto/departmentSelectRes.tsx';
 export * from '../dto/departmentSelectResItem.tsx';
+export * from '../dto/departmentTree.ts';
 export * from '../dto/departmentUpdate.tsx';
 export * from '../dto/departmentView.tsx';
 import type { IDtoOptionsDepartmentActivation } from '../dto/departmentActivation.ts';
@@ -250,6 +251,7 @@ import type { IDtoOptionsDepartmentReorder } from '../dto/departmentReorder.ts';
 import type { IDtoOptionsDepartmentSelectReq } from '../dto/departmentSelectReq.tsx';
 import type { IDtoOptionsDepartmentSelectRes } from '../dto/departmentSelectRes.tsx';
 import type { IDtoOptionsDepartmentSelectResItem } from '../dto/departmentSelectResItem.tsx';
+import type { IDtoOptionsDepartmentTreeItem } from '../dto/departmentTree.ts';
 import type { IDtoOptionsDepartmentUpdate } from '../dto/departmentUpdate.tsx';
 import type { IDtoOptionsDepartmentView } from '../dto/departmentView.tsx';
 import 'vona-module-a-web';
@@ -264,6 +266,7 @@ declare module 'vona-module-a-web' {
 'admin-department:departmentSelectReq': IDtoOptionsDepartmentSelectReq;
 'admin-department:departmentSelectRes': IDtoOptionsDepartmentSelectRes;
 'admin-department:departmentSelectResItem': IDtoOptionsDepartmentSelectResItem;
+'admin-department:departmentTree': IDtoOptionsDepartmentTreeItem;
 'admin-department:departmentUpdate': IDtoOptionsDepartmentUpdate;
 'admin-department:departmentView': IDtoOptionsDepartmentView;
     }
@@ -283,6 +286,7 @@ import type { DtoDepartmentReorder } from '../dto/departmentReorder.ts';
 import type { DtoDepartmentSelectReq } from '../dto/departmentSelectReq.tsx';
 import type { DtoDepartmentSelectRes } from '../dto/departmentSelectRes.tsx';
 import type { DtoDepartmentSelectResItem } from '../dto/departmentSelectResItem.tsx';
+import type { DtoDepartmentTree } from '../dto/departmentTree.ts';
 import type { DtoDepartmentUpdate } from '../dto/departmentUpdate.tsx';
 import type { DtoDepartmentView } from '../dto/departmentView.tsx';
 declare module 'vona-module-admin-department' {
@@ -317,6 +321,10 @@ declare module 'vona-module-admin-department' {
 
     export interface IDtoOptionsDepartmentSelectResItem {
       fields?: TypeEntityOptionsFields<DtoDepartmentSelectResItem, IDtoOptionsDepartmentSelectResItem[TypeSymbolKeyFieldsMore]>;
+    }
+
+    export interface IDtoOptionsDepartmentTree {
+      fields?: TypeEntityOptionsFields<DtoDepartmentTree, IDtoOptionsDepartmentTree[TypeSymbolKeyFieldsMore]>;
     }
 
     export interface IDtoOptionsDepartmentUpdate {
@@ -369,6 +377,7 @@ declare module 'vona-module-a-web' {
     }
 export interface IApiPathGetRecord{
         '/admin/department': undefined;
+'/admin/department/tree': undefined;
 '/admin/department/:id': undefined;
     }
 export interface IApiPathPatchRecord{

@@ -123,6 +123,14 @@ export type ApiSchemaAdminDepartmentDtoDepartmentSelectResItem =
   components['schemas']['admin-department.dto.departmentSelectResItem'];
 export type ApiSchemaAdminDepartmentDtoDepartmentSelectResItemPartial =
   Partial<ApiSchemaAdminDepartmentDtoDepartmentSelectResItem>;
+export type ApiSchemaAdminDepartmentDtoDepartmentTree =
+  components['schemas']['admin-department.dto.departmentTree'];
+export type ApiSchemaAdminDepartmentDtoDepartmentTreePartial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentTree>;
+export type ApiSchemaAdminDepartmentDtoDepartmentTreeItem =
+  components['schemas']['admin-department.dto.departmentTreeItem'];
+export type ApiSchemaAdminDepartmentDtoDepartmentTreeItemPartial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentTreeItem>;
 export type ApiSchemaAdminDepartmentDtoDepartmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_72c27d7cd13c5c9702e4249706cbc0b3dea0ff7d =
   components['schemas']['admin-department.dto.departmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_72c27d7cd13c5c9702e4249706cbc0b3dea0ff7d'];
 export type ApiSchemaAdminDepartmentDtoDepartmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_72c27d7cd13c5c9702e4249706cbc0b3dea0ff7dPartial =

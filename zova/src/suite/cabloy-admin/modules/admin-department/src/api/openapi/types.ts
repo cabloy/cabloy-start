@@ -432,6 +432,22 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/admin/department/tree': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['AdminDepartment_tree'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/admin/department/{id}': {
     parameters: {
       query?: never;
@@ -1990,6 +2006,21 @@ export interface components {
       /** @description Operations */
       _operationsRow?: unknown;
     };
+    'admin-department.dto.departmentTree': {
+      list: components['schemas']['admin-department.dto.departmentTreeItem'][];
+    };
+    'admin-department.dto.departmentTreeItem': {
+      id: number | string;
+      /** @description Department Name */
+      name: string;
+      /** @description Parent Department */
+      parentId?: number | string | undefined;
+      /** @description Enabled */
+      enabled: boolean;
+      /** @description Sort Order */
+      sortOrder: number;
+      children: unknown[];
+    };
     'admin-department.dto.departmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_72c27d7cd13c5c9702e4249706cbc0b3dea0ff7d':
       | {
           /**
@@ -3502,6 +3533,30 @@ export interface operations {
             code: string;
             message: string;
             data: number | string;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminDepartment_tree: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['admin-department.dto.departmentTree'];
           };
         };
       };

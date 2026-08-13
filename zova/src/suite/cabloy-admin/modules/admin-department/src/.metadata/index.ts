@@ -111,6 +111,48 @@ declare module 'zova' {
   }
 }
 /** apiSchema: end */
+/** controller: begin */
+export * from '../component/blockDepartment/controller.jsx';
+
+import 'zova';
+declare module 'zova' {
+
+
+}
+declare module 'zova-module-admin-department' {
+
+        export interface ControllerBlockDepartment {
+          /** @internal */
+          get scope(): ScopeModuleAdminDepartment;
+        }
+}
+/** controller: end */
+/** controller: begin */
+import { ControllerBlockDepartment } from '../component/blockDepartment/controller.jsx';
+import 'zova';
+declare module 'zova' {
+  export interface IBeanRecordLocal {
+    'admin-department.controller.blockDepartment': ControllerBlockDepartment;
+  }
+}
+/** controller: end */
+
+/** components: begin */
+export * from './component/blockDepartment.js';
+import { ZBlockDepartment } from './component/blockDepartment.js';
+export const components = {
+  'blockDepartment': ZBlockDepartment,
+};
+import 'zova';
+declare module 'zova' {
+export interface IComponentRecord {
+  'admin-department:blockDepartment': ControllerBlockDepartment;
+}
+export interface IZovaComponentRecord {
+  'admin-department:blockDepartment': typeof ZBlockDepartment;
+}
+}
+/** components: end */
 /** scope: begin */
 import { BeanScopeBase, type BeanScopeUtil } from 'zova';
 import { Scope } from 'zova-module-a-bean';

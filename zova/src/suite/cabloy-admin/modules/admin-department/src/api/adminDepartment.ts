@@ -24,6 +24,13 @@ export type ApiApiAdminDepartmentcreateRequestBody =
 export type ApiApiAdminDepartmentcreateResponseBody =
   paths[ApiApiAdminDepartmentcreatePath][ApiApiAdminDepartmentcreateMethod]['responses']['200']['content']['application/json']['data'];
 
+/** AdminDepartment_tree */
+export const ApiApiAdminDepartmenttreePath = '/api/admin/department/tree';
+export type ApiApiAdminDepartmenttreePath = '/api/admin/department/tree';
+export type ApiApiAdminDepartmenttreeMethod = 'get';
+export type ApiApiAdminDepartmenttreeResponseBody =
+  paths[ApiApiAdminDepartmenttreePath][ApiApiAdminDepartmenttreeMethod]['responses']['200']['content']['application/json']['data'];
+
 /** AdminDepartment_view */
 export const ApiApiAdminDepartmentviewPath = '/api/admin/department/{id}';
 export type ApiApiAdminDepartmentviewPath = '/api/admin/department/{id}';
@@ -103,6 +110,13 @@ export class ApiAdminDepartment extends BeanApiBase {
     return this.$fetch.post<any, ApiApiAdminDepartmentcreateResponseBody>(
       ApiApiAdminDepartmentcreatePath,
       body,
+      this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
+    );
+  }
+
+  tree(options?: IApiActionOptions) {
+    return this.$fetch.get<any, ApiApiAdminDepartmenttreeResponseBody>(
+      ApiApiAdminDepartmenttreePath,
       this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
     );
   }

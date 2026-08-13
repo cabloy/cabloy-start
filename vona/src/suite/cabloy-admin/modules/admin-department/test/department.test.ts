@@ -105,6 +105,54 @@ describe('department.test.ts', { concurrency: false }, () => {
     }
   });
 
+  it('action:department:tree', async () => {
+    const ids: string[] = [];
+    try {
+      await app.bean.executor.mockCtx(async () => {
+        const [unauthenticatedResult, unauthenticatedError] = await catchError(() => {
+          return app.bean.executor.performAction('get', '/admin/department/tree', {
+            innerAccess: false,
+          });
+        });
+        assert.equal(unauthenticatedResult, undefined);
+        assert.equal(unauthenticatedError?.code, 401);
+
+        await app.bean.passport.signinMock();
+        const rootA = await departmentService().create({
+          name: `Root-A-${crypto.randomUUID()}`,
+          parentId: null,
+        });
+        const rootB = await departmentService().create({
+          name: `Root-B-${crypto.randomUUID()}`,
+          parentId: null,
+        });
+        const child = await departmentService().create({
+          name: `Child-${crypto.randomUUID()}`,
+          parentId: rootA.id,
+        });
+        const leaf = await departmentService().create({
+          name: `Leaf-${crypto.randomUUID()}`,
+          parentId: child.id,
+        });
+        ids.push(String(rootA.id), String(rootB.id), String(child.id), String(leaf.id));
+
+        const response = await app.bean.executor.performAction('get', '/admin/department/tree', {
+          innerAccess: false,
+        });
+        assert.equal(response.list.length >= 2, true);
+        const foundRoot = response.list.find(item => String(item.id) === String(rootA.id));
+        assert.ok(foundRoot);
+        assert.equal(foundRoot.children.length, 1);
+        assert.equal(String(foundRoot.children[0].id), String(child.id));
+        assert.equal(foundRoot.children[0].children.length, 1);
+        assert.equal(String(foundRoot.children[0].children[0].id), String(leaf.id));
+        assert.deepEqual(foundRoot.children[0].children[0].children, []);
+      });
+    } finally {
+      await deleteDepartments(ids);
+    }
+  });
+
   it('action:department:guardsLifecycleChanges', async () => {
     const ids: string[] = [];
     try {

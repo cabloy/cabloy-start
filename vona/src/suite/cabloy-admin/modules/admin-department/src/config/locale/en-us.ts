@@ -1,6 +1,7 @@
 export default {
   Operations: 'Operations',
   Department: 'Department',
+  AllDepartments: 'All Departments',
   DepartmentName: 'Department Name',
   ParentDepartment: 'Parent Department',
   PlaceBeforeDepartment: 'Place Before Department',

@@ -17,6 +17,7 @@ import { DtoDepartmentMove } from '../dto/departmentMove.ts';
 import { DtoDepartmentReorder } from '../dto/departmentReorder.ts';
 import { DtoDepartmentSelectReq } from '../dto/departmentSelectReq.tsx';
 import { DtoDepartmentSelectRes } from '../dto/departmentSelectRes.tsx';
+import { DtoDepartmentTree } from '../dto/departmentTree.ts';
 import { DtoDepartmentUpdate } from '../dto/departmentUpdate.tsx';
 import { DtoDepartmentView } from '../dto/departmentView.tsx';
 
@@ -40,6 +41,14 @@ export class ControllerDepartment extends BeanBase {
     @Arg.filter(DtoDepartmentSelectReq) params: IQueryParams<ModelDepartment>,
   ): Promise<DtoDepartmentSelectRes> {
     return await this.scope.service.department.select(params);
+  }
+
+  @Web.get('tree')
+  @Api.body(DtoDepartmentTree)
+  @Core.serializer()
+  @Passport.systemAdmin()
+  async tree(): Promise<DtoDepartmentTree> {
+    return await this.scope.service.department.tree();
   }
 
   @Web.get(':id')
