@@ -46,7 +46,10 @@
   "title": "admin-department",
   "vonaModule": {
     "dependencies": {
+      "a-index": "5.0.0",
+      "a-redlock": "5.0.0",
       "a-vona": "5.0.0"
-    }
+    },
+    "fileVersion": 1
   }
 }

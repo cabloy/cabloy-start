@@ -1,0 +1,14 @@
+export default {
+  Operations: 'Operations',
+  Department: 'Department',
+  DepartmentName: 'Department Name',
+  ParentDepartment: 'Parent Department',
+  PlaceBeforeDepartment: 'Place Before Department',
+  Enabled: 'Enabled',
+  SortOrder: 'Sort Order',
+  DepartmentNameAlreadyInUse: 'The Department name is already in use for this parent',
+  DepartmentParentInvalid: 'The requested parent Department is unavailable',
+  DepartmentCycleDetected: 'The requested move would create a Department cycle',
+  DepartmentReorderInvalid: 'The requested Department reorder is invalid',
+  DepartmentLifecycleBlocked: 'The Department has dependent records that must be handled first',
+};
