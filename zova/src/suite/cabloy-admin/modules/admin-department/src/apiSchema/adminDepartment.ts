@@ -10,6 +10,10 @@ import {
   ApiApiAdminDepartmentviewPath,
   ApiApiAdminDepartmentdeletePath,
   ApiApiAdminDepartmentupdatePath,
+  ApiApiAdminDepartmentselectMembershipsPath,
+  ApiApiAdminDepartmentcreateMembershipPath,
+  ApiApiAdminDepartmentdeleteMembershipPath,
+  ApiApiAdminDepartmentupdateMembershipPath,
   ApiApiAdminDepartmentmovePath,
   ApiApiAdminDepartmentreorderPath,
   ApiApiAdminDepartmentupdateActivationPath,
@@ -39,6 +43,22 @@ export class ApiSchemaAdminDepartment extends BeanBase {
 
   update(options?: IApiSchemaOptions) {
     return this.$sdk.createApiSchemas(ApiApiAdminDepartmentupdatePath, 'patch', options);
+  }
+
+  selectMemberships(options?: IApiSchemaOptions) {
+    return this.$sdk.createApiSchemas(ApiApiAdminDepartmentselectMembershipsPath, 'get', options);
+  }
+
+  createMembership(options?: IApiSchemaOptions) {
+    return this.$sdk.createApiSchemas(ApiApiAdminDepartmentcreateMembershipPath, 'post', options);
+  }
+
+  deleteMembership(options?: IApiSchemaOptions) {
+    return this.$sdk.createApiSchemas(ApiApiAdminDepartmentdeleteMembershipPath, 'delete', options);
+  }
+
+  updateMembership(options?: IApiSchemaOptions) {
+    return this.$sdk.createApiSchemas(ApiApiAdminDepartmentupdateMembershipPath, 'patch', options);
   }
 
   move(options?: IApiSchemaOptions) {

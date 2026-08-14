@@ -17,5 +17,15 @@ export class MetaVersion extends BeanBase implements IMetaVersionUpdate {
       table.integer(department.sortOrder).defaultTo(0);
       table.tableIdentity(department.managerMembershipId);
     });
+
+    const departmentMembership = this.scope.entity.departmentMembership;
+    await this.bean.model.createTable(departmentMembership.$table, table => {
+      table.basicFields();
+      table.tableIdentity(departmentMembership.departmentId);
+      table.tableIdentity(departmentMembership.userId);
+      table.string(departmentMembership.position, 100);
+      table.boolean(departmentMembership.enabled).defaultTo(true);
+      table.boolean(departmentMembership.primary).defaultTo(false);
+    });
   }
 }

@@ -5,7 +5,12 @@ import type { ModelResource } from 'zova-module-rest-resource';
 import { Use, usePrepareArg } from 'zova';
 import { BeanModelBase, Model } from 'zova-module-a-model';
 
-import type { ApiSchemaAdminDepartmentDtoDepartmentTree } from '../api/openapi/schemas.js';
+import type {
+  ApiSchemaAdminDepartmentDtoDepartmentMembershipCreate,
+  ApiSchemaAdminDepartmentDtoDepartmentMembershipSelectRes,
+  ApiSchemaAdminDepartmentDtoDepartmentMembershipUpdate,
+  ApiSchemaAdminDepartmentDtoDepartmentTree,
+} from '../api/openapi/schemas.js';
 
 export interface IModelOptionsDepartment extends IDecoratorModelOptions {}
 
@@ -25,6 +30,59 @@ export class ModelDepartment extends BeanModelBase {
         return await this.scope.api.adminDepartment.tree();
       },
     );
+  }
+
+  memberships(departmentId: TableIdentity) {
+    return this.$$modelResource.query<ApiSchemaAdminDepartmentDtoDepartmentMembershipSelectRes>(
+      `department-memberships-${departmentId}`,
+      async () => {
+        return await this.scope.api.adminDepartment.selectMemberships({
+          params: { departmentId },
+        });
+      },
+    );
+  }
+
+  createMembership(departmentId: TableIdentity) {
+    return this.$$modelResource.mutationItem<
+      TableIdentity,
+      ApiSchemaAdminDepartmentDtoDepartmentMembershipCreate
+    >({
+      id: departmentId,
+      action: 'createMembership',
+      mutationFn: async body => {
+        return await this.scope.api.adminDepartment.createMembership(body, {
+          params: { departmentId },
+        });
+      },
+    });
+  }
+
+  updateMembership(departmentId: TableIdentity, membershipId: TableIdentity) {
+    return this.$$modelResource.mutationItem<
+      void,
+      ApiSchemaAdminDepartmentDtoDepartmentMembershipUpdate
+    >({
+      id: departmentId,
+      action: `updateMembership-${membershipId}`,
+      mutationFn: async body => {
+        await this.scope.api.adminDepartment.updateMembership(body, {
+          params: { departmentId, membershipId },
+        });
+      },
+    });
+  }
+
+  deleteMembership(departmentId: TableIdentity, membershipId: TableIdentity) {
+    return this.$$modelResource.mutationItem<void, void>({
+      id: departmentId,
+      action: `deleteMembership-${membershipId}`,
+      mutationFn: async () => {
+        await this.scope.api.adminDepartment.deleteMembership({
+          params: { departmentId, membershipId },
+        });
+      },
+    });
   }
 
   move(id: TableIdentity) {

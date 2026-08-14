@@ -60,6 +60,54 @@ export type ApiApiAdminDepartmentupdateRequestBody =
 export type ApiApiAdminDepartmentupdateResponseBody =
   paths[ApiApiAdminDepartmentupdatePath][ApiApiAdminDepartmentupdateMethod]['responses']['200']['content']['application/json']['data'];
 
+/** AdminDepartment_selectMemberships */
+export const ApiApiAdminDepartmentselectMembershipsPath =
+  '/api/admin/department/{departmentId}/memberships';
+export type ApiApiAdminDepartmentselectMembershipsPath =
+  '/api/admin/department/{departmentId}/memberships';
+export type ApiApiAdminDepartmentselectMembershipsMethod = 'get';
+export type ApiApiAdminDepartmentselectMembershipsRequestParams =
+  paths[ApiApiAdminDepartmentselectMembershipsPath][ApiApiAdminDepartmentselectMembershipsMethod]['parameters']['path'];
+export type ApiApiAdminDepartmentselectMembershipsResponseBody =
+  paths[ApiApiAdminDepartmentselectMembershipsPath][ApiApiAdminDepartmentselectMembershipsMethod]['responses']['200']['content']['application/json']['data'];
+
+/** AdminDepartment_createMembership */
+export const ApiApiAdminDepartmentcreateMembershipPath =
+  '/api/admin/department/{departmentId}/memberships';
+export type ApiApiAdminDepartmentcreateMembershipPath =
+  '/api/admin/department/{departmentId}/memberships';
+export type ApiApiAdminDepartmentcreateMembershipMethod = 'post';
+export type ApiApiAdminDepartmentcreateMembershipRequestParams =
+  paths[ApiApiAdminDepartmentcreateMembershipPath][ApiApiAdminDepartmentcreateMembershipMethod]['parameters']['path'];
+export type ApiApiAdminDepartmentcreateMembershipRequestBody =
+  components['schemas']['admin-department.dto.departmentMembershipCreate'];
+export type ApiApiAdminDepartmentcreateMembershipResponseBody =
+  paths[ApiApiAdminDepartmentcreateMembershipPath][ApiApiAdminDepartmentcreateMembershipMethod]['responses']['200']['content']['application/json']['data'];
+
+/** AdminDepartment_deleteMembership */
+export const ApiApiAdminDepartmentdeleteMembershipPath =
+  '/api/admin/department/{departmentId}/memberships/{membershipId}';
+export type ApiApiAdminDepartmentdeleteMembershipPath =
+  '/api/admin/department/{departmentId}/memberships/{membershipId}';
+export type ApiApiAdminDepartmentdeleteMembershipMethod = 'delete';
+export type ApiApiAdminDepartmentdeleteMembershipRequestParams =
+  paths[ApiApiAdminDepartmentdeleteMembershipPath][ApiApiAdminDepartmentdeleteMembershipMethod]['parameters']['path'];
+export type ApiApiAdminDepartmentdeleteMembershipResponseBody =
+  paths[ApiApiAdminDepartmentdeleteMembershipPath][ApiApiAdminDepartmentdeleteMembershipMethod]['responses']['200']['content']['application/json']['data'];
+
+/** AdminDepartment_updateMembership */
+export const ApiApiAdminDepartmentupdateMembershipPath =
+  '/api/admin/department/{departmentId}/memberships/{membershipId}';
+export type ApiApiAdminDepartmentupdateMembershipPath =
+  '/api/admin/department/{departmentId}/memberships/{membershipId}';
+export type ApiApiAdminDepartmentupdateMembershipMethod = 'patch';
+export type ApiApiAdminDepartmentupdateMembershipRequestParams =
+  paths[ApiApiAdminDepartmentupdateMembershipPath][ApiApiAdminDepartmentupdateMembershipMethod]['parameters']['path'];
+export type ApiApiAdminDepartmentupdateMembershipRequestBody =
+  components['schemas']['admin-department.dto.departmentMembershipUpdate'];
+export type ApiApiAdminDepartmentupdateMembershipResponseBody =
+  paths[ApiApiAdminDepartmentupdateMembershipPath][ApiApiAdminDepartmentupdateMembershipMethod]['responses']['200']['content']['application/json']['data'];
+
 /** AdminDepartment_move */
 export const ApiApiAdminDepartmentmovePath = '/api/admin/department/{id}/move';
 export type ApiApiAdminDepartmentmovePath = '/api/admin/department/{id}/move';
@@ -151,6 +199,54 @@ export class ApiAdminDepartment extends BeanApiBase {
   ) {
     return this.$fetch.patch<any, ApiApiAdminDepartmentupdateResponseBody>(
       this.$pathTranslate(ApiApiAdminDepartmentupdatePath, options.params),
+      body,
+      this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
+    );
+  }
+
+  selectMemberships(
+    options: {
+      params: ApiApiAdminDepartmentselectMembershipsRequestParams;
+    } & IApiActionOptions,
+  ) {
+    return this.$fetch.get<any, ApiApiAdminDepartmentselectMembershipsResponseBody>(
+      this.$pathTranslate(ApiApiAdminDepartmentselectMembershipsPath, options.params),
+      this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
+    );
+  }
+
+  createMembership(
+    body: ApiApiAdminDepartmentcreateMembershipRequestBody,
+    options: {
+      params: ApiApiAdminDepartmentcreateMembershipRequestParams;
+    } & IApiActionOptions,
+  ) {
+    return this.$fetch.post<any, ApiApiAdminDepartmentcreateMembershipResponseBody>(
+      this.$pathTranslate(ApiApiAdminDepartmentcreateMembershipPath, options.params),
+      body,
+      this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
+    );
+  }
+
+  deleteMembership(
+    options: {
+      params: ApiApiAdminDepartmentdeleteMembershipRequestParams;
+    } & IApiActionOptions,
+  ) {
+    return this.$fetch.delete<any, ApiApiAdminDepartmentdeleteMembershipResponseBody>(
+      this.$pathTranslate(ApiApiAdminDepartmentdeleteMembershipPath, options.params),
+      this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
+    );
+  }
+
+  updateMembership(
+    body: ApiApiAdminDepartmentupdateMembershipRequestBody,
+    options: {
+      params: ApiApiAdminDepartmentupdateMembershipRequestParams;
+    } & IApiActionOptions,
+  ) {
+    return this.$fetch.patch<any, ApiApiAdminDepartmentupdateMembershipResponseBody>(
+      this.$pathTranslate(ApiApiAdminDepartmentupdateMembershipPath, options.params),
       body,
       this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
     );

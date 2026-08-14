@@ -7,6 +7,10 @@ import { Core } from 'vona-module-a-core';
 
 import type { DtoDepartmentActivation } from '../dto/departmentActivation.ts';
 import type { DtoDepartmentCreate } from '../dto/departmentCreate.tsx';
+import type { DtoDepartmentMembershipCreate } from '../dto/departmentMembershipCreate.ts';
+import type { DtoDepartmentMembershipItem } from '../dto/departmentMembershipItem.ts';
+import type { DtoDepartmentMembershipSelectRes } from '../dto/departmentMembershipSelectRes.ts';
+import type { DtoDepartmentMembershipUpdate } from '../dto/departmentMembershipUpdate.ts';
 import type { DtoDepartmentMove } from '../dto/departmentMove.ts';
 import type { DtoDepartmentReorder } from '../dto/departmentReorder.ts';
 import type { DtoDepartmentSelectRes } from '../dto/departmentSelectRes.tsx';
@@ -14,10 +18,20 @@ import type { DtoDepartmentTree, DtoDepartmentTreeItem } from '../dto/department
 import type { DtoDepartmentUpdate } from '../dto/departmentUpdate.tsx';
 import type { DtoDepartmentView } from '../dto/departmentView.tsx';
 import type { EntityDepartment } from '../entity/department.tsx';
+import type { EntityDepartmentMembership } from '../entity/departmentMembership.tsx';
 import type { ModelDepartment } from '../model/department.ts';
 
 const RootNamespace = 'root';
 const SortOrderGap = 1024;
+
+function toMembershipItem(membership: EntityDepartmentMembership): DtoDepartmentMembershipItem {
+  return {
+    id: membership.id,
+    userId: membership.userId,
+    position: membership.position,
+    enabled: membership.enabled,
+  };
+}
 
 @Service()
 export class ServiceDepartment extends BeanBase {
@@ -152,6 +166,74 @@ export class ServiceDepartment extends BeanBase {
     });
   }
 
+  async selectMemberships(departmentId: TableIdentity): Promise<DtoDepartmentMembershipSelectRes> {
+    const department = await this.scope.model.department.getById(departmentId);
+    if (!department) this.app.throw(404, 'Department not found');
+    const list = await this.scope.model.departmentMembership.select({
+      where: { departmentId: department.id },
+      orders: [['id', 'asc']],
+    });
+    return { list: list.map(toMembershipItem) };
+  }
+
+  async createMembership(
+    departmentId: TableIdentity,
+    command: DtoDepartmentMembershipCreate,
+  ): Promise<EntityDepartmentMembership> {
+    return await this.withMembershipPair(departmentId, command.userId, async () => {
+      return await this.createMembershipInTransaction(departmentId, command);
+    });
+  }
+
+  @Core.transaction()
+  async createMembershipInTransaction(
+    departmentId: TableIdentity,
+    command: DtoDepartmentMembershipCreate,
+  ): Promise<EntityDepartmentMembership> {
+    const department = await this.requireDepartmentForUpdate(departmentId);
+    if (!department.enabled) this.scope.error.DepartmentMembershipDepartmentDisabled.throw();
+    const user = await this.$scope.homeUser.model.user.getByIdForUpdate(command.userId);
+    if (!user) this.scope.error.DepartmentMembershipUnavailable.throw();
+    const userId = user!.id;
+    const existing = await this.scope.model.departmentMembership.getForUpdate({
+      departmentId: department.id,
+      userId,
+    });
+    if (existing) this.scope.error.DepartmentMembershipAlreadyExists.throw();
+    return await this.scope.model.departmentMembership.insert({
+      departmentId: department.id,
+      userId,
+      position: command.position || undefined,
+      enabled: true,
+      primary: false,
+    });
+  }
+
+  @Core.transaction()
+  async updateMembership(
+    departmentId: TableIdentity,
+    membershipId: TableIdentity,
+    command: DtoDepartmentMembershipUpdate,
+  ): Promise<void> {
+    const department = await this.requireDepartmentForUpdate(departmentId);
+    const membership = await this.requireMembershipForUpdate(department.id, membershipId);
+    if (command.enabled === false && membership.enabled) {
+      this.assertMembershipNotManager(department, membership);
+    }
+    const patch: Partial<Pick<EntityDepartmentMembership, 'position' | 'enabled'>> = {};
+    if (command.position !== undefined) patch.position = command.position || undefined;
+    if (command.enabled !== undefined) patch.enabled = command.enabled;
+    await this.scope.model.departmentMembership.updateById(membership.id, patch);
+  }
+
+  @Core.transaction()
+  async deleteMembership(departmentId: TableIdentity, membershipId: TableIdentity): Promise<void> {
+    const department = await this.requireDepartmentForUpdate(departmentId);
+    const membership = await this.requireMembershipForUpdate(department.id, membershipId);
+    this.assertMembershipNotManager(department, membership);
+    await this.scope.model.departmentMembership.deleteById(membership.id);
+  }
+
   private normalizeParentId(parentId: TableIdentity | null | undefined): TableIdentity | null {
     if (parentId === undefined || parentId === null) return null;
     if (String(parentId) === '0') this.scope.error.DepartmentParentInvalid.throw();
@@ -162,6 +244,17 @@ export class ServiceDepartment extends BeanBase {
     const department = await this.scope.model.department.getByIdForUpdate(id);
     if (!department) this.app.throw(404, 'Department not found');
     return department;
+  }
+
+  private async requireMembershipForUpdate(
+    departmentId: TableIdentity,
+    membershipId: TableIdentity,
+  ): Promise<EntityDepartmentMembership> {
+    const membership = await this.scope.model.departmentMembership.getByIdForUpdate(membershipId);
+    if (!membership || String(membership.departmentId) !== String(departmentId)) {
+      this.app.throw(404, 'Department membership not found');
+    }
+    return membership;
   }
 
   private async ensureParent(parentId: TableIdentity | null | undefined): Promise<void> {
@@ -241,12 +334,27 @@ export class ServiceDepartment extends BeanBase {
   }
 
   private async assertLifecycleChangeAllowed(department: EntityDepartment): Promise<void> {
-    const children = await this.scope.model.department.select({
-      where: { parentId: department.id },
-      limit: 1,
-    });
-    if (children.length || department.managerMembershipId != null) {
+    const [children, memberships] = await Promise.all([
+      this.scope.model.department.select({
+        where: { parentId: department.id },
+        limit: 1,
+      }),
+      this.scope.model.departmentMembership.select({
+        where: { departmentId: department.id, enabled: true },
+        limit: 1,
+      }),
+    ]);
+    if (children.length || memberships.length || department.managerMembershipId != null) {
       this.scope.error.DepartmentLifecycleBlocked.throw();
+    }
+  }
+
+  private assertMembershipNotManager(
+    department: EntityDepartment,
+    membership: EntityDepartmentMembership,
+  ): void {
+    if (String(department.managerMembershipId) === String(membership.id)) {
+      this.scope.error.DepartmentMembershipManagerReferenced.throw();
     }
   }
 
@@ -274,5 +382,16 @@ export class ServiceDepartment extends BeanBase {
       );
     };
     return await lock(0);
+  }
+
+  private async withMembershipPair<T>(
+    departmentId: TableIdentity,
+    userId: TableIdentity,
+    fn: () => Promise<T>,
+  ): Promise<T> {
+    return await this.$scope.redlock.service.redlock.lock(
+      `department.membership.${departmentId}.${userId}`,
+      fn,
+    );
   }
 }

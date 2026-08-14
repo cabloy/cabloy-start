@@ -1,7 +1,9 @@
 import { Meta } from 'vona-module-a-meta';
 import { BeanRedlockBase } from 'vona-module-a-redlock';
 
-export type TypeRedlockLockResource = `department.siblings.${string}`;
+export type TypeRedlockLockResource =
+  | `department.siblings.${string}`
+  | `department.membership.${string}.${string}`;
 export type TypeRedlockLockIsolateResource = never;
 
 @Meta()

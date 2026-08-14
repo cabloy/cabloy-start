@@ -4,12 +4,15 @@ import type { TypeEntityOptionsFields,TypeControllerOptionsActions } from 'vona-
 import type { TableIdentity } from 'table-identity';
 /** entity: begin */
 export * from '../entity/department.tsx';
+export * from '../entity/departmentMembership.tsx';
 import type { IEntityOptionsDepartment } from '../entity/department.tsx';
+import type { IEntityOptionsDepartmentMembership } from '../entity/departmentMembership.tsx';
 import 'vona-module-a-orm';
 declare module 'vona-module-a-orm' {
 
     export interface IEntityRecord {
       'admin-department:department': IEntityOptionsDepartment;
+'admin-department:departmentMembership': IEntityOptionsDepartmentMembership;
     }
 
 
@@ -20,16 +23,21 @@ declare module 'vona-module-admin-department' {
 /** entity: end */
 /** entity: begin */
 import type { EntityDepartment } from '../entity/department.tsx';
+import type { EntityDepartmentMembership } from '../entity/departmentMembership.tsx';
 export interface IModuleEntity {
   'department': EntityDepartmentMeta;
+'departmentMembership': EntityDepartmentMembershipMeta;
 }
 /** entity: end */
 /** entity: begin */
 export type EntityDepartmentTableName = 'adminDepartment';
+export type EntityDepartmentMembershipTableName = 'adminDepartmentMembership';
 export type EntityDepartmentMeta=TypeEntityMeta<EntityDepartment,EntityDepartmentTableName>;
+export type EntityDepartmentMembershipMeta=TypeEntityMeta<EntityDepartmentMembership,EntityDepartmentMembershipTableName>;
 declare module 'vona-module-a-orm' {
   export interface ITableRecord {
     'adminDepartment': EntityDepartmentMeta;
+'adminDepartmentMembership': EntityDepartmentMembershipMeta;
   }
 }
 declare module 'vona-module-admin-department' {
@@ -37,16 +45,23 @@ declare module 'vona-module-admin-department' {
     export interface IEntityOptionsDepartment {
       fields?: TypeEntityOptionsFields<EntityDepartment, IEntityOptionsDepartment[TypeSymbolKeyFieldsMore]>;
     }
+
+    export interface IEntityOptionsDepartmentMembership {
+      fields?: TypeEntityOptionsFields<EntityDepartmentMembership, IEntityOptionsDepartmentMembership[TypeSymbolKeyFieldsMore]>;
+    }
 }
 /** entity: end */
 /** model: begin */
 export * from '../model/department.ts';
+export * from '../model/departmentMembership.ts';
 import type { IModelOptionsDepartment } from '../model/department.ts';
+import type { IModelOptionsDepartmentMembership } from '../model/departmentMembership.ts';
 import 'vona-module-a-orm';
 declare module 'vona-module-a-orm' {
 
     export interface IModelRecord {
       'admin-department:department': IModelOptionsDepartment;
+'admin-department:departmentMembership': IModelOptionsDepartmentMembership;
     }
 
 
@@ -63,12 +78,25 @@ declare module 'vona-module-admin-department' {
             get $onionName(): 'admin-department:department';
             get $onionOptions(): IModelOptionsDepartment;
           }
+
+        export interface ModelDepartmentMembership {
+          /** @internal */
+          get scope(): ScopeModuleAdminDepartment;
+        }
+
+          export interface ModelDepartmentMembership {
+            get $beanFullName(): 'admin-department.model.departmentMembership';
+            get $onionName(): 'admin-department:departmentMembership';
+            get $onionOptions(): IModelOptionsDepartmentMembership;
+          }
 }
 /** model: end */
 /** model: begin */
 import type { ModelDepartment } from '../model/department.ts';
+import type { ModelDepartmentMembership } from '../model/departmentMembership.ts';
 export interface IModuleModel {
   'department': ModelDepartment;
+'departmentMembership': ModelDepartmentMembership;
 }
 /** model: end */
 /** model: begin */
@@ -77,6 +105,7 @@ import 'vona';
 declare module 'vona' {
   export interface IBeanRecordGeneral {
     'admin-department.model.department': ModelDepartment;
+'admin-department.model.departmentMembership': ModelDepartmentMembership;
   }
 }
 /** model: end */
@@ -128,10 +157,50 @@ selectByNameEqI<T extends IModelSelectParams<EntityDepartment,ModelDepartment,Mo
 getByEnabled<T extends IModelGetOptions<EntityDepartment,ModelDepartment>>(enabled?: boolean, options?: T): Promise<TypeModelRelationResult<EntityDepartment, ModelDepartment, T> | undefined>;
 selectByEnabled<T extends IModelSelectParams<EntityDepartment,ModelDepartment,ModelJoins>, ModelJoins extends TypeModelsClassLikeGeneral | undefined = undefined>(enabled?: boolean, params?: T, options?: IModelMethodOptions, modelJoins?: ModelJoins): Promise<TypeModelRelationResult<EntityDepartment, ModelDepartment, T>[]>;
     }
+export interface ModelDepartmentMembership {
+      [SymbolKeyEntity]: EntityDepartmentMembership;
+      [SymbolKeyEntityMeta]: EntityDepartmentMembershipMeta;
+      [SymbolKeyModelOptions]: IModelOptionsDepartmentMembership;
+      get<T extends IModelGetOptions<EntityDepartmentMembership,ModelDepartmentMembership>>(where: TypeModelWhere<EntityDepartmentMembership>, options?: T): Promise<TypeModelRelationResult<EntityDepartmentMembership, ModelDepartmentMembership, T> | undefined>;
+      /**
+       * Retrieves one matching primary row with a pessimistic FOR UPDATE lock.
+       * Requires an active transaction. The lock is released when that transaction completes.
+       * Entity and query caches are bypassed.
+       */
+      getForUpdate<T extends IModelGetOptions<EntityDepartmentMembership,ModelDepartmentMembership>>(where: TypeModelWhere<EntityDepartmentMembership>, options?: T): Promise<TypeModelRelationResult<EntityDepartmentMembership, ModelDepartmentMembership, T> | undefined>;
+      /**
+       * Retrieves a primary row by ID with the same pessimistic FOR UPDATE lock semantics.
+       * Requires an active transaction. The lock is released when that transaction completes.
+       * Entity and query caches are bypassed.
+       */
+      getByIdForUpdate<T extends IModelGetOptions<EntityDepartmentMembership,ModelDepartmentMembership>>(id: TableIdentity, options?: T): Promise<TypeModelRelationResult<EntityDepartmentMembership, ModelDepartmentMembership, T> | undefined>;
+      mget<T extends IModelGetOptions<EntityDepartmentMembership,ModelDepartmentMembership>>(ids: TableIdentity[], options?: T): Promise<TypeModelRelationResult<EntityDepartmentMembership, ModelDepartmentMembership, T>[]>;
+      selectAndCount<T extends IModelSelectParams<EntityDepartmentMembership,ModelDepartmentMembership,ModelJoins>, ModelJoins extends TypeModelsClassLikeGeneral | undefined = undefined>(params?: T, options?: IModelMethodOptions, modelJoins?: ModelJoins): Promise<TypeModelSelectAndCount<EntityDepartmentMembership, ModelDepartmentMembership, T>>;
+      select<T extends IModelSelectParams<EntityDepartmentMembership,ModelDepartmentMembership,ModelJoins>, ModelJoins extends TypeModelsClassLikeGeneral | undefined = undefined>(params?: T, options?: IModelMethodOptions, modelJoins?: ModelJoins): Promise<TypeModelRelationResult<EntityDepartmentMembership, ModelDepartmentMembership, T>[]>;
+      insert<T extends IModelInsertOptions<EntityDepartmentMembership,ModelDepartmentMembership>>(data?: TypeModelMutateRelationData<EntityDepartmentMembership,ModelDepartmentMembership, T>, options?: T): Promise<TypeModelMutateRelationData<EntityDepartmentMembership,ModelDepartmentMembership, T, true>>;
+      insertBulk<T extends IModelInsertOptions<EntityDepartmentMembership,ModelDepartmentMembership>>(items: TypeModelMutateRelationData<EntityDepartmentMembership,ModelDepartmentMembership, T>[], options?: T): Promise<TypeModelMutateRelationData<EntityDepartmentMembership,ModelDepartmentMembership, T, true>[]>;
+      update<T extends IModelUpdateOptions<EntityDepartmentMembership,ModelDepartmentMembership>>(data: TypeModelMutateRelationData<EntityDepartmentMembership,ModelDepartmentMembership, T>, options?: T): Promise<TypeModelMutateRelationData<EntityDepartmentMembership,ModelDepartmentMembership, T>>;
+      updateBulk<T extends IModelUpdateOptions<EntityDepartmentMembership,ModelDepartmentMembership>>(items: TypeModelMutateRelationData<EntityDepartmentMembership,ModelDepartmentMembership, T>[], options?: T): Promise<TypeModelMutateRelationData<EntityDepartmentMembership,ModelDepartmentMembership, T>[]>;
+      delete<T extends IModelDeleteOptions<EntityDepartmentMembership,ModelDepartmentMembership>>(where?: TypeModelWhere<EntityDepartmentMembership>, options?: T): Promise<void>;
+      deleteBulk<T extends IModelDeleteOptions<EntityDepartmentMembership,ModelDepartmentMembership>>(ids: TableIdentity[], options?: T): Promise<void>;
+      mutate<T extends IModelMutateOptions<EntityDepartmentMembership,ModelDepartmentMembership>>(data?: TypeModelMutateRelationData<EntityDepartmentMembership,ModelDepartmentMembership, T>, options?: T): Promise<TypeModelMutateRelationData<EntityDepartmentMembership,ModelDepartmentMembership, T>>;
+      mutateBulk<T extends IModelMutateOptions<EntityDepartmentMembership,ModelDepartmentMembership>>(items: TypeModelMutateRelationData<EntityDepartmentMembership,ModelDepartmentMembership, T>[], options?: T): Promise<TypeModelMutateRelationData<EntityDepartmentMembership,ModelDepartmentMembership, T>[]>;
+      count<T extends IModelSelectCountParams<EntityDepartmentMembership,ModelDepartmentMembership,ModelJoins>, ModelJoins extends TypeModelsClassLikeGeneral | undefined = undefined>(params?: T, options?: IModelMethodOptions, modelJoins?: ModelJoins): Promise<string | undefined>;
+      increment<T extends IModelIncrementParams<EntityDepartmentMembership,ModelDepartmentMembership,ModelJoins>, ModelJoins extends TypeModelsClassLikeGeneral | undefined = undefined>(params?: T, options?: IModelMethodOptions, modelJoins?: ModelJoins): Promise<number>;
+      decrement<T extends IModelIncrementParams<EntityDepartmentMembership,ModelDepartmentMembership,ModelJoins>, ModelJoins extends TypeModelsClassLikeGeneral | undefined = undefined>(params?: T, options?: IModelMethodOptions, modelJoins?: ModelJoins): Promise<number>;
+      aggregate<T extends IModelSelectAggrParams<EntityDepartmentMembership,ModelDepartmentMembership,ModelJoins>, ModelJoins extends TypeModelsClassLikeGeneral | undefined = undefined>(params?: T, options?: IModelMethodOptions, modelJoins?: ModelJoins): Promise<TypeModelAggrRelationResult<T>>;
+      group<T extends IModelSelectGroupParams<EntityDepartmentMembership,ModelDepartmentMembership,ModelJoins>, ModelJoins extends TypeModelsClassLikeGeneral | undefined = undefined>(params?: T, options?: IModelMethodOptions, modelJoins?: ModelJoins): Promise<TypeModelGroupRelationResult<EntityDepartmentMembership, T>[]>;
+      getById<T extends IModelGetOptions<EntityDepartmentMembership,ModelDepartmentMembership>>(id: TableIdentity, options?: T): Promise<TypeModelRelationResult<EntityDepartmentMembership, ModelDepartmentMembership, T> | undefined>;
+updateById<T extends IModelUpdateOptions<EntityDepartmentMembership,ModelDepartmentMembership>>(id: TableIdentity, data: TypeModelMutateRelationData<EntityDepartmentMembership,ModelDepartmentMembership, T>, options?: T): Promise<TypeModelMutateRelationData<EntityDepartmentMembership,ModelDepartmentMembership, T>>;
+deleteById<T extends IModelDeleteOptions<EntityDepartmentMembership,ModelDepartmentMembership>>(id: TableIdentity, options?: T): Promise<void>;
+getByEnabled<T extends IModelGetOptions<EntityDepartmentMembership,ModelDepartmentMembership>>(enabled?: boolean, options?: T): Promise<TypeModelRelationResult<EntityDepartmentMembership, ModelDepartmentMembership, T> | undefined>;
+selectByEnabled<T extends IModelSelectParams<EntityDepartmentMembership,ModelDepartmentMembership,ModelJoins>, ModelJoins extends TypeModelsClassLikeGeneral | undefined = undefined>(enabled?: boolean, params?: T, options?: IModelMethodOptions, modelJoins?: ModelJoins): Promise<TypeModelRelationResult<EntityDepartmentMembership, ModelDepartmentMembership, T>[]>;
+    }
 }
 declare module 'vona-module-a-orm' {
   export interface IModelClassRecord {
     'admin-department:department': ModelDepartment;
+'admin-department:departmentMembership': ModelDepartmentMembership;
   }
 }
 /** model: end */
@@ -235,6 +304,10 @@ import type { MetaRedlock } from '../bean/meta.redlock.ts';
 export * from '../dto/departmentActivation.ts';
 export * from '../dto/departmentBase.tsx';
 export * from '../dto/departmentCreate.tsx';
+export * from '../dto/departmentMembershipCreate.ts';
+export * from '../dto/departmentMembershipItem.ts';
+export * from '../dto/departmentMembershipSelectRes.ts';
+export * from '../dto/departmentMembershipUpdate.ts';
 export * from '../dto/departmentMove.ts';
 export * from '../dto/departmentReorder.ts';
 export * from '../dto/departmentSelectReq.tsx';
@@ -246,6 +319,10 @@ export * from '../dto/departmentView.tsx';
 import type { IDtoOptionsDepartmentActivation } from '../dto/departmentActivation.ts';
 import type { IDtoOptionsDepartmentBase } from '../dto/departmentBase.tsx';
 import type { IDtoOptionsDepartmentCreate } from '../dto/departmentCreate.tsx';
+import type { IDtoOptionsDepartmentMembershipCreate } from '../dto/departmentMembershipCreate.ts';
+import type { IDtoOptionsDepartmentMembershipItem } from '../dto/departmentMembershipItem.ts';
+import type { IDtoOptionsDepartmentMembershipSelectRes } from '../dto/departmentMembershipSelectRes.ts';
+import type { IDtoOptionsDepartmentMembershipUpdate } from '../dto/departmentMembershipUpdate.ts';
 import type { IDtoOptionsDepartmentMove } from '../dto/departmentMove.ts';
 import type { IDtoOptionsDepartmentReorder } from '../dto/departmentReorder.ts';
 import type { IDtoOptionsDepartmentSelectReq } from '../dto/departmentSelectReq.tsx';
@@ -261,6 +338,10 @@ declare module 'vona-module-a-web' {
       'admin-department:departmentActivation': IDtoOptionsDepartmentActivation;
 'admin-department:departmentBase': IDtoOptionsDepartmentBase;
 'admin-department:departmentCreate': IDtoOptionsDepartmentCreate;
+'admin-department:departmentMembershipCreate': IDtoOptionsDepartmentMembershipCreate;
+'admin-department:departmentMembershipItem': IDtoOptionsDepartmentMembershipItem;
+'admin-department:departmentMembershipSelectRes': IDtoOptionsDepartmentMembershipSelectRes;
+'admin-department:departmentMembershipUpdate': IDtoOptionsDepartmentMembershipUpdate;
 'admin-department:departmentMove': IDtoOptionsDepartmentMove;
 'admin-department:departmentReorder': IDtoOptionsDepartmentReorder;
 'admin-department:departmentSelectReq': IDtoOptionsDepartmentSelectReq;
@@ -281,6 +362,10 @@ declare module 'vona-module-admin-department' {
 import type { DtoDepartmentActivation } from '../dto/departmentActivation.ts';
 import type { DtoDepartmentBase } from '../dto/departmentBase.tsx';
 import type { DtoDepartmentCreate } from '../dto/departmentCreate.tsx';
+import type { DtoDepartmentMembershipCreate } from '../dto/departmentMembershipCreate.ts';
+import type { DtoDepartmentMembershipItem } from '../dto/departmentMembershipItem.ts';
+import type { DtoDepartmentMembershipSelectRes } from '../dto/departmentMembershipSelectRes.ts';
+import type { DtoDepartmentMembershipUpdate } from '../dto/departmentMembershipUpdate.ts';
 import type { DtoDepartmentMove } from '../dto/departmentMove.ts';
 import type { DtoDepartmentReorder } from '../dto/departmentReorder.ts';
 import type { DtoDepartmentSelectReq } from '../dto/departmentSelectReq.tsx';
@@ -301,6 +386,22 @@ declare module 'vona-module-admin-department' {
 
     export interface IDtoOptionsDepartmentCreate {
       fields?: TypeEntityOptionsFields<DtoDepartmentCreate, IDtoOptionsDepartmentCreate[TypeSymbolKeyFieldsMore]>;
+    }
+
+    export interface IDtoOptionsDepartmentMembershipCreate {
+      fields?: TypeEntityOptionsFields<DtoDepartmentMembershipCreate, IDtoOptionsDepartmentMembershipCreate[TypeSymbolKeyFieldsMore]>;
+    }
+
+    export interface IDtoOptionsDepartmentMembershipItem {
+      fields?: TypeEntityOptionsFields<DtoDepartmentMembershipItem, IDtoOptionsDepartmentMembershipItem[TypeSymbolKeyFieldsMore]>;
+    }
+
+    export interface IDtoOptionsDepartmentMembershipSelectRes {
+      fields?: TypeEntityOptionsFields<DtoDepartmentMembershipSelectRes, IDtoOptionsDepartmentMembershipSelectRes[TypeSymbolKeyFieldsMore]>;
+    }
+
+    export interface IDtoOptionsDepartmentMembershipUpdate {
+      fields?: TypeEntityOptionsFields<DtoDepartmentMembershipUpdate, IDtoOptionsDepartmentMembershipUpdate[TypeSymbolKeyFieldsMore]>;
     }
 
     export interface IDtoOptionsDepartmentMove {
@@ -374,17 +475,21 @@ declare module 'vona-module-admin-department' {
 declare module 'vona-module-a-web' {
   export interface IApiPathPostRecord{
         '/admin/department': undefined;
+'/admin/department/:departmentId/memberships': undefined;
     }
 export interface IApiPathGetRecord{
         '/admin/department': undefined;
 '/admin/department/tree': undefined;
 '/admin/department/:id': undefined;
+'/admin/department/:departmentId/memberships': undefined;
     }
 export interface IApiPathPatchRecord{
         '/admin/department/:id': undefined;
+'/admin/department/:departmentId/memberships/:membershipId': undefined;
     }
 export interface IApiPathDeleteRecord{
         '/admin/department/:id': undefined;
+'/admin/department/:departmentId/memberships/:membershipId': undefined;
     }
 export interface IApiPathPutRecord{
         '/admin/department/:id/move': undefined;

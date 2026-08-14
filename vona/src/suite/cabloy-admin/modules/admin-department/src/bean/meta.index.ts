@@ -9,6 +9,9 @@ import { $tableColumns } from 'vona-module-a-ormutils';
     ...$tableColumns('adminDepartment', 'parentId+name'),
     ...$tableColumns('adminDepartment', 'parentId+sortOrder'),
     ...$tableColumns('adminDepartment', 'managerMembershipId'),
+    ...$tableColumns('adminDepartmentMembership', 'departmentId+userId'),
+    ...$tableColumns('adminDepartmentMembership', 'departmentId+enabled'),
+    ...$tableColumns('adminDepartmentMembership', 'userId+enabled'),
   },
 })
 export class MetaIndex extends BeanBase {}

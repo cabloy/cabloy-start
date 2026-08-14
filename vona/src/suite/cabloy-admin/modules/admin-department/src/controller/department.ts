@@ -13,6 +13,9 @@ import type { ModelDepartment } from '../model/department.ts';
 
 import { DtoDepartmentActivation } from '../dto/departmentActivation.ts';
 import { DtoDepartmentCreate } from '../dto/departmentCreate.tsx';
+import { DtoDepartmentMembershipCreate } from '../dto/departmentMembershipCreate.ts';
+import { DtoDepartmentMembershipSelectRes } from '../dto/departmentMembershipSelectRes.ts';
+import { DtoDepartmentMembershipUpdate } from '../dto/departmentMembershipUpdate.ts';
 import { DtoDepartmentMove } from '../dto/departmentMove.ts';
 import { DtoDepartmentReorder } from '../dto/departmentReorder.ts';
 import { DtoDepartmentSelectReq } from '../dto/departmentSelectReq.tsx';
@@ -76,6 +79,47 @@ export class ControllerDepartment extends BeanBase {
   @Passport.systemAdmin()
   async delete(@Arg.param('id', v.tableIdentity()) id: TableIdentity): Promise<void> {
     await this.scope.service.department.delete(id);
+  }
+
+  @Web.get(':departmentId/memberships')
+  @Api.body(DtoDepartmentMembershipSelectRes)
+  @Core.serializer()
+  @Passport.systemAdmin()
+  async selectMemberships(
+    @Arg.param('departmentId', v.tableIdentity()) departmentId: TableIdentity,
+  ): Promise<DtoDepartmentMembershipSelectRes> {
+    return await this.scope.service.department.selectMemberships(departmentId);
+  }
+
+  @Web.post(':departmentId/memberships')
+  @Api.body(v.tableIdentity())
+  @Passport.systemAdmin()
+  async createMembership(
+    @Arg.param('departmentId', v.tableIdentity()) departmentId: TableIdentity,
+    @Arg.body() command: DtoDepartmentMembershipCreate,
+  ): Promise<TableIdentity> {
+    return (await this.scope.service.department.createMembership(departmentId, command)).id;
+  }
+
+  @Web.patch(':departmentId/memberships/:membershipId')
+  @Api.body(z.null())
+  @Passport.systemAdmin()
+  async updateMembership(
+    @Arg.param('departmentId', v.tableIdentity()) departmentId: TableIdentity,
+    @Arg.param('membershipId', v.tableIdentity()) membershipId: TableIdentity,
+    @Arg.body() command: DtoDepartmentMembershipUpdate,
+  ): Promise<void> {
+    await this.scope.service.department.updateMembership(departmentId, membershipId, command);
+  }
+
+  @Web.delete(':departmentId/memberships/:membershipId')
+  @Api.body(z.null())
+  @Passport.systemAdmin()
+  async deleteMembership(
+    @Arg.param('departmentId', v.tableIdentity()) departmentId: TableIdentity,
+    @Arg.param('membershipId', v.tableIdentity()) membershipId: TableIdentity,
+  ): Promise<void> {
+    await this.scope.service.department.deleteMembership(departmentId, membershipId);
   }
 
   @Web.put(':id/move')
