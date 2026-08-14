@@ -281,7 +281,9 @@ export class BehaviorAppModal extends BeanBehaviorBase<
           title={options?.title ?? this.sys.env.APP_TITLE}
           v-slots={slots}
         >
-          {options?.slotDefault && <VCardText>{options.slotDefault(dialog)}</VCardText>}
+          {options?.slotDefault && (
+            <VCardText class="pt-2">{options.slotDefault(dialog)}</VCardText>
+          )}
           {options?.slotActions && <VCardActions>{options.slotActions(dialog)}</VCardActions>}
         </VCard>
       </VDialog>

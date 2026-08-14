@@ -97,7 +97,7 @@ export class ControllerFormFieldLocalizedText extends BeanControllerBase {
     const dialog = this.$appModal.dialog({
       title: this.scope.locale.Locales(),
       slotDefault: () => (
-        <div class="d-flex flex-column ga-2 py-2">
+        <div class="d-flex flex-column ga-2">
           {rows.map(locale => (
             <VTextField
               key={locale}
