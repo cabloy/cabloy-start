@@ -26,7 +26,9 @@ declare module 'zova-module-a-openapi' {
   }
 }
 
-export interface IResourceFormFieldDepartmentTreeOptions extends IResourceFormFieldOptionsBase {}
+export interface IResourceFormFieldDepartmentTreeOptions extends IResourceFormFieldOptionsBase {
+  excludeId?: TableIdentity;
+}
 
 export interface ControllerFormFieldDepartmentTreeProps extends IFormFieldComponentOptions {
   options?: IResourceFormFieldDepartmentTreeOptions;
@@ -72,7 +74,7 @@ export class ControllerFormFieldDepartmentTree extends BeanControllerBase {
             {
               id: RootDepartment,
               name: this.scope.locale.RootDepartment(),
-              children: this.treeData,
+              children: this._getTreeData(propsBucket.options?.excludeId),
             },
           ];
           const propsTextField: VTextField['$props'] = {
@@ -132,6 +134,20 @@ export class ControllerFormFieldDepartmentTree extends BeanControllerBase {
         }}
       ></ZFormField>
     );
+  }
+
+  private _getTreeData(excludeId?: TableIdentity) {
+    if (excludeId === undefined) return this.treeData;
+    return this._filterTreeItems(this.treeData, excludeId);
+  }
+
+  private _filterTreeItems(items: DepartmentTreeItem[], excludeId: TableIdentity) {
+    return items
+      .filter(item => String(item.id) !== String(excludeId))
+      .map(item => ({
+        ...item,
+        children: this._filterTreeItems(item.children, excludeId),
+      }));
   }
 
   private _getActivatedId(value: unknown): TableIdentity | typeof RootDepartment {

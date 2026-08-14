@@ -51,6 +51,9 @@ export class DtoDepartmentSelectResItem extends $Dto.get(() => ModelDepartment) 
     ZovaRender.cell('start-table:actionOperationsRow', {
       actions: [
         ZovaRender.tableActionRow('start-table:actionUpdate'),
+        ZovaRender.tableActionRow('admin-department:actionMove', {
+          permission: { actionInherit: 'update' },
+        }),
         ZovaRender.tableActionRow('start-table:actionDelete'),
       ],
     }),
