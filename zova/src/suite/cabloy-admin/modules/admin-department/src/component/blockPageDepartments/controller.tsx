@@ -23,17 +23,17 @@ const AllDepartments = '__all__';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceBlockRecord {
-    'admin-department:blockDepartment'?: ControllerBlockDepartmentProps;
+    'admin-department:blockPageDepartments'?: ControllerBlockPageDepartmentsProps;
   }
 }
 
-export interface ControllerBlockDepartmentProps extends IResourceBlockOptionsBase {
+export interface ControllerBlockPageDepartmentsProps extends IResourceBlockOptionsBase {
   blocks?: IResourceRenderBlockOptionsBlock[];
   resource?: string;
 }
 
 @Controller()
-export class ControllerBlockDepartment extends BeanControllerBase {
+export class ControllerBlockPageDepartments extends BeanControllerBase {
   static $propsDefault = {};
   static $componentOptions: IComponentOptions = { inheritAttrs: false, deepExtendDefault: true };
 
@@ -85,7 +85,7 @@ export class ControllerBlockDepartment extends BeanControllerBase {
         children: this.treeData,
       },
     ];
-    const props = this.$props as ControllerBlockDepartmentProps;
+    const props = this.$props as ControllerBlockPageDepartmentsProps;
     return (
       <div class={`${props.class ?? ''} d-flex flex-column flex-md-row align-stretch ga-4 h-100`}>
         <VCard class="flex-shrink-0 h-100" width="280" variant="outlined">
@@ -134,7 +134,7 @@ export class ControllerBlockDepartment extends BeanControllerBase {
   }
 
   private _renderPage() {
-    const props = this.$props as ControllerBlockDepartmentProps;
+    const props = this.$props as ControllerBlockPageDepartmentsProps;
     const blocks = props.blocks;
     if (!blocks || blocks.length === 0) return;
     return (

@@ -112,7 +112,7 @@ declare module 'zova' {
 }
 /** apiSchema: end */
 /** controller: begin */
-export * from '../component/blockDepartment/controller.jsx';
+export * from '../component/blockPageDepartments/controller.jsx';
 
 import 'zova';
 declare module 'zova' {
@@ -121,35 +121,35 @@ declare module 'zova' {
 }
 declare module 'zova-module-admin-department' {
   
-        export interface ControllerBlockDepartment {
+        export interface ControllerBlockPageDepartments {
           /** @internal */
           get scope(): ScopeModuleAdminDepartment;
         } 
 }
 /** controller: end */
 /** controller: begin */
-import { ControllerBlockDepartment } from '../component/blockDepartment/controller.jsx';
+import { ControllerBlockPageDepartments } from '../component/blockPageDepartments/controller.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
-    'admin-department.controller.blockDepartment': ControllerBlockDepartment;
+    'admin-department.controller.blockPageDepartments': ControllerBlockPageDepartments;
   }
 }
 /** controller: end */
 
 /** components: begin */
-export * from './component/blockDepartment.js';
-import { ZBlockDepartment } from './component/blockDepartment.js';
+export * from './component/blockPageDepartments.js';
+import { ZBlockPageDepartments } from './component/blockPageDepartments.js';
 export const components = {
-  'blockDepartment': ZBlockDepartment,
+  'blockPageDepartments': ZBlockPageDepartments,
 };
 import 'zova';
 declare module 'zova' {
 export interface IComponentRecord {
-  'admin-department:blockDepartment': ControllerBlockDepartment;
+  'admin-department:blockPageDepartments': ControllerBlockPageDepartments;
 }
 export interface IZovaComponentRecord {
-  'admin-department:blockDepartment': typeof ZBlockDepartment;
+  'admin-department:blockPageDepartments': typeof ZBlockPageDepartments;
 }
 }
 /** components: end */

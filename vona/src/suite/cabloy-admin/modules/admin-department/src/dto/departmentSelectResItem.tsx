@@ -12,7 +12,7 @@ export interface IDtoOptionsDepartmentSelectResItem extends IDecoratorDtoOptions
 
 @Dto<IDtoOptionsDepartmentSelectResItem>({
   blocks: [
-    ZovaRender.block('admin-department:blockDepartment', {
+    ZovaRender.block('admin-department:blockPageDepartments', {
       blocks: [
         ZovaRender.block('start-page:blockFilter', {
           formFieldLayout: { inline: true },
