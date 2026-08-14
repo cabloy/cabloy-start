@@ -48,4 +48,6 @@ export interface IDtoOptionsDepartmentView extends IDecoratorDtoOptions {}
     }),
   ],
 })
-export class DtoDepartmentView extends $Dto.get(() => ModelDepartment) {}
+export class DtoDepartmentView extends $Dto.get(() => ModelDepartment, {
+  include: { parent: true },
+}) {}

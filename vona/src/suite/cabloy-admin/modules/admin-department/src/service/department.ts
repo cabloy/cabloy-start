@@ -54,6 +54,7 @@ export class ServiceDepartment extends BeanBase {
   async select(params?: IQueryParams<ModelDepartment>): Promise<DtoDepartmentSelectRes> {
     return await this.scope.model.department.selectAndCount({
       ...params,
+      include: { parent: true },
       orders: [
         ['sortOrder', 'asc'],
         ['id', 'asc'],
@@ -92,7 +93,9 @@ export class ServiceDepartment extends BeanBase {
   }
 
   async view(id: TableIdentity): Promise<DtoDepartmentView | undefined> {
-    return await this.scope.model.department.getById(id);
+    return await this.scope.model.department.getById(id, {
+      include: { parent: true },
+    });
   }
 
   @Core.transaction()

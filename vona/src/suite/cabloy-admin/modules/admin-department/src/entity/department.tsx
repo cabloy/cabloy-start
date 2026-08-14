@@ -1,7 +1,7 @@
 import type { TableIdentity } from 'table-identity';
 import type { IDecoratorEntityOptions } from 'vona-module-a-orm';
 
-import { $makeMetadata, Api, v } from 'vona-module-a-openapiutils';
+import { $makeMetadata, $resourceName, Api, v } from 'vona-module-a-openapiutils';
 import { Entity, EntityBase } from 'vona-module-a-orm';
 import { ZovaRender } from 'zova-rest-cabloy-start-admin';
 
@@ -42,6 +42,12 @@ export class EntityDepartment extends EntityBase {
     v.title($locale('ParentDepartment')),
     v.optional(),
     ZovaRender.order(2),
+    ZovaRender.field('start-resource:formFieldResourcePicker', {
+      resource: $resourceName('admin-department:department'),
+    }),
+    ZovaRender.cell('start-resource:resourcePicker', {
+      resource: $resourceName('admin-department:department'),
+    }),
     v.tableIdentity(),
   )
   parentId: TableIdentity | null;

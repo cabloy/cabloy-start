@@ -54,10 +54,13 @@ describe('department.test.ts', { concurrency: false }, () => {
           body: { name: `Child-${crypto.randomUUID()}`, parentId: root },
         });
         ids.push(String(child));
-        const view = await departmentService().view(child);
-        assert.ok(view);
-        assert.equal(String(view!.parentId), String(root));
-        assert.notEqual(view!.parentId, 0);
+        const view = await app.bean.executor.performAction('get', '/admin/department/:id', {
+          params: { id: child },
+        });
+        assert.equal(String(view.parentId), String(root));
+        assert.equal(String(view.parent?.id), String(root));
+        assert.equal(view.parent?.name, name);
+        assert.notEqual(view.parentId, 0);
 
         const [duplicateResult, duplicateError] = await catchError(() => {
           return app.bean.executor.performAction('post', departmentPath, {
@@ -135,6 +138,9 @@ describe('department.test.ts', { concurrency: false }, () => {
           responseA.list.map(item => String(item.id)),
           [String(childA.id)],
         );
+        assert.equal(String(responseA.list[0].parentId), String(parentA.id));
+        assert.equal(String(responseA.list[0].parent?.id), String(parentA.id));
+        assert.equal(responseA.list[0].parent?.name, parentA.name);
 
         const responseB = await app.bean.executor.performAction('get', '/admin/department', {
           query: { where: { parentId: parentB.id }, pageNo: 1, pageSize: 20 },

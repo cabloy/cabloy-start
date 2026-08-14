@@ -171,21 +171,25 @@ export * from '../bean/tableCell.actionMove.jsx';
 import { ITableCellOptionsActionMove } from '../bean/tableCell.actionMove.jsx';
 import 'zova-module-a-table';
 declare module 'zova-module-a-table' {
-  export interface ITableCellRecord {
-    'admin-department:actionMove': ITableCellOptionsActionMove;
-  }
+  
+    export interface ITableCellRecord {
+      'admin-department:actionMove': ITableCellOptionsActionMove;
+    }
+
+  
 }
 declare module 'zova-module-admin-department' {
-  export interface TableCellActionMove {
-    /** @internal */
-    get scope(): ScopeModuleAdminDepartment;
-  }
+  
+        export interface TableCellActionMove {
+          /** @internal */
+          get scope(): ScopeModuleAdminDepartment;
+        }
 
-  export interface TableCellActionMove {
-    get $beanFullName(): 'admin-department.tableCell.actionMove';
-    get $onionName(): 'admin-department:actionMove';
-    get $onionOptions(): ITableCellOptionsActionMove;
-  }
+        export interface TableCellActionMove {
+          get $beanFullName(): 'admin-department.tableCell.actionMove';
+          get $onionName(): 'admin-department:actionMove';
+          get $onionOptions(): ITableCellOptionsActionMove;
+        } 
 }
 /** tableCell: end */
 /** tableCell: begin */

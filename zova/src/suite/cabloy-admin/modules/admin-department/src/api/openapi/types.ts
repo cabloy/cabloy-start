@@ -2035,6 +2035,12 @@ export interface components {
       /** @description Sort Order */
       sortOrder: number;
       managerMembershipId?: number | string | undefined;
+      parent?: {
+        /** @description ID */
+        id: number | string;
+        /** @description Department Name */
+        name: string;
+      };
       /** @description Operations */
       _operationsRow?: unknown;
     };
@@ -2086,6 +2092,12 @@ export interface components {
           /** @description Sort Order */
           sortOrder: number;
           managerMembershipId?: number | string | undefined;
+          parent?: {
+            /** @description ID */
+            id: number | string;
+            /** @description Department Name */
+            name: string;
+          };
         }
       | undefined;
     'admin-department.dto.departmentUpdate': {
