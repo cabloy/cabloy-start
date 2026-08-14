@@ -8,4 +8,8 @@ export const errors = {
   DepartmentMembershipManagerReferenced: { code: 1007, status: 409 },
   DepartmentMembershipUnavailable: { code: 1008, status: 409 },
   DepartmentMembershipDepartmentDisabled: { code: 1009, status: 409 },
+  DepartmentMembershipPrimaryRequiresEnabled: { code: 1010, status: 409 },
+  DepartmentManagerMembershipInvalid: { code: 1011, status: 409 },
+  DepartmentMembershipManagerReplacementRequired: { code: 1012, status: 409 },
+  DepartmentMembershipManagerTransitionInvalid: { code: 1013, status: 409 },
 } as const;

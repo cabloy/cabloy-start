@@ -10,6 +10,8 @@ export default {
   DepartmentMembership: 'Department Membership',
   User: 'User',
   Position: 'Position',
+  Primary: 'Primary',
+  DepartmentManager: 'Department Manager',
   DepartmentNameAlreadyInUse: 'The Department name is already in use for this parent',
   DepartmentParentInvalid: 'The requested parent Department is unavailable',
   DepartmentCycleDetected: 'The requested move would create a Department cycle',
@@ -20,4 +22,11 @@ export default {
     'The membership is the Department manager and must be handled explicitly',
   DepartmentMembershipUnavailable: 'The requested Department membership is unavailable',
   DepartmentMembershipDepartmentDisabled: 'The Department must be enabled before adding members',
+  DepartmentMembershipPrimaryRequiresEnabled: 'Only an enabled membership can be primary',
+  DepartmentManagerMembershipInvalid:
+    'The Department manager must be an enabled membership of this Department',
+  DepartmentMembershipManagerReplacementRequired:
+    'The Department manager must be cleared or replaced before this membership changes',
+  DepartmentMembershipManagerTransitionInvalid:
+    'A manager transition is valid only when changing the current Department manager membership',
 };

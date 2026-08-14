@@ -3,7 +3,26 @@ import assert from 'node:assert';
 import { describe, it } from 'node:test';
 import { app } from 'vona-mock';
 
-import { DtoDepartmentMembershipCreate, DtoDepartmentMembershipUpdate } from '../src/index.ts';
+import {
+  DtoDepartmentManagerUpdate,
+  DtoDepartmentMembershipCreate,
+  DtoDepartmentMembershipDelete,
+  DtoDepartmentMembershipPrimary,
+  DtoDepartmentMembershipUpdate,
+} from '../src/index.ts';
+
+function createBarrier(parties: number) {
+  let arrived = 0;
+  let release!: () => void;
+  const open = new Promise<void>(resolve => {
+    release = resolve;
+  });
+  return async () => {
+    arrived += 1;
+    if (arrived === parties) release();
+    await open;
+  };
+}
 
 function departmentService() {
   return app.scope('admin-department').service.department;
@@ -39,7 +58,13 @@ async function deleteUsers(ids: string[]) {
 describe('departmentMembership.test.ts', { concurrency: false }, () => {
   it('dto:departmentMembership emits metadata', async () => {
     await app.bean.executor.mockCtx(async () => {
-      for (const DtoClass of [DtoDepartmentMembershipCreate, DtoDepartmentMembershipUpdate]) {
+      for (const DtoClass of [
+        DtoDepartmentManagerUpdate,
+        DtoDepartmentMembershipCreate,
+        DtoDepartmentMembershipDelete,
+        DtoDepartmentMembershipPrimary,
+        DtoDepartmentMembershipUpdate,
+      ]) {
         const apiJson = await app.bean.openapi.generateJsonOfClass(DtoClass);
         assert.ok(apiJson.components?.schemas);
       }
@@ -217,6 +242,168 @@ describe('departmentMembership.test.ts', { concurrency: false }, () => {
     }
   });
 
+  it('action:departmentMembership:managesPrimaryAndManagerLifecycle', async () => {
+    const departmentIds: string[] = [];
+    const membershipIds: string[] = [];
+    const userIds: string[] = [];
+    try {
+      await app.bean.executor.mockCtx(async () => {
+        await app.bean.passport.signinMock();
+        const user = await app.bean.user.register({
+          name: `department-primary-${crypto.randomUUID()}`,
+        });
+        const replacementUser = await app.bean.user.register({
+          name: `department-manager-replacement-${crypto.randomUUID()}`,
+        });
+        userIds.push(String(user.id), String(replacementUser.id));
+        const departmentA = await departmentService().create({
+          name: `Department-Primary-A-${crypto.randomUUID()}`,
+          parentId: null,
+        });
+        const departmentB = await departmentService().create({
+          name: `Department-Primary-B-${crypto.randomUUID()}`,
+          parentId: null,
+        });
+        departmentIds.push(String(departmentA.id), String(departmentB.id));
+        const membershipA = await app.bean.executor.performAction(
+          'post',
+          '/admin/department/:departmentId/memberships',
+          { params: { departmentId: departmentA.id }, body: { userId: user.id } },
+        );
+        const membershipB = await app.bean.executor.performAction(
+          'post',
+          '/admin/department/:departmentId/memberships',
+          { params: { departmentId: departmentB.id }, body: { userId: user.id } },
+        );
+        const replacementMembership = await app.bean.executor.performAction(
+          'post',
+          '/admin/department/:departmentId/memberships',
+          {
+            params: { departmentId: departmentA.id },
+            body: { userId: replacementUser.id },
+          },
+        );
+        membershipIds.push(String(membershipA), String(membershipB), String(replacementMembership));
+
+        await app.bean.executor.performAction(
+          'put',
+          '/admin/department/:departmentId/memberships/:membershipId/primary',
+          {
+            params: { departmentId: departmentA.id, membershipId: membershipA },
+            body: { primary: true },
+          },
+        );
+        await app.bean.executor.performAction(
+          'put',
+          '/admin/department/:departmentId/memberships/:membershipId/primary',
+          {
+            params: { departmentId: departmentB.id, membershipId: membershipB },
+            body: { primary: true },
+          },
+        );
+        const primaryA = await app
+          .scope('admin-department')
+          .model.departmentMembership.getById(membershipA);
+        const primaryB = await app
+          .scope('admin-department')
+          .model.departmentMembership.getById(membershipB);
+        assert.equal(primaryA!.primary, false);
+        assert.equal(primaryB!.primary, true);
+
+        await app.bean.executor.performAction(
+          'patch',
+          '/admin/department/:departmentId/memberships/:membershipId',
+          {
+            params: { departmentId: departmentB.id, membershipId: membershipB },
+            body: { enabled: false },
+          },
+        );
+        const disabledPrimary = await app
+          .scope('admin-department')
+          .model.departmentMembership.getById(membershipB);
+        assert.equal(disabledPrimary!.enabled, false);
+        assert.equal(disabledPrimary!.primary, false);
+        const [primaryResult, primaryError] = await catchError(() => {
+          return app.bean.executor.performAction(
+            'put',
+            '/admin/department/:departmentId/memberships/:membershipId/primary',
+            {
+              params: { departmentId: departmentB.id, membershipId: membershipB },
+              body: { primary: true },
+            },
+          );
+        });
+        assert.equal(primaryResult, undefined);
+        assert.equal(primaryError?.code, 'admin-department:1010');
+
+        await app.bean.executor.performAction('put', '/admin/department/:id/manager', {
+          params: { id: departmentA.id },
+          body: { membershipId: membershipA },
+        });
+        const [invalidManagerResult, invalidManagerError] = await catchError(() => {
+          return app.bean.executor.performAction('put', '/admin/department/:id/manager', {
+            params: { id: departmentA.id },
+            body: { membershipId: membershipB },
+          });
+        });
+        assert.equal(invalidManagerResult, undefined);
+        assert.equal(invalidManagerError?.code, 'admin-department:1011');
+
+        const [managerDisableResult, managerDisableError] = await catchError(() => {
+          return app.bean.executor.performAction(
+            'patch',
+            '/admin/department/:departmentId/memberships/:membershipId',
+            {
+              params: { departmentId: departmentA.id, membershipId: membershipA },
+              body: { enabled: false },
+            },
+          );
+        });
+        assert.equal(managerDisableResult, undefined);
+        assert.equal(managerDisableError?.code, 'admin-department:1012');
+        const departmentWithManager = await app
+          .scope('admin-department')
+          .model.department.getById(departmentA.id);
+        assert.equal(String(departmentWithManager!.managerMembershipId), String(membershipA));
+
+        await app.bean.executor.performAction(
+          'delete',
+          '/admin/department/:departmentId/memberships/:membershipId',
+          {
+            params: { departmentId: departmentA.id, membershipId: membershipA },
+            body: { managerMembershipId: replacementMembership },
+          },
+        );
+        membershipIds.splice(membershipIds.indexOf(String(membershipA)), 1);
+        const departmentWithReplacement = await app
+          .scope('admin-department')
+          .model.department.getById(departmentA.id);
+        assert.equal(
+          String(departmentWithReplacement!.managerMembershipId),
+          String(replacementMembership),
+        );
+
+        await app.bean.executor.performAction(
+          'delete',
+          '/admin/department/:departmentId/memberships/:membershipId',
+          {
+            params: { departmentId: departmentA.id, membershipId: replacementMembership },
+            body: { managerMembershipId: null },
+          },
+        );
+        membershipIds.splice(membershipIds.indexOf(String(replacementMembership)), 1);
+        const departmentWithoutManager = await app
+          .scope('admin-department')
+          .model.department.getById(departmentA.id);
+        assert.equal(departmentWithoutManager!.managerMembershipId, undefined);
+      });
+    } finally {
+      await deleteMemberships(membershipIds);
+      await deleteDepartments(departmentIds);
+      await deleteUsers(userIds);
+    }
+  });
+
   it('action:departmentMembership:scopesMembershipsByInstance', async () => {
     const departmentIds: string[] = [];
     const membershipIds: string[] = [];
@@ -314,6 +501,84 @@ describe('departmentMembership.test.ts', { concurrency: false }, () => {
           .model.departmentMembership.getById(membershipId);
         assert.ok(membership);
         assert.equal(membership!.position, 'Scoped');
+      });
+    } finally {
+      await deleteMemberships(membershipIds);
+      await deleteDepartments(departmentIds);
+      await deleteUsers(userIds);
+    }
+  });
+
+  it('action:departmentMembership:serializesPrimaryAssignmentUnderPostgreSQLContention', async t => {
+    const isPostgres = await app.bean.executor.mockCtx(async () => app.ctx.db.dialectName === 'pg');
+    if (!isPostgres) {
+      t.skip('PostgreSQL locking proof');
+      return;
+    }
+
+    const departmentIds: string[] = [];
+    const membershipIds: string[] = [];
+    const userIds: string[] = [];
+    try {
+      let departmentAId: string | undefined;
+      let departmentBId: string | undefined;
+      let membershipAId: string | undefined;
+      let membershipBId: string | undefined;
+      let userId: string | undefined;
+      await app.bean.executor.mockCtx(async () => {
+        const user = await app.bean.user.register({
+          name: `department-primary-race-${crypto.randomUUID()}`,
+        });
+        userId = String(user.id);
+        userIds.push(userId);
+        const departmentA = await departmentService().create({
+          name: `Department-Primary-Race-A-${crypto.randomUUID()}`,
+          parentId: null,
+        });
+        const departmentB = await departmentService().create({
+          name: `Department-Primary-Race-B-${crypto.randomUUID()}`,
+          parentId: null,
+        });
+        departmentAId = String(departmentA.id);
+        departmentBId = String(departmentB.id);
+        departmentIds.push(departmentAId, departmentBId);
+        membershipAId = String(
+          (await departmentService().createMembership(departmentAId, { userId })).id,
+        );
+        membershipBId = String(
+          (await departmentService().createMembership(departmentBId, { userId })).id,
+        );
+        membershipIds.push(membershipAId, membershipBId);
+      });
+
+      assert.ok(departmentAId);
+      assert.ok(departmentBId);
+      assert.ok(membershipAId);
+      assert.ok(membershipBId);
+      const start = createBarrier(2);
+      await Promise.all([
+        app.bean.executor.mockCtx(async () => {
+          await start();
+          await departmentService().updateMembershipPrimary(departmentAId!, membershipAId!, {
+            primary: true,
+          });
+        }),
+        app.bean.executor.mockCtx(async () => {
+          await start();
+          await departmentService().updateMembershipPrimary(departmentBId!, membershipBId!, {
+            primary: true,
+          });
+        }),
+      ]);
+
+      await app.bean.executor.mockCtx(async () => {
+        const memberships = await app.scope('admin-department').model.departmentMembership.select({
+          where: { userId, enabled: true, primary: true },
+        });
+        assert.equal(memberships.length, 1);
+        assert.ok(
+          [String(membershipAId), String(membershipBId)].includes(String(memberships[0].id)),
+        );
       });
     } finally {
       await deleteMemberships(membershipIds);

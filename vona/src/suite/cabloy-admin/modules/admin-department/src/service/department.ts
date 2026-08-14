@@ -7,8 +7,11 @@ import { Core } from 'vona-module-a-core';
 
 import type { DtoDepartmentActivation } from '../dto/departmentActivation.ts';
 import type { DtoDepartmentCreate } from '../dto/departmentCreate.tsx';
+import type { DtoDepartmentManagerUpdate } from '../dto/departmentManagerUpdate.ts';
 import type { DtoDepartmentMembershipCreate } from '../dto/departmentMembershipCreate.ts';
+import type { DtoDepartmentMembershipDelete } from '../dto/departmentMembershipDelete.ts';
 import type { DtoDepartmentMembershipItem } from '../dto/departmentMembershipItem.ts';
+import type { DtoDepartmentMembershipPrimary } from '../dto/departmentMembershipPrimary.ts';
 import type { DtoDepartmentMembershipSelectRes } from '../dto/departmentMembershipSelectRes.ts';
 import type { DtoDepartmentMembershipUpdate } from '../dto/departmentMembershipUpdate.ts';
 import type { DtoDepartmentMove } from '../dto/departmentMove.ts';
@@ -212,29 +215,119 @@ export class ServiceDepartment extends BeanBase {
     });
   }
 
-  @Core.transaction()
   async updateMembership(
+    departmentId: TableIdentity,
+    membershipId: TableIdentity,
+    command: DtoDepartmentMembershipUpdate,
+  ): Promise<void> {
+    if (command.enabled !== false) {
+      await this.updateMembershipInTransaction(departmentId, membershipId, command);
+      return;
+    }
+    const membership = await this.requireMembership(departmentId, membershipId);
+    await this.withPrimaryUser(membership.userId, async () => {
+      await this.updateMembershipInTransaction(departmentId, membershipId, command);
+    });
+  }
+
+  @Core.transaction()
+  async updateMembershipInTransaction(
     departmentId: TableIdentity,
     membershipId: TableIdentity,
     command: DtoDepartmentMembershipUpdate,
   ): Promise<void> {
     const department = await this.requireDepartmentForUpdate(departmentId);
     const membership = await this.requireMembershipForUpdate(department.id, membershipId);
-    if (command.enabled === false && membership.enabled) {
-      this.assertMembershipNotManager(department, membership);
-    }
-    const patch: Partial<Pick<EntityDepartmentMembership, 'position' | 'enabled'>> = {};
+    const disabling = command.enabled === false && membership.enabled;
+    await this.applyManagerMembershipLifecycle(department, membership, command, disabling);
+    const patch: Partial<Pick<EntityDepartmentMembership, 'position' | 'enabled' | 'primary'>> = {};
     if (command.position !== undefined) patch.position = command.position || undefined;
     if (command.enabled !== undefined) patch.enabled = command.enabled;
+    if (disabling && membership.primary) patch.primary = false;
     await this.scope.model.departmentMembership.updateById(membership.id, patch);
   }
 
+  async deleteMembership(
+    departmentId: TableIdentity,
+    membershipId: TableIdentity,
+    command: DtoDepartmentMembershipDelete,
+  ): Promise<void> {
+    const membership = await this.requireMembership(departmentId, membershipId);
+    await this.withPrimaryUser(membership.userId, async () => {
+      await this.deleteMembershipInTransaction(departmentId, membershipId, command);
+    });
+  }
+
   @Core.transaction()
-  async deleteMembership(departmentId: TableIdentity, membershipId: TableIdentity): Promise<void> {
+  async deleteMembershipInTransaction(
+    departmentId: TableIdentity,
+    membershipId: TableIdentity,
+    command: DtoDepartmentMembershipDelete,
+  ): Promise<void> {
     const department = await this.requireDepartmentForUpdate(departmentId);
     const membership = await this.requireMembershipForUpdate(department.id, membershipId);
-    this.assertMembershipNotManager(department, membership);
+    await this.applyManagerMembershipLifecycle(department, membership, command, true);
+    if (membership.primary) {
+      await this.scope.model.departmentMembership.updateById(membership.id, { primary: false });
+    }
     await this.scope.model.departmentMembership.deleteById(membership.id);
+  }
+
+  async updateMembershipPrimary(
+    departmentId: TableIdentity,
+    membershipId: TableIdentity,
+    command: DtoDepartmentMembershipPrimary,
+  ): Promise<void> {
+    const membership = await this.requireMembership(departmentId, membershipId);
+    await this.withPrimaryUser(membership.userId, async () => {
+      await this.updateMembershipPrimaryInTransaction(departmentId, membershipId, command);
+    });
+  }
+
+  @Core.transaction()
+  async updateMembershipPrimaryInTransaction(
+    departmentId: TableIdentity,
+    membershipId: TableIdentity,
+    command: DtoDepartmentMembershipPrimary,
+  ): Promise<void> {
+    const department = await this.requireDepartmentForUpdate(departmentId);
+    const membership = await this.requireMembershipForUpdate(department.id, membershipId);
+    if (!command.primary) {
+      if (membership.primary) {
+        await this.scope.model.departmentMembership.updateById(membership.id, { primary: false });
+      }
+      return;
+    }
+    if (!membership.enabled) this.scope.error.DepartmentMembershipPrimaryRequiresEnabled.throw();
+    const primaries = await this.scope.model.departmentMembership.select({
+      where: { userId: membership.userId, enabled: true, primary: true },
+      orders: [['id', 'asc']],
+    });
+    for (const primary of primaries) {
+      const current = await this.scope.model.departmentMembership.getByIdForUpdate(primary.id);
+      if (current && String(current.id) !== String(membership.id)) {
+        await this.scope.model.departmentMembership.updateById(current.id, { primary: false });
+      }
+    }
+    await this.scope.model.departmentMembership.updateById(membership.id, { primary: true });
+  }
+
+  @Core.transaction()
+  async updateManager(id: TableIdentity, command: DtoDepartmentManagerUpdate): Promise<void> {
+    const department = await this.requireDepartmentForUpdate(id);
+    if (command.membershipId === null) {
+      await this.scope.model.department.updateById(department.id, {
+        managerMembershipId: undefined,
+      });
+      return;
+    }
+    const membership = await this.requireEnabledMembershipForManager(
+      department,
+      command.membershipId,
+    );
+    await this.scope.model.department.updateById(department.id, {
+      managerMembershipId: membership.id,
+    });
   }
 
   private normalizeParentId(parentId: TableIdentity | null | undefined): TableIdentity | null {
@@ -249,6 +342,17 @@ export class ServiceDepartment extends BeanBase {
     return department;
   }
 
+  private async requireMembership(
+    departmentId: TableIdentity,
+    membershipId: TableIdentity,
+  ): Promise<EntityDepartmentMembership> {
+    const membership = await this.scope.model.departmentMembership.getById(membershipId);
+    if (!membership || String(membership.departmentId) !== String(departmentId)) {
+      this.app.throw(404, 'Department membership not found');
+    }
+    return membership;
+  }
+
   private async requireMembershipForUpdate(
     departmentId: TableIdentity,
     membershipId: TableIdentity,
@@ -258,6 +362,58 @@ export class ServiceDepartment extends BeanBase {
       this.app.throw(404, 'Department membership not found');
     }
     return membership;
+  }
+
+  private async requireEnabledMembershipForManager(
+    department: EntityDepartment,
+    membershipId: TableIdentity,
+  ): Promise<EntityDepartmentMembership> {
+    const membership = await this.scope.model.departmentMembership.getByIdForUpdate(membershipId);
+    if (!membership) this.app.throw(404, 'Department membership not found');
+    if (String(membership.departmentId) !== String(department.id) || !membership.enabled) {
+      this.scope.error.DepartmentManagerMembershipInvalid.throw();
+    }
+    return membership;
+  }
+
+  private async applyManagerMembershipLifecycle(
+    department: EntityDepartment,
+    membership: EntityDepartmentMembership,
+    command: { managerMembershipId?: TableIdentity | null },
+    changing: boolean,
+  ): Promise<void> {
+    if (!changing) {
+      if (command.managerMembershipId !== undefined) {
+        this.scope.error.DepartmentMembershipManagerTransitionInvalid.throw();
+      }
+      return;
+    }
+    const currentManager = String(department.managerMembershipId) === String(membership.id);
+    if (!currentManager) {
+      if (command.managerMembershipId !== undefined) {
+        this.scope.error.DepartmentMembershipManagerTransitionInvalid.throw();
+      }
+      return;
+    }
+    if (command.managerMembershipId === undefined) {
+      this.scope.error.DepartmentMembershipManagerReplacementRequired.throw();
+    }
+    if (command.managerMembershipId === null) {
+      await this.scope.model.department.updateById(department.id, {
+        managerMembershipId: undefined,
+      });
+      return;
+    }
+    const replacement = await this.requireEnabledMembershipForManager(
+      department,
+      command.managerMembershipId!,
+    );
+    if (String(replacement.id) === String(membership.id)) {
+      this.scope.error.DepartmentManagerMembershipInvalid.throw();
+    }
+    await this.scope.model.department.updateById(department.id, {
+      managerMembershipId: replacement.id,
+    });
   }
 
   private async ensureParent(parentId: TableIdentity | null | undefined): Promise<void> {
@@ -352,15 +508,6 @@ export class ServiceDepartment extends BeanBase {
     }
   }
 
-  private assertMembershipNotManager(
-    department: EntityDepartment,
-    membership: EntityDepartmentMembership,
-  ): void {
-    if (String(department.managerMembershipId) === String(membership.id)) {
-      this.scope.error.DepartmentMembershipManagerReferenced.throw();
-    }
-  }
-
   private sameParent(
     left: TableIdentity | null | undefined,
     right: TableIdentity | null | undefined,
@@ -394,6 +541,13 @@ export class ServiceDepartment extends BeanBase {
   ): Promise<T> {
     return await this.$scope.redlock.service.redlock.lock(
       `department.membership.${departmentId}.${userId}`,
+      fn,
+    );
+  }
+
+  private async withPrimaryUser<T>(userId: TableIdentity, fn: () => Promise<T>): Promise<T> {
+    return await this.$scope.redlock.service.redlock.lock(
+      `department.membership-primary.${userId}`,
       fn,
     );
   }

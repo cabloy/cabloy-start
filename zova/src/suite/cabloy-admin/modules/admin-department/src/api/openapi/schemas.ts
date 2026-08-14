@@ -155,6 +155,18 @@ export type ApiSchemaAdminDepartmentDtoDepartmentMembershipUpdate =
   components['schemas']['admin-department.dto.departmentMembershipUpdate'];
 export type ApiSchemaAdminDepartmentDtoDepartmentMembershipUpdatePartial =
   Partial<ApiSchemaAdminDepartmentDtoDepartmentMembershipUpdate>;
+export type ApiSchemaAdminDepartmentDtoDepartmentMembershipDelete =
+  components['schemas']['admin-department.dto.departmentMembershipDelete'];
+export type ApiSchemaAdminDepartmentDtoDepartmentMembershipDeletePartial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentMembershipDelete>;
+export type ApiSchemaAdminDepartmentDtoDepartmentMembershipPrimary =
+  components['schemas']['admin-department.dto.departmentMembershipPrimary'];
+export type ApiSchemaAdminDepartmentDtoDepartmentMembershipPrimaryPartial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentMembershipPrimary>;
+export type ApiSchemaAdminDepartmentDtoDepartmentManagerUpdate =
+  components['schemas']['admin-department.dto.departmentManagerUpdate'];
+export type ApiSchemaAdminDepartmentDtoDepartmentManagerUpdatePartial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentManagerUpdate>;
 export type ApiSchemaAdminDepartmentDtoDepartmentMove =
   components['schemas']['admin-department.dto.departmentMove'];
 export type ApiSchemaAdminDepartmentDtoDepartmentMovePartial =

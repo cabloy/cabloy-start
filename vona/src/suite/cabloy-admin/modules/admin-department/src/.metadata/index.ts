@@ -1,5 +1,5 @@
 // eslint-disable
-import type { TypeEntityMeta,TypeModelsClassLikeGeneral,TypeSymbolKeyFieldsMore } from 'vona-module-a-orm';
+import type { TypeEntityMeta,TypeModelsClassLikeGeneral,TypeSymbolKeyFieldsMore,IModelRelationBelongsTo } from 'vona-module-a-orm';
 import type { TypeEntityOptionsFields,TypeControllerOptionsActions } from 'vona-module-a-openapi';
 import type { TableIdentity } from 'table-identity';
 /** entity: begin */
@@ -9,16 +9,16 @@ import type { IEntityOptionsDepartment } from '../entity/department.tsx';
 import type { IEntityOptionsDepartmentMembership } from '../entity/departmentMembership.tsx';
 import 'vona-module-a-orm';
 declare module 'vona-module-a-orm' {
-
+  
     export interface IEntityRecord {
       'admin-department:department': IEntityOptionsDepartment;
 'admin-department:departmentMembership': IEntityOptionsDepartmentMembership;
     }
 
-
+  
 }
 declare module 'vona-module-admin-department' {
-
+   
 }
 /** entity: end */
 /** entity: begin */
@@ -41,7 +41,7 @@ declare module 'vona-module-a-orm' {
   }
 }
 declare module 'vona-module-admin-department' {
-
+  
     export interface IEntityOptionsDepartment {
       fields?: TypeEntityOptionsFields<EntityDepartment, IEntityOptionsDepartment[TypeSymbolKeyFieldsMore]>;
     }
@@ -58,16 +58,16 @@ import type { IModelOptionsDepartment } from '../model/department.ts';
 import type { IModelOptionsDepartmentMembership } from '../model/departmentMembership.ts';
 import 'vona-module-a-orm';
 declare module 'vona-module-a-orm' {
-
+  
     export interface IModelRecord {
       'admin-department:department': IModelOptionsDepartment;
 'admin-department:departmentMembership': IModelOptionsDepartmentMembership;
     }
 
-
+  
 }
 declare module 'vona-module-admin-department' {
-
+  
         export interface ModelDepartment {
           /** @internal */
           get scope(): ScopeModuleAdminDepartment;
@@ -88,7 +88,7 @@ declare module 'vona-module-admin-department' {
             get $beanFullName(): 'admin-department.model.departmentMembership';
             get $onionName(): 'admin-department:departmentMembership';
             get $onionOptions(): IModelOptionsDepartmentMembership;
-          }
+          } 
 }
 /** model: end */
 /** model: begin */
@@ -113,7 +113,11 @@ declare module 'vona' {
 import type { IModelGetOptions, IModelMethodOptions, IModelSelectParams, TypeModelSelectAndCount, TypeModelRelationResult, TypeModelWhere, IModelInsertOptions, TypeModelMutateRelationData, IModelDeleteOptions, IModelUpdateOptions, IModelMutateOptions, IModelSelectCountParams, IModelIncrementParams, IModelSelectAggrParams, TypeModelAggrRelationResult, IModelSelectGroupParams, TypeModelGroupRelationResult } from 'vona-module-a-orm';
 import { SymbolKeyEntity, SymbolKeyEntityMeta, SymbolKeyModelOptions } from 'vona-module-a-orm';
 declare module 'vona-module-admin-department' {
-
+  export interface IModelOptionsDepartment {
+        relations: {
+          parent: IModelRelationBelongsTo<'admin-department:department', 'admin-department:department', false, 'id'|'name'>;
+        };
+      }
   export interface ModelDepartment {
       [SymbolKeyEntity]: EntityDepartment;
       [SymbolKeyEntityMeta]: EntityDepartmentMeta;
@@ -209,15 +213,15 @@ export * from '../service/department.ts';
 
 import 'vona-module-a-bean';
 declare module 'vona-module-a-bean' {
-
+  
     export interface IServiceRecord {
       'admin-department:department': never;
     }
 
-
+  
 }
 declare module 'vona-module-admin-department' {
-
+  
         export interface ServiceDepartment {
           /** @internal */
           get scope(): ScopeModuleAdminDepartment;
@@ -226,8 +230,8 @@ declare module 'vona-module-admin-department' {
           export interface ServiceDepartment {
             get $beanFullName(): 'admin-department.service.department';
             get $onionName(): 'admin-department:department';
-
-          }
+            
+          } 
 }
 /** service: end */
 /** service: begin */
@@ -252,17 +256,17 @@ export * from '../bean/meta.version.ts';
 import type { IMetaOptionsIndex } from 'vona-module-a-index';
 import 'vona-module-a-meta';
 declare module 'vona-module-a-meta' {
-
+  
     export interface IMetaRecord {
       'admin-department:index': IMetaOptionsIndex;
 'admin-department:redlock': never;
 'admin-department:version': never;
     }
 
-
+  
 }
 declare module 'vona-module-admin-department' {
-
+  
         export interface MetaIndex {
           /** @internal */
           get scope(): ScopeModuleAdminDepartment;
@@ -282,7 +286,7 @@ declare module 'vona-module-admin-department' {
           export interface MetaRedlock {
             get $beanFullName(): 'admin-department.meta.redlock';
             get $onionName(): 'admin-department:redlock';
-
+            
           }
 
         export interface MetaVersion {
@@ -293,8 +297,8 @@ declare module 'vona-module-admin-department' {
           export interface MetaVersion {
             get $beanFullName(): 'admin-department.meta.version';
             get $onionName(): 'admin-department:version';
-
-          }
+            
+          } 
 }
 /** meta: end */
 /** meta redlock: begin */
@@ -304,8 +308,11 @@ import type { MetaRedlock } from '../bean/meta.redlock.ts';
 export * from '../dto/departmentActivation.ts';
 export * from '../dto/departmentBase.tsx';
 export * from '../dto/departmentCreate.tsx';
+export * from '../dto/departmentManagerUpdate.ts';
 export * from '../dto/departmentMembershipCreate.ts';
+export * from '../dto/departmentMembershipDelete.ts';
 export * from '../dto/departmentMembershipItem.ts';
+export * from '../dto/departmentMembershipPrimary.ts';
 export * from '../dto/departmentMembershipSelectRes.ts';
 export * from '../dto/departmentMembershipUpdate.ts';
 export * from '../dto/departmentMove.ts';
@@ -319,8 +326,11 @@ export * from '../dto/departmentView.tsx';
 import type { IDtoOptionsDepartmentActivation } from '../dto/departmentActivation.ts';
 import type { IDtoOptionsDepartmentBase } from '../dto/departmentBase.tsx';
 import type { IDtoOptionsDepartmentCreate } from '../dto/departmentCreate.tsx';
+import type { IDtoOptionsDepartmentManagerUpdate } from '../dto/departmentManagerUpdate.ts';
 import type { IDtoOptionsDepartmentMembershipCreate } from '../dto/departmentMembershipCreate.ts';
+import type { IDtoOptionsDepartmentMembershipDelete } from '../dto/departmentMembershipDelete.ts';
 import type { IDtoOptionsDepartmentMembershipItem } from '../dto/departmentMembershipItem.ts';
+import type { IDtoOptionsDepartmentMembershipPrimary } from '../dto/departmentMembershipPrimary.ts';
 import type { IDtoOptionsDepartmentMembershipSelectRes } from '../dto/departmentMembershipSelectRes.ts';
 import type { IDtoOptionsDepartmentMembershipUpdate } from '../dto/departmentMembershipUpdate.ts';
 import type { IDtoOptionsDepartmentMove } from '../dto/departmentMove.ts';
@@ -333,13 +343,16 @@ import type { IDtoOptionsDepartmentUpdate } from '../dto/departmentUpdate.tsx';
 import type { IDtoOptionsDepartmentView } from '../dto/departmentView.tsx';
 import 'vona-module-a-web';
 declare module 'vona-module-a-web' {
-
+  
     export interface IDtoRecord {
       'admin-department:departmentActivation': IDtoOptionsDepartmentActivation;
 'admin-department:departmentBase': IDtoOptionsDepartmentBase;
 'admin-department:departmentCreate': IDtoOptionsDepartmentCreate;
+'admin-department:departmentManagerUpdate': IDtoOptionsDepartmentManagerUpdate;
 'admin-department:departmentMembershipCreate': IDtoOptionsDepartmentMembershipCreate;
+'admin-department:departmentMembershipDelete': IDtoOptionsDepartmentMembershipDelete;
 'admin-department:departmentMembershipItem': IDtoOptionsDepartmentMembershipItem;
+'admin-department:departmentMembershipPrimary': IDtoOptionsDepartmentMembershipPrimary;
 'admin-department:departmentMembershipSelectRes': IDtoOptionsDepartmentMembershipSelectRes;
 'admin-department:departmentMembershipUpdate': IDtoOptionsDepartmentMembershipUpdate;
 'admin-department:departmentMove': IDtoOptionsDepartmentMove;
@@ -352,18 +365,21 @@ declare module 'vona-module-a-web' {
 'admin-department:departmentView': IDtoOptionsDepartmentView;
     }
 
-
+  
 }
 declare module 'vona-module-admin-department' {
-
+   
 }
 /** dto: end */
 /** dto: begin */
 import type { DtoDepartmentActivation } from '../dto/departmentActivation.ts';
 import type { DtoDepartmentBase } from '../dto/departmentBase.tsx';
 import type { DtoDepartmentCreate } from '../dto/departmentCreate.tsx';
+import type { DtoDepartmentManagerUpdate } from '../dto/departmentManagerUpdate.ts';
 import type { DtoDepartmentMembershipCreate } from '../dto/departmentMembershipCreate.ts';
+import type { DtoDepartmentMembershipDelete } from '../dto/departmentMembershipDelete.ts';
 import type { DtoDepartmentMembershipItem } from '../dto/departmentMembershipItem.ts';
+import type { DtoDepartmentMembershipPrimary } from '../dto/departmentMembershipPrimary.ts';
 import type { DtoDepartmentMembershipSelectRes } from '../dto/departmentMembershipSelectRes.ts';
 import type { DtoDepartmentMembershipUpdate } from '../dto/departmentMembershipUpdate.ts';
 import type { DtoDepartmentMove } from '../dto/departmentMove.ts';
@@ -375,7 +391,7 @@ import type { DtoDepartmentTree } from '../dto/departmentTree.ts';
 import type { DtoDepartmentUpdate } from '../dto/departmentUpdate.tsx';
 import type { DtoDepartmentView } from '../dto/departmentView.tsx';
 declare module 'vona-module-admin-department' {
-
+  
     export interface IDtoOptionsDepartmentActivation {
       fields?: TypeEntityOptionsFields<DtoDepartmentActivation, IDtoOptionsDepartmentActivation[TypeSymbolKeyFieldsMore]>;
     }
@@ -388,12 +404,24 @@ declare module 'vona-module-admin-department' {
       fields?: TypeEntityOptionsFields<DtoDepartmentCreate, IDtoOptionsDepartmentCreate[TypeSymbolKeyFieldsMore]>;
     }
 
+    export interface IDtoOptionsDepartmentManagerUpdate {
+      fields?: TypeEntityOptionsFields<DtoDepartmentManagerUpdate, IDtoOptionsDepartmentManagerUpdate[TypeSymbolKeyFieldsMore]>;
+    }
+
     export interface IDtoOptionsDepartmentMembershipCreate {
       fields?: TypeEntityOptionsFields<DtoDepartmentMembershipCreate, IDtoOptionsDepartmentMembershipCreate[TypeSymbolKeyFieldsMore]>;
     }
 
+    export interface IDtoOptionsDepartmentMembershipDelete {
+      fields?: TypeEntityOptionsFields<DtoDepartmentMembershipDelete, IDtoOptionsDepartmentMembershipDelete[TypeSymbolKeyFieldsMore]>;
+    }
+
     export interface IDtoOptionsDepartmentMembershipItem {
       fields?: TypeEntityOptionsFields<DtoDepartmentMembershipItem, IDtoOptionsDepartmentMembershipItem[TypeSymbolKeyFieldsMore]>;
+    }
+
+    export interface IDtoOptionsDepartmentMembershipPrimary {
+      fields?: TypeEntityOptionsFields<DtoDepartmentMembershipPrimary, IDtoOptionsDepartmentMembershipPrimary[TypeSymbolKeyFieldsMore]>;
     }
 
     export interface IDtoOptionsDepartmentMembershipSelectRes {
@@ -442,15 +470,15 @@ export * from '../controller/department.ts';
 import type { IControllerOptionsDepartment } from '../controller/department.ts';
 import 'vona-module-a-web';
 declare module 'vona-module-a-web' {
-
+  
     export interface IControllerRecord {
       'admin-department:department': IControllerOptionsDepartment;
     }
 
-
+  
 }
 declare module 'vona-module-admin-department' {
-
+  
         export interface ControllerDepartment {
           /** @internal */
           get scope(): ScopeModuleAdminDepartment;
@@ -460,14 +488,14 @@ declare module 'vona-module-admin-department' {
             get $beanFullName(): 'admin-department.controller.department';
             get $onionName(): 'admin-department:department';
             get $onionOptions(): IControllerOptionsDepartment;
-          }
+          } 
 }
 /** controller: end */
 /** controller: begin */
 // @ts-ignore ignore
 import type { ControllerDepartment } from '../controller/department.ts';
 declare module 'vona-module-admin-department' {
-
+  
     export interface IControllerOptionsDepartment {
       actions?: TypeControllerOptionsActions<ControllerDepartment>;
     }
@@ -492,7 +520,9 @@ export interface IApiPathDeleteRecord{
 '/admin/department/:departmentId/memberships/:membershipId': undefined;
     }
 export interface IApiPathPutRecord{
-        '/admin/department/:id/move': undefined;
+        '/admin/department/:departmentId/memberships/:membershipId/primary': undefined;
+'/admin/department/:id/manager': undefined;
+'/admin/department/:id/move': undefined;
 '/admin/department/:id/reorder': undefined;
 '/admin/department/:id/activation': undefined;
     }
@@ -504,22 +534,22 @@ import 'vona-module-a-openapi';
       'admin-department:department': never;
     }
   }
-
+  
 /** controller: end */
 /** ssrMenu: begin */
 export * from '../bean/ssrMenu.department.ts';
 import type { ISsrMenuOptionsDepartment } from '../bean/ssrMenu.department.ts';
 import 'vona-module-a-ssr';
 declare module 'vona-module-a-ssr' {
-
+  
     export interface ISsrMenuRecord {
       'admin-department:department': ISsrMenuOptionsDepartment;
     }
 
-
+  
 }
 declare module 'vona-module-admin-department' {
-
+  
         export interface SsrMenuDepartment {
           /** @internal */
           get scope(): ScopeModuleAdminDepartment;
@@ -529,7 +559,7 @@ declare module 'vona-module-admin-department' {
             get $beanFullName(): 'admin-department.ssrMenu.department';
             get $onionName(): 'admin-department:department';
             get $onionOptions(): ISsrMenuOptionsDepartment;
-          }
+          } 
 }
 /** ssrMenu: end */
 /** locale: begin */
@@ -565,8 +595,8 @@ declare module 'vona' {
   export interface IBeanScopeContainer {
     adminDepartment: ScopeModuleAdminDepartment;
   }
-
-
+  
+  
 
   export interface IBeanScopeLocale {
     'admin-department': (typeof locales)[TypeLocaleBase];

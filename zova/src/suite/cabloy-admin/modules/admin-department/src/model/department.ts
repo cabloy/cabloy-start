@@ -6,7 +6,10 @@ import { Use, usePrepareArg } from 'zova';
 import { BeanModelBase, Model } from 'zova-module-a-model';
 
 import type {
+  ApiSchemaAdminDepartmentDtoDepartmentManagerUpdate,
   ApiSchemaAdminDepartmentDtoDepartmentMembershipCreate,
+  ApiSchemaAdminDepartmentDtoDepartmentMembershipDelete,
+  ApiSchemaAdminDepartmentDtoDepartmentMembershipPrimary,
   ApiSchemaAdminDepartmentDtoDepartmentMembershipSelectRes,
   ApiSchemaAdminDepartmentDtoDepartmentMembershipUpdate,
   ApiSchemaAdminDepartmentDtoDepartmentTree,
@@ -74,13 +77,45 @@ export class ModelDepartment extends BeanModelBase {
   }
 
   deleteMembership(departmentId: TableIdentity, membershipId: TableIdentity) {
-    return this.$$modelResource.mutationItem<void, void>({
+    return this.$$modelResource.mutationItem<
+      void,
+      ApiSchemaAdminDepartmentDtoDepartmentMembershipDelete
+    >({
       id: departmentId,
       action: `deleteMembership-${membershipId}`,
-      mutationFn: async () => {
+      mutationFn: async body => {
         await this.scope.api.adminDepartment.deleteMembership({
           params: { departmentId, membershipId },
+          data: body,
         });
+      },
+    });
+  }
+
+  updateMembershipPrimary(departmentId: TableIdentity, membershipId: TableIdentity) {
+    return this.$$modelResource.mutationItem<
+      void,
+      ApiSchemaAdminDepartmentDtoDepartmentMembershipPrimary
+    >({
+      id: departmentId,
+      action: `updateMembershipPrimary-${membershipId}`,
+      mutationFn: async body => {
+        await this.scope.api.adminDepartment.updateMembershipPrimary(body, {
+          params: { departmentId, membershipId },
+        });
+      },
+    });
+  }
+
+  updateManager(id: TableIdentity) {
+    return this.$$modelResource.mutationItem<
+      void,
+      ApiSchemaAdminDepartmentDtoDepartmentManagerUpdate
+    >({
+      id,
+      action: 'updateManager',
+      mutationFn: async body => {
+        await this.scope.api.adminDepartment.updateManager(body, { params: { id } });
       },
     });
   }

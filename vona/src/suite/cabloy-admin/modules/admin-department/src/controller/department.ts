@@ -13,7 +13,10 @@ import type { ModelDepartment } from '../model/department.ts';
 
 import { DtoDepartmentActivation } from '../dto/departmentActivation.ts';
 import { DtoDepartmentCreate } from '../dto/departmentCreate.tsx';
+import { DtoDepartmentManagerUpdate } from '../dto/departmentManagerUpdate.ts';
 import { DtoDepartmentMembershipCreate } from '../dto/departmentMembershipCreate.ts';
+import { DtoDepartmentMembershipDelete } from '../dto/departmentMembershipDelete.ts';
+import { DtoDepartmentMembershipPrimary } from '../dto/departmentMembershipPrimary.ts';
 import { DtoDepartmentMembershipSelectRes } from '../dto/departmentMembershipSelectRes.ts';
 import { DtoDepartmentMembershipUpdate } from '../dto/departmentMembershipUpdate.ts';
 import { DtoDepartmentMove } from '../dto/departmentMove.ts';
@@ -118,8 +121,34 @@ export class ControllerDepartment extends BeanBase {
   async deleteMembership(
     @Arg.param('departmentId', v.tableIdentity()) departmentId: TableIdentity,
     @Arg.param('membershipId', v.tableIdentity()) membershipId: TableIdentity,
+    @Arg.body() command: DtoDepartmentMembershipDelete,
   ): Promise<void> {
-    await this.scope.service.department.deleteMembership(departmentId, membershipId);
+    await this.scope.service.department.deleteMembership(departmentId, membershipId, command);
+  }
+
+  @Web.put(':departmentId/memberships/:membershipId/primary')
+  @Api.body(z.null())
+  @Passport.systemAdmin()
+  async updateMembershipPrimary(
+    @Arg.param('departmentId', v.tableIdentity()) departmentId: TableIdentity,
+    @Arg.param('membershipId', v.tableIdentity()) membershipId: TableIdentity,
+    @Arg.body() command: DtoDepartmentMembershipPrimary,
+  ): Promise<void> {
+    await this.scope.service.department.updateMembershipPrimary(
+      departmentId,
+      membershipId,
+      command,
+    );
+  }
+
+  @Web.put(':id/manager')
+  @Api.body(z.null())
+  @Passport.systemAdmin()
+  async updateManager(
+    @Arg.param('id', v.tableIdentity()) id: TableIdentity,
+    @Arg.body() command: DtoDepartmentManagerUpdate,
+  ): Promise<void> {
+    await this.scope.service.department.updateManager(id, command);
   }
 
   @Web.put(':id/move')

@@ -496,6 +496,38 @@ export interface paths {
     patch: operations['AdminDepartment_updateMembership'];
     trace?: never;
   };
+  '/api/admin/department/{departmentId}/memberships/{membershipId}/primary': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put: operations['AdminDepartment_updateMembershipPrimary'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/department/{id}/manager': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put: operations['AdminDepartment_updateManager'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/admin/department/{id}/move': {
     parameters: {
       query?: never;
@@ -2126,6 +2158,20 @@ export interface components {
       /** @description Position */
       position?: string | undefined;
       enabled?: boolean | undefined;
+      /** @description Department Manager */
+      managerMembershipId?: number | string | undefined;
+    };
+    'admin-department.dto.departmentMembershipDelete': {
+      /** @description Department Manager */
+      managerMembershipId?: number | string | undefined;
+    };
+    'admin-department.dto.departmentMembershipPrimary': {
+      /** @description Primary */
+      primary: boolean;
+    };
+    'admin-department.dto.departmentManagerUpdate': {
+      /** @description Department Manager */
+      membershipId: number | string | undefined;
     };
     'admin-department.dto.departmentMove': {
       /** @description Parent Department */
@@ -3778,7 +3824,11 @@ export interface operations {
       };
       cookie?: never;
     };
-    requestBody?: never;
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-department.dto.departmentMembershipDelete'];
+      };
+    };
     responses: {
       200: {
         headers: {
@@ -3808,6 +3858,67 @@ export interface operations {
     requestBody: {
       content: {
         'application/json': components['schemas']['admin-department.dto.departmentMembershipUpdate'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminDepartment_updateMembershipPrimary: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        departmentId: number | string;
+        membershipId: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-department.dto.departmentMembershipPrimary'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminDepartment_updateManager: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-department.dto.departmentManagerUpdate'];
       };
     };
     responses: {

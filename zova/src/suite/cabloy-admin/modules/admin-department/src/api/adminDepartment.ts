@@ -92,6 +92,8 @@ export type ApiApiAdminDepartmentdeleteMembershipPath =
 export type ApiApiAdminDepartmentdeleteMembershipMethod = 'delete';
 export type ApiApiAdminDepartmentdeleteMembershipRequestParams =
   paths[ApiApiAdminDepartmentdeleteMembershipPath][ApiApiAdminDepartmentdeleteMembershipMethod]['parameters']['path'];
+export type ApiApiAdminDepartmentdeleteMembershipRequestBody =
+  components['schemas']['admin-department.dto.departmentMembershipDelete'];
 export type ApiApiAdminDepartmentdeleteMembershipResponseBody =
   paths[ApiApiAdminDepartmentdeleteMembershipPath][ApiApiAdminDepartmentdeleteMembershipMethod]['responses']['200']['content']['application/json']['data'];
 
@@ -107,6 +109,30 @@ export type ApiApiAdminDepartmentupdateMembershipRequestBody =
   components['schemas']['admin-department.dto.departmentMembershipUpdate'];
 export type ApiApiAdminDepartmentupdateMembershipResponseBody =
   paths[ApiApiAdminDepartmentupdateMembershipPath][ApiApiAdminDepartmentupdateMembershipMethod]['responses']['200']['content']['application/json']['data'];
+
+/** AdminDepartment_updateMembershipPrimary */
+export const ApiApiAdminDepartmentupdateMembershipPrimaryPath =
+  '/api/admin/department/{departmentId}/memberships/{membershipId}/primary';
+export type ApiApiAdminDepartmentupdateMembershipPrimaryPath =
+  '/api/admin/department/{departmentId}/memberships/{membershipId}/primary';
+export type ApiApiAdminDepartmentupdateMembershipPrimaryMethod = 'put';
+export type ApiApiAdminDepartmentupdateMembershipPrimaryRequestParams =
+  paths[ApiApiAdminDepartmentupdateMembershipPrimaryPath][ApiApiAdminDepartmentupdateMembershipPrimaryMethod]['parameters']['path'];
+export type ApiApiAdminDepartmentupdateMembershipPrimaryRequestBody =
+  components['schemas']['admin-department.dto.departmentMembershipPrimary'];
+export type ApiApiAdminDepartmentupdateMembershipPrimaryResponseBody =
+  paths[ApiApiAdminDepartmentupdateMembershipPrimaryPath][ApiApiAdminDepartmentupdateMembershipPrimaryMethod]['responses']['200']['content']['application/json']['data'];
+
+/** AdminDepartment_updateManager */
+export const ApiApiAdminDepartmentupdateManagerPath = '/api/admin/department/{id}/manager';
+export type ApiApiAdminDepartmentupdateManagerPath = '/api/admin/department/{id}/manager';
+export type ApiApiAdminDepartmentupdateManagerMethod = 'put';
+export type ApiApiAdminDepartmentupdateManagerRequestParams =
+  paths[ApiApiAdminDepartmentupdateManagerPath][ApiApiAdminDepartmentupdateManagerMethod]['parameters']['path'];
+export type ApiApiAdminDepartmentupdateManagerRequestBody =
+  components['schemas']['admin-department.dto.departmentManagerUpdate'];
+export type ApiApiAdminDepartmentupdateManagerResponseBody =
+  paths[ApiApiAdminDepartmentupdateManagerPath][ApiApiAdminDepartmentupdateManagerMethod]['responses']['200']['content']['application/json']['data'];
 
 /** AdminDepartment_move */
 export const ApiApiAdminDepartmentmovePath = '/api/admin/department/{id}/move';
@@ -247,6 +273,32 @@ export class ApiAdminDepartment extends BeanApiBase {
   ) {
     return this.$fetch.patch<any, ApiApiAdminDepartmentupdateMembershipResponseBody>(
       this.$pathTranslate(ApiApiAdminDepartmentupdateMembershipPath, options.params),
+      body,
+      this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
+    );
+  }
+
+  updateMembershipPrimary(
+    body: ApiApiAdminDepartmentupdateMembershipPrimaryRequestBody,
+    options: {
+      params: ApiApiAdminDepartmentupdateMembershipPrimaryRequestParams;
+    } & IApiActionOptions,
+  ) {
+    return this.$fetch.put<any, ApiApiAdminDepartmentupdateMembershipPrimaryResponseBody>(
+      this.$pathTranslate(ApiApiAdminDepartmentupdateMembershipPrimaryPath, options.params),
+      body,
+      this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
+    );
+  }
+
+  updateManager(
+    body: ApiApiAdminDepartmentupdateManagerRequestBody,
+    options: {
+      params: ApiApiAdminDepartmentupdateManagerRequestParams;
+    } & IApiActionOptions,
+  ) {
+    return this.$fetch.put<any, ApiApiAdminDepartmentupdateManagerResponseBody>(
+      this.$pathTranslate(ApiApiAdminDepartmentupdateManagerPath, options.params),
       body,
       this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
     );
