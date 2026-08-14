@@ -91,7 +91,7 @@ export class ModelDepartment extends BeanModelBase {
       action: 'move',
       mutationFn: async parentId => {
         await (this.scope.api.adminDepartment.move(
-          { parentId },
+          { parentId: parentId ?? undefined },
           { params: { id } },
         ) as Promise<void>);
       },
