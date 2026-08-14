@@ -6,7 +6,7 @@ import type {
 } from 'zova-module-a-openapi';
 import type { ControllerBlockPage } from 'zova-module-start-page';
 
-import { VCard, VCardText, VTreeview } from 'vuetify/components';
+import { VCard, VCardText, VTreeview, VTreeviewItem } from 'vuetify/components';
 import { BeanControllerBase } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { ZBlockPage } from 'zova-module-start-page';
@@ -39,7 +39,7 @@ export class ControllerBlockDepartment extends BeanControllerBase {
 
   pageRef: ControllerBlockPage | undefined;
   modelDepartment: ModelDepartment;
-  selectedKey = AllDepartments;
+  selectedKey: TableIdentity | typeof AllDepartments = AllDepartments;
 
   protected async __init__() {
     this.modelDepartment = (await this.bean._getBeanSelector(
@@ -54,7 +54,7 @@ export class ControllerBlockDepartment extends BeanControllerBase {
   }
 
   get selectedId(): TableIdentity | undefined {
-    return this.selectedKey === AllDepartments ? undefined : (this.selectedKey as TableIdentity);
+    return this.selectedKey === AllDepartments ? undefined : this.selectedKey;
   }
 
   get queryFixed() {
@@ -62,9 +62,19 @@ export class ControllerBlockDepartment extends BeanControllerBase {
   }
 
   onActivated(value: unknown) {
-    const activated = Array.isArray(value) ? value[0] : value;
-    if (activated === undefined || activated === null) return;
-    this.selectedKey = String(activated);
+    const activated =
+      value instanceof Set
+        ? value.values().next().value
+        : Array.isArray(value)
+          ? value[0]
+          : value;
+    if (typeof activated !== 'number' && typeof activated !== 'string') return;
+    this.selectDepartment(activated);
+  }
+
+  selectDepartment(id: TableIdentity | typeof AllDepartments) {
+    if (this.selectedKey === id) return;
+    this.selectedKey = id;
     this.pageRef?.setQueryFixed(this.queryFixed);
   }
 
@@ -92,6 +102,30 @@ export class ControllerBlockDepartment extends BeanControllerBase {
               openAll
               density="compact"
               onUpdate:activated={value => this.onActivated(value)}
+              v-slots={{
+                header: ({ props: itemProps, item }: any) => {
+                  return (
+                    <VTreeviewItem
+                      {...itemProps}
+                      onClick={(event: MouseEvent) => {
+                        itemProps.onClick?.(event);
+                        this.selectDepartment(item.id);
+                      }}
+                    ></VTreeviewItem>
+                  );
+                },
+                item: ({ props: itemProps, item }: any) => {
+                  return (
+                    <VTreeviewItem
+                      {...itemProps}
+                      onClick={(event: MouseEvent) => {
+                        itemProps.onClick?.(event);
+                        this.selectDepartment(item.id);
+                      }}
+                    ></VTreeviewItem>
+                  );
+                },
+              }}
             ></VTreeview>
           </VCardText>
         </VCard>
