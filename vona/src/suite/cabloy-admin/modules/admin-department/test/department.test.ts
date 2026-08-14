@@ -105,6 +105,50 @@ describe('department.test.ts', { concurrency: false }, () => {
     }
   });
 
+  it('action:department:selectNestedWhere', async () => {
+    const ids: string[] = [];
+    try {
+      await app.bean.executor.mockCtx(async () => {
+        await app.bean.passport.signinMock();
+        const parentA = await departmentService().create({
+          name: `Parent-A-${crypto.randomUUID()}`,
+          parentId: null,
+        });
+        const parentB = await departmentService().create({
+          name: `Parent-B-${crypto.randomUUID()}`,
+          parentId: null,
+        });
+        const childA = await departmentService().create({
+          name: `Child-A-${crypto.randomUUID()}`,
+          parentId: parentA.id,
+        });
+        const childB = await departmentService().create({
+          name: `Child-B-${crypto.randomUUID()}`,
+          parentId: parentB.id,
+        });
+        ids.push(String(parentA.id), String(parentB.id), String(childA.id), String(childB.id));
+
+        const responseA = await app.bean.executor.performAction('get', '/admin/department', {
+          query: { where: { parentId: parentA.id }, pageNo: 1, pageSize: 20 },
+        });
+        assert.deepEqual(
+          responseA.list.map(item => String(item.id)),
+          [String(childA.id)],
+        );
+
+        const responseB = await app.bean.executor.performAction('get', '/admin/department', {
+          query: { where: { parentId: parentB.id }, pageNo: 1, pageSize: 20 },
+        });
+        assert.deepEqual(
+          responseB.list.map(item => String(item.id)),
+          [String(childB.id)],
+        );
+      });
+    } finally {
+      await deleteDepartments(ids);
+    }
+  });
+
   it('action:department:tree', async () => {
     const ids: string[] = [];
     try {

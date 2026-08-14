@@ -4,15 +4,15 @@ export * from '../model/department.js';
 import { IModelOptionsDepartment } from '../model/department.js';
 import 'zova-module-a-model';
 declare module 'zova-module-a-model' {
-
+  
     export interface IModelRecord {
       'admin-department:department': IModelOptionsDepartment;
     }
 
-
+  
 }
 declare module 'zova-module-admin-department' {
-
+  
         export interface ModelDepartment {
           /** @internal */
           get scope(): ScopeModuleAdminDepartment;
@@ -22,7 +22,7 @@ declare module 'zova-module-admin-department' {
           get $beanFullName(): 'admin-department.model.department';
           get $onionName(): 'admin-department:department';
           get $onionOptions(): IModelOptionsDepartment;
-        }
+        } 
 }
 /** model: end */
 /** model: begin */
@@ -39,11 +39,11 @@ export * from '../api/adminDepartment.js';
 
 import 'zova';
 declare module 'zova' {
-
-
+  
+  
 }
 declare module 'zova-module-admin-department' {
-
+  
         export interface ApiAdminDepartment {
           /** @internal */
           get scope(): ScopeModuleAdminDepartment;
@@ -52,8 +52,8 @@ declare module 'zova-module-admin-department' {
         export interface ApiAdminDepartment {
           get $beanFullName(): 'admin-department.api.adminDepartment';
           get $onionName(): 'admin-department:adminDepartment';
-
-        }
+          
+        } 
 }
 /** api: end */
 /** api: begin */
@@ -79,11 +79,11 @@ export * from '../apiSchema/adminDepartment.js';
 
 import 'zova';
 declare module 'zova' {
-
-
+  
+  
 }
 declare module 'zova-module-admin-department' {
-
+  
         export interface ApiSchemaAdminDepartment {
           /** @internal */
           get scope(): ScopeModuleAdminDepartment;
@@ -92,8 +92,8 @@ declare module 'zova-module-admin-department' {
         export interface ApiSchemaAdminDepartment {
           get $beanFullName(): 'admin-department.apiSchema.adminDepartment';
           get $onionName(): 'admin-department:adminDepartment';
-
-        }
+          
+        } 
 }
 /** apiSchema: end */
 /** apiSchema: begin */
@@ -116,15 +116,15 @@ export * from '../component/blockDepartment/controller.jsx';
 
 import 'zova';
 declare module 'zova' {
-
-
+  
+  
 }
 declare module 'zova-module-admin-department' {
-
+  
         export interface ControllerBlockDepartment {
           /** @internal */
           get scope(): ScopeModuleAdminDepartment;
-        }
+        } 
 }
 /** controller: end */
 /** controller: begin */
@@ -153,8 +153,11 @@ export interface IZovaComponentRecord {
 }
 }
 /** components: end */
+/** locale: begin */
+import { locales } from './locales.js';
+/** locale: end */
 /** scope: begin */
-import { BeanScopeBase, type BeanScopeUtil } from 'zova';
+import { BeanScopeBase, type BeanScopeUtil, TypeModuleLocales, TypeLocaleBase } from 'zova';
 import { Scope } from 'zova-module-a-bean';
 
 @Scope()
@@ -162,6 +165,7 @@ export class ScopeModuleAdminDepartment extends BeanScopeBase {}
 
 export interface ScopeModuleAdminDepartment {
   util: BeanScopeUtil;
+locale: TypeModuleLocales<(typeof locales)[TypeLocaleBase]>;
 api: IModuleApi;
 apiSchema: IModuleApiSchema;
 }
@@ -171,12 +175,17 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'admin-department': ScopeModuleAdminDepartment;
   }
+  
+  
 
+  export interface IBeanScopeLocale {
+    'admin-department': (typeof locales)[TypeLocaleBase];
+  }
 
-
-
-
-
+  
 }
 
+export function locale<K extends keyof (typeof locales)[TypeLocaleBase]>(key: K): `admin-department::${K}` {
+  return `admin-department::${key}`;
+}
 /** scope: end */

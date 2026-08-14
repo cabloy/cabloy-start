@@ -81,7 +81,7 @@ export class ControllerBlockDepartment extends BeanControllerBase {
     const treeItems: DepartmentTreeItem[] = [
       {
         id: AllDepartments,
-        name: (this.scope as any).locale.AllDepartments(),
+        name: this.scope.locale.AllDepartments(),
         children: this.treeData,
       },
     ];
