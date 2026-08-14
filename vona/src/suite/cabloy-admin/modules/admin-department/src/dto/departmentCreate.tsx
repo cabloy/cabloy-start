@@ -55,6 +55,7 @@ export class DtoDepartmentCreate {
 
   @Api.field(
     v.title($locale('ParentDepartment')),
+    ZovaRender.field('admin-department:formFieldDepartmentTree'),
     $makeSchema(v.optional(), v.nullable(), v.tableIdentity()),
   )
   parentId?: TableIdentity | null;

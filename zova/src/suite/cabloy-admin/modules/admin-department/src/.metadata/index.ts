@@ -113,6 +113,7 @@ declare module 'zova' {
 /** apiSchema: end */
 /** controller: begin */
 export * from '../component/blockPageDepartments/controller.jsx';
+export * from '../component/formFieldDepartmentTree/controller.jsx';
 
 import 'zova';
 declare module 'zova' {
@@ -124,15 +125,22 @@ declare module 'zova-module-admin-department' {
         export interface ControllerBlockPageDepartments {
           /** @internal */
           get scope(): ScopeModuleAdminDepartment;
+        }
+
+        export interface ControllerFormFieldDepartmentTree {
+          /** @internal */
+          get scope(): ScopeModuleAdminDepartment;
         } 
 }
 /** controller: end */
 /** controller: begin */
 import { ControllerBlockPageDepartments } from '../component/blockPageDepartments/controller.jsx';
+import { ControllerFormFieldDepartmentTree } from '../component/formFieldDepartmentTree/controller.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
     'admin-department.controller.blockPageDepartments': ControllerBlockPageDepartments;
+'admin-department.controller.formFieldDepartmentTree': ControllerFormFieldDepartmentTree;
   }
 }
 /** controller: end */
@@ -140,16 +148,21 @@ declare module 'zova' {
 /** components: begin */
 export * from './component/blockPageDepartments.js';
 import { ZBlockPageDepartments } from './component/blockPageDepartments.js';
+export * from './component/formFieldDepartmentTree.js';
+import { ZFormFieldDepartmentTree } from './component/formFieldDepartmentTree.js';
 export const components = {
   'blockPageDepartments': ZBlockPageDepartments,
+'formFieldDepartmentTree': ZFormFieldDepartmentTree,
 };
 import 'zova';
 declare module 'zova' {
 export interface IComponentRecord {
   'admin-department:blockPageDepartments': ControllerBlockPageDepartments;
+'admin-department:formFieldDepartmentTree': ControllerFormFieldDepartmentTree;
 }
 export interface IZovaComponentRecord {
   'admin-department:blockPageDepartments': typeof ZBlockPageDepartments;
+'admin-department:formFieldDepartmentTree': typeof ZFormFieldDepartmentTree;
 }
 }
 /** components: end */
