@@ -63,6 +63,12 @@ export class ControllerBlockPage<TData extends {} = {}> extends BeanControllerBa
     // query
     this.queryFixedData = this.$props.queryFixed ?? {};
     this.queryFilterData = {};
+    this.$watch(
+      () => this.$props.queryFixed,
+      queryFixed => {
+        this.setQueryFixed(queryFixed);
+      },
+    );
     this.queryPaged = { pageNo: 1, pageSize: this.$props.pageSize };
     this.query = this.$computed(() => {
       const { where: whereFixed, ...queryFixed } = this.queryFixedData;

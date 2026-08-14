@@ -75,7 +75,6 @@ export class ControllerBlockDepartment extends BeanControllerBase {
   selectDepartment(id: TableIdentity | typeof AllDepartments) {
     if (this.selectedKey === id) return;
     this.selectedKey = id;
-    this.pageRef?.setQueryFixed(this.queryFixed);
   }
 
   protected render() {
@@ -138,14 +137,11 @@ export class ControllerBlockDepartment extends BeanControllerBase {
     const props = this.$props as ControllerBlockDepartmentProps;
     const blocks = props.blocks;
     if (!blocks || blocks.length === 0) return;
-    const options = {
-      resource: (this.$props as ControllerBlockDepartmentProps).resource,
-      blocks,
-      queryFixed: this.queryFixed,
-    };
     return (
       <ZBlockPage
-        {...options}
+        resource={props.resource}
+        blocks={blocks}
+        queryFixed={this.queryFixed}
         controllerRef={ref => {
           this.pageRef = ref;
         }}
