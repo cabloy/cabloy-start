@@ -92,6 +92,11 @@ const fullstackGroups = [
       },
       { text: 'Framework Performance', link: '/fullstack/framework-performance' },
       { text: 'Vona + Zova Integration', link: '/fullstack/vona-zova-integration' },
+      { text: 'A-Pay Payment Suite', link: '/fullstack/a-pay-payment-suite' },
+      {
+        text: 'Payment Provider Sandbox Configuration',
+        link: '/fullstack/payment-sandbox-configuration',
+      },
       { text: 'Contract Loop Playbook', link: '/fullstack/contract-loop-playbook' },
       {
         text: 'Admin Resource and Web Self-Service',
@@ -254,6 +259,7 @@ export default defineConfig({
             { text: 'Upload Guide', link: '/backend/upload-guide' },
             { text: 'Image Guide', link: '/backend/image-guide' },
             { text: 'File Guide', link: '/backend/file-guide' },
+            { text: 'Markdown Guide', link: '/backend/markdown-guide' },
             { text: 'Mail Guide', link: '/backend/mail-guide' },
             { text: 'Serialization Guide', link: '/backend/serialization-guide' },
           ],
@@ -445,6 +451,7 @@ export default defineConfig({
             { text: 'Form Layout Guide', link: '/frontend/form-layout-guide' },
             { text: 'Image Guide', link: '/frontend/image-guide' },
             { text: 'File Guide', link: '/frontend/file-guide' },
+            { text: 'Markdown Guide', link: '/frontend/markdown-guide' },
             {
               text: 'Zova Form Under the Hood',
               link: '/frontend/zova-form-under-the-hood',
