@@ -1,10 +1,48 @@
-import type { IMetaVersionUpdate, IMetaVersionUpdateOptions } from 'vona-module-a-version';
+import type {
+  IMetaVersionSeed,
+  IMetaVersionUpdate,
+  IMetaVersionUpdateOptions,
+} from 'vona-module-a-version';
 
 import { BeanBase } from 'vona';
 import { Meta } from 'vona-module-a-meta';
 
 @Meta()
-export class MetaVersion extends BeanBase implements IMetaVersionUpdate {
+export class MetaVersion extends BeanBase implements IMetaVersionSeed, IMetaVersionUpdate {
+  async seed() {
+    const department = this.scope.model.department;
+    const root = await department.insert({
+      name: 'CabloyJS',
+      parentId: null,
+      enabled: true,
+      sortOrder: 1024,
+    });
+    await department.insert({
+      name: 'Finance',
+      parentId: root.id,
+      enabled: true,
+      sortOrder: 1024,
+    });
+    const development = await department.insert({
+      name: 'Development',
+      parentId: root.id,
+      enabled: true,
+      sortOrder: 2048,
+    });
+    await department.insert({
+      name: 'Frontend',
+      parentId: development.id,
+      enabled: true,
+      sortOrder: 1024,
+    });
+    await department.insert({
+      name: 'Backend',
+      parentId: development.id,
+      enabled: true,
+      sortOrder: 2048,
+    });
+  }
+
   async update(options: IMetaVersionUpdateOptions) {
     if (options.version !== 1) return;
 

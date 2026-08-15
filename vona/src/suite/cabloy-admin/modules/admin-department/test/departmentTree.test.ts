@@ -62,12 +62,13 @@ describe('departmentTree.test.ts', { concurrency: false }, () => {
             ['id', 'asc'],
           ],
         });
+        const testRoots = roots.filter(item => ids.includes(String(item.id)));
         assert.deepEqual(
-          roots.map(item => String(item.id)),
+          testRoots.map(item => String(item.id)),
           [String(third.id), String(first.id), String(second.id)],
         );
         assert.ok(
-          roots.every((item, index) => index === 0 || item.sortOrder > roots[index - 1].sortOrder),
+          testRoots.every((item, index) => index === 0 || item.sortOrder > testRoots[index - 1].sortOrder),
         );
 
         const [selfResult, selfError] = await catchError(() => {
