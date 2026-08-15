@@ -30,7 +30,7 @@ This record proves redirect, SSR-document, hydration, and approved Resource-navi
 
 ## Retained evidence
 
-- [Start Admin browser log](./artifacts/2026-08-15-534056c-start-admin-browser.log)
+- [Start Admin browser record](./artifacts/2026-08-15-603cb4c-start-admin-browser.md)
 
 ## Waiver
 
