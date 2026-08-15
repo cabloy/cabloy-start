@@ -3151,6 +3151,9 @@ importers:
 
   src/suite/cabloy-admin/modules/admin-user:
     dependencies:
+      vona-module-admin-department:
+        specifier: workspace:^
+        version: link:../admin-department
       vona-module-home-user:
         specifier: workspace:^
         version: link:../../../a-home/modules/home-user

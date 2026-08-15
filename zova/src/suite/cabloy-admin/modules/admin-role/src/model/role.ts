@@ -8,12 +8,18 @@ import { BeanModelBase, Model } from 'zova-module-a-model';
 export interface IModelOptionsRole extends IDecoratorModelOptions {}
 
 const RoleResource = 'admin-role:role';
+const UserResource = 'admin-user:user';
 
 @Model<IModelOptionsRole>()
 export class ModelRole extends BeanModelBase {
   @Use({ beanFullName: 'rest-resource.model.resource' })
   protected get $$modelResource(): ModelResource {
     return usePrepareArg(RoleResource, true);
+  }
+
+  @Use({ beanFullName: 'rest-resource.model.resource' })
+  protected get $$modelUserResource(): ModelResource {
+    return usePrepareArg(UserResource, true);
   }
 
   replaceUserRoles(userId: TableIdentity) {
@@ -25,6 +31,9 @@ export class ModelRole extends BeanModelBase {
           { roleIds },
           { params: { userId } },
         ) as Promise<void>);
+      },
+      onSuccess: async () => {
+        await this.$$modelUserResource.$invalidateQueries({ queryKey: ['item', userId] });
       },
     });
   }

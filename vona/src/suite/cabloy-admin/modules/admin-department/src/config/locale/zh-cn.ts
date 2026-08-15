@@ -8,6 +8,7 @@ export default {
   Enabled: '已启用',
   SortOrder: '排序',
   DepartmentMembership: '部门成员关系',
+  DepartmentMemberships: '部门成员关系',
   User: '用户',
   Position: '职位',
   Primary: '主要成员关系',

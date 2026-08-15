@@ -340,6 +340,27 @@ describe('departmentMembership.test.ts', { concurrency: false }, () => {
           params: { id: departmentA.id },
           body: { membershipId: membershipA },
         });
+        const viewWithManager = await app.bean.executor.performAction(
+          'get',
+          '/admin/department/:id',
+          {
+            params: { id: departmentA.id },
+          },
+        );
+        assert.equal(viewWithManager.memberships.length, 2);
+        assert.deepEqual(viewWithManager.memberships[0], {
+          id: membershipA,
+          userId: user.id,
+          user: { id: user.id, name: user.name, avatar: null },
+          position: null,
+          enabled: true,
+          primary: false,
+        });
+        assert.deepEqual(viewWithManager.manager, {
+          id: user.id,
+          name: user.name,
+          avatar: null,
+        });
         const [invalidManagerResult, invalidManagerError] = await catchError(() => {
           return app.bean.executor.performAction('put', '/admin/department/:id/manager', {
             params: { id: departmentA.id },

@@ -45,6 +45,8 @@ declare module 'vona' {
 /** dto: begin */
 export * from '../dto/userAccountStatusUpdate.ts';
 export * from '../dto/userBase.tsx';
+export * from '../dto/userDepartmentMembershipSummary.ts';
+export * from '../dto/userRoleSummary.ts';
 export * from '../dto/userSelectReq.tsx';
 export * from '../dto/userSelectRes.tsx';
 export * from '../dto/userSelectResItem.tsx';
@@ -52,6 +54,8 @@ export * from '../dto/userUpdate.tsx';
 export * from '../dto/userView.tsx';
 import type { IDtoOptionsUserAccountStatusUpdate } from '../dto/userAccountStatusUpdate.ts';
 import type { IDtoOptionsUserBase } from '../dto/userBase.tsx';
+import type { IDtoOptionsUserDepartmentMembershipSummary } from '../dto/userDepartmentMembershipSummary.ts';
+import type { IDtoOptionsUserRoleSummary } from '../dto/userRoleSummary.ts';
 import type { IDtoOptionsUserSelectReq } from '../dto/userSelectReq.tsx';
 import type { IDtoOptionsUserSelectRes } from '../dto/userSelectRes.tsx';
 import type { IDtoOptionsUserSelectResItem } from '../dto/userSelectResItem.tsx';
@@ -63,6 +67,8 @@ declare module 'vona-module-a-web' {
     export interface IDtoRecord {
       'admin-user:userAccountStatusUpdate': IDtoOptionsUserAccountStatusUpdate;
 'admin-user:userBase': IDtoOptionsUserBase;
+'admin-user:userDepartmentMembershipSummary': IDtoOptionsUserDepartmentMembershipSummary;
+'admin-user:userRoleSummary': IDtoOptionsUserRoleSummary;
 'admin-user:userSelectReq': IDtoOptionsUserSelectReq;
 'admin-user:userSelectRes': IDtoOptionsUserSelectRes;
 'admin-user:userSelectResItem': IDtoOptionsUserSelectResItem;
@@ -79,6 +85,8 @@ declare module 'vona-module-admin-user' {
 /** dto: begin */
 import type { DtoUserAccountStatusUpdate } from '../dto/userAccountStatusUpdate.ts';
 import type { DtoUserBase } from '../dto/userBase.tsx';
+import type { DtoUserDepartmentMembershipSummary } from '../dto/userDepartmentMembershipSummary.ts';
+import type { DtoUserRoleSummary } from '../dto/userRoleSummary.ts';
 import type { DtoUserSelectReq } from '../dto/userSelectReq.tsx';
 import type { DtoUserSelectRes } from '../dto/userSelectRes.tsx';
 import type { DtoUserSelectResItem } from '../dto/userSelectResItem.tsx';
@@ -92,6 +100,14 @@ declare module 'vona-module-admin-user' {
 
     export interface IDtoOptionsUserBase {
       fields?: TypeEntityOptionsFields<DtoUserBase, IDtoOptionsUserBase[TypeSymbolKeyFieldsMore]>;
+    }
+
+    export interface IDtoOptionsUserDepartmentMembershipSummary {
+      fields?: TypeEntityOptionsFields<DtoUserDepartmentMembershipSummary, IDtoOptionsUserDepartmentMembershipSummary[TypeSymbolKeyFieldsMore]>;
+    }
+
+    export interface IDtoOptionsUserRoleSummary {
+      fields?: TypeEntityOptionsFields<DtoUserRoleSummary, IDtoOptionsUserRoleSummary[TypeSymbolKeyFieldsMore]>;
     }
 
     export interface IDtoOptionsUserSelectReq {

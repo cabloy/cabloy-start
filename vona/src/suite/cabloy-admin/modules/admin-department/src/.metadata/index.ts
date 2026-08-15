@@ -314,6 +314,7 @@ export * from '../dto/departmentMembershipDelete.ts';
 export * from '../dto/departmentMembershipItem.ts';
 export * from '../dto/departmentMembershipPrimary.ts';
 export * from '../dto/departmentMembershipSelectRes.ts';
+export * from '../dto/departmentMembershipSummary.ts';
 export * from '../dto/departmentMembershipUpdate.ts';
 export * from '../dto/departmentMove.ts';
 export * from '../dto/departmentReorder.ts';
@@ -322,6 +323,7 @@ export * from '../dto/departmentSelectRes.tsx';
 export * from '../dto/departmentSelectResItem.tsx';
 export * from '../dto/departmentTree.ts';
 export * from '../dto/departmentUpdate.tsx';
+export * from '../dto/departmentUserSummary.ts';
 export * from '../dto/departmentView.tsx';
 import type { IDtoOptionsDepartmentActivation } from '../dto/departmentActivation.ts';
 import type { IDtoOptionsDepartmentBase } from '../dto/departmentBase.tsx';
@@ -332,6 +334,7 @@ import type { IDtoOptionsDepartmentMembershipDelete } from '../dto/departmentMem
 import type { IDtoOptionsDepartmentMembershipItem } from '../dto/departmentMembershipItem.ts';
 import type { IDtoOptionsDepartmentMembershipPrimary } from '../dto/departmentMembershipPrimary.ts';
 import type { IDtoOptionsDepartmentMembershipSelectRes } from '../dto/departmentMembershipSelectRes.ts';
+import type { IDtoOptionsDepartmentMembershipSummary } from '../dto/departmentMembershipSummary.ts';
 import type { IDtoOptionsDepartmentMembershipUpdate } from '../dto/departmentMembershipUpdate.ts';
 import type { IDtoOptionsDepartmentMove } from '../dto/departmentMove.ts';
 import type { IDtoOptionsDepartmentReorder } from '../dto/departmentReorder.ts';
@@ -340,6 +343,7 @@ import type { IDtoOptionsDepartmentSelectRes } from '../dto/departmentSelectRes.
 import type { IDtoOptionsDepartmentSelectResItem } from '../dto/departmentSelectResItem.tsx';
 import type { IDtoOptionsDepartmentTreeItem } from '../dto/departmentTree.ts';
 import type { IDtoOptionsDepartmentUpdate } from '../dto/departmentUpdate.tsx';
+import type { IDtoOptionsDepartmentUserSummary } from '../dto/departmentUserSummary.ts';
 import type { IDtoOptionsDepartmentView } from '../dto/departmentView.tsx';
 import 'vona-module-a-web';
 declare module 'vona-module-a-web' {
@@ -354,6 +358,7 @@ declare module 'vona-module-a-web' {
 'admin-department:departmentMembershipItem': IDtoOptionsDepartmentMembershipItem;
 'admin-department:departmentMembershipPrimary': IDtoOptionsDepartmentMembershipPrimary;
 'admin-department:departmentMembershipSelectRes': IDtoOptionsDepartmentMembershipSelectRes;
+'admin-department:departmentMembershipSummary': IDtoOptionsDepartmentMembershipSummary;
 'admin-department:departmentMembershipUpdate': IDtoOptionsDepartmentMembershipUpdate;
 'admin-department:departmentMove': IDtoOptionsDepartmentMove;
 'admin-department:departmentReorder': IDtoOptionsDepartmentReorder;
@@ -362,6 +367,7 @@ declare module 'vona-module-a-web' {
 'admin-department:departmentSelectResItem': IDtoOptionsDepartmentSelectResItem;
 'admin-department:departmentTree': IDtoOptionsDepartmentTreeItem;
 'admin-department:departmentUpdate': IDtoOptionsDepartmentUpdate;
+'admin-department:departmentUserSummary': IDtoOptionsDepartmentUserSummary;
 'admin-department:departmentView': IDtoOptionsDepartmentView;
     }
 
@@ -381,6 +387,7 @@ import type { DtoDepartmentMembershipDelete } from '../dto/departmentMembershipD
 import type { DtoDepartmentMembershipItem } from '../dto/departmentMembershipItem.ts';
 import type { DtoDepartmentMembershipPrimary } from '../dto/departmentMembershipPrimary.ts';
 import type { DtoDepartmentMembershipSelectRes } from '../dto/departmentMembershipSelectRes.ts';
+import type { DtoDepartmentMembershipSummary } from '../dto/departmentMembershipSummary.ts';
 import type { DtoDepartmentMembershipUpdate } from '../dto/departmentMembershipUpdate.ts';
 import type { DtoDepartmentMove } from '../dto/departmentMove.ts';
 import type { DtoDepartmentReorder } from '../dto/departmentReorder.ts';
@@ -389,6 +396,7 @@ import type { DtoDepartmentSelectRes } from '../dto/departmentSelectRes.tsx';
 import type { DtoDepartmentSelectResItem } from '../dto/departmentSelectResItem.tsx';
 import type { DtoDepartmentTree } from '../dto/departmentTree.ts';
 import type { DtoDepartmentUpdate } from '../dto/departmentUpdate.tsx';
+import type { DtoDepartmentUserSummary } from '../dto/departmentUserSummary.ts';
 import type { DtoDepartmentView } from '../dto/departmentView.tsx';
 declare module 'vona-module-admin-department' {
   
@@ -428,6 +436,10 @@ declare module 'vona-module-admin-department' {
       fields?: TypeEntityOptionsFields<DtoDepartmentMembershipSelectRes, IDtoOptionsDepartmentMembershipSelectRes[TypeSymbolKeyFieldsMore]>;
     }
 
+    export interface IDtoOptionsDepartmentMembershipSummary {
+      fields?: TypeEntityOptionsFields<DtoDepartmentMembershipSummary, IDtoOptionsDepartmentMembershipSummary[TypeSymbolKeyFieldsMore]>;
+    }
+
     export interface IDtoOptionsDepartmentMembershipUpdate {
       fields?: TypeEntityOptionsFields<DtoDepartmentMembershipUpdate, IDtoOptionsDepartmentMembershipUpdate[TypeSymbolKeyFieldsMore]>;
     }
@@ -458,6 +470,10 @@ declare module 'vona-module-admin-department' {
 
     export interface IDtoOptionsDepartmentUpdate {
       fields?: TypeEntityOptionsFields<DtoDepartmentUpdate, IDtoOptionsDepartmentUpdate[TypeSymbolKeyFieldsMore]>;
+    }
+
+    export interface IDtoOptionsDepartmentUserSummary {
+      fields?: TypeEntityOptionsFields<DtoDepartmentUserSummary, IDtoOptionsDepartmentUserSummary[TypeSymbolKeyFieldsMore]>;
     }
 
     export interface IDtoOptionsDepartmentView {

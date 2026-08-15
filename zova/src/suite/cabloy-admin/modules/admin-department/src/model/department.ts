@@ -18,12 +18,18 @@ import type {
 export interface IModelOptionsDepartment extends IDecoratorModelOptions {}
 
 const DepartmentResource = 'admin-department:department';
+const UserResource = 'admin-user:user';
 
 @Model<IModelOptionsDepartment>()
 export class ModelDepartment extends BeanModelBase {
   @Use({ beanFullName: 'rest-resource.model.resource' })
   protected get $$modelResource(): ModelResource {
     return usePrepareArg(DepartmentResource, true);
+  }
+
+  @Use({ beanFullName: 'rest-resource.model.resource' })
+  protected get $$modelUserResource(): ModelResource {
+    return usePrepareArg(UserResource, true);
   }
 
   tree() {
@@ -36,12 +42,15 @@ export class ModelDepartment extends BeanModelBase {
   }
 
   memberships(departmentId: TableIdentity) {
-    return this.$$modelResource.query<ApiSchemaAdminDepartmentDtoDepartmentMembershipSelectRes>(
-      `department-memberships-${departmentId}`,
-      async () => {
-        return await this.scope.api.adminDepartment.selectMemberships({
-          params: { departmentId },
-        });
+    return this.$$modelResource.queryItem<ApiSchemaAdminDepartmentDtoDepartmentMembershipSelectRes>(
+      {
+        id: departmentId,
+        action: 'memberships',
+        queryFn: async () => {
+          return await this.scope.api.adminDepartment.selectMemberships({
+            params: { departmentId },
+          });
+        },
       },
     );
   }
@@ -58,10 +67,17 @@ export class ModelDepartment extends BeanModelBase {
           params: { departmentId },
         });
       },
+      onSuccess: async (_membershipId, body) => {
+        await this._invalidateUserView(body.userId);
+      },
     });
   }
 
-  updateMembership(departmentId: TableIdentity, membershipId: TableIdentity) {
+  updateMembership(
+    departmentId: TableIdentity,
+    membershipId: TableIdentity,
+    userId: TableIdentity,
+  ) {
     return this.$$modelResource.mutationItem<
       void,
       ApiSchemaAdminDepartmentDtoDepartmentMembershipUpdate
@@ -73,10 +89,17 @@ export class ModelDepartment extends BeanModelBase {
           params: { departmentId, membershipId },
         });
       },
+      onSuccess: async () => {
+        await this._invalidateUserView(userId);
+      },
     });
   }
 
-  deleteMembership(departmentId: TableIdentity, membershipId: TableIdentity) {
+  deleteMembership(
+    departmentId: TableIdentity,
+    membershipId: TableIdentity,
+    userId: TableIdentity,
+  ) {
     return this.$$modelResource.mutationItem<
       void,
       ApiSchemaAdminDepartmentDtoDepartmentMembershipDelete
@@ -89,10 +112,17 @@ export class ModelDepartment extends BeanModelBase {
           data: body,
         });
       },
+      onSuccess: async () => {
+        await this._invalidateUserView(userId);
+      },
     });
   }
 
-  updateMembershipPrimary(departmentId: TableIdentity, membershipId: TableIdentity) {
+  updateMembershipPrimary(
+    departmentId: TableIdentity,
+    membershipId: TableIdentity,
+    userId: TableIdentity,
+  ) {
     return this.$$modelResource.mutationItem<
       void,
       ApiSchemaAdminDepartmentDtoDepartmentMembershipPrimary
@@ -103,6 +133,10 @@ export class ModelDepartment extends BeanModelBase {
         await this.scope.api.adminDepartment.updateMembershipPrimary(body, {
           params: { departmentId, membershipId },
         });
+      },
+      onSuccess: async () => {
+        await this._invalidateUserView(userId);
+        await this.$$modelResource.$invalidateQueries({ queryKey: [] });
       },
     });
   }
@@ -118,6 +152,10 @@ export class ModelDepartment extends BeanModelBase {
         await this.scope.api.adminDepartment.updateManager(body, { params: { id } });
       },
     });
+  }
+
+  private async _invalidateUserView(userId: TableIdentity) {
+    await this.$$modelUserResource.$invalidateQueries({ queryKey: ['item', userId] });
   }
 
   move(id: TableIdentity) {

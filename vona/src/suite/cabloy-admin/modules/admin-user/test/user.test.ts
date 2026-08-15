@@ -7,7 +7,7 @@ import { DtoUserUpdate } from '../src/dto/userUpdate.tsx';
 
 const userPath = '/admin/user';
 
-function assertUserProjection(user: Record<string, unknown>) {
+function assertUserListProjection(user: Record<string, unknown>) {
   assert.deepEqual(Object.keys(user).sort(), [
     'accountStatus',
     'activated',
@@ -17,6 +17,22 @@ function assertUserProjection(user: Record<string, unknown>) {
     'locale',
     'mobile',
     'name',
+    'tz',
+  ]);
+}
+
+function assertUserViewProjection(user: Record<string, unknown>) {
+  assert.deepEqual(Object.keys(user).sort(), [
+    'accountStatus',
+    'activated',
+    'avatar',
+    'departmentMemberships',
+    'email',
+    'id',
+    'locale',
+    'mobile',
+    'name',
+    'roles',
     'tz',
   ]);
 }
@@ -78,7 +94,9 @@ describe('user.test.ts', { concurrency: false }, () => {
           let view = await app.bean.executor.performAction('get', '/admin/user/:id', {
             params: { id: userId },
           });
-          assertUserProjection(view);
+          assertUserViewProjection(view);
+          assert.deepEqual(view.roles, []);
+          assert.deepEqual(view.departmentMemberships, []);
           assert.equal(view.name, user.name);
           assert.equal(view.avatar, ':emoji:rocket');
           assert.equal(view.email, updatedEmail);
@@ -92,7 +110,7 @@ describe('user.test.ts', { concurrency: false }, () => {
             users.list.map(item => item.id),
             [userId],
           );
-          assertUserProjection(users.list[0]);
+          assertUserListProjection(users.list[0]);
 
           const [emailConflictResult, emailConflictError] = await catchError(() => {
             return app.bean.executor.performAction('patch', '/admin/user/:id', {
@@ -113,6 +131,7 @@ describe('user.test.ts', { concurrency: false }, () => {
           view = await app.bean.executor.performAction('get', '/admin/user/:id', {
             params: { id: userId },
           });
+          assertUserViewProjection(view);
           assert.equal(view.activated, true);
 
           const disableResult = await app.bean.executor.performAction(
@@ -124,6 +143,7 @@ describe('user.test.ts', { concurrency: false }, () => {
           view = await app.bean.executor.performAction('get', '/admin/user/:id', {
             params: { id: userId },
           });
+          assertUserViewProjection(view);
           assert.equal(view.activated, true);
           assert.equal(view.accountStatus, 'disabled');
 

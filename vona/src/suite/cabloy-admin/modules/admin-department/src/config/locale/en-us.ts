@@ -8,6 +8,7 @@ export default {
   Enabled: 'Enabled',
   SortOrder: 'Sort Order',
   DepartmentMembership: 'Department Membership',
+  DepartmentMemberships: 'Department Memberships',
   User: 'User',
   Position: 'Position',
   Primary: 'Primary',

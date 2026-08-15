@@ -1,5 +1,6 @@
 import type { IDecoratorDtoOptions } from 'vona-module-a-web';
 
+import { $makeMetadata, Api, v } from 'vona-module-a-openapiutils';
 import { $Dto } from 'vona-module-a-orm';
 import { Dto } from 'vona-module-a-web';
 import { ModelUser } from 'vona-module-home-user';
@@ -7,6 +8,8 @@ import { ZovaRender } from 'zova-rest-cabloy-start-admin';
 
 import { $locale } from '../.metadata/locales.ts';
 import { DtoUserRead } from './userBase.tsx';
+import { DtoUserDepartmentMembershipSummary } from './userDepartmentMembershipSummary.ts';
+import { DtoUserRoleSummary } from './userRoleSummary.ts';
 
 export interface IDtoOptionsUserView extends IDecoratorDtoOptions {}
 
@@ -39,6 +42,16 @@ export interface IDtoOptionsUserView extends IDecoratorDtoOptions {}
                       },
                     ],
                   },
+                  {
+                    type: 'group',
+                    title: $locale('Roles'),
+                    children: [{ type: 'field', name: 'roles' }],
+                  },
+                  {
+                    type: 'group',
+                    title: $locale('DepartmentMemberships'),
+                    children: [{ type: 'field', name: 'departmentMemberships' }],
+                  },
                 ],
               },
             }),
@@ -52,7 +65,29 @@ export interface IDtoOptionsUserView extends IDecoratorDtoOptions {}
       ],
     }),
   ],
+  fields: {
+    roles: $makeMetadata(
+      v.title($locale('Roles')),
+      ZovaRender.field('start-details:formFieldDetails'),
+    ),
+    departmentMemberships: $makeMetadata(
+      v.title($locale('DepartmentMemberships')),
+      ZovaRender.field('start-details:formFieldDetails'),
+    ),
+  },
 })
 export class DtoUserView extends $Dto.get(() => ModelUser, {
   dtoClass: DtoUserRead,
-}) {}
+}) {
+  @Api.field(v.title($locale('Roles')), v.array(DtoUserRoleSummary))
+  roles: DtoUserRoleSummary[];
+
+  @Api.field(v.title($locale('DepartmentMemberships')), v.array(DtoUserDepartmentMembershipSummary))
+  departmentMemberships: DtoUserDepartmentMembershipSummary[];
+
+  @Api.field(ZovaRender.visible(false), v.optional(), v.array(DtoUserRoleSummary))
+  _roles?: DtoUserRoleSummary[];
+
+  @Api.field(ZovaRender.visible(false), v.optional(), v.array(DtoUserDepartmentMembershipSummary))
+  _departmentMemberships?: DtoUserDepartmentMembershipSummary[];
+}

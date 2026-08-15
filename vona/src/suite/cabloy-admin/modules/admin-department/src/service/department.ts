@@ -13,12 +13,14 @@ import type { DtoDepartmentMembershipDelete } from '../dto/departmentMembershipD
 import type { DtoDepartmentMembershipItem } from '../dto/departmentMembershipItem.ts';
 import type { DtoDepartmentMembershipPrimary } from '../dto/departmentMembershipPrimary.ts';
 import type { DtoDepartmentMembershipSelectRes } from '../dto/departmentMembershipSelectRes.ts';
+import type { DtoDepartmentMembershipSummary } from '../dto/departmentMembershipSummary.ts';
 import type { DtoDepartmentMembershipUpdate } from '../dto/departmentMembershipUpdate.ts';
 import type { DtoDepartmentMove } from '../dto/departmentMove.ts';
 import type { DtoDepartmentReorder } from '../dto/departmentReorder.ts';
 import type { DtoDepartmentSelectRes } from '../dto/departmentSelectRes.tsx';
 import type { DtoDepartmentTree, DtoDepartmentTreeItem } from '../dto/departmentTree.ts';
 import type { DtoDepartmentUpdate } from '../dto/departmentUpdate.tsx';
+import type { DtoDepartmentUserSummary } from '../dto/departmentUserSummary.ts';
 import type { DtoDepartmentView } from '../dto/departmentView.tsx';
 import type { EntityDepartment } from '../entity/department.tsx';
 import type { EntityDepartmentMembership } from '../entity/departmentMembership.tsx';
@@ -96,9 +98,56 @@ export class ServiceDepartment extends BeanBase {
   }
 
   async view(id: TableIdentity): Promise<DtoDepartmentView | undefined> {
-    return await this.scope.model.department.getById(id, {
+    const department = await this.scope.model.department.getById(id, {
       include: { parent: true },
     });
+    if (!department) return undefined;
+
+    const memberships = await this.scope.model.departmentMembership.select({
+      where: { departmentId: department.id },
+      orders: [['id', 'asc']],
+    });
+    const users = memberships.length
+      ? await this.$scope.homeUser.model.user.mget(memberships.map(item => item.userId))
+      : [];
+    const usersById = new Map(users.map(user => [String(user.id), user]));
+    const membershipSummaries = memberships.flatMap(
+      (membership): DtoDepartmentMembershipSummary[] => {
+        const user = usersById.get(String(membership.userId));
+        if (!user) return [];
+        const userSummary: DtoDepartmentUserSummary = {
+          id: user.id,
+          name: user.name,
+          avatar: user.avatar ?? null,
+        };
+        return [
+          {
+            id: membership.id,
+            userId: membership.userId,
+            user: userSummary,
+            position: membership.position ?? null,
+            enabled: membership.enabled,
+            primary: membership.primary,
+          },
+        ];
+      },
+    );
+    const managerMembership = department.managerMembershipId
+      ? memberships.find(
+          membership => String(membership.id) === String(department.managerMembershipId),
+        )
+      : undefined;
+    const manager = managerMembership
+      ? (membershipSummaries.find(
+          membership => String(membership.id) === String(managerMembership.id),
+        )?.user ?? null)
+      : null;
+
+    return {
+      ...department,
+      memberships: membershipSummaries,
+      manager,
+    } as DtoDepartmentView;
   }
 
   @Core.transaction()

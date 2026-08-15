@@ -31,6 +31,7 @@
     "postpack": "clean-package restore"
   },
   "dependencies": {
+    "vona-module-admin-department": "workspace:^",
     "vona-module-home-user": "workspace:^"
   },
   "devDependencies": {
@@ -49,6 +50,7 @@
   "vonaModule": {
     "dependencies": {
       "a-vona": "5.0.0",
+      "admin-department": "5.0.0",
       "home-user": "5.0.0"
     }
   }
