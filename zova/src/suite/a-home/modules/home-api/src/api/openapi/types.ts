@@ -416,6 +416,166 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/admin/department': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['AdminDepartment_select'];
+    put?: never;
+    post: operations['AdminDepartment_create'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/department/tree': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['AdminDepartment_tree'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/department/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['AdminDepartment_view'];
+    put?: never;
+    post?: never;
+    delete: operations['AdminDepartment_delete'];
+    options?: never;
+    head?: never;
+    patch: operations['AdminDepartment_update'];
+    trace?: never;
+  };
+  '/api/admin/department/{departmentId}/memberships': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['AdminDepartment_selectMemberships'];
+    put?: never;
+    post: operations['AdminDepartment_createMembership'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/department/{departmentId}/memberships/{membershipId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete: operations['AdminDepartment_deleteMembership'];
+    options?: never;
+    head?: never;
+    patch: operations['AdminDepartment_updateMembership'];
+    trace?: never;
+  };
+  '/api/admin/department/{departmentId}/memberships/{membershipId}/primary': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put: operations['AdminDepartment_updateMembershipPrimary'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/department/{id}/manager': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put: operations['AdminDepartment_updateManager'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/department/{id}/move': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put: operations['AdminDepartment_move'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/department/{id}/reorder': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put: operations['AdminDepartment_reorder'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/department/{id}/activation': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put: operations['AdminDepartment_updateActivation'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/admin/role': {
     parameters: {
       query?: never;
@@ -457,6 +617,86 @@ export interface paths {
     };
     get?: never;
     put: operations['AdminRole_replaceUserRoles'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/role/system-admin/fresh-proof': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['AdminRole_issueSystemAdminFreshProof'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/role/system-admin/grant/{userId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['AdminRole_grantSystemAdmin'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/role/system-admin/revoke/{userId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['AdminRole_revokeSystemAdmin'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/role/system-admin/account-status/{userId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put: operations['AdminRole_updateSystemAdminAccountStatus'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/role/system-admin/activation/{userId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put: operations['AdminRole_updateSystemAdminActivation'];
     post?: never;
     delete?: never;
     options?: never;
@@ -1782,6 +2022,184 @@ export interface components {
           summaryText: string;
         }
       | undefined;
+    'admin-department.dto.departmentCreate': {
+      /** @description Department Name */
+      name: string;
+      /** @description Parent Department */
+      parentId?: number | string | undefined;
+    };
+    'admin-department.dto.departmentSelectRes': {
+      list: components['schemas']['admin-department.dto.departmentSelectResItem'][];
+      total: string;
+      pageCount: number;
+      pageSize: number;
+      pageNo: number;
+    };
+    'admin-department.dto.departmentSelectResItem': {
+      /**
+       * Format: date-time
+       * @description Created At
+       */
+      createdAt: Date;
+      /**
+       * Format: date-time
+       * @description Updated At
+       */
+      updatedAt: Date;
+      /**
+       * @description Deleted
+       * @default false
+       */
+      deleted?: boolean;
+      /**
+       * @description Instance ID
+       * @default 0
+       */
+      iid?: number;
+      /** @description ID */
+      id: number | string;
+      /** @description Department Name */
+      name: string;
+      /** @description Parent Department */
+      parentId?: number | string | undefined;
+      /** @description Enabled */
+      enabled: boolean;
+      /** @description Sort Order */
+      sortOrder: number;
+      managerId?: number | string | undefined;
+      parent?: {
+        /** @description ID */
+        id: number | string;
+        /** @description Department Name */
+        name: string;
+      };
+      /** @description Operations */
+      _operationsRow?: unknown;
+    };
+    'admin-department.dto.departmentTree': {
+      list: components['schemas']['admin-department.dto.departmentTreeItem'][];
+    };
+    'admin-department.dto.departmentTreeItem': {
+      id: number | string;
+      /** @description Department Name */
+      name: string;
+      /** @description Parent Department */
+      parentId?: number | string | undefined;
+      /** @description Enabled */
+      enabled: boolean;
+      /** @description Sort Order */
+      sortOrder: number;
+      children: unknown[];
+    };
+    'admin-department.dto.departmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_79c0532d32be8f81d66d76995fbc84629567c463':
+      | {
+          /**
+           * Format: date-time
+           * @description Created At
+           */
+          createdAt: Date;
+          /**
+           * Format: date-time
+           * @description Updated At
+           */
+          updatedAt: Date;
+          /**
+           * @description Deleted
+           * @default false
+           */
+          deleted?: boolean;
+          /**
+           * @description Instance ID
+           * @default 0
+           */
+          iid?: number;
+          /** @description ID */
+          id: number | string;
+          /** @description Department Name */
+          name: string;
+          /** @description Parent Department */
+          parentId?: number | string | undefined;
+          /** @description Enabled */
+          enabled: boolean;
+          /** @description Sort Order */
+          sortOrder: number;
+          managerId?: number | string | undefined;
+          parent?: {
+            /** @description ID */
+            id: number | string;
+            /** @description Department Name */
+            name: string;
+          };
+        }
+      | undefined;
+    'admin-department.dto.departmentUpdate': {
+      /** @description Department Name */
+      name: string;
+    };
+    'admin-department.dto.departmentMembershipSelectRes': {
+      list: components['schemas']['admin-department.dto.departmentMembershipSummary'][];
+    };
+    'admin-department.dto.departmentMembershipSummary': {
+      id: number | string;
+      /** @description User */
+      userId: number | string;
+      user: components['schemas']['admin-department.dto.departmentUserSummary_626802c24df1498cec99aab0854fedf90c9b6dd3_0aab216abd3467dd07f61c69172266c2441af477_c4656f36fd04b7e6710079f758ab6240097007f7'];
+      /** @description Position */
+      position?: string | undefined;
+      /** @description Enabled */
+      enabled: boolean;
+      /** @description Primary */
+      primary: boolean;
+      /** @description Department Manager */
+      manager: boolean;
+      /** @description Operations */
+      _operationsRow?: unknown;
+    };
+    /** @description User */
+    'admin-department.dto.departmentUserSummary_626802c24df1498cec99aab0854fedf90c9b6dd3_0aab216abd3467dd07f61c69172266c2441af477_c4656f36fd04b7e6710079f758ab6240097007f7': {
+      id: number | string;
+      /** @description User */
+      name: string;
+      avatar?: unknown;
+    };
+    'admin-department.dto.departmentMembershipCreate': {
+      /** @description User */
+      userId: number | string;
+      /** @description Position */
+      position?: string | undefined;
+    };
+    'admin-department.dto.departmentMembershipUpdate': {
+      /** @description Position */
+      position?: string | undefined;
+      enabled?: boolean | undefined;
+      /** @description Department Manager */
+      managerMembershipId?: number | string | undefined;
+    };
+    'admin-department.dto.departmentMembershipDelete_2d063d28bc7243bed02ebd8bddf1212a93c6305b':
+      | {
+          /** @description Department Manager */
+          managerMembershipId?: number | string | undefined;
+        }
+      | undefined;
+    'admin-department.dto.departmentMembershipPrimary': {
+      /** @description Primary */
+      primary: boolean;
+    };
+    'admin-department.dto.departmentManagerUpdate': {
+      /** @description Department Manager */
+      membershipId: number | string | undefined;
+    };
+    'admin-department.dto.departmentMove': {
+      /** @description Parent Department */
+      parentId: number | string | undefined;
+    };
+    'admin-department.dto.departmentReorder': {
+      /** @description Place Before Department */
+      beforeId: number | string | undefined;
+    };
+    'admin-department.dto.departmentActivation': {
+      enabled: boolean;
+    };
     'admin-role.dto.roleView': {
       /** @description ID */
       id: number | string;
@@ -1875,6 +2293,33 @@ export interface components {
     'admin-role.dto.userRoleReplace': {
       roleIds: (number | string)[];
     };
+    'admin-role.dto.systemAdminFreshProofIssueRes': {
+      proof: string;
+      /** Format: date-time */
+      expiresAt: Date;
+    };
+    'admin-role.dto.systemAdminFreshProofIssue': {
+      password: string;
+    };
+    'admin-role.dto.systemAdminGrant': {
+      reason: string;
+      freshProof: string;
+    };
+    'admin-role.dto.systemAdminRevoke': {
+      reason: string;
+      freshProof: string;
+    };
+    'admin-role.dto.systemAdminAccountStatus': {
+      /** @enum {string} */
+      accountStatus: 'active' | 'disabled';
+      reason: string;
+      freshProof: string;
+    };
+    'admin-role.dto.systemAdminActivation': {
+      activated: boolean;
+      reason: string;
+      freshProof: string;
+    };
     'admin-user.dto.userSelectRes': {
       list: components['schemas']['admin-user.dto.userSelectResItem'][];
       total: string;
@@ -1911,7 +2356,7 @@ export interface components {
       /** @description Operations */
       _operationsRow?: unknown;
     };
-    'admin-user.dto.userView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_3af4868dbf0dab6a1b8727d55c4030f401fb2bc7':
+    'admin-user.dto.userView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_40af9fcb058b9199af19862859aa4705bac1c6ba':
       | {
           /** @description ID */
           id: number | string;
@@ -1938,9 +2383,39 @@ export interface components {
           locale?: string | undefined;
           /** @description Time Zone */
           tz?: string | undefined;
+          /** @description Roles */
+          roles: components['schemas']['admin-user.dto.userRoleSummary'][];
+          /** @description Department Memberships */
+          departmentMemberships: components['schemas']['admin-user.dto.userDepartmentMembershipSummary'][];
+          _roles?: components['schemas']['admin-user.dto.userRoleSummary'][] | undefined;
+          _departmentMemberships?:
+            | components['schemas']['admin-user.dto.userDepartmentMembershipSummary'][]
+            | undefined;
         }
       | undefined;
+    'admin-user.dto.userRoleSummary': {
+      id: number | string;
+      /** @description Role Name */
+      name: string;
+      /** @description Role Title */
+      title: string;
+    };
+    'admin-user.dto.userDepartmentMembershipSummary': {
+      id: number | string;
+      /** @description Department */
+      departmentId: number | string;
+      /** @description Department Name */
+      departmentName: string;
+      /** @description Position */
+      position?: string | undefined;
+      /** @description Enabled */
+      enabled: boolean;
+      /** @description Primary */
+      primary: boolean;
+    };
     'admin-user.dto.userUpdate': {
+      /** @description User Name */
+      name?: string | undefined;
       /** @description Avatar */
       avatar?: string | undefined;
       /**
@@ -3158,6 +3633,444 @@ export interface operations {
     };
     authToken: true;
   };
+  AdminDepartment_select: {
+    parameters: {
+      query?: {
+        columns?: string[] | undefined;
+        where?:
+          | {
+              [key: string]: unknown;
+            }
+          | undefined;
+        orders?: string | string[][] | undefined;
+        pageNo?: number;
+        pageSize?: number;
+        name?: string | undefined;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['admin-department.dto.departmentSelectRes'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminDepartment_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-department.dto.departmentCreate'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: number | string;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminDepartment_tree: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['admin-department.dto.departmentTree'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminDepartment_view: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data?: components['schemas']['admin-department.dto.departmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_79c0532d32be8f81d66d76995fbc84629567c463'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminDepartment_delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminDepartment_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-department.dto.departmentUpdate'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminDepartment_selectMemberships: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        departmentId: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['admin-department.dto.departmentMembershipSelectRes'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminDepartment_createMembership: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        departmentId: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-department.dto.departmentMembershipCreate'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: number | string;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminDepartment_deleteMembership: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        departmentId: number | string;
+        membershipId: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        'application/json': components['schemas']['admin-department.dto.departmentMembershipDelete_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminDepartment_updateMembership: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        departmentId: number | string;
+        membershipId: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-department.dto.departmentMembershipUpdate'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminDepartment_updateMembershipPrimary: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        departmentId: number | string;
+        membershipId: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-department.dto.departmentMembershipPrimary'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminDepartment_updateManager: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-department.dto.departmentManagerUpdate'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminDepartment_move: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-department.dto.departmentMove'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminDepartment_reorder: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-department.dto.departmentReorder'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminDepartment_updateActivation: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-department.dto.departmentActivation'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
   AdminRole_select: {
     parameters: {
       query?: {
@@ -3334,6 +4247,154 @@ export interface operations {
     };
     authToken: true;
   };
+  AdminRole_issueSystemAdminFreshProof: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-role.dto.systemAdminFreshProofIssue'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['admin-role.dto.systemAdminFreshProofIssueRes'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRole_grantSystemAdmin: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        userId: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-role.dto.systemAdminGrant'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRole_revokeSystemAdmin: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        userId: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-role.dto.systemAdminRevoke'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRole_updateSystemAdminAccountStatus: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        userId: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-role.dto.systemAdminAccountStatus'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRole_updateSystemAdminActivation: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        userId: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-role.dto.systemAdminActivation'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
   AdminUser_select: {
     parameters: {
       query?: {
@@ -3390,7 +4451,7 @@ export interface operations {
           'application/json': {
             code: string;
             message: string;
-            data?: components['schemas']['admin-user.dto.userView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_3af4868dbf0dab6a1b8727d55c4030f401fb2bc7'];
+            data?: components['schemas']['admin-user.dto.userView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_40af9fcb058b9199af19862859aa4705bac1c6ba'];
           };
         };
       };

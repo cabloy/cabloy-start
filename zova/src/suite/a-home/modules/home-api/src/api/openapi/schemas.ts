@@ -111,6 +111,78 @@ export type ApiSchemaTrainingStudentDtoStudentSummary_2d063d28bc7243bed02ebd8bdd
   components['schemas']['training-student.dto.studentSummary_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
 export type ApiSchemaTrainingStudentDtoStudentSummary_2d063d28bc7243bed02ebd8bddf1212a93c6305bPartial =
   Partial<ApiSchemaTrainingStudentDtoStudentSummary_2d063d28bc7243bed02ebd8bddf1212a93c6305b>;
+export type ApiSchemaAdminDepartmentDtoDepartmentCreate =
+  components['schemas']['admin-department.dto.departmentCreate'];
+export type ApiSchemaAdminDepartmentDtoDepartmentCreatePartial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentCreate>;
+export type ApiSchemaAdminDepartmentDtoDepartmentSelectRes =
+  components['schemas']['admin-department.dto.departmentSelectRes'];
+export type ApiSchemaAdminDepartmentDtoDepartmentSelectResPartial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentSelectRes>;
+export type ApiSchemaAdminDepartmentDtoDepartmentSelectResItem =
+  components['schemas']['admin-department.dto.departmentSelectResItem'];
+export type ApiSchemaAdminDepartmentDtoDepartmentSelectResItemPartial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentSelectResItem>;
+export type ApiSchemaAdminDepartmentDtoDepartmentTree =
+  components['schemas']['admin-department.dto.departmentTree'];
+export type ApiSchemaAdminDepartmentDtoDepartmentTreePartial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentTree>;
+export type ApiSchemaAdminDepartmentDtoDepartmentTreeItem =
+  components['schemas']['admin-department.dto.departmentTreeItem'];
+export type ApiSchemaAdminDepartmentDtoDepartmentTreeItemPartial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentTreeItem>;
+export type ApiSchemaAdminDepartmentDtoDepartmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_79c0532d32be8f81d66d76995fbc84629567c463 =
+  components['schemas']['admin-department.dto.departmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_79c0532d32be8f81d66d76995fbc84629567c463'];
+export type ApiSchemaAdminDepartmentDtoDepartmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_79c0532d32be8f81d66d76995fbc84629567c463Partial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_79c0532d32be8f81d66d76995fbc84629567c463>;
+export type ApiSchemaAdminDepartmentDtoDepartmentUpdate =
+  components['schemas']['admin-department.dto.departmentUpdate'];
+export type ApiSchemaAdminDepartmentDtoDepartmentUpdatePartial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentUpdate>;
+export type ApiSchemaAdminDepartmentDtoDepartmentMembershipSelectRes =
+  components['schemas']['admin-department.dto.departmentMembershipSelectRes'];
+export type ApiSchemaAdminDepartmentDtoDepartmentMembershipSelectResPartial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentMembershipSelectRes>;
+export type ApiSchemaAdminDepartmentDtoDepartmentMembershipSummary =
+  components['schemas']['admin-department.dto.departmentMembershipSummary'];
+export type ApiSchemaAdminDepartmentDtoDepartmentMembershipSummaryPartial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentMembershipSummary>;
+export type ApiSchemaAdminDepartmentDtoDepartmentUserSummary_626802c24df1498cec99aab0854fedf90c9b6dd3_0aab216abd3467dd07f61c69172266c2441af477_c4656f36fd04b7e6710079f758ab6240097007f7 =
+  components['schemas']['admin-department.dto.departmentUserSummary_626802c24df1498cec99aab0854fedf90c9b6dd3_0aab216abd3467dd07f61c69172266c2441af477_c4656f36fd04b7e6710079f758ab6240097007f7'];
+export type ApiSchemaAdminDepartmentDtoDepartmentUserSummary_626802c24df1498cec99aab0854fedf90c9b6dd3_0aab216abd3467dd07f61c69172266c2441af477_c4656f36fd04b7e6710079f758ab6240097007f7Partial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentUserSummary_626802c24df1498cec99aab0854fedf90c9b6dd3_0aab216abd3467dd07f61c69172266c2441af477_c4656f36fd04b7e6710079f758ab6240097007f7>;
+export type ApiSchemaAdminDepartmentDtoDepartmentMembershipCreate =
+  components['schemas']['admin-department.dto.departmentMembershipCreate'];
+export type ApiSchemaAdminDepartmentDtoDepartmentMembershipCreatePartial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentMembershipCreate>;
+export type ApiSchemaAdminDepartmentDtoDepartmentMembershipUpdate =
+  components['schemas']['admin-department.dto.departmentMembershipUpdate'];
+export type ApiSchemaAdminDepartmentDtoDepartmentMembershipUpdatePartial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentMembershipUpdate>;
+export type ApiSchemaAdminDepartmentDtoDepartmentMembershipDelete_2d063d28bc7243bed02ebd8bddf1212a93c6305b =
+  components['schemas']['admin-department.dto.departmentMembershipDelete_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
+export type ApiSchemaAdminDepartmentDtoDepartmentMembershipDelete_2d063d28bc7243bed02ebd8bddf1212a93c6305bPartial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentMembershipDelete_2d063d28bc7243bed02ebd8bddf1212a93c6305b>;
+export type ApiSchemaAdminDepartmentDtoDepartmentMembershipPrimary =
+  components['schemas']['admin-department.dto.departmentMembershipPrimary'];
+export type ApiSchemaAdminDepartmentDtoDepartmentMembershipPrimaryPartial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentMembershipPrimary>;
+export type ApiSchemaAdminDepartmentDtoDepartmentManagerUpdate =
+  components['schemas']['admin-department.dto.departmentManagerUpdate'];
+export type ApiSchemaAdminDepartmentDtoDepartmentManagerUpdatePartial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentManagerUpdate>;
+export type ApiSchemaAdminDepartmentDtoDepartmentMove =
+  components['schemas']['admin-department.dto.departmentMove'];
+export type ApiSchemaAdminDepartmentDtoDepartmentMovePartial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentMove>;
+export type ApiSchemaAdminDepartmentDtoDepartmentReorder =
+  components['schemas']['admin-department.dto.departmentReorder'];
+export type ApiSchemaAdminDepartmentDtoDepartmentReorderPartial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentReorder>;
+export type ApiSchemaAdminDepartmentDtoDepartmentActivation =
+  components['schemas']['admin-department.dto.departmentActivation'];
+export type ApiSchemaAdminDepartmentDtoDepartmentActivationPartial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentActivation>;
 export type ApiSchemaAdminRoleDtoRoleView = components['schemas']['admin-role.dto.roleView'];
 export type ApiSchemaAdminRoleDtoRoleViewPartial = Partial<ApiSchemaAdminRoleDtoRoleView>;
 export type ApiSchemaAdminRoleDtoRoleCreate = components['schemas']['admin-role.dto.roleCreate'];
@@ -132,6 +204,30 @@ export type ApiSchemaAdminRoleDtoUserRoleReplace =
   components['schemas']['admin-role.dto.userRoleReplace'];
 export type ApiSchemaAdminRoleDtoUserRoleReplacePartial =
   Partial<ApiSchemaAdminRoleDtoUserRoleReplace>;
+export type ApiSchemaAdminRoleDtoSystemAdminFreshProofIssueRes =
+  components['schemas']['admin-role.dto.systemAdminFreshProofIssueRes'];
+export type ApiSchemaAdminRoleDtoSystemAdminFreshProofIssueResPartial =
+  Partial<ApiSchemaAdminRoleDtoSystemAdminFreshProofIssueRes>;
+export type ApiSchemaAdminRoleDtoSystemAdminFreshProofIssue =
+  components['schemas']['admin-role.dto.systemAdminFreshProofIssue'];
+export type ApiSchemaAdminRoleDtoSystemAdminFreshProofIssuePartial =
+  Partial<ApiSchemaAdminRoleDtoSystemAdminFreshProofIssue>;
+export type ApiSchemaAdminRoleDtoSystemAdminGrant =
+  components['schemas']['admin-role.dto.systemAdminGrant'];
+export type ApiSchemaAdminRoleDtoSystemAdminGrantPartial =
+  Partial<ApiSchemaAdminRoleDtoSystemAdminGrant>;
+export type ApiSchemaAdminRoleDtoSystemAdminRevoke =
+  components['schemas']['admin-role.dto.systemAdminRevoke'];
+export type ApiSchemaAdminRoleDtoSystemAdminRevokePartial =
+  Partial<ApiSchemaAdminRoleDtoSystemAdminRevoke>;
+export type ApiSchemaAdminRoleDtoSystemAdminAccountStatus =
+  components['schemas']['admin-role.dto.systemAdminAccountStatus'];
+export type ApiSchemaAdminRoleDtoSystemAdminAccountStatusPartial =
+  Partial<ApiSchemaAdminRoleDtoSystemAdminAccountStatus>;
+export type ApiSchemaAdminRoleDtoSystemAdminActivation =
+  components['schemas']['admin-role.dto.systemAdminActivation'];
+export type ApiSchemaAdminRoleDtoSystemAdminActivationPartial =
+  Partial<ApiSchemaAdminRoleDtoSystemAdminActivation>;
 export type ApiSchemaAdminUserDtoUserSelectRes =
   components['schemas']['admin-user.dto.userSelectRes'];
 export type ApiSchemaAdminUserDtoUserSelectResPartial = Partial<ApiSchemaAdminUserDtoUserSelectRes>;
@@ -139,10 +235,18 @@ export type ApiSchemaAdminUserDtoUserSelectResItem =
   components['schemas']['admin-user.dto.userSelectResItem'];
 export type ApiSchemaAdminUserDtoUserSelectResItemPartial =
   Partial<ApiSchemaAdminUserDtoUserSelectResItem>;
-export type ApiSchemaAdminUserDtoUserView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_3af4868dbf0dab6a1b8727d55c4030f401fb2bc7 =
-  components['schemas']['admin-user.dto.userView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_3af4868dbf0dab6a1b8727d55c4030f401fb2bc7'];
-export type ApiSchemaAdminUserDtoUserView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_3af4868dbf0dab6a1b8727d55c4030f401fb2bc7Partial =
-  Partial<ApiSchemaAdminUserDtoUserView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_3af4868dbf0dab6a1b8727d55c4030f401fb2bc7>;
+export type ApiSchemaAdminUserDtoUserView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_40af9fcb058b9199af19862859aa4705bac1c6ba =
+  components['schemas']['admin-user.dto.userView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_40af9fcb058b9199af19862859aa4705bac1c6ba'];
+export type ApiSchemaAdminUserDtoUserView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_40af9fcb058b9199af19862859aa4705bac1c6baPartial =
+  Partial<ApiSchemaAdminUserDtoUserView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_40af9fcb058b9199af19862859aa4705bac1c6ba>;
+export type ApiSchemaAdminUserDtoUserRoleSummary =
+  components['schemas']['admin-user.dto.userRoleSummary'];
+export type ApiSchemaAdminUserDtoUserRoleSummaryPartial =
+  Partial<ApiSchemaAdminUserDtoUserRoleSummary>;
+export type ApiSchemaAdminUserDtoUserDepartmentMembershipSummary =
+  components['schemas']['admin-user.dto.userDepartmentMembershipSummary'];
+export type ApiSchemaAdminUserDtoUserDepartmentMembershipSummaryPartial =
+  Partial<ApiSchemaAdminUserDtoUserDepartmentMembershipSummary>;
 export type ApiSchemaAdminUserDtoUserUpdate = components['schemas']['admin-user.dto.userUpdate'];
 export type ApiSchemaAdminUserDtoUserUpdatePartial = Partial<ApiSchemaAdminUserDtoUserUpdate>;
 export type ApiSchemaAdminUserDtoUserAccountStatusUpdate =
