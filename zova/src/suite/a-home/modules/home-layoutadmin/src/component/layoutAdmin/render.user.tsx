@@ -1,4 +1,4 @@
-import { VBtn, VList, VListItem, VMenu } from 'vuetify/components';
+import { VAvatar, VBtn, VList, VListItem, VMenu } from 'vuetify/components';
 import { BeanRenderBase, ClientOnly } from 'zova';
 import { Render } from 'zova-module-a-bean';
 
@@ -8,7 +8,18 @@ export class RenderUser extends BeanRenderBase {
     const slots = {
       activator: ({ props }) => {
         return (
-          <VBtn {...props} prependIcon={this.$passport.user?.avatar as any} variant="text">
+          <VBtn
+            {...props}
+            variant="text"
+            v-slots={{
+              prepend: () => (
+                <VAvatar
+                  image={this.$passport.user?.avatar || this.$scopeBase.config.avatar.empty}
+                  size={24}
+                />
+              ),
+            }}
+          >
             {this.$passport.user?.name}
           </VBtn>
         );
