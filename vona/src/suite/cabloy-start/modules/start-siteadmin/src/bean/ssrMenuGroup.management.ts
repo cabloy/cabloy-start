@@ -13,7 +13,7 @@ export interface ISsrMenuGroupOptionsManagement extends IDecoratorSsrMenuGroupOp
 @SsrMenuGroup<ISsrMenuGroupOptionsManagement>({
   item: {
     title: $locale('Management'),
-    order: $order(2),
+    order: $order(1),
     icon: undefined,
   },
   site: ['start-siteadmin:admin'],

@@ -14,7 +14,7 @@ export interface ISsrMenuGroupOptionsSystemManagement extends IDecoratorSsrMenuG
 @SsrMenuGroup<ISsrMenuGroupOptionsSystemManagement>({
   item: {
     title: $locale('SystemManagement'),
-    order: $order(1),
+    order: $order(2),
     icon: undefined,
   },
 })
