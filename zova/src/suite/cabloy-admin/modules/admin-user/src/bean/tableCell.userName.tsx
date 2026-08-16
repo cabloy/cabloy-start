@@ -5,7 +5,7 @@ import type {
   NextTableCellRender,
 } from 'zova-module-a-table';
 
-import { VBtn } from 'vuetify/components';
+import { VAvatar, VBtn } from 'vuetify/components';
 import { BeanBase } from 'zova';
 import { TableCell } from 'zova-module-a-table';
 
@@ -38,8 +38,12 @@ export class TableCellUserName extends BeanBase implements ITableCellRender {
       <VBtn
         class={options.class}
         color={options.color}
-        prependIcon={avatar as any}
         variant={options.variant}
+        v-slots={{
+          prepend: () => (
+            <VAvatar image={avatar || this.$scopeBase.config.avatar.empty} size={24} />
+          ),
+        }}
         nativeOnClick={async event => {
           event.preventDefault();
           event.stopPropagation();
