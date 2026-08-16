@@ -111,7 +111,7 @@ export class ControllerBlockDepartmentMemberships extends BeanControllerBase {
   }
 
   private _renderManager() {
-    const locale = this._getLocale();
+    const locale = this.scope.locale;
     return (
       <VCard class="mb-4" variant="tonal">
         <VCardText>
@@ -123,10 +123,11 @@ export class ControllerBlockDepartmentMemberships extends BeanControllerBase {
   }
 
   private _renderMembershipError() {
+    const locale = this.scope.locale;
     return (
       <VCard class={this.$props.class} color="error" variant="tonal">
         <VCardText>
-          <div>{this._getLocale().MembershipsLoadFailed()}</div>
+          <div>{locale.MembershipsLoadFailed()}</div>
           <VBtn
             class="mt-4"
             type="button"
@@ -135,24 +136,11 @@ export class ControllerBlockDepartmentMemberships extends BeanControllerBase {
               await this.queryMemberships.refetch();
             }}
           >
-            {this._getLocale().Retry()}
+            {locale.Retry()}
           </VBtn>
         </VCardText>
       </VCard>
     );
-  }
-
-  private _getLocale() {
-    return (this as unknown as {
-      scope: {
-        locale: {
-          Manager(): string;
-          ManagerNotSet(): string;
-          MembershipsLoadFailed(): string;
-          Retry(): string;
-        };
-      };
-    }).scope.locale;
   }
 
   private _prepareJsx() {
