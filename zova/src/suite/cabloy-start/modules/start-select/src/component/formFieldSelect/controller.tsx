@@ -8,6 +8,8 @@ import { BeanControllerBase } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { ZFormField, ZFormFieldPreset } from 'zova-module-a-form';
 
+import { isSelectValueEqual } from '../../lib/utils.js';
+
 declare module 'zova-module-a-openapi' {
   export interface IResourceFormFieldRecord {
     'start-select:formFieldSelect'?: IResourceFormFieldSelectOptions;
@@ -62,6 +64,7 @@ export class ControllerFormFieldSelect extends BeanControllerBase {
             'errorMessages': error ? errorObj?.message : undefined,
             ...propsBucket.options,
             ...props,
+            'valueComparator': (value, itemValue) => isSelectValueEqual(itemValue, value),
           };
           return <VSelect {...propsNew}></VSelect>;
         }}
@@ -71,9 +74,10 @@ export class ControllerFormFieldSelect extends BeanControllerBase {
 
   private _getValueByItems() {
     const value = this.$props.value;
-    const item = this.$props.options.items?.find(
-      item => item[String(this.$props.options.itemValue)] === value,
-    );
+    const item = this.$props.options.items?.find(item => {
+      const itemValue = item[String(this.$props.options.itemValue)];
+      return isSelectValueEqual(itemValue, value);
+    });
     return item?.[String(this.$props.options.itemTitle)];
   }
 }

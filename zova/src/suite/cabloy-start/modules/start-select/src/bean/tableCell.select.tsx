@@ -9,6 +9,8 @@ import { VSelect } from 'vuetify/components';
 import { BeanBase } from 'zova';
 import { TableCell } from 'zova-module-a-table';
 
+import { isSelectValueEqual } from '../lib/utils.js';
+
 declare module 'zova-module-a-openapi' {
   export interface IResourceTableCellRecord {
     'start-select:select'?: ITableCellOptionsSelect;
@@ -29,7 +31,10 @@ export class TableCellSelect extends BeanBase implements ITableCellRender {
     next: NextTableCellRender,
   ) {
     const value = next();
-    const item = options.items?.find(item => item[String(options.itemValue)] === value);
+    const item = options.items?.find(item => {
+      const itemValue = item[String(options.itemValue)];
+      return isSelectValueEqual(itemValue, value);
+    });
     const value2 = item?.[String(options.itemTitle)];
     if (!options.class) return value2;
     return <div class={options.class}>{value2}</div>;
