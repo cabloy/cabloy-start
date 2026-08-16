@@ -187,7 +187,7 @@ test(
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
       await expect(page.getByText('admin', { exact: true })).toBeVisible();
       await expect(page.getByText(initialPosition, { exact: true })).toBeVisible();
-      await expect(page.getByRole('link', { name: 'Edit Department', exact: true })).toBeVisible();
+      await expect(page.getByRole('link', { name: 'Edit Department', exact: true })).toHaveCount(0);
       await expect(page.getByRole('button', { name: 'Add Membership', exact: true })).toBeVisible();
       const membershipRow = page.getByRole('row').filter({ hasText: initialPosition });
       await expect(membershipRow).toBeVisible();
@@ -251,8 +251,9 @@ test(
       ).toBeVisible();
       expect(genericDepartmentPatchRequests).toBe(0);
 
-      await page.getByRole('link', { name: 'Edit Department', exact: true }).click();
-      await expect(page).toHaveURL(new RegExp(`/${departmentId}/edit$`));
+      await page.goto(`${resourcePath('admin-department:department')}/${departmentId}/edit`, {
+        waitUntil: 'load',
+      });
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
       await expect(page.getByRole('button', { name: 'Submit', exact: true })).toBeVisible();
       await expect(page.getByRole('button', { name: 'Add Membership', exact: true })).toHaveCount(0);

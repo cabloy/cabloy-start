@@ -2091,7 +2091,7 @@ export interface components {
       sortOrder: number;
       children: unknown[];
     };
-    'admin-department.dto.departmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_2ffc3fa5d987440e3265f0a2115f69977f382b62':
+    'admin-department.dto.departmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_79c0532d32be8f81d66d76995fbc84629567c463':
       | {
           /**
            * Format: date-time
@@ -3739,7 +3739,7 @@ export interface operations {
           'application/json': {
             code: string;
             message: string;
-            data?: components['schemas']['admin-department.dto.departmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_2ffc3fa5d987440e3265f0a2115f69977f382b62'];
+            data?: components['schemas']['admin-department.dto.departmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_79c0532d32be8f81d66d76995fbc84629567c463'];
           };
         };
       };

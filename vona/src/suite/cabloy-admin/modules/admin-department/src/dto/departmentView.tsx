@@ -42,9 +42,6 @@ export interface IDtoOptionsDepartmentView extends IDecoratorDtoOptions {}
         ZovaRender.block('admin-department:blockDepartmentMemberships'),
         ZovaRender.block('start-pageentry:blockToolbarRow', {
           actions: [
-            ZovaRender.formActionRow('admin-department:actionEditDepartment', {
-              permission: { actionInherit: 'update', formScene: ['view'] },
-            }),
             ZovaRender.formActionRow('start-form:actionBack', { permission: { public: true } }),
           ],
         }),
