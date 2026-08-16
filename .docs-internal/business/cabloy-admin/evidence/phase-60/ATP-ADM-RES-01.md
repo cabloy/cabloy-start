@@ -2,17 +2,17 @@
 
 ## Traceability
 
-| Field | Value |
-| --- | --- |
-| ATP | `ATP-ADM-RES-01` |
-| PRD | `PRD-ADM-UI-01`; `PRD-ADM-MEM-01` through `PRD-ADM-MEM-05` |
-| SRS | `SRS-ADM-MEM-01` through `SRS-ADM-MEM-05`; `SRS-ADM-UI-01`, `SRS-ADM-UI-02` |
-| WBS | `WBS-ADM-60-03` |
-| Tested backend revision | `603cb4cfb9fd1c0fe08d14bb72804c0e82ba766a` |
-| Browser-test source | uncommitted [cabloy-admin.spec.ts](../../../../../e2e/specs/cabloy-start/cabloy-admin.spec.ts) |
-| Database client | clean `better-sqlite3` E2E database |
-| Zova flavor | Start Admin SSR |
-| Executor date | 2026-08-15 |
+| Field                   | Value                                                                                          |
+| ----------------------- | ---------------------------------------------------------------------------------------------- |
+| ATP                     | `ATP-ADM-RES-01`                                                                               |
+| PRD                     | `PRD-ADM-UI-01`; `PRD-ADM-MEM-01` through `PRD-ADM-MEM-05`                                     |
+| SRS                     | `SRS-ADM-MEM-01` through `SRS-ADM-MEM-05`; `SRS-ADM-UI-01`, `SRS-ADM-UI-02`                    |
+| WBS                     | `WBS-ADM-60-03`                                                                                |
+| Tested backend revision | `603cb4cfb9fd1c0fe08d14bb72804c0e82ba766a`                                                     |
+| Browser-test source     | uncommitted [cabloy-admin.spec.ts](../../../../../e2e/specs/cabloy-start/cabloy-admin.spec.ts) |
+| Database client         | clean `better-sqlite3` E2E database                                                            |
+| Zova flavor             | Start Admin SSR                                                                                |
+| Executor date           | 2026-08-15                                                                                     |
 
 ## Procedure
 
@@ -26,7 +26,7 @@ The clean harness resets managed E2E state and starts the Start Admin SSR runtim
 
 Pass. The tagged run reports 2 tests passed in 10.0 seconds. It proves that the existing Admin Resource owner renders the account detail projections, the Department `presetResource` exposes the rendered `Move Department` custom command, and a successful visible move refreshes the Department tree/list state: the child is absent under its old parent and visible under its new parent without a full-page reload.
 
-Fixture requests only arrange and remove isolated test data; they are not evidence of a rendered command. This record proves the existing Department Resource/tree refresh path, not membership-specific behavior. The current browser UI does not render membership, primary, manager, or ordinary-role command controls, so this ATP does **not** claim browser execution of those commands or membership-query cache refresh. The backend API, model-façade, cache-owner, and PostgreSQL behaviors remain covered by the other Phase 60 records.
+Fixture requests only arrange and remove isolated test data; they are not evidence of a rendered command. This record proves the Department Resource/tree refresh path at the tested 2026-08-15 revision, not membership-specific behavior. Its statement that membership, primary, and manager controls were unrendered is revision-scoped: the current rendered command coverage is retained separately in [ATP-ADM-RES-02](./ATP-ADM-RES-02.md). Ordinary-role replacement UI remains outside that newer browser scenario. The backend API, model-façade, cache-owner, and PostgreSQL behaviors remain covered by the other Phase 60 records.
 
 ## Retained evidence
 

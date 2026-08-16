@@ -17,24 +17,24 @@ zova/src/suite/cabloy-admin/modules/<module>/
 
 It integrates with the existing Start Admin site:
 
-| Concern | Contract |
-| --- | --- |
-| Vona SSR site | `admin` |
-| Public path | `/admin` |
-| Zova flavor | `cabloyStartAdmin` |
+| Concern             | Contract                   |
+| ------------------- | -------------------------- |
+| Vona SSR site       | `admin`                    |
+| Public path         | `/admin`                   |
+| Zova flavor         | `cabloyStartAdmin`         |
 | Reverse-chain build | `npm run build:zova:admin` |
 
 Phase one creates no new Admin SSR site, public path, flavor, or independent application.
 
 ## Capability and Persistence Ownership
 
-| Owner | Owns | Does not own |
-| --- | --- | --- |
-| `admin-user` | Account-management projections, permitted profile updates, activation commands, role/Department composition | Account identity, credentials, auth providers, Passport persistence |
-| `admin-role` | Ordinary-role management façade, ordinary role memberships, protected `systemAdmin` workflow, sensitive-operation audit | A replacement role or role-membership entity |
-| `admin-department` | Department forest, Department memberships, position text, primary membership, manager lifecycle | Tenant identity, Organization, dynamic data scope |
-| `home-user` / `a-user` | `homeUser`, `homeRole`, `homeRoleUser`, authentication, Passport, tokens, stable `bean.user`, `bean.role`, and `bean.passport` surfaces | Cabloy Admin operational use cases |
-| `rest-resource` | Conventional Admin Resource bootstrap, schemas, permissions, queries, mutations, query keys, and invalidation | Domain-specific custom-command semantics |
+| Owner                  | Owns                                                                                                                                    | Does not own                                                        |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `admin-user`           | Account-management projections, permitted profile updates, activation commands, role/Department composition                             | Account identity, credentials, auth providers, Passport persistence |
+| `admin-role`           | Ordinary-role management façade, ordinary role memberships, protected `systemAdmin` workflow, sensitive-operation audit                 | A replacement role or role-membership entity                        |
+| `admin-department`     | Department forest, Department memberships, position text, primary membership, manager lifecycle                                         | Tenant identity, Organization, dynamic data scope                   |
+| `home-user` / `a-user` | `homeUser`, `homeRole`, `homeRoleUser`, authentication, Passport, tokens, stable `bean.user`, `bean.role`, and `bean.passport` surfaces | Cabloy Admin operational use cases                                  |
+| `rest-resource`        | Conventional Admin Resource bootstrap, schemas, permissions, queries, mutations, query keys, and invalidation                           | Domain-specific custom-command semantics                            |
 
 `bean.user` and `bean.role` do not currently expose every operation required by Cabloy Admin. Cabloy Admin services must add managed façades around those facts rather than bypassing or duplicating their ownership.
 
@@ -91,7 +91,7 @@ Phase one creates no new Admin SSR site, public path, flavor, or independent app
 
 ### Department data and tree lifecycle
 
-- **SRS-ADM-DEP-01**: A Department persists `name`, nullable `parentId`, `enabled`, deterministic sibling ordering, and nullable `managerMembershipId`. It has no `organizationId` or Organization relationship.
+- **SRS-ADM-DEP-01**: A Department persists `name`, nullable `parentId`, `enabled`, deterministic sibling ordering, and nullable `managerId`. `managerId` identifies the account of an enabled membership of that exact Department. It has no `organizationId` or Organization relationship.
 - **SRS-ADM-DEP-02**: `parentId = null` is the only top-level representation. `0` is invalid. A non-null parent must be an existing Department in the active instance.
 - **SRS-ADM-DEP-03**: Sibling Department names are case-insensitively unique within the same active-instance parent scope, including the root scope. Enforcement uses transaction-aware service logic and lookup indexes, never `table.unique(...)`.
 - **SRS-ADM-DEP-04**: `moveDepartment` is a dedicated command rather than an unrestricted `parentId` patch. It locks and rechecks the moving node and destination ancestry in one transaction, rejecting self-parent and ancestor cycles.
@@ -104,8 +104,8 @@ Phase one creates no new Admin SSR site, public path, flavor, or independent app
 - **SRS-ADM-MEM-01**: A Department membership persists `departmentId`, `userId`, optional trimmed textual `position`, `enabled`, and `primary`. Position is scoped to the membership, never the global account.
 - **SRS-ADM-MEM-02**: One enabled live membership for a `(departmentId, userId)` pair is enforced with active-instance-scoped transactional service logic and non-unique lookup indexes. Both referenced records must be found in active-instance scope.
 - **SRS-ADM-MEM-03**: A user has at most one enabled primary membership in an active instance. Setting a new primary atomically clears the previous enabled primary. Removing or disabling a primary clears that state rather than silently choosing a replacement.
-- **SRS-ADM-MEM-04**: A Department manager is represented by `managerMembershipId`. It must identify an enabled membership of that exact Department; manager assignment never creates a membership implicitly.
-- **SRS-ADM-MEM-05**: Removing or disabling a manager membership requires an explicit manager replacement or clear command in the same transaction. An invalid manager relation is rejected with `409`.
+- **SRS-ADM-MEM-04**: A Department manager is represented by `managerId`, the account identity of an enabled membership of that exact Department. The manager-assignment command accepts `membershipId` to validate this relationship; assignment never creates a membership implicitly.
+- **SRS-ADM-MEM-05**: Removing or disabling a manager membership requires an explicit replacement membership or clear command in the same transaction. The service persists the replacement membership's `userId` as `managerId`; an invalid manager relation is rejected with `409`.
 
 ## API, DTO, and Frontend State Contracts
 
@@ -127,13 +127,13 @@ Phase one creates no new Admin SSR site, public path, flavor, or independent app
 
 ## Acceptance Mapping
 
-| PRD family | SRS contracts | Delivery work | Acceptance scenarios |
-| --- | --- | --- | --- |
-| `PRD-ADM-USR-*` | `SRS-ADM-USR-*` | `WBS-ADM-30-*` | `ATP-ADM-USR-01` |
-| `PRD-ADM-ROL-*` | `SRS-ADM-ROL-*` | `WBS-ADM-30-*` | `ATP-ADM-ROL-01` |
-| `PRD-ADM-SUP-*` | `SRS-ADM-SUP-*`, `SRS-ADM-TXN-*`, `SRS-ADM-AUD-*` | `WBS-ADM-40-*` | `ATP-ADM-SUP-*` |
-| `PRD-ADM-DEP-*` | `SRS-ADM-DEP-*` | `WBS-ADM-50-*` | `ATP-ADM-DEP-*` |
-| `PRD-ADM-MEM-*` | `SRS-ADM-MEM-*` | `WBS-ADM-60-*` | `ATP-ADM-MEM-*`, `ATP-ADM-MGR-01` |
+| PRD family                      | SRS contracts                                                     | Delivery work                  | Acceptance scenarios                                                                     |
+| ------------------------------- | ----------------------------------------------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------- |
+| `PRD-ADM-USR-*`                 | `SRS-ADM-USR-*`                                                   | `WBS-ADM-30-*`                 | `ATP-ADM-USR-01`                                                                         |
+| `PRD-ADM-ROL-*`                 | `SRS-ADM-ROL-*`                                                   | `WBS-ADM-30-*`                 | `ATP-ADM-ROL-01`                                                                         |
+| `PRD-ADM-SUP-*`                 | `SRS-ADM-SUP-*`, `SRS-ADM-TXN-*`, `SRS-ADM-AUD-*`                 | `WBS-ADM-40-*`                 | `ATP-ADM-SUP-*`                                                                          |
+| `PRD-ADM-DEP-*`                 | `SRS-ADM-DEP-*`                                                   | `WBS-ADM-50-*`                 | `ATP-ADM-DEP-*`                                                                          |
+| `PRD-ADM-MEM-*`                 | `SRS-ADM-MEM-*`                                                   | `WBS-ADM-60-*`                 | `ATP-ADM-MEM-*`, `ATP-ADM-MGR-01`                                                        |
 | `PRD-ADM-SEC-*`, `PRD-ADM-UI-*` | `SRS-ADM-TEN-*`, `SRS-ADM-AUT-*`, `SRS-ADM-API-*`, `SRS-ADM-UI-*` | `WBS-ADM-20-*`, `WBS-ADM-70-*` | `ATP-ADM-TEN-01`, `ATP-ADM-AUT-01`, `ATP-ADM-CTR-01`, `ATP-ADM-RES-01`, `ATP-ADM-SSR-01` |
 
 ## Related Records

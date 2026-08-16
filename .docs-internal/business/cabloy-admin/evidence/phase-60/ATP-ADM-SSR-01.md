@@ -2,17 +2,17 @@
 
 ## Traceability
 
-| Field | Value |
-| --- | --- |
-| ATP | `ATP-ADM-SSR-01` |
-| PRD | `PRD-ADM-UI-01` |
-| SRS | `SRS-ADM-UI-03` |
-| WBS | `WBS-ADM-60-03` |
-| Tested backend revision | `534056c7cf59b4bde6b96abefe01cf462ec91203` |
-| Browser-test source | uncommitted [cabloy-admin.spec.ts](../../../../../e2e/specs/cabloy-start/cabloy-admin.spec.ts) |
-| Database client | clean `better-sqlite3` E2E database |
-| Zova flavor | Start Admin SSR |
-| Executor date | 2026-08-15 |
+| Field                   | Value                                                                                          |
+| ----------------------- | ---------------------------------------------------------------------------------------------- |
+| ATP                     | `ATP-ADM-SSR-01`                                                                               |
+| PRD                     | `PRD-ADM-UI-01`                                                                                |
+| SRS                     | `SRS-ADM-UI-03`                                                                                |
+| WBS                     | `WBS-ADM-60-03`                                                                                |
+| Tested backend revision | `534056c7cf59b4bde6b96abefe01cf462ec91203`                                                     |
+| Browser-test source     | uncommitted [cabloy-admin.spec.ts](../../../../../e2e/specs/cabloy-start/cabloy-admin.spec.ts) |
+| Database client         | clean `better-sqlite3` E2E database                                                            |
+| Zova flavor             | Start Admin SSR                                                                                |
+| Executor date           | 2026-08-15                                                                                     |
 
 ## Procedure
 
@@ -24,7 +24,7 @@ The browser spec uses an anonymous request to load `/admin/` without following r
 
 ## Expected and observed result
 
-Pass. The tagged run reports 2 tests passed. The anonymous Admin root returned `302` with `cache-control: private, no-store` and a login location. The raw login response contained the SSR marker and did not present an already-hydrated Admin document. After browser login, the Administration shell rendered, all three approved Resource menu destinations resolved, the document reported Admin hydration, and no browser page errors were recorded.
+Pass. The tagged run at the tested 2026-08-15 revision reported 2 tests passed. The anonymous Admin root returned `302` with `cache-control: private, no-store` and a login location. The raw login response contained the SSR marker and did not present an already-hydrated Admin document. After browser login, the Administration shell rendered, all three approved Resource menu destinations resolved, the document reported Admin hydration, and no browser page errors were recorded. A current 2026-08-16 run is retained with [ATP-ADM-RES-02](./ATP-ADM-RES-02.md).
 
 This record proves redirect, SSR-document, hydration, and approved Resource-navigation behavior. It does not establish direct API authorization outcomes for ordinary versus privileged callers; that distinct acceptance scope remains owned by the applicable API ATP records.
 

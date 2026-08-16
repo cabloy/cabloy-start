@@ -98,34 +98,16 @@ async function deleteDepartment(page: Page, id: number | string) {
   await requestApi(page, 'DELETE', `/api/admin/department/${id}`);
 }
 
-async function createMembership(
+async function deleteMembership(
   page: Page,
   departmentId: number | string,
-  userId: number | string,
-  position?: string,
+  membershipId: number | string,
 ) {
-  const response = await requestApi(page, 'POST', `/api/admin/department/${departmentId}/memberships`, {
-    userId,
-    position,
-  });
-  return (await response.json()).data as number | string;
-}
-
-async function deleteMembership(page: Page, departmentId: number | string, membershipId: number | string) {
-  await requestApi(page, 'DELETE', `/api/admin/department/${departmentId}/memberships/${membershipId}`);
-}
-
-async function getAdminUserId(page: Page) {
-  const response = await requestApi(page, 'GET', '/api/admin/user');
-  const responseBody = (await response.json()) as {
-    data?: { list?: Array<{ id: number | string; name: string }> };
-    list?: Array<{ id: number | string; name: string }>;
-  };
-  const list = responseBody.data?.list ?? responseBody.list;
-  expect(list).toBeDefined();
-  const admin = list!.find(item => item.name === 'admin');
-  expect(admin).toBeDefined();
-  return admin!.id;
+  await requestApi(
+    page,
+    'DELETE',
+    `/api/admin/department/${departmentId}/memberships/${membershipId}`,
+  );
 }
 
 test(
@@ -175,33 +157,57 @@ test(
     let failedMembershipsDepartmentId: number | string | undefined;
     let membershipId: number | string | undefined;
     try {
-      const adminUserId = await getAdminUserId(page);
       departmentId = await createDepartment(page, departmentName);
       emptyDepartmentId = await createDepartment(page, `${departmentName} Empty`);
-      failedMembershipsDepartmentId = await createDepartment(page, `${departmentName} Failed Memberships`);
-      membershipId = await createMembership(page, departmentId, adminUserId, initialPosition);
+      failedMembershipsDepartmentId = await createDepartment(
+        page,
+        `${departmentName} Failed Memberships`,
+      );
 
       await page.goto(`${resourcePath('admin-department:department')}/${departmentId}`, {
         waitUntil: 'load',
       });
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
-      await expect(page.getByText('admin', { exact: true })).toBeVisible();
-      await expect(page.getByText(initialPosition, { exact: true })).toBeVisible();
       await expect(page.getByRole('link', { name: 'Edit Department', exact: true })).toHaveCount(0);
       await expect(page.getByRole('button', { name: 'Add Membership', exact: true })).toBeVisible();
-      const membershipRow = page.getByRole('row').filter({ hasText: initialPosition });
-      await expect(membershipRow).toBeVisible();
-      await expect(membershipRow.getByRole('button', { name: 'Edit Membership', exact: true })).toBeVisible();
-      await expect(
-        membershipRow.getByRole('button', { name: 'Set Primary Membership', exact: true }),
-      ).toBeVisible();
-      await expect(membershipRow.getByRole('button', { name: 'Set Manager', exact: true })).toBeVisible();
-      await expect(membershipRow.getByRole('button', { name: 'Delete', exact: true })).toBeVisible();
+      await expect(page.getByText('No data available', { exact: true })).toBeVisible();
       await expect(page.getByTestId('department-manager')).toHaveText('No manager assigned');
       await expect(page.getByRole('button', { name: 'Submit', exact: true })).toHaveCount(0);
 
-      await membershipRow.getByRole('button', { name: 'Edit Membership', exact: true }).click();
+      await page.getByRole('button', { name: 'Add Membership', exact: true }).click();
       const dialog = page.getByRole('dialog');
+      await expect(dialog).toBeVisible();
+      await dialog.locator('.v-select').click();
+      await page.locator('.v-overlay__content').getByText('admin', { exact: true }).click();
+      await dialog.getByLabel('Position').fill(initialPosition);
+      const created = waitForApiResponse(
+        page,
+        'POST',
+        new RegExp(`/api/admin/department/${departmentId}/memberships$`),
+      );
+      await dialog.getByRole('button', { name: 'Save', exact: true }).click();
+      const createdResponse = await created;
+      membershipId = (await createdResponse.json()).data as number | string;
+      await expect(dialog).toBeHidden();
+      await expect(page.getByText('admin', { exact: true })).toBeVisible();
+      await expect(page.getByText(initialPosition, { exact: true })).toBeVisible();
+
+      const membershipRow = page.getByRole('row').filter({ hasText: initialPosition });
+      await expect(membershipRow).toBeVisible();
+      await expect(
+        membershipRow.getByRole('button', { name: 'Edit Membership', exact: true }),
+      ).toBeVisible();
+      await expect(
+        membershipRow.getByRole('button', { name: 'Set Primary Membership', exact: true }),
+      ).toBeVisible();
+      await expect(
+        membershipRow.getByRole('button', { name: 'Set Manager', exact: true }),
+      ).toBeVisible();
+      await expect(
+        membershipRow.getByRole('button', { name: 'Delete', exact: true }),
+      ).toBeVisible();
+
+      await membershipRow.getByRole('button', { name: 'Edit Membership', exact: true }).click();
       await expect(dialog).toBeVisible();
       await dialog.getByLabel('Position').fill(updatedPosition);
       const updated = waitForApiResponse(
@@ -214,6 +220,33 @@ test(
       await expect(dialog).toBeHidden();
       await expect(page.getByText(updatedPosition, { exact: true })).toBeVisible();
 
+      const updatedMembershipRow = page.getByRole('row').filter({ hasText: updatedPosition });
+      const primarySet = waitForApiResponse(
+        page,
+        'PUT',
+        new RegExp(`/api/admin/department/${departmentId}/memberships/${membershipId}/primary$`),
+      );
+      await updatedMembershipRow
+        .getByRole('button', { name: 'Set Primary Membership', exact: true })
+        .click();
+      await primarySet;
+      await expect(
+        updatedMembershipRow.getByRole('button', { name: 'Clear Primary Membership', exact: true }),
+      ).toBeVisible();
+
+      const primaryCleared = waitForApiResponse(
+        page,
+        'PUT',
+        new RegExp(`/api/admin/department/${departmentId}/memberships/${membershipId}/primary$`),
+      );
+      await updatedMembershipRow
+        .getByRole('button', { name: 'Clear Primary Membership', exact: true })
+        .click();
+      await primaryCleared;
+      await expect(
+        updatedMembershipRow.getByRole('button', { name: 'Set Primary Membership', exact: true }),
+      ).toBeVisible();
+
       let genericDepartmentPatchRequests = 0;
       page.on('request', request => {
         const url = new URL(request.url());
@@ -224,7 +257,6 @@ test(
           genericDepartmentPatchRequests += 1;
         }
       });
-      const updatedMembershipRow = page.getByRole('row').filter({ hasText: updatedPosition });
       const managerUpdated = waitForApiResponse(
         page,
         'PUT',
@@ -243,7 +275,9 @@ test(
         'PUT',
         new RegExp(`/api/admin/department/${departmentId}/manager$`),
       );
-      await updatedMembershipRow.getByRole('button', { name: 'Clear Manager', exact: true }).click();
+      await updatedMembershipRow
+        .getByRole('button', { name: 'Clear Manager', exact: true })
+        .click();
       await managerCleared;
       await expect(page.getByTestId('department-manager')).toHaveText('No manager assigned');
       await expect(
@@ -251,13 +285,76 @@ test(
       ).toBeVisible();
       expect(genericDepartmentPatchRequests).toBe(0);
 
+      const managerReset = waitForApiResponse(
+        page,
+        'PUT',
+        new RegExp(`/api/admin/department/${departmentId}/manager$`),
+      );
+      await updatedMembershipRow.getByRole('button', { name: 'Set Manager', exact: true }).click();
+      await managerReset;
+      await expect(page.getByTestId('department-manager')).toHaveText('admin');
+
+      await updatedMembershipRow.getByRole('button', { name: 'Delete', exact: true }).click();
+      const confirmation = page.getByRole('dialog');
+      await expect(
+        confirmation.getByText('Delete this manager membership and clear the Department manager?', {
+          exact: true,
+        }),
+      ).toBeVisible();
+      const deleted = waitForApiResponse(
+        page,
+        'DELETE',
+        new RegExp(`/api/admin/department/${departmentId}/memberships/${membershipId}$`),
+        false,
+      );
+      await confirmation.getByRole('button', { name: 'Yes', exact: true }).click();
+      const deletedResponse = await deleted;
+      expect(deletedResponse.status()).toBe(409);
+      await expect(
+        page.getByText(
+          'The Department manager must be cleared or replaced before this membership changes',
+          {
+            exact: true,
+          },
+        ),
+      ).toBeVisible();
+      await page.getByRole('button', { name: 'Close', exact: true }).click();
+
+      const managerClearedBeforeDelete = waitForApiResponse(
+        page,
+        'PUT',
+        new RegExp(`/api/admin/department/${departmentId}/manager$`),
+      );
+      await updatedMembershipRow
+        .getByRole('button', { name: 'Clear Manager', exact: true })
+        .click();
+      await managerClearedBeforeDelete;
+      await expect(page.getByTestId('department-manager')).toHaveText('No manager assigned');
+
+      const deletedAfterManagerClear = waitForApiResponse(
+        page,
+        'DELETE',
+        new RegExp(`/api/admin/department/${departmentId}/memberships/${membershipId}$`),
+      );
+      await updatedMembershipRow.getByRole('button', { name: 'Delete', exact: true }).click();
+      await confirmation.getByRole('button', { name: 'Yes', exact: true }).click();
+      await deletedAfterManagerClear;
+      membershipId = undefined;
+      await expect(page.getByText(updatedPosition, { exact: true })).toHaveCount(0);
+      await expect(page.getByText('No data available', { exact: true })).toBeVisible();
+      expect(genericDepartmentPatchRequests).toBe(0);
+
       await page.goto(`${resourcePath('admin-department:department')}/${departmentId}/edit`, {
         waitUntil: 'load',
       });
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
       await expect(page.getByRole('button', { name: 'Submit', exact: true })).toBeVisible();
-      await expect(page.getByRole('button', { name: 'Add Membership', exact: true })).toHaveCount(0);
-      await expect(page.getByRole('button', { name: 'Edit Membership', exact: true })).toHaveCount(0);
+      await expect(page.getByRole('button', { name: 'Add Membership', exact: true })).toHaveCount(
+        0,
+      );
+      await expect(page.getByRole('button', { name: 'Edit Membership', exact: true })).toHaveCount(
+        0,
+      );
       await expect(
         page.getByRole('button', { name: 'Set Primary Membership', exact: true }),
       ).toHaveCount(0);
@@ -282,7 +379,9 @@ test(
           await route.fulfill({
             status: 503,
             contentType: 'application/json',
-            body: JSON.stringify({ message: 'Membership query intentionally failed for E2E coverage.' }),
+            body: JSON.stringify({
+              message: 'Membership query intentionally failed for E2E coverage.',
+            }),
           });
           return;
         }
@@ -297,7 +396,9 @@ test(
         .getByText(`${departmentName} Failed Memberships`, { exact: true })
         .click();
       await expect(page).toHaveURL(new RegExp(`/${failedMembershipsDepartmentId}/?$`));
-      await expect(page.getByText('Unable to load Department memberships.', { exact: true })).toBeVisible();
+      await expect(
+        page.getByText('Unable to load Department memberships.', { exact: true }),
+      ).toBeVisible();
       await expect(page.getByRole('button', { name: 'Retry', exact: true })).toBeVisible();
       await expect(page.getByText('No data available', { exact: true })).toHaveCount(0);
 
@@ -308,7 +409,9 @@ test(
       await page.unroute(failedMembershipsPath);
       await expect(page.getByRole('button', { name: 'Add Membership', exact: true })).toBeVisible();
       await expect(page.getByText('No data available', { exact: true })).toBeVisible();
-      await expect(page.getByText('Unable to load Department memberships.', { exact: true })).toHaveCount(0);
+      await expect(
+        page.getByText('Unable to load Department memberships.', { exact: true }),
+      ).toHaveCount(0);
       expect(pageErrors).toEqual([]);
     } finally {
       if (departmentId !== undefined && membershipId !== undefined) {
@@ -356,11 +459,7 @@ test(
       const moveDialog = page.getByRole('dialog');
       await expect(moveDialog).toBeVisible();
       await moveDialog.getByText(rootB, { exact: true }).click();
-      const moved = waitForApiResponse(
-        page,
-        'PUT',
-        /\/api\/admin\/department\/[^/]+\/move$/,
-      );
+      const moved = waitForApiResponse(page, 'PUT', /\/api\/admin\/department\/[^/]+\/move$/);
       await moveDialog.getByRole('button', { name: 'Move Department', exact: true }).click();
       await moved;
       await expect(moveDialog).toBeHidden();
