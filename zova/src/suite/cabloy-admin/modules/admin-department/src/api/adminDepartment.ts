@@ -255,13 +255,17 @@ export class ApiAdminDepartment extends BeanApiBase {
   }
 
   deleteMembership(
+    body: ApiApiAdminDepartmentdeleteMembershipRequestBody | undefined,
     options: {
       params: ApiApiAdminDepartmentdeleteMembershipRequestParams;
     } & IApiActionOptions,
   ) {
     return this.$fetch.delete<any, ApiApiAdminDepartmentdeleteMembershipResponseBody>(
       this.$pathTranslate(ApiApiAdminDepartmentdeleteMembershipPath, options.params),
-      this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
+      {
+        ...this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
+        data: body,
+      },
     );
   }
 

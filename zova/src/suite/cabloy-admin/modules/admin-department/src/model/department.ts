@@ -107,9 +107,8 @@ export class ModelDepartment extends BeanModelBase {
       id: departmentId,
       action: `deleteMembership-${membershipId}`,
       mutationFn: async body => {
-        await this.scope.api.adminDepartment.deleteMembership({
+        await this.scope.api.adminDepartment.deleteMembership(body, {
           params: { departmentId, membershipId },
-          data: body,
         });
       },
       onSuccess: async () => {

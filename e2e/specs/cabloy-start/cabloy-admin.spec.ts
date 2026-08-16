@@ -294,6 +294,16 @@ test(
       await managerReset;
       await expect(page.getByTestId('department-manager')).toHaveText('admin');
 
+      let managerClearRequests = 0;
+      page.on('request', request => {
+        const url = new URL(request.url());
+        if (
+          request.method() === 'PUT' &&
+          url.pathname === `/api/admin/department/${departmentId}/manager`
+        ) {
+          managerClearRequests += 1;
+        }
+      });
       await updatedMembershipRow.getByRole('button', { name: 'Delete', exact: true }).click();
       const confirmation = page.getByRole('dialog');
       await expect(
@@ -305,43 +315,15 @@ test(
         page,
         'DELETE',
         new RegExp(`/api/admin/department/${departmentId}/memberships/${membershipId}$`),
-        false,
       );
       await confirmation.getByRole('button', { name: 'Yes', exact: true }).click();
       const deletedResponse = await deleted;
-      expect(deletedResponse.status()).toBe(409);
-      await expect(
-        page.getByText(
-          'The Department manager must be cleared or replaced before this membership changes',
-          {
-            exact: true,
-          },
-        ),
-      ).toBeVisible();
-      await page.getByRole('button', { name: 'Close', exact: true }).click();
-
-      const managerClearedBeforeDelete = waitForApiResponse(
-        page,
-        'PUT',
-        new RegExp(`/api/admin/department/${departmentId}/manager$`),
-      );
-      await updatedMembershipRow
-        .getByRole('button', { name: 'Clear Manager', exact: true })
-        .click();
-      await managerClearedBeforeDelete;
+      expect(deletedResponse.request().postDataJSON()).toEqual({ managerMembershipId: null });
       await expect(page.getByTestId('department-manager')).toHaveText('No manager assigned');
-
-      const deletedAfterManagerClear = waitForApiResponse(
-        page,
-        'DELETE',
-        new RegExp(`/api/admin/department/${departmentId}/memberships/${membershipId}$`),
-      );
-      await updatedMembershipRow.getByRole('button', { name: 'Delete', exact: true }).click();
-      await confirmation.getByRole('button', { name: 'Yes', exact: true }).click();
-      await deletedAfterManagerClear;
       membershipId = undefined;
       await expect(page.getByText(updatedPosition, { exact: true })).toHaveCount(0);
       await expect(page.getByText('No data available', { exact: true })).toBeVisible();
+      expect(managerClearRequests).toBe(0);
       expect(genericDepartmentPatchRequests).toBe(0);
 
       await page.goto(`${resourcePath('admin-department:department')}/${departmentId}/edit`, {
