@@ -92,7 +92,7 @@ describe('department.test.ts', { concurrency: false }, () => {
               parentId: child,
               enabled: false,
               sortOrder: -1,
-              managerMembershipId: 'must-not-be-updated',
+              managerId: 'must-not-be-updated',
               name: `Renamed-${crypto.randomUUID()}`,
             },
           },

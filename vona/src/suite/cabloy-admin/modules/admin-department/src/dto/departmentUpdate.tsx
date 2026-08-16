@@ -1,10 +1,12 @@
 import type { IDecoratorDtoOptions } from 'vona-module-a-web';
 
-import { Api, v } from 'vona-module-a-openapiutils';
+import { $Dto } from 'vona-module-a-orm';
 import { Dto } from 'vona-module-a-web';
 import { ZovaRender } from 'zova-rest-cabloy-start-admin';
 
 import { $locale } from '../.metadata/locales.ts';
+import { ModelDepartment } from '../model/department.ts';
+import { DtoDepartmentUpdateBase } from './departmentUpdateBase.ts';
 
 export interface IDtoOptionsDepartmentUpdate extends IDecoratorDtoOptions {}
 
@@ -27,6 +29,7 @@ export interface IDtoOptionsDepartmentUpdate extends IDecoratorDtoOptions {}
             }),
           ],
         }),
+        ZovaRender.block('admin-department:blockDepartmentMemberships'),
         ZovaRender.block('start-pageentry:blockToolbarRow', {
           actions: [
             ZovaRender.formActionRow('start-form:actionSubmit', {
@@ -39,7 +42,6 @@ export interface IDtoOptionsDepartmentUpdate extends IDecoratorDtoOptions {}
     }),
   ],
 })
-export class DtoDepartmentUpdate {
-  @Api.field(v.title($locale('DepartmentName')), v.required(), v.trim(), v.min(1), v.max(100))
-  name: string;
-}
+export class DtoDepartmentUpdate extends $Dto.update(() => ModelDepartment, {
+  dtoClass: DtoDepartmentUpdateBase,
+}) {}

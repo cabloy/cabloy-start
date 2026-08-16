@@ -13,7 +13,16 @@ export interface IDtoOptionsDepartmentMembershipSummary extends IDecoratorDtoOpt
 @Dto<IDtoOptionsDepartmentMembershipSummary>({
   blocks: [
     ZovaRender.block('start-details:blockDetails', {
-      blocks: [ZovaRender.block('start-details:blockTable')],
+      blocks: [
+        ZovaRender.block('start-details:blockToolbarBulk', {
+          actions: [
+            ZovaRender.detailsActionBulk('admin-department:actionCreateMembership', {
+              permission: { formScene: ['create', 'edit'] },
+            }),
+          ],
+        }),
+        ZovaRender.block('start-details:blockTable'),
+      ],
     }),
   ],
 })
@@ -38,4 +47,29 @@ export class DtoDepartmentMembershipSummary {
 
   @Api.field(v.title($locale('Primary')), v.required())
   primary: boolean;
+
+  @Api.field(v.title($locale('DepartmentManager')), ZovaRender.visible(false), v.required())
+  manager: boolean;
+
+  @Api.field(
+    v.title($locale('Operations')),
+    ZovaRender.order(1, 'max'),
+    ZovaRender.cell('start-details:actionOperationsRow', {
+      actions: [
+        ZovaRender.detailsActionRow('admin-department:actionUpdateMembership', {
+          permission: { formScene: ['create', 'edit'] },
+        }),
+        ZovaRender.detailsActionRow('admin-department:actionToggleMembershipPrimary', {
+          permission: { formScene: ['create', 'edit'] },
+        }),
+        ZovaRender.detailsActionRow('admin-department:actionUpdateMembershipManager', {
+          permission: { formScene: ['create', 'edit'] },
+        }),
+        ZovaRender.detailsActionRow('admin-department:actionDeleteMembership', {
+          permission: { formScene: ['create', 'edit'] },
+        }),
+      ],
+    }),
+  )
+  _operationsRow?: unknown;
 }

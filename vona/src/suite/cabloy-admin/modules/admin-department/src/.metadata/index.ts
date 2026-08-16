@@ -308,6 +308,7 @@ import type { MetaRedlock } from '../bean/meta.redlock.ts';
 export * from '../dto/departmentActivation.ts';
 export * from '../dto/departmentBase.tsx';
 export * from '../dto/departmentCreate.tsx';
+export * from '../dto/departmentCreateBase.ts';
 export * from '../dto/departmentManagerUpdate.ts';
 export * from '../dto/departmentMembershipCreate.ts';
 export * from '../dto/departmentMembershipDelete.ts';
@@ -317,17 +318,20 @@ export * from '../dto/departmentMembershipSelectRes.ts';
 export * from '../dto/departmentMembershipSummary.ts';
 export * from '../dto/departmentMembershipUpdate.ts';
 export * from '../dto/departmentMove.ts';
+export * from '../dto/departmentRead.ts';
 export * from '../dto/departmentReorder.ts';
 export * from '../dto/departmentSelectReq.tsx';
 export * from '../dto/departmentSelectRes.tsx';
 export * from '../dto/departmentSelectResItem.tsx';
 export * from '../dto/departmentTree.ts';
 export * from '../dto/departmentUpdate.tsx';
+export * from '../dto/departmentUpdateBase.ts';
 export * from '../dto/departmentUserSummary.ts';
 export * from '../dto/departmentView.tsx';
 import type { IDtoOptionsDepartmentActivation } from '../dto/departmentActivation.ts';
 import type { IDtoOptionsDepartmentBase } from '../dto/departmentBase.tsx';
 import type { IDtoOptionsDepartmentCreate } from '../dto/departmentCreate.tsx';
+import type { IDtoOptionsDepartmentCreateBase } from '../dto/departmentCreateBase.ts';
 import type { IDtoOptionsDepartmentManagerUpdate } from '../dto/departmentManagerUpdate.ts';
 import type { IDtoOptionsDepartmentMembershipCreate } from '../dto/departmentMembershipCreate.ts';
 import type { IDtoOptionsDepartmentMembershipDelete } from '../dto/departmentMembershipDelete.ts';
@@ -337,12 +341,14 @@ import type { IDtoOptionsDepartmentMembershipSelectRes } from '../dto/department
 import type { IDtoOptionsDepartmentMembershipSummary } from '../dto/departmentMembershipSummary.ts';
 import type { IDtoOptionsDepartmentMembershipUpdate } from '../dto/departmentMembershipUpdate.ts';
 import type { IDtoOptionsDepartmentMove } from '../dto/departmentMove.ts';
+import type { IDtoOptionsDepartmentRead } from '../dto/departmentRead.ts';
 import type { IDtoOptionsDepartmentReorder } from '../dto/departmentReorder.ts';
 import type { IDtoOptionsDepartmentSelectReq } from '../dto/departmentSelectReq.tsx';
 import type { IDtoOptionsDepartmentSelectRes } from '../dto/departmentSelectRes.tsx';
 import type { IDtoOptionsDepartmentSelectResItem } from '../dto/departmentSelectResItem.tsx';
 import type { IDtoOptionsDepartmentTreeItem } from '../dto/departmentTree.ts';
 import type { IDtoOptionsDepartmentUpdate } from '../dto/departmentUpdate.tsx';
+import type { IDtoOptionsDepartmentUpdateBase } from '../dto/departmentUpdateBase.ts';
 import type { IDtoOptionsDepartmentUserSummary } from '../dto/departmentUserSummary.ts';
 import type { IDtoOptionsDepartmentView } from '../dto/departmentView.tsx';
 import 'vona-module-a-web';
@@ -352,6 +358,7 @@ declare module 'vona-module-a-web' {
       'admin-department:departmentActivation': IDtoOptionsDepartmentActivation;
 'admin-department:departmentBase': IDtoOptionsDepartmentBase;
 'admin-department:departmentCreate': IDtoOptionsDepartmentCreate;
+'admin-department:departmentCreateBase': IDtoOptionsDepartmentCreateBase;
 'admin-department:departmentManagerUpdate': IDtoOptionsDepartmentManagerUpdate;
 'admin-department:departmentMembershipCreate': IDtoOptionsDepartmentMembershipCreate;
 'admin-department:departmentMembershipDelete': IDtoOptionsDepartmentMembershipDelete;
@@ -361,12 +368,14 @@ declare module 'vona-module-a-web' {
 'admin-department:departmentMembershipSummary': IDtoOptionsDepartmentMembershipSummary;
 'admin-department:departmentMembershipUpdate': IDtoOptionsDepartmentMembershipUpdate;
 'admin-department:departmentMove': IDtoOptionsDepartmentMove;
+'admin-department:departmentRead': IDtoOptionsDepartmentRead;
 'admin-department:departmentReorder': IDtoOptionsDepartmentReorder;
 'admin-department:departmentSelectReq': IDtoOptionsDepartmentSelectReq;
 'admin-department:departmentSelectRes': IDtoOptionsDepartmentSelectRes;
 'admin-department:departmentSelectResItem': IDtoOptionsDepartmentSelectResItem;
 'admin-department:departmentTree': IDtoOptionsDepartmentTreeItem;
 'admin-department:departmentUpdate': IDtoOptionsDepartmentUpdate;
+'admin-department:departmentUpdateBase': IDtoOptionsDepartmentUpdateBase;
 'admin-department:departmentUserSummary': IDtoOptionsDepartmentUserSummary;
 'admin-department:departmentView': IDtoOptionsDepartmentView;
     }
@@ -381,6 +390,7 @@ declare module 'vona-module-admin-department' {
 import type { DtoDepartmentActivation } from '../dto/departmentActivation.ts';
 import type { DtoDepartmentBase } from '../dto/departmentBase.tsx';
 import type { DtoDepartmentCreate } from '../dto/departmentCreate.tsx';
+import type { DtoDepartmentCreateBase } from '../dto/departmentCreateBase.ts';
 import type { DtoDepartmentManagerUpdate } from '../dto/departmentManagerUpdate.ts';
 import type { DtoDepartmentMembershipCreate } from '../dto/departmentMembershipCreate.ts';
 import type { DtoDepartmentMembershipDelete } from '../dto/departmentMembershipDelete.ts';
@@ -390,12 +400,14 @@ import type { DtoDepartmentMembershipSelectRes } from '../dto/departmentMembersh
 import type { DtoDepartmentMembershipSummary } from '../dto/departmentMembershipSummary.ts';
 import type { DtoDepartmentMembershipUpdate } from '../dto/departmentMembershipUpdate.ts';
 import type { DtoDepartmentMove } from '../dto/departmentMove.ts';
+import type { DtoDepartmentRead } from '../dto/departmentRead.ts';
 import type { DtoDepartmentReorder } from '../dto/departmentReorder.ts';
 import type { DtoDepartmentSelectReq } from '../dto/departmentSelectReq.tsx';
 import type { DtoDepartmentSelectRes } from '../dto/departmentSelectRes.tsx';
 import type { DtoDepartmentSelectResItem } from '../dto/departmentSelectResItem.tsx';
 import type { DtoDepartmentTree } from '../dto/departmentTree.ts';
 import type { DtoDepartmentUpdate } from '../dto/departmentUpdate.tsx';
+import type { DtoDepartmentUpdateBase } from '../dto/departmentUpdateBase.ts';
 import type { DtoDepartmentUserSummary } from '../dto/departmentUserSummary.ts';
 import type { DtoDepartmentView } from '../dto/departmentView.tsx';
 declare module 'vona-module-admin-department' {
@@ -410,6 +422,10 @@ declare module 'vona-module-admin-department' {
 
     export interface IDtoOptionsDepartmentCreate {
       fields?: TypeEntityOptionsFields<DtoDepartmentCreate, IDtoOptionsDepartmentCreate[TypeSymbolKeyFieldsMore]>;
+    }
+
+    export interface IDtoOptionsDepartmentCreateBase {
+      fields?: TypeEntityOptionsFields<DtoDepartmentCreateBase, IDtoOptionsDepartmentCreateBase[TypeSymbolKeyFieldsMore]>;
     }
 
     export interface IDtoOptionsDepartmentManagerUpdate {
@@ -448,6 +464,10 @@ declare module 'vona-module-admin-department' {
       fields?: TypeEntityOptionsFields<DtoDepartmentMove, IDtoOptionsDepartmentMove[TypeSymbolKeyFieldsMore]>;
     }
 
+    export interface IDtoOptionsDepartmentRead {
+      fields?: TypeEntityOptionsFields<DtoDepartmentRead, IDtoOptionsDepartmentRead[TypeSymbolKeyFieldsMore]>;
+    }
+
     export interface IDtoOptionsDepartmentReorder {
       fields?: TypeEntityOptionsFields<DtoDepartmentReorder, IDtoOptionsDepartmentReorder[TypeSymbolKeyFieldsMore]>;
     }
@@ -470,6 +490,10 @@ declare module 'vona-module-admin-department' {
 
     export interface IDtoOptionsDepartmentUpdate {
       fields?: TypeEntityOptionsFields<DtoDepartmentUpdate, IDtoOptionsDepartmentUpdate[TypeSymbolKeyFieldsMore]>;
+    }
+
+    export interface IDtoOptionsDepartmentUpdateBase {
+      fields?: TypeEntityOptionsFields<DtoDepartmentUpdateBase, IDtoOptionsDepartmentUpdateBase[TypeSymbolKeyFieldsMore]>;
     }
 
     export interface IDtoOptionsDepartmentUserSummary {

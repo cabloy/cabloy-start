@@ -8,7 +8,7 @@ import { $tableColumns } from 'vona-module-a-ormutils';
   indexes: {
     ...$tableColumns('adminDepartment', 'parentId+name'),
     ...$tableColumns('adminDepartment', 'parentId+sortOrder'),
-    ...$tableColumns('adminDepartment', 'managerMembershipId'),
+    ...$tableColumns('adminDepartment', 'managerId'),
     ...$tableColumns('adminDepartmentMembership', 'departmentId+userId'),
     ...$tableColumns('adminDepartmentMembership', 'departmentId+enabled'),
     ...$tableColumns('adminDepartmentMembership', 'userId+enabled'),

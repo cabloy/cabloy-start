@@ -53,7 +53,7 @@ export class MetaVersion extends BeanBase implements IMetaVersionSeed, IMetaVers
       table.tableIdentity(department.parentId);
       table.boolean(department.enabled).defaultTo(true);
       table.integer(department.sortOrder).defaultTo(0);
-      table.tableIdentity(department.managerMembershipId);
+      table.tableIdentity(department.managerId);
     });
 
     const departmentMembership = this.scope.entity.departmentMembership;

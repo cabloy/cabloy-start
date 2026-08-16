@@ -93,7 +93,7 @@ export type ApiApiAdminDepartmentdeleteMembershipMethod = 'delete';
 export type ApiApiAdminDepartmentdeleteMembershipRequestParams =
   paths[ApiApiAdminDepartmentdeleteMembershipPath][ApiApiAdminDepartmentdeleteMembershipMethod]['parameters']['path'];
 export type ApiApiAdminDepartmentdeleteMembershipRequestBody =
-  components['schemas']['admin-department.dto.departmentMembershipDelete'];
+  components['schemas']['admin-department.dto.departmentMembershipDelete_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
 export type ApiApiAdminDepartmentdeleteMembershipResponseBody =
   paths[ApiApiAdminDepartmentdeleteMembershipPath][ApiApiAdminDepartmentdeleteMembershipMethod]['responses']['200']['content']['application/json']['data'];
 

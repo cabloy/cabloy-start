@@ -59,5 +59,5 @@ export class EntityDepartment extends EntityBase {
   sortOrder: number;
 
   @Api.field(ZovaRender.visible(false), v.optional(), v.tableIdentity())
-  managerMembershipId?: TableIdentity;
+  managerId?: TableIdentity;
 }

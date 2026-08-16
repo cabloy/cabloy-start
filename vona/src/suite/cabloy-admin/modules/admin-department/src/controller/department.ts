@@ -121,9 +121,9 @@ export class ControllerDepartment extends BeanBase {
   async deleteMembership(
     @Arg.param('departmentId', v.tableIdentity()) departmentId: TableIdentity,
     @Arg.param('membershipId', v.tableIdentity()) membershipId: TableIdentity,
-    @Arg.body() command: DtoDepartmentMembershipDelete,
+    @Arg.body(v.optional()) command?: DtoDepartmentMembershipDelete,
   ): Promise<void> {
-    await this.scope.service.department.deleteMembership(departmentId, membershipId, command);
+    await this.scope.service.department.deleteMembership(departmentId, membershipId, command ?? {});
   }
 
   @Web.put(':departmentId/memberships/:membershipId/primary')

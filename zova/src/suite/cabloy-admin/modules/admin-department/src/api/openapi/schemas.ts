@@ -131,10 +131,10 @@ export type ApiSchemaAdminDepartmentDtoDepartmentTreeItem =
   components['schemas']['admin-department.dto.departmentTreeItem'];
 export type ApiSchemaAdminDepartmentDtoDepartmentTreeItemPartial =
   Partial<ApiSchemaAdminDepartmentDtoDepartmentTreeItem>;
-export type ApiSchemaAdminDepartmentDtoDepartmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_af5570af1376880edfa8f6de6a83e65c0d61592b =
-  components['schemas']['admin-department.dto.departmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_af5570af1376880edfa8f6de6a83e65c0d61592b'];
-export type ApiSchemaAdminDepartmentDtoDepartmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_af5570af1376880edfa8f6de6a83e65c0d61592bPartial =
-  Partial<ApiSchemaAdminDepartmentDtoDepartmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_af5570af1376880edfa8f6de6a83e65c0d61592b>;
+export type ApiSchemaAdminDepartmentDtoDepartmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_178e970e07588147aaeb724dae9c1155906936c7 =
+  components['schemas']['admin-department.dto.departmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_178e970e07588147aaeb724dae9c1155906936c7'];
+export type ApiSchemaAdminDepartmentDtoDepartmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_178e970e07588147aaeb724dae9c1155906936c7Partial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_178e970e07588147aaeb724dae9c1155906936c7>;
 export type ApiSchemaAdminDepartmentDtoDepartmentMembershipSummary =
   components['schemas']['admin-department.dto.departmentMembershipSummary'];
 export type ApiSchemaAdminDepartmentDtoDepartmentMembershipSummaryPartial =
@@ -155,10 +155,6 @@ export type ApiSchemaAdminDepartmentDtoDepartmentMembershipSelectRes =
   components['schemas']['admin-department.dto.departmentMembershipSelectRes'];
 export type ApiSchemaAdminDepartmentDtoDepartmentMembershipSelectResPartial =
   Partial<ApiSchemaAdminDepartmentDtoDepartmentMembershipSelectRes>;
-export type ApiSchemaAdminDepartmentDtoDepartmentMembershipItem =
-  components['schemas']['admin-department.dto.departmentMembershipItem'];
-export type ApiSchemaAdminDepartmentDtoDepartmentMembershipItemPartial =
-  Partial<ApiSchemaAdminDepartmentDtoDepartmentMembershipItem>;
 export type ApiSchemaAdminDepartmentDtoDepartmentMembershipCreate =
   components['schemas']['admin-department.dto.departmentMembershipCreate'];
 export type ApiSchemaAdminDepartmentDtoDepartmentMembershipCreatePartial =
@@ -167,10 +163,10 @@ export type ApiSchemaAdminDepartmentDtoDepartmentMembershipUpdate =
   components['schemas']['admin-department.dto.departmentMembershipUpdate'];
 export type ApiSchemaAdminDepartmentDtoDepartmentMembershipUpdatePartial =
   Partial<ApiSchemaAdminDepartmentDtoDepartmentMembershipUpdate>;
-export type ApiSchemaAdminDepartmentDtoDepartmentMembershipDelete =
-  components['schemas']['admin-department.dto.departmentMembershipDelete'];
-export type ApiSchemaAdminDepartmentDtoDepartmentMembershipDeletePartial =
-  Partial<ApiSchemaAdminDepartmentDtoDepartmentMembershipDelete>;
+export type ApiSchemaAdminDepartmentDtoDepartmentMembershipDelete_2d063d28bc7243bed02ebd8bddf1212a93c6305b =
+  components['schemas']['admin-department.dto.departmentMembershipDelete_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
+export type ApiSchemaAdminDepartmentDtoDepartmentMembershipDelete_2d063d28bc7243bed02ebd8bddf1212a93c6305bPartial =
+  Partial<ApiSchemaAdminDepartmentDtoDepartmentMembershipDelete_2d063d28bc7243bed02ebd8bddf1212a93c6305b>;
 export type ApiSchemaAdminDepartmentDtoDepartmentMembershipPrimary =
   components['schemas']['admin-department.dto.departmentMembershipPrimary'];
 export type ApiSchemaAdminDepartmentDtoDepartmentMembershipPrimaryPartial =

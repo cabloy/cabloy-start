@@ -8,7 +8,7 @@ import { BeanModelBase, Model } from 'zova-module-a-model';
 import type {
   ApiSchemaAdminDepartmentDtoDepartmentManagerUpdate,
   ApiSchemaAdminDepartmentDtoDepartmentMembershipCreate,
-  ApiSchemaAdminDepartmentDtoDepartmentMembershipDelete,
+  ApiSchemaAdminDepartmentDtoDepartmentMembershipDelete_2d063d28bc7243bed02ebd8bddf1212a93c6305b,
   ApiSchemaAdminDepartmentDtoDepartmentMembershipPrimary,
   ApiSchemaAdminDepartmentDtoDepartmentMembershipSelectRes,
   ApiSchemaAdminDepartmentDtoDepartmentMembershipUpdate,
@@ -102,7 +102,7 @@ export class ModelDepartment extends BeanModelBase {
   ) {
     return this.$$modelResource.mutationItem<
       void,
-      ApiSchemaAdminDepartmentDtoDepartmentMembershipDelete
+      ApiSchemaAdminDepartmentDtoDepartmentMembershipDelete_2d063d28bc7243bed02ebd8bddf1212a93c6305b
     >({
       id: departmentId,
       action: `deleteMembership-${membershipId}`,

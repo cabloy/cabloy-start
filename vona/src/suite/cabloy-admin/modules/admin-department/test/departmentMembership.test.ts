@@ -157,8 +157,11 @@ describe('departmentMembership.test.ts', { concurrency: false }, () => {
           {
             id: membershipA,
             userId: user.id,
+            user: { id: user.id, name: user.name, avatar: null },
             position: 'Engineer',
             enabled: true,
+            primary: false,
+            manager: false,
           },
         ]);
         const membershipsB = await app.bean.executor.performAction(
@@ -355,6 +358,7 @@ describe('departmentMembership.test.ts', { concurrency: false }, () => {
           position: null,
           enabled: true,
           primary: false,
+          manager: true,
         });
         assert.deepEqual(viewWithManager.manager, {
           id: user.id,
@@ -385,7 +389,7 @@ describe('departmentMembership.test.ts', { concurrency: false }, () => {
         const departmentWithManager = await app
           .scope('admin-department')
           .model.department.getById(departmentA.id);
-        assert.equal(String(departmentWithManager!.managerMembershipId), String(membershipA));
+        assert.equal(String(departmentWithManager!.managerId), String(user.id));
 
         await app.bean.executor.performAction(
           'delete',
@@ -400,8 +404,8 @@ describe('departmentMembership.test.ts', { concurrency: false }, () => {
           .scope('admin-department')
           .model.department.getById(departmentA.id);
         assert.equal(
-          String(departmentWithReplacement!.managerMembershipId),
-          String(replacementMembership),
+          String(departmentWithReplacement!.managerId),
+          String(replacementUser.id),
         );
 
         await app.bean.executor.performAction(
@@ -416,7 +420,7 @@ describe('departmentMembership.test.ts', { concurrency: false }, () => {
         const departmentWithoutManager = await app
           .scope('admin-department')
           .model.department.getById(departmentA.id);
-        assert.equal(departmentWithoutManager!.managerMembershipId, undefined);
+        assert.equal(departmentWithoutManager!.managerId, undefined);
       });
     } finally {
       await deleteMemberships(membershipIds);

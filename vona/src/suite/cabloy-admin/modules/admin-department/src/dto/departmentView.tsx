@@ -43,7 +43,9 @@ export interface IDtoOptionsDepartmentView extends IDecoratorDtoOptions<'_manage
                     children: [
                       {
                         type: 'section',
-                        children: [{ type: 'field', name: 'manager.name' }],
+                        children: [
+                          { type: 'field', name: 'manager.name' },
+                        ],
                       },
                     ],
                   },
@@ -59,6 +61,9 @@ export interface IDtoOptionsDepartmentView extends IDecoratorDtoOptions<'_manage
         }),
         ZovaRender.block('start-pageentry:blockToolbarRow', {
           actions: [
+            ZovaRender.formActionRow('admin-department:actionEditDepartment', {
+              permission: { actionInherit: 'update', formScene: ['view'] },
+            }),
             ZovaRender.formActionRow('start-form:actionBack', { permission: { public: true } }),
           ],
         }),
