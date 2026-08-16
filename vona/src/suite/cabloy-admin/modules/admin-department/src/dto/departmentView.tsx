@@ -1,16 +1,13 @@
 import type { IDecoratorDtoOptions } from 'vona-module-a-web';
 
-import { $makeMetadata, Api, v } from 'vona-module-a-openapiutils';
 import { $Dto } from 'vona-module-a-orm';
 import { Dto } from 'vona-module-a-web';
 import { ZovaRender } from 'zova-rest-cabloy-start-admin';
 
 import { $locale } from '../.metadata/locales.ts';
 import { ModelDepartment } from '../model/department.ts';
-import { DtoDepartmentMembershipSummary } from './departmentMembershipSummary.ts';
-import { DtoDepartmentUserSummary } from './departmentUserSummary.ts';
 
-export interface IDtoOptionsDepartmentView extends IDecoratorDtoOptions<'_managerName'> {}
+export interface IDtoOptionsDepartmentView extends IDecoratorDtoOptions {}
 
 @Dto<IDtoOptionsDepartmentView>({
   blocks: [
@@ -37,28 +34,12 @@ export interface IDtoOptionsDepartmentView extends IDecoratorDtoOptions<'_manage
                       },
                     ],
                   },
-                  {
-                    type: 'group',
-                    title: $locale('DepartmentManager'),
-                    children: [
-                      {
-                        type: 'section',
-                        children: [
-                          { type: 'field', name: 'manager.name' },
-                        ],
-                      },
-                    ],
-                  },
-                  {
-                    type: 'group',
-                    title: $locale('DepartmentMemberships'),
-                    children: [{ type: 'field', name: 'memberships' }],
-                  },
                 ],
               },
             }),
           ],
         }),
+        ZovaRender.block('admin-department:blockDepartmentMemberships'),
         ZovaRender.block('start-pageentry:blockToolbarRow', {
           actions: [
             ZovaRender.formActionRow('admin-department:actionEditDepartment', {
@@ -70,29 +51,7 @@ export interface IDtoOptionsDepartmentView extends IDecoratorDtoOptions<'_manage
       ],
     }),
   ],
-  fields: {
-    memberships: $makeMetadata(
-      v.title($locale('DepartmentMemberships')),
-      ZovaRender.field('start-details:formFieldDetails'),
-    ),
-    _managerName: $makeMetadata(ZovaRender.fieldSource('manager.name')),
-  },
 })
 export class DtoDepartmentView extends $Dto.get(() => ModelDepartment, {
   include: { parent: true },
-}) {
-  @Api.field(v.title($locale('DepartmentMemberships')), v.array(DtoDepartmentMembershipSummary))
-  memberships: DtoDepartmentMembershipSummary[];
-
-  @Api.field(
-    v.title($locale('DepartmentManager')),
-    ZovaRender.visible(false),
-    v.optional(),
-    v.nullable(),
-    v.object(DtoDepartmentUserSummary),
-  )
-  manager?: DtoDepartmentUserSummary | null;
-
-  @Api.field(ZovaRender.visible(false), v.optional(), v.array(DtoDepartmentMembershipSummary))
-  _memberships?: DtoDepartmentMembershipSummary[];
-}
+}) {}

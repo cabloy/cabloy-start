@@ -2091,7 +2091,7 @@ export interface components {
       sortOrder: number;
       children: unknown[];
     };
-    'admin-department.dto.departmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_178e970e07588147aaeb724dae9c1155906936c7':
+    'admin-department.dto.departmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_2ffc3fa5d987440e3265f0a2115f69977f382b62':
       | {
           /**
            * Format: date-time
@@ -2130,15 +2130,15 @@ export interface components {
             /** @description Department Name */
             name: string;
           };
-          /** @description Department Memberships */
-          memberships: components['schemas']['admin-department.dto.departmentMembershipSummary'][];
-          manager?: components['schemas']['admin-department.dto.departmentUserSummary_2d063d28bc7243bed02ebd8bddf1212a93c6305b_1816ff740d81c738ec055c7038bbd93beb9405a7_1e820476987d0f2c1bdfcf191436842ebed36849_0aab216abd3467dd07f61c69172266c2441af477_0a0cb4012ea0138784bc202c82997b5bbf762cfd'];
-          _memberships?:
-            | components['schemas']['admin-department.dto.departmentMembershipSummary'][]
-            | undefined;
-          _managerName?: unknown;
         }
       | undefined;
+    'admin-department.dto.departmentUpdate': {
+      /** @description Department Name */
+      name: string;
+    };
+    'admin-department.dto.departmentMembershipSelectRes': {
+      list: components['schemas']['admin-department.dto.departmentMembershipSummary'][];
+    };
     'admin-department.dto.departmentMembershipSummary': {
       id: number | string;
       /** @description User */
@@ -2161,22 +2161,6 @@ export interface components {
       /** @description User */
       name: string;
       avatar?: unknown;
-    };
-    /** @description Department Manager */
-    'admin-department.dto.departmentUserSummary_2d063d28bc7243bed02ebd8bddf1212a93c6305b_1816ff740d81c738ec055c7038bbd93beb9405a7_1e820476987d0f2c1bdfcf191436842ebed36849_0aab216abd3467dd07f61c69172266c2441af477_0a0cb4012ea0138784bc202c82997b5bbf762cfd':
-      | {
-          id: number | string;
-          /** @description User */
-          name: string;
-          avatar?: unknown;
-        }
-      | undefined;
-    'admin-department.dto.departmentUpdate': {
-      /** @description Department Name */
-      name: string;
-    };
-    'admin-department.dto.departmentMembershipSelectRes': {
-      list: components['schemas']['admin-department.dto.departmentMembershipSummary'][];
     };
     'admin-department.dto.departmentMembershipCreate': {
       /** @description User */
@@ -3755,7 +3739,7 @@ export interface operations {
           'application/json': {
             code: string;
             message: string;
-            data?: components['schemas']['admin-department.dto.departmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_178e970e07588147aaeb724dae9c1155906936c7'];
+            data?: components['schemas']['admin-department.dto.departmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_2ffc3fa5d987440e3265f0a2115f69977f382b62'];
           };
         };
       };

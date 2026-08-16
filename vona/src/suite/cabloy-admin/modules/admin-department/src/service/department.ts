@@ -92,18 +92,7 @@ export class ServiceDepartment extends BeanBase {
     });
     if (!department) return undefined;
 
-    const membershipSummaries = await this.getMembershipSummaries(department);
-    const manager = department.managerId
-      ? (membershipSummaries.find(
-          membership => String(membership.userId) === String(department.managerId),
-        )?.user ?? null)
-      : null;
-
-    return {
-      ...department,
-      memberships: membershipSummaries,
-      manager,
-    } as DtoDepartmentView;
+    return department as DtoDepartmentView;
   }
 
   @Core.transaction()

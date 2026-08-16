@@ -29,7 +29,6 @@ export interface IDtoOptionsDepartmentUpdate extends IDecoratorDtoOptions {}
             }),
           ],
         }),
-        ZovaRender.block('admin-department:blockDepartmentMemberships'),
         ZovaRender.block('start-pageentry:blockToolbarRow', {
           actions: [
             ZovaRender.formActionRow('start-form:actionSubmit', {
