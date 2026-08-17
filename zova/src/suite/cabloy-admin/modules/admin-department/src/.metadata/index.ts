@@ -206,13 +206,17 @@ export interface IZovaComponentRecord {
 }
 /** components: end */
 /** tableCell: begin */
+export * from '../bean/tableCell.actionActivation.jsx';
 export * from '../bean/tableCell.actionDeleteMembership.jsx';
 export * from '../bean/tableCell.actionMove.jsx';
+export * from '../bean/tableCell.actionReorder.jsx';
 export * from '../bean/tableCell.actionToggleMembershipPrimary.jsx';
 export * from '../bean/tableCell.actionUpdateMembership.jsx';
 export * from '../bean/tableCell.actionUpdateMembershipManager.jsx';
+import { ITableCellOptionsActionActivation } from '../bean/tableCell.actionActivation.jsx';
 import { ITableCellOptionsActionDeleteMembership } from '../bean/tableCell.actionDeleteMembership.jsx';
 import { ITableCellOptionsActionMove } from '../bean/tableCell.actionMove.jsx';
+import { ITableCellOptionsActionReorder } from '../bean/tableCell.actionReorder.jsx';
 import { ITableCellOptionsActionToggleMembershipPrimary } from '../bean/tableCell.actionToggleMembershipPrimary.jsx';
 import { ITableCellOptionsActionUpdateMembership } from '../bean/tableCell.actionUpdateMembership.jsx';
 import { ITableCellOptionsActionUpdateMembershipManager } from '../bean/tableCell.actionUpdateMembershipManager.jsx';
@@ -220,8 +224,10 @@ import 'zova-module-a-table';
 declare module 'zova-module-a-table' {
   
     export interface ITableCellRecord {
-      'admin-department:actionDeleteMembership': ITableCellOptionsActionDeleteMembership;
+      'admin-department:actionActivation': ITableCellOptionsActionActivation;
+'admin-department:actionDeleteMembership': ITableCellOptionsActionDeleteMembership;
 'admin-department:actionMove': ITableCellOptionsActionMove;
+'admin-department:actionReorder': ITableCellOptionsActionReorder;
 'admin-department:actionToggleMembershipPrimary': ITableCellOptionsActionToggleMembershipPrimary;
 'admin-department:actionUpdateMembership': ITableCellOptionsActionUpdateMembership;
 'admin-department:actionUpdateMembershipManager': ITableCellOptionsActionUpdateMembershipManager;
@@ -231,6 +237,17 @@ declare module 'zova-module-a-table' {
 }
 declare module 'zova-module-admin-department' {
   
+        export interface TableCellActionActivation {
+          /** @internal */
+          get scope(): ScopeModuleAdminDepartment;
+        }
+
+        export interface TableCellActionActivation {
+          get $beanFullName(): 'admin-department.tableCell.actionActivation';
+          get $onionName(): 'admin-department:actionActivation';
+          get $onionOptions(): ITableCellOptionsActionActivation;
+        }
+
         export interface TableCellActionDeleteMembership {
           /** @internal */
           get scope(): ScopeModuleAdminDepartment;
@@ -251,6 +268,17 @@ declare module 'zova-module-admin-department' {
           get $beanFullName(): 'admin-department.tableCell.actionMove';
           get $onionName(): 'admin-department:actionMove';
           get $onionOptions(): ITableCellOptionsActionMove;
+        }
+
+        export interface TableCellActionReorder {
+          /** @internal */
+          get scope(): ScopeModuleAdminDepartment;
+        }
+
+        export interface TableCellActionReorder {
+          get $beanFullName(): 'admin-department.tableCell.actionReorder';
+          get $onionName(): 'admin-department:actionReorder';
+          get $onionOptions(): ITableCellOptionsActionReorder;
         }
 
         export interface TableCellActionToggleMembershipPrimary {
@@ -288,16 +316,20 @@ declare module 'zova-module-admin-department' {
 }
 /** tableCell: end */
 /** tableCell: begin */
+import { TableCellActionActivation } from '../bean/tableCell.actionActivation.jsx';
 import { TableCellActionDeleteMembership } from '../bean/tableCell.actionDeleteMembership.jsx';
 import { TableCellActionMove } from '../bean/tableCell.actionMove.jsx';
+import { TableCellActionReorder } from '../bean/tableCell.actionReorder.jsx';
 import { TableCellActionToggleMembershipPrimary } from '../bean/tableCell.actionToggleMembershipPrimary.jsx';
 import { TableCellActionUpdateMembership } from '../bean/tableCell.actionUpdateMembership.jsx';
 import { TableCellActionUpdateMembershipManager } from '../bean/tableCell.actionUpdateMembershipManager.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
-    'admin-department.tableCell.actionDeleteMembership': TableCellActionDeleteMembership;
+    'admin-department.tableCell.actionActivation': TableCellActionActivation;
+'admin-department.tableCell.actionDeleteMembership': TableCellActionDeleteMembership;
 'admin-department.tableCell.actionMove': TableCellActionMove;
+'admin-department.tableCell.actionReorder': TableCellActionReorder;
 'admin-department.tableCell.actionToggleMembershipPrimary': TableCellActionToggleMembershipPrimary;
 'admin-department.tableCell.actionUpdateMembership': TableCellActionUpdateMembership;
 'admin-department.tableCell.actionUpdateMembershipManager': TableCellActionUpdateMembershipManager;

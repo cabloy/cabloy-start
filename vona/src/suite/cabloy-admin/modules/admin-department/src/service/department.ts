@@ -187,7 +187,7 @@ export class ServiceDepartment extends BeanBase {
     command: DtoDepartmentMembershipCreate,
   ): Promise<EntityDepartmentMembership> {
     const department = await this.requireDepartmentForUpdate(departmentId);
-    if (!department.enabled) this.scope.error.DepartmentMembershipDepartmentDisabled.throw();
+    this.assertDepartmentEnabledForMembershipMutation(department);
     const user = await this.$scope.homeUser.model.user.getByIdForUpdate(command.userId);
     if (!user) this.scope.error.DepartmentMembershipUnavailable.throw();
     const userId = user!.id;
@@ -228,6 +228,8 @@ export class ServiceDepartment extends BeanBase {
   ): Promise<void> {
     const department = await this.requireDepartmentForUpdate(departmentId);
     const membership = await this.requireMembershipForUpdate(department.id, membershipId);
+    const enabling = command.enabled === true && !membership.enabled;
+    if (enabling) this.assertDepartmentEnabledForMembershipMutation(department);
     const disabling = command.enabled === false && membership.enabled;
     await this.applyManagerMembershipLifecycle(department, membership, command, disabling);
     const patch: Partial<Pick<EntityDepartmentMembership, 'position' | 'enabled' | 'primary'>> = {};
@@ -311,6 +313,7 @@ export class ServiceDepartment extends BeanBase {
       });
       return;
     }
+    this.assertDepartmentEnabledForMembershipMutation(department);
     const membership = await this.requireEnabledMembershipForManager(
       department,
       command.membershipId,
@@ -318,6 +321,10 @@ export class ServiceDepartment extends BeanBase {
     await this.scope.model.department.updateById(department.id, {
       managerId: membership.userId,
     });
+  }
+
+  private assertDepartmentEnabledForMembershipMutation(department: EntityDepartment): void {
+    if (!department.enabled) this.scope.error.DepartmentMembershipDepartmentDisabled.throw();
   }
 
   private async getMembershipSummaries(

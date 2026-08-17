@@ -98,15 +98,34 @@ async function deleteDepartment(page: Page, id: number | string) {
   await requestApi(page, 'DELETE', `/api/admin/department/${id}`);
 }
 
+async function getDepartment(page: Page, id: number | string) {
+  const response = await requestApi(page, 'GET', `/api/admin/department/${id}`);
+  const payload = (await response.json()) as { data?: { enabled: boolean }; enabled?: boolean };
+  return (payload.data ?? payload) as { enabled: boolean };
+}
+
+async function createMembership(
+  page: Page,
+  departmentId: number | string,
+  userId: number | string,
+) {
+  const response = await requestApi(page, 'POST', `/api/admin/department/${departmentId}/memberships`, {
+    userId,
+  });
+  return (await response.json()).data as number | string;
+}
+
 async function deleteMembership(
   page: Page,
   departmentId: number | string,
   membershipId: number | string,
+  managerMembershipId?: number | string | null,
 ) {
   await requestApi(
     page,
     'DELETE',
     `/api/admin/department/${departmentId}/memberships/${membershipId}`,
+    managerMembershipId === undefined ? undefined : { managerMembershipId },
   );
 }
 
@@ -179,7 +198,7 @@ test(
 );
 
 test(
-  'ATP-ADM-RES-02: Department details manage memberships and Edit updates the Department',
+  'ATP-ADM-RES-02: Department details manage memberships',
   { tag: ['@admin', '@cabloy-admin'] },
   async ({ page }) => {
     const pageErrors = collectPageErrors(page);
@@ -363,23 +382,6 @@ test(
       expect(managerClearRequests).toBe(0);
       expect(genericDepartmentPatchRequests).toBe(0);
 
-      await page.goto(`${resourcePath('admin-department:department')}/${departmentId}/edit`, {
-        waitUntil: 'load',
-      });
-      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
-      await expect(page.getByRole('button', { name: 'Submit', exact: true })).toBeVisible();
-      await expect(page.getByRole('button', { name: 'Add Membership', exact: true })).toHaveCount(
-        0,
-      );
-      await expect(page.getByRole('button', { name: 'Edit Membership', exact: true })).toHaveCount(
-        0,
-      );
-      await expect(
-        page.getByRole('button', { name: 'Set Primary Membership', exact: true }),
-      ).toHaveCount(0);
-      await expect(page.getByRole('button', { name: 'Set Manager', exact: true })).toHaveCount(0);
-      await expect(page.getByTestId('department-manager')).toHaveCount(0);
-
       await page.goto(`${resourcePath('admin-department:department')}/${emptyDepartmentId}`, {
         waitUntil: 'load',
       });
@@ -544,6 +546,7 @@ test(
     const rootA = `ATP Root A ${suffix}`;
     const rootB = `ATP Root B ${suffix}`;
     const child = `ATP Child ${suffix}`;
+    const protectedDepartment = `ATP Protected ${suffix}`;
     await loginAsAdmin(page);
 
     await page.goto('/admin/rest/resource/admin-user%3Auser/1', { waitUntil: 'load' });
@@ -554,16 +557,25 @@ test(
     let rootAId: number | string | undefined;
     let rootBId: number | string | undefined;
     let childId: number | string | undefined;
+    let protectedDepartmentId: number | string | undefined;
+    let protectedMembershipId: number | string | undefined;
     try {
       rootAId = await createDepartment(page, rootA);
       rootBId = await createDepartment(page, rootB);
       childId = await createDepartment(page, child, rootAId);
+      protectedDepartmentId = await createDepartment(page, protectedDepartment);
+      protectedMembershipId = await createMembership(page, protectedDepartmentId, 1);
+      await requestApi(page, 'PUT', `/api/admin/department/${protectedDepartmentId}/manager`, {
+        membershipId: protectedMembershipId,
+      });
 
       await page.goto(resourcePath('admin-department:department'), { waitUntil: 'load' });
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
       const childRow = page.getByRole('row').filter({ hasText: child });
       await expect(childRow).toBeVisible();
-      await childRow.getByRole('button', { name: 'Move Department', exact: true }).click();
+      await expect(childRow.getByRole('button', { name: 'Reorder', exact: true })).toBeVisible();
+      await expect(childRow.getByRole('button', { name: 'Disable', exact: true })).toBeVisible();
+      await childRow.getByRole('button', { name: 'Move', exact: true }).click();
 
       const moveDialog = page.getByRole('dialog');
       await expect(moveDialog).toBeVisible();
@@ -579,9 +591,109 @@ test(
       await expect(departmentRows.filter({ hasText: child })).toHaveCount(0);
       await departmentTree.getByText(rootB, { exact: true }).click();
       await expect(departmentRows.filter({ hasText: child })).toBeVisible();
+
+      let genericDepartmentPatchRequests = 0;
+      page.on('request', request => {
+        const url = new URL(request.url());
+        if (request.method() === 'PATCH' && url.pathname === `/api/admin/department/${childId}`) {
+          genericDepartmentPatchRequests += 1;
+        }
+      });
+      const movedChildRow = departmentRows.filter({ hasText: child });
+      await movedChildRow.getByRole('button', { name: 'Reorder', exact: true }).click();
+      const reorderDialog = page.getByRole('dialog');
+      await expect(reorderDialog).toBeVisible();
+      await expect(reorderDialog.getByText('Append', { exact: true })).toBeVisible();
+      await expect(reorderDialog.getByText(rootA, { exact: true })).toHaveCount(0);
+      await expect(reorderDialog.getByText(rootB, { exact: true })).toHaveCount(0);
+      const reordered = waitForApiResponse(page, 'PUT', /\/api\/admin\/department\/[^/]+\/reorder$/);
+      await reorderDialog.getByRole('button', { name: 'Reorder Department', exact: true }).click();
+      await reordered;
+      await expect(reorderDialog).toBeHidden();
+
+      await movedChildRow.getByRole('button', { name: 'Disable', exact: true }).click();
+      const confirmation = page.getByRole('dialog');
+      await expect(confirmation.getByText('Disable this Department?', { exact: true })).toBeVisible();
+      const disabled = waitForApiResponse(page, 'PUT', /\/api\/admin\/department\/[^/]+\/activation$/);
+      await confirmation.getByRole('button', { name: 'Yes', exact: true }).click();
+      const disabledResponse = await disabled;
+      expect(disabledResponse.request().postDataJSON()).toEqual({ enabled: false });
+      await expect
+        .poll(async () => (await getDepartment(page, childId!)).enabled)
+        .toBeFalsy();
+      await page.goto(resourcePath('admin-department:department'), { waitUntil: 'load' });
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+      const disabledChildRow = page.getByRole('row').filter({ hasText: child });
+      await expect(
+        disabledChildRow.getByRole('button', { name: 'Enable', exact: true }),
+      ).toBeVisible();
+
+      await page.goto(resourcePath('admin-department:department'), { waitUntil: 'load' });
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+      let protectedRow = page.getByRole('row').filter({ hasText: protectedDepartment });
+      await expect(protectedRow).toBeVisible();
+      await protectedRow.getByRole('button', { name: 'Disable', exact: true }).click();
+      let protectedConfirmation = page.getByRole('dialog');
+      await expect(
+        protectedConfirmation.getByText('Disable this Department?', { exact: true }),
+      ).toBeVisible();
+      const rejectedDisable = waitForApiResponse(
+        page,
+        'PUT',
+        new RegExp(`/api/admin/department/${protectedDepartmentId}/activation$`),
+        false,
+      );
+      await protectedConfirmation.getByRole('button', { name: 'Yes', exact: true }).click();
+      expect((await rejectedDisable).status()).toBe(409);
+      const lifecycleAlert = page
+        .getByRole('dialog')
+        .filter({ hasText: 'The Department has dependent records that must be handled first' });
+      await expect(lifecycleAlert).toBeVisible();
+      await lifecycleAlert.getByRole('button', { name: 'Close', exact: true }).click();
+      await expect(lifecycleAlert).not.toBeVisible();
+      await expect(protectedRow.getByRole('button', { name: 'Disable', exact: true })).toBeVisible();
+      await requestApi(page, 'PUT', `/api/admin/department/${protectedDepartmentId}/manager`, {
+        membershipId: null,
+      });
+      await deleteMembership(page, protectedDepartmentId, protectedMembershipId);
+      protectedMembershipId = undefined;
+      await page.goto(resourcePath('admin-department:department'), { waitUntil: 'load' });
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+      protectedRow = page.getByRole('row').filter({ hasText: protectedDepartment });
+      await expect(protectedRow).toBeVisible();
+      await protectedRow.getByRole('button', { name: 'Disable', exact: true }).click();
+      protectedConfirmation = page.getByRole('dialog');
+      await expect(
+        protectedConfirmation.getByText('Disable this Department?', { exact: true }),
+      ).toBeVisible();
+      const disabledProtectedDepartment = waitForApiResponse(
+        page,
+        'PUT',
+        new RegExp(`/api/admin/department/${protectedDepartmentId}/activation$`),
+      );
+      await protectedConfirmation.getByRole('button', { name: 'Yes', exact: true }).click();
+      await disabledProtectedDepartment;
+      await page.goto(resourcePath('admin-department:department'), { waitUntil: 'load' });
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+      protectedRow = page.getByRole('row').filter({ hasText: protectedDepartment });
+      await expect(
+        protectedRow.getByRole('button', { name: 'Enable', exact: true }),
+      ).toBeVisible();
+      expect(genericDepartmentPatchRequests).toBe(0);
       expect(pageErrors).toEqual([]);
     } finally {
-      if (childId !== undefined) await deleteDepartment(page, childId);
+      if (protectedDepartmentId !== undefined && protectedMembershipId !== undefined) {
+        await requestApi(page, 'PUT', `/api/admin/department/${protectedDepartmentId}/manager`, {
+          membershipId: null,
+        });
+        await deleteMembership(page, protectedDepartmentId, protectedMembershipId);
+      }
+      if (protectedDepartmentId !== undefined) {
+        await deleteDepartment(page, protectedDepartmentId);
+      }
+      if (childId !== undefined) {
+        await deleteDepartment(page, childId);
+      }
       if (rootBId !== undefined) await deleteDepartment(page, rootBId);
       if (rootAId !== undefined) await deleteDepartment(page, rootAId);
     }

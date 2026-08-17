@@ -245,6 +245,88 @@ describe('departmentMembership.test.ts', { concurrency: false }, () => {
     }
   });
 
+  it('action:departmentMembership:blocksEnablingMembershipsAndAssigningManagersInDisabledDepartments', async () => {
+    const departmentIds: string[] = [];
+    const membershipIds: string[] = [];
+    const userIds: string[] = [];
+    try {
+      await app.bean.executor.mockCtx(async () => {
+        await app.bean.passport.signinMock();
+        const user = await app.bean.user.register({
+          name: `department-disabled-${crypto.randomUUID()}`,
+        });
+        userIds.push(String(user.id));
+        const department = await departmentService().create({
+          name: `Department-Disabled-${crypto.randomUUID()}`,
+          parentId: null,
+        });
+        departmentIds.push(String(department.id));
+        const membershipId = await app.bean.executor.performAction(
+          'post',
+          '/admin/department/:departmentId/memberships',
+          {
+            params: { departmentId: department.id },
+            body: { userId: user.id },
+          },
+        );
+        membershipIds.push(String(membershipId));
+        await app.bean.executor.performAction(
+          'patch',
+          '/admin/department/:departmentId/memberships/:membershipId',
+          {
+            params: { departmentId: department.id, membershipId },
+            body: { enabled: false },
+          },
+        );
+        await app.bean.executor.performAction('put', '/admin/department/:id/activation', {
+          params: { id: department.id },
+          body: { enabled: false },
+        });
+
+        const [enableMembershipResult, enableMembershipError] = await catchError(() => {
+          return app.bean.executor.performAction(
+            'patch',
+            '/admin/department/:departmentId/memberships/:membershipId',
+            {
+              params: { departmentId: department.id, membershipId },
+              body: { enabled: true },
+            },
+          );
+        });
+        assert.equal(enableMembershipResult, undefined);
+        assert.equal(enableMembershipError?.code, 'admin-department:1009');
+        assert.equal(enableMembershipError?.status, 409);
+        const disabledMembership = await app
+          .scope('admin-department')
+          .model.departmentMembership.getById(membershipId);
+        assert.equal(disabledMembership!.enabled, false);
+
+        // Arrange an otherwise eligible membership through the model so the API guard, rather than
+        // ordinary manager eligibility, is the reason that manager assignment is rejected.
+        await app.scope('admin-department').model.departmentMembership.updateById(membershipId, {
+          enabled: true,
+        });
+        const [assignManagerResult, assignManagerError] = await catchError(() => {
+          return app.bean.executor.performAction('put', '/admin/department/:id/manager', {
+            params: { id: department.id },
+            body: { membershipId },
+          });
+        });
+        assert.equal(assignManagerResult, undefined);
+        assert.equal(assignManagerError?.code, 'admin-department:1009');
+        assert.equal(assignManagerError?.status, 409);
+        const unchangedDepartment = await app
+          .scope('admin-department')
+          .model.department.getById(department.id);
+        assert.equal(unchangedDepartment!.managerId, undefined);
+      });
+    } finally {
+      await deleteMemberships(membershipIds);
+      await deleteDepartments(departmentIds);
+      await deleteUsers(userIds);
+    }
+  });
+
   it('action:departmentMembership:managesPrimaryAndManagerLifecycle', async () => {
     const departmentIds: string[] = [];
     const membershipIds: string[] = [];

@@ -203,6 +203,78 @@ describe('department.test.ts', { concurrency: false }, () => {
     }
   });
 
+  it('action:department:scopesForestCommandsByInstance', async () => {
+    const ids: string[] = [];
+    try {
+      let rootId: string | undefined;
+      let childId: string | undefined;
+      let rootName: string | undefined;
+      await app.bean.executor.mockCtx(async () => {
+        await app.bean.passport.signinMock();
+        const root = await departmentService().create({
+          name: `Department-Scoped-Root-${crypto.randomUUID()}`,
+          parentId: null,
+        });
+        const child = await departmentService().create({
+          name: `Department-Scoped-Child-${crypto.randomUUID()}`,
+          parentId: root.id,
+        });
+        rootId = String(root.id);
+        childId = String(child.id);
+        rootName = root.name;
+        ids.push(rootId, childId);
+      });
+
+      assert.ok(rootId);
+      assert.ok(childId);
+      assert.ok(rootName);
+      await app.bean.executor.mockCtx(
+        async () => {
+          await app.bean.passport.signinMock();
+          const foreignView = await app.bean.executor.performAction('get', '/admin/department/:id', {
+            params: { id: rootId },
+          });
+          assert.equal(foreignView, undefined);
+          const foreignSelect = await app.bean.executor.performAction('get', departmentPath, {
+            query: { where: { id: rootId }, pageNo: 1, pageSize: 20 },
+          });
+          assert.equal(foreignSelect.list.some(item => String(item.id) === rootId), false);
+          const foreignTree = await app.bean.executor.performAction('get', '/admin/department/tree');
+          assert.equal(
+            JSON.stringify(foreignTree).includes(rootId),
+            false,
+          );
+
+          for (const [path, body] of [
+            ['/admin/department/:id/move', { parentId: null }],
+            ['/admin/department/:id/reorder', { beforeId: null }],
+            ['/admin/department/:id/activation', { enabled: false }],
+          ] as const) {
+            const [result, error] = await catchError(() => {
+              return app.bean.executor.performAction('put', path, {
+                params: { id: childId },
+                body,
+              });
+            });
+            assert.equal(result, undefined);
+            assert.equal(error?.code, 404);
+          }
+        },
+        { instanceName: 'shareTest' as any },
+      );
+
+      await app.bean.executor.mockCtx(async () => {
+        const root = await departmentService().view(rootId!);
+        const child = await departmentService().view(childId!);
+        assert.equal(root?.name, rootName);
+        assert.equal(String(child?.parentId), rootId);
+        assert.equal(child?.enabled, true);
+      });
+    } finally {
+      await deleteDepartments(ids);
+    }
+  });
+
   it('action:department:guardsLifecycleChanges', async () => {
     const ids: string[] = [];
     try {

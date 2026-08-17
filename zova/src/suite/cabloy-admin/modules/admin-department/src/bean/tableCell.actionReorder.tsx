@@ -20,27 +20,30 @@ interface DepartmentRow {
   parentId: TableIdentity | null;
 }
 
-interface DepartmentMoveData {
-  parentId: TableIdentity | null;
+interface DepartmentReorderData {
+  beforeId: TableIdentity | null;
 }
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceTableActionRowRecord {
-    'admin-department:actionMove'?: ITableCellOptionsActionMove;
+    'admin-department:actionReorder'?: ITableCellOptionsActionReorder;
   }
 }
 
-export interface ITableCellOptionsActionMove extends IResourceTableActionRowOptionsBase {}
+export interface ITableCellOptionsActionReorder extends IResourceTableActionRowOptionsBase {}
 
-@TableCell<ITableCellOptionsActionMove>()
-export class TableCellActionMove extends BeanBase implements ITableCellRender {
+@TableCell<ITableCellOptionsActionReorder>()
+export class TableCellActionReorder extends BeanBase implements ITableCellRender {
   render(
-    options: ITableCellOptionsActionMove,
+    options: ITableCellOptionsActionReorder,
     renderContext: IJsxRenderContextTableCell,
     _next: NextTableCellRender,
   ) {
     const { $host, cellContext, ctx } = renderContext;
-    const row = cellContext.row as unknown as DepartmentRow;
+    const row = cellContext.row.original as DepartmentRow;
+    const locale = (this.scope as unknown as {
+      locale: { Reorder(): string };
+    }).locale;
     return (
       <ZButton
         class={options.class}
@@ -51,36 +54,43 @@ export class TableCellActionMove extends BeanBase implements ITableCellRender {
             'admin-department.model.department',
             true,
           )) as ModelDepartment;
-          await this._openMoveDialog($host, modelDepartment, row);
+          await this._openReorderDialog($host, modelDepartment, row);
         }}
       >
-        {this.scope.locale.Move()}
+        {locale.Reorder()}
       </ZButton>
     );
   }
 
-  private async _openMoveDialog(
+  private async _openReorderDialog(
     $host: IJsxRenderContextTableCell['$host'],
     modelDepartment: ModelDepartment,
     row: DepartmentRow,
   ) {
-    const apiSchemas = modelDepartment.scope.apiSchema.adminDepartment.move();
+    const locale = (this.scope as unknown as {
+      locale: {
+        ReorderDepartment(): string;
+        AppendDepartment(): string;
+        Cancel(): string;
+      };
+    }).locale;
+    const apiSchemas = modelDepartment.scope.apiSchema.adminDepartment.reorder();
     await apiSchemas.sdk.suspense();
     let dialog: AppModalItem | undefined;
-    let formRef: BeanControllerFormBase<DepartmentMoveData> | undefined;
+    let formRef: BeanControllerFormBase<DepartmentReorderData> | undefined;
     dialog = this.$appModal.dialog({
-      title: this.scope.locale.MoveDepartment(),
+      title: locale.ReorderDepartment(),
       slotDefault: () => (
-        <ZForm<DepartmentMoveData>
+        <ZForm<DepartmentReorderData>
           formTag="div"
           controllerRef={ref => {
             formRef = ref;
           }}
-          data={{ parentId: row.parentId ?? null }}
+          data={{ beforeId: null }}
           schema={apiSchemas.requestBody}
           formMeta={formMetaFromFormScene('edit')}
           onSubmitData={async data => {
-            await modelDepartment.move(row.id).mutateAsync(data.value.parentId);
+            await modelDepartment.reorder(row.id).mutateAsync(data.value.beforeId);
             dialog?.close();
           }}
           onShowError={async ({ error }) => {
@@ -91,9 +101,13 @@ export class TableCellActionMove extends BeanBase implements ITableCellRender {
           }}
         >
           <ZFormFieldPreset
-            name="parentId"
+            name="beforeId"
             render="admin-department:formFieldDepartmentTree"
-            options={{ excludeId: row.id }}
+            options={{
+              excludeId: row.id,
+              siblingOfId: row.id,
+              rootTitle: locale.AppendDepartment(),
+            }}
           ></ZFormFieldPreset>
         </ZForm>
       ),
@@ -107,7 +121,7 @@ export class TableCellActionMove extends BeanBase implements ITableCellRender {
                 modal.close();
               }}
             >
-              {this.scope.locale.Cancel()}
+              {locale.Cancel()}
             </ZButton>
             <ZButton
               color="primary"
@@ -117,7 +131,7 @@ export class TableCellActionMove extends BeanBase implements ITableCellRender {
                 await formRef?.submit();
               }}
             >
-              {this.scope.locale.MoveDepartment()}
+              {locale.ReorderDepartment()}
             </ZButton>
           </>
         );

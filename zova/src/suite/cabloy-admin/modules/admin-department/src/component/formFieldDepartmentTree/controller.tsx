@@ -28,6 +28,8 @@ declare module 'zova-module-a-openapi' {
 
 export interface IResourceFormFieldDepartmentTreeOptions extends IResourceFormFieldOptionsBase {
   excludeId?: TableIdentity;
+  siblingOfId?: TableIdentity;
+  rootTitle?: string;
 }
 
 export interface ControllerFormFieldDepartmentTreeProps extends IFormFieldComponentOptions {
@@ -73,17 +75,23 @@ export class ControllerFormFieldDepartmentTree extends BeanControllerBase {
           const treeItems: DepartmentTreeItem[] = [
             {
               id: RootDepartment,
-              name: this.scope.locale.RootDepartment(),
-              children: this._getTreeData(propsBucket.options?.excludeId),
+              name: propsBucket.options?.rootTitle ?? this.scope.locale.RootDepartment(),
+              children: this._getTreeData(propsBucket.options),
             },
           ];
+          const {
+            rootTitle: _rootTitle,
+            excludeId: _excludeId,
+            siblingOfId: _siblingOfId,
+            ...fieldOptions
+          } = propsBucket.options ?? {};
           const propsTextField: VTextField['$props'] = {
             active: true,
             label: propsBucket.layout?.label as string | undefined,
             prependIcon: propsBucket.layout?.iconPrefix,
             appendIcon: propsBucket.layout?.iconSuffix,
             errorMessages: error ? errorObj?.message : undefined,
-            ...propsBucket.options,
+            ...fieldOptions,
             ...props,
           };
           const selectDepartment = (id: TableIdentity | typeof RootDepartment) => {
@@ -136,9 +144,26 @@ export class ControllerFormFieldDepartmentTree extends BeanControllerBase {
     );
   }
 
-  private _getTreeData(excludeId?: TableIdentity) {
-    if (excludeId === undefined) return this.treeData;
-    return this._filterTreeItems(this.treeData, excludeId);
+  private _getTreeData(options?: IResourceFormFieldDepartmentTreeOptions) {
+    const siblingOfId = options?.siblingOfId;
+    if (siblingOfId !== undefined) {
+      return this._findSiblings(this.treeData, siblingOfId)
+        .filter(item => String(item.id) !== String(options?.excludeId))
+        .map(item => ({ ...item, children: [] }));
+    }
+    if (options?.excludeId === undefined) return this.treeData;
+    return this._filterTreeItems(this.treeData, options.excludeId);
+  }
+
+  private _findSiblings(items: DepartmentTreeItem[], id: TableIdentity): DepartmentTreeItem[] {
+    for (const item of items) {
+      if (item.children.some(child => String(child.id) === String(id))) {
+        return item.children;
+      }
+      const siblings = this._findSiblings(item.children, id);
+      if (siblings.length) return siblings;
+    }
+    return items.some(item => String(item.id) === String(id)) ? items : [];
   }
 
   private _filterTreeItems(items: DepartmentTreeItem[], excludeId: TableIdentity) {
