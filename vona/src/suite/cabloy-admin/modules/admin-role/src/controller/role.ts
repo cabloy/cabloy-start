@@ -46,6 +46,16 @@ export class ControllerRole extends BeanBase {
     return await this.scope.service.role.select(params);
   }
 
+  @Web.get('membership-select')
+  @Api.body(DtoRoleSelectRes)
+  @Core.serializer()
+  @Passport.systemAdmin()
+  async selectMembershipCandidates(
+    @Arg.filter(DtoRoleSelectReq) params: IQueryParams<ModelRole>,
+  ): Promise<DtoRoleSelectRes> {
+    return await this.scope.service.role.selectMembershipCandidates(params);
+  }
+
   @Web.get(':id')
   @Api.body(v.optional(), v.object(DtoRoleView))
   @Core.serializer()

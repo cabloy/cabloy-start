@@ -9,7 +9,7 @@ This PRD owns product outcomes, business scope, business rules, and business acc
 ## Product Goals
 
 - Provide one operational surface for finding and maintaining all existing accounts without replacing the established identity, authentication, or Passport model.
-- Allow administrators to create, edit, delete, and assign ordinary roles while reserving `systemAdmin` for controlled recovery authority.
+- Allow administrators to create, edit, and delete custom roles; manage non-system-administrator memberships, including `registeredUser`; and reserve `systemAdmin` for controlled recovery authority.
 - Model a Department forest directly inside the active Vona instance without adding a premature Organization dimension.
 - Allow one account to hold multiple Department memberships and record an optional per-membership position description.
 - Make Department responsibility visible through a manager assignment while preserving membership boundaries.
@@ -39,8 +39,9 @@ An authorized administrator who maintains the Department forest, assigns members
 
 - Find and view all existing accounts in the active instance.
 - Maintain permitted account profile information and activation state; the exact mutable fields and credential lifecycle are deferred to the SRS.
-- Create, edit, and delete ordinary existing roles, and assign or revoke ordinary roles for accounts.
-- Exclude the protected `systemAdmin` role from generic role edit, delete, and bulk-membership operations.
+- Create, edit, and delete custom existing roles; configured framework-role definitions remain unavailable to generic Role Resource CRUD.
+- Display every assigned account role and assign or revoke every non-system-administrator membership, including the fixed `registeredUser` membership.
+- Exclude `systemAdmin` membership from generic role edit, delete, candidate-selection, and bulk-replacement operations.
 - Grant or revoke `systemAdmin` only through a dedicated protected workflow.
 - Create, view, maintain, enable, disable, and rearrange the Department forest in the active instance.
 - Treat `parentId = null` as a top-level Department.
@@ -66,7 +67,7 @@ An authorized administrator who maintains the Department forest, assigns members
 ### Maintain an account and memberships
 
 1. A System Administrator finds an account in the active instance.
-2. They inspect the account's permitted profile, activation state, ordinary roles, and Department memberships.
+2. They inspect the account's permitted profile, activation state, all assigned roles, and Department memberships.
 3. They update permitted profile or activation information when needed.
 4. They add, update, remove, or designate a primary membership without changing the account's authentication identity.
 5. The system presents the resulting role and membership information consistently on subsequent administration views.
@@ -75,8 +76,8 @@ An authorized administrator who maintains the Department forest, assigns members
 
 1. A System Administrator creates or selects an ordinary role.
 2. They maintain its business-facing identity and presentation information within the supported role contract.
-3. They assign or revoke ordinary role membership for selected accounts.
-4. They cannot use ordinary role maintenance to mutate the protected `systemAdmin` role.
+3. They assign or revoke non-system-administrator membership for selected accounts, including `registeredUser`.
+4. They cannot use generic role maintenance to mutate a fixed role definition or the protected `systemAdmin` membership.
 
 ### Establish a Department tree
 
@@ -109,10 +110,10 @@ An authorized administrator who maintains the Department forest, assigns members
 
 ### Ordinary Role Management
 
-- **PRD-ADM-ROL-01**: A System Administrator can create, inspect, edit, and delete ordinary roles in the active instance.
-- **PRD-ADM-ROL-02**: A System Administrator can assign and revoke ordinary role membership for accounts.
-- **PRD-ADM-ROL-03**: Ordinary role administration cannot rename, delete, alter the site admission of, or bulk-replace membership for the protected `systemAdmin` role.
-- **PRD-ADM-ROL-04**: A newly created ordinary role does not imply a dynamic permission matrix in phase one.
+- **PRD-ADM-ROL-01**: A System Administrator can create, inspect, edit, and delete custom roles in the active instance; configured framework-role definitions remain unavailable to generic Role Resource CRUD.
+- **PRD-ADM-ROL-02**: A System Administrator can assign and revoke non-system-administrator membership for accounts, including `registeredUser`.
+- **PRD-ADM-ROL-03**: Generic role administration cannot rename, delete, alter the site admission of, select as a replacement candidate, grant, revoke, or bulk-replace the protected `systemAdmin` membership.
+- **PRD-ADM-ROL-04**: A newly created custom role does not imply a dynamic permission matrix in phase one.
 
 ### Protected System Administrator Authority
 
@@ -147,7 +148,8 @@ An authorized administrator who maintains the Department forest, assigns members
 
 - A Vona instance is the tenant and contains the phase-one Department forest.
 - Ordinary account, role, Department, and membership operations are visible only within the active instance.
-- `systemAdmin` is a stable protected role name, not a business display label or a normal editable role.
+- `registeredUser` and `systemAdmin` are fixed framework-role definitions, not normal editable Role Resource records; `registeredUser` membership remains manageable.
+- `systemAdmin` is a stable protected membership name, not a business display label or a generic role-management mutation target. Its grant and revoke remain exclusive to the sensitive workflow.
 - A sensitive management operation must not leave the active instance without at least one activated `systemAdmin`.
 - A top-level Department uses `parentId = null`; `0` is not a Department identifier.
 - When a Department has a parent, that parent must be an existing Department in the same active instance; a Department cannot become its own ancestor.
@@ -170,14 +172,14 @@ The phase-one Cabloy Admin baseline is ready for acceptance when:
 
 ## Requirement Traceability
 
-| Product area | PRD requirements | SRS contracts | Delivery work | Acceptance scenarios |
-| --- | --- | --- | --- | --- |
-| Account management | `PRD-ADM-USR-*` | `SRS-ADM-USR-*` | `WBS-ADM-30-*` | `ATP-ADM-USR-01` |
-| Ordinary role management | `PRD-ADM-ROL-*` | `SRS-ADM-ROL-*` | `WBS-ADM-30-*` | `ATP-ADM-ROL-01` |
-| Protected administrator authority | `PRD-ADM-SUP-*` | `SRS-ADM-SUP-*`, `SRS-ADM-TXN-*`, `SRS-ADM-AUD-*` | `WBS-ADM-40-*` | `ATP-ADM-SUP-*` |
-| Departments | `PRD-ADM-DEP-*` | `SRS-ADM-DEP-*` | `WBS-ADM-50-*` | `ATP-ADM-DEP-*` |
-| Membership | `PRD-ADM-MEM-*` | `SRS-ADM-MEM-*` | `WBS-ADM-60-*` | `ATP-ADM-MEM-*`, `ATP-ADM-MGR-01` |
-| Security and operational UI | `PRD-ADM-SEC-*`, `PRD-ADM-UI-*` | `SRS-ADM-TEN-*`, `SRS-ADM-AUT-*`, `SRS-ADM-API-*`, `SRS-ADM-UI-*` | `WBS-ADM-20-*`, `WBS-ADM-70-*` | `ATP-ADM-TEN-01`, `ATP-ADM-AUT-01`, `ATP-ADM-CTR-01`, `ATP-ADM-RES-01`, `ATP-ADM-SSR-01` |
+| Product area                      | PRD requirements                | SRS contracts                                                     | Delivery work                  | Acceptance scenarios                                                                     |
+| --------------------------------- | ------------------------------- | ----------------------------------------------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------- |
+| Account management                | `PRD-ADM-USR-*`                 | `SRS-ADM-USR-*`                                                   | `WBS-ADM-30-*`                 | `ATP-ADM-USR-01`                                                                         |
+| Ordinary role management          | `PRD-ADM-ROL-*`                 | `SRS-ADM-ROL-*`                                                   | `WBS-ADM-30-*`                 | `ATP-ADM-ROL-01`                                                                         |
+| Protected administrator authority | `PRD-ADM-SUP-*`                 | `SRS-ADM-SUP-*`, `SRS-ADM-TXN-*`, `SRS-ADM-AUD-*`                 | `WBS-ADM-40-*`                 | `ATP-ADM-SUP-*`                                                                          |
+| Departments                       | `PRD-ADM-DEP-*`                 | `SRS-ADM-DEP-*`                                                   | `WBS-ADM-50-*`                 | `ATP-ADM-DEP-*`                                                                          |
+| Membership                        | `PRD-ADM-MEM-*`                 | `SRS-ADM-MEM-*`                                                   | `WBS-ADM-60-*`                 | `ATP-ADM-MEM-*`, `ATP-ADM-MGR-01`                                                        |
+| Security and operational UI       | `PRD-ADM-SEC-*`, `PRD-ADM-UI-*` | `SRS-ADM-TEN-*`, `SRS-ADM-AUT-*`, `SRS-ADM-API-*`, `SRS-ADM-UI-*` | `WBS-ADM-20-*`, `WBS-ADM-70-*` | `ATP-ADM-TEN-01`, `ATP-ADM-AUT-01`, `ATP-ADM-CTR-01`, `ATP-ADM-RES-01`, `ATP-ADM-SSR-01` |
 
 The complete traceability chain is PRD requirement → SRS contract → delivery task → acceptance scenario → observed evidence.
 

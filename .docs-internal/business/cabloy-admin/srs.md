@@ -31,7 +31,7 @@ Phase one creates no new Admin SSR site, public path, flavor, or independent app
 | Owner                  | Owns                                                                                                                                    | Does not own                                                        |
 | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | `admin-user`           | Account-management projections, permitted profile updates, activation commands, role/Department composition                             | Account identity, credentials, auth providers, Passport persistence |
-| `admin-role`           | Ordinary-role management façade, ordinary role memberships, protected `systemAdmin` workflow, sensitive-operation audit                 | A replacement role or role-membership entity                        |
+| `admin-role`           | Custom-role lifecycle façade, non-system-administrator memberships, protected `systemAdmin` workflow, sensitive-operation audit         | A replacement role or role-membership entity                        |
 | `admin-department`     | Department forest, Department memberships, position text, primary membership, manager lifecycle                                         | Tenant identity, Organization, dynamic data scope                   |
 | `home-user` / `a-user` | `homeUser`, `homeRole`, `homeRoleUser`, authentication, Passport, tokens, stable `bean.user`, `bean.role`, and `bean.passport` surfaces | Cabloy Admin operational use cases                                  |
 | `rest-resource`        | Conventional Admin Resource bootstrap, schemas, permissions, queries, mutations, query keys, and invalidation                           | Domain-specific custom-command semantics                            |
@@ -55,15 +55,17 @@ Phase one creates no new Admin SSR site, public path, flavor, or independent app
 - **SRS-ADM-USR-03**: `id`, `iid`, timestamps, deletion state, `name`, credentials, authentication-provider records, password/reset lifecycle, actor identity, and target ownership are never browser-mutable. `name` remains immutable in phase one.
 - **SRS-ADM-USR-04**: Activation is a dedicated command, not a generic profile patch. Any operation that can make a `systemAdmin` unusable delegates to the protected administrator service.
 - **SRS-ADM-USR-05**: Public account deletion is deferred in phase one. Deactivation is the supported ordinary account-retirement operation until a future contract defines authentication, role/membership, Department-manager, audit, retention, and protected-administrator cascades.
+- **SRS-ADM-USR-06**: User detail resolves and displays every active-instance role membership. Each role summary carries a presentation-only `systemAdmin` marker; it is not an authorization input.
 
 ## Ordinary Role Contracts
 
 - **SRS-ADM-ROL-01**: `admin-role` manages the existing `homeRole` and `homeRoleUser` facts. It does not create a duplicate role or role-membership table.
 - **SRS-ADM-ROL-02**: A role `name` is a trimmed, locale-neutral authorization identity, is case-insensitively unique in the active instance, and is immutable after creation. `title`, optional locales, and validated `siteIds` remain distinct fields.
 - **SRS-ADM-ROL-03**: Role-name and membership business uniqueness use ordinary lookup indexes plus transactional service checks. Tenant-scoped business uniqueness must not use `table.unique(...)`.
-- **SRS-ADM-ROL-04**: Configured built-in role names cannot be renamed or deleted through generic role operations. Generic membership replacement cannot add, remove, or indirectly alter a configured built-in role membership.
-- **SRS-ADM-ROL-05**: Generic role APIs must additionally reject all `systemAdmin` site-admission, delete, rename, and membership-replacement changes. Only the protected workflow can grant or revoke `systemAdmin`.
-- **SRS-ADM-ROL-06**: One canonical atomic ordinary-membership replacement command owns ordinary role assignment. It validates every supplied role/user in active-instance scope, excludes protected memberships, and leaves no partial relation set on failure.
+- **SRS-ADM-ROL-04**: Configured built-in role definitions cannot be created, viewed, renamed, updated, deleted, or otherwise exposed through generic Role Resource lifecycle APIs. This definition protection applies to both `registeredUser` and `systemAdmin`.
+- **SRS-ADM-ROL-05**: Generic role APIs must additionally reject all `systemAdmin` site-admission, delete, rename, candidate-selection, and membership-replacement changes. Only the protected workflow can grant or revoke `systemAdmin`.
+- **SRS-ADM-ROL-06**: One canonical atomic non-system-administrator membership replacement command owns custom-role and `registeredUser` assignment. It validates every supplied role/user in active-instance scope, preserves an existing `systemAdmin` membership when omitted, rejects a supplied `systemAdmin` ID before any write, and leaves no partial relation set on failure.
+- **SRS-ADM-ROL-07**: The guarded membership-candidate selector returns custom roles and `registeredUser` while server-enforcing exclusion of `systemAdmin`, including when a caller supplies a conflicting filter. It does not widen the generic Role Resource list or view contract.
 
 ## Protected System Administrator Contracts
 
@@ -110,7 +112,7 @@ Phase one creates no new Admin SSR site, public path, flavor, or independent app
 ## API, DTO, and Frontend State Contracts
 
 - **SRS-ADM-API-01**: Resource identities are `admin-user:user`, `admin-role:role`, and `admin-department:department`. Conventional Resource operations are exposed only when their lifecycle is supported; `admin-user` has no create action until an authentication/credential creation workflow exists.
-- **SRS-ADM-API-02**: Operation DTOs are narrow. Dedicated commands cover account activation, ordinary-role membership replacement, system administrator grant/revoke, Department move and activation, manager assignment, and membership create/update/delete/primary operations.
+- **SRS-ADM-API-02**: Operation DTOs are narrow. Dedicated commands cover account activation, non-system-administrator membership replacement, system administrator grant/revoke, Department move and activation, manager assignment, and membership create/update/delete/primary operations.
 - **SRS-ADM-API-03**: Generic DTOs never accept authoritative instance scope, protected state transitions, actor identity, target ownership, or nested arbitrary entity writes. List, view, create, update, and command DTOs are distinct where their audience or fields differ.
 - **SRS-ADM-UI-01**: Conventional Start Admin resources use `presetResource` and selector-scoped `rest-resource.model.resource`. It remains the owner of schemas, permissions, standard queries/mutations, query keys, and invalidation.
 - **SRS-ADM-UI-02**: A module-local Zova model is permitted only as a thin semantic façade for custom commands. It delegates to the same Resource selector and uses `queryItem` / `mutationItem` so it cannot become a competing CRUD/cache owner.

@@ -6,6 +6,7 @@ import { ApiSchema } from 'zova-module-a-api';
 import {
   ApiApiAdminRoleselectPath,
   ApiApiAdminRolecreatePath,
+  ApiApiAdminRoleselectMembershipCandidatesPath,
   ApiApiAdminRoleviewPath,
   ApiApiAdminRoledeletePath,
   ApiApiAdminRoleupdatePath,
@@ -25,6 +26,14 @@ export class ApiSchemaAdminRole extends BeanBase {
 
   create(options?: IApiSchemaOptions) {
     return this.$sdk.createApiSchemas(ApiApiAdminRolecreatePath, 'post', options);
+  }
+
+  selectMembershipCandidates(options?: IApiSchemaOptions) {
+    return this.$sdk.createApiSchemas(
+      ApiApiAdminRoleselectMembershipCandidatesPath,
+      'get',
+      options,
+    );
   }
 
   view(options?: IApiSchemaOptions) {

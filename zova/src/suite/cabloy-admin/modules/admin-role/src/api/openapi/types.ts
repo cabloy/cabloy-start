@@ -592,6 +592,22 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/admin/role/membership-select': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['AdminRole_selectMembershipCandidates'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/admin/role/{id}': {
     parameters: {
       query?: never;
@@ -2291,6 +2307,7 @@ export interface components {
       siteIds?: string[] | undefined;
     };
     'admin-role.dto.userRoleReplace': {
+      /** @description Roles */
       roleIds: (number | string)[];
     };
     'admin-role.dto.systemAdminFreshProofIssueRes': {
@@ -2399,6 +2416,7 @@ export interface components {
       name: string;
       /** @description Role Title */
       title: string;
+      systemAdmin: boolean;
     };
     'admin-user.dto.userDepartmentMembershipSummary': {
       id: number | string;
@@ -4129,6 +4147,42 @@ export interface operations {
             code: string;
             message: string;
             data: components['schemas']['admin-role.dto.roleView'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRole_selectMembershipCandidates: {
+    parameters: {
+      query?: {
+        columns?: string[] | undefined;
+        where?:
+          | {
+              [key: string]: unknown;
+            }
+          | undefined;
+        orders?: string | string[][] | undefined;
+        pageNo?: number;
+        pageSize?: number;
+        name?: string | undefined;
+        title?: string | undefined;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['admin-role.dto.roleSelectRes'];
           };
         };
       };

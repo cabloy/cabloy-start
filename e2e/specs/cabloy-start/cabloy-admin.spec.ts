@@ -110,6 +110,43 @@ async function deleteMembership(
   );
 }
 
+async function createRole(page: Page, name: string) {
+  const response = await requestApi(page, 'POST', '/api/admin/role', {
+    name,
+    title: name,
+    siteIds: ['admin'],
+  });
+  return (await response.json()).data as { id: number | string };
+}
+
+interface UserRoleSummary {
+  id: number | string;
+  name: string;
+  systemAdmin: boolean;
+}
+
+async function getUserRoles(page: Page, userId: number | string) {
+  const response = await requestApi(page, 'GET', `/api/admin/user/${userId}`);
+  const payload = (await response.json()) as {
+    data?: { roles: UserRoleSummary[] };
+    roles?: UserRoleSummary[];
+  };
+  const user = payload.data ?? payload;
+  return user.roles!;
+}
+
+async function replaceUserRoles(
+  page: Page,
+  userId: number | string,
+  roleIds: Array<number | string>,
+) {
+  await requestApi(page, 'PUT', `/api/admin/role/user/${userId}/roles`, { roleIds });
+}
+
+async function deleteRole(page: Page, roleId: number | string) {
+  await requestApi(page, 'DELETE', `/api/admin/role/${roleId}`);
+}
+
 test(
   'ATP-ADM-SSR-01: Start Admin redirects, server-renders, and hydrates approved resources',
   { tag: ['@admin', '@cabloy-admin'] },
@@ -404,6 +441,96 @@ test(
       }
       if (emptyDepartmentId !== undefined) await deleteDepartment(page, emptyDepartmentId);
       if (departmentId !== undefined) await deleteDepartment(page, departmentId);
+    }
+  },
+);
+
+test(
+  'ATP-ADM-RES-03: User details replace non-system-administrator roles through the rendered command',
+  { tag: ['@admin', '@cabloy-admin'] },
+  async ({ page }) => {
+    const pageErrors = collectPageErrors(page);
+    const suffix = `${test.info().workerIndex}-${Date.now()}`;
+    const roleName = `ATP Ordinary Role ${suffix}`;
+    const userId = 1;
+    await loginAsAdmin(page);
+
+    let roleId: number | string | undefined;
+    let originalNonSystemAdminRoleIds: Array<number | string> | undefined;
+    let systemAdminRoleId: number | string | undefined;
+    try {
+      const originalRoles = await getUserRoles(page, userId);
+      originalNonSystemAdminRoleIds = originalRoles
+        .filter(role => !role.systemAdmin)
+        .map(role => role.id);
+      systemAdminRoleId = originalRoles.find(role => role.systemAdmin)?.id;
+      expect(systemAdminRoleId).toBeDefined();
+      roleId = (await createRole(page, roleName)).id;
+
+      await page.goto(`${resourcePath('admin-user:user')}/${userId}`, { waitUntil: 'load' });
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+      await expect(page.getByText('Roles', { exact: true })).toBeVisible();
+      const systemAdminRow = page
+        .getByRole('row')
+        .filter({ has: page.getByRole('cell', { name: 'systemAdmin', exact: true }) });
+      await expect(systemAdminRow).toBeVisible();
+      await expect(systemAdminRow.getByText('Protected', { exact: true })).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: 'Replace Non-System-Administrator Roles', exact: true }),
+      ).toBeVisible();
+
+      await page
+        .getByRole('button', { name: 'Replace Non-System-Administrator Roles', exact: true })
+        .click();
+      const dialog = page.getByRole('dialog');
+      await expect(dialog).toBeVisible();
+      const rolePicker = dialog.locator('.v-select');
+      await rolePicker.click();
+      const options = page.locator('.v-overlay__content').filter({
+        has: page.locator('.v-list-item-title'),
+      });
+      await expect(options.getByText('Registered User', { exact: true })).toBeVisible();
+      await expect(options.getByText('System Administrator', { exact: true })).toHaveCount(0);
+      await options.getByText(roleName, { exact: true }).click();
+      await rolePicker.press('Escape');
+
+      let genericUserPatchRequests = 0;
+      page.on('request', request => {
+        const url = new URL(request.url());
+        if (request.method() === 'PATCH' && url.pathname === `/api/admin/user/${userId}`) {
+          genericUserPatchRequests += 1;
+        }
+      });
+      const replaced = waitForApiResponse(
+        page,
+        'PUT',
+        new RegExp(`/api/admin/role/user/${userId}/roles$`),
+      );
+      await dialog.getByRole('button', { name: 'Save', exact: true }).click();
+      const replacementResponse = await replaced;
+      const replacementBody = replacementResponse.request().postDataJSON() as {
+        roleIds: Array<number | string>;
+      };
+      expect(replacementBody.roleIds).toEqual([...originalNonSystemAdminRoleIds, roleId]);
+      expect(replacementBody.roleIds).not.toContain(systemAdminRoleId);
+      await expect(dialog).toBeHidden();
+      await expect(
+        page
+          .getByRole('row')
+          .filter({ has: page.getByRole('cell', { name: roleName, exact: true }) }),
+      ).toBeVisible();
+      expect(genericUserPatchRequests).toBe(0);
+
+      await page.goto(`${resourcePath('admin-user:user')}/${userId}/edit`, { waitUntil: 'load' });
+      await expect(
+        page.getByRole('button', { name: 'Replace Non-System-Administrator Roles', exact: true }),
+      ).toHaveCount(0);
+      expect(pageErrors).toEqual([]);
+    } finally {
+      if (originalNonSystemAdminRoleIds) {
+        await replaceUserRoles(page, userId, originalNonSystemAdminRoleIds);
+      }
+      if (roleId !== undefined) await deleteRole(page, roleId);
     }
   },
 );

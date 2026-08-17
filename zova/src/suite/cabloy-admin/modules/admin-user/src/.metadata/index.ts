@@ -155,14 +155,17 @@ export interface IZovaComponentRecord {
 /** components: end */
 /** tableCell: begin */
 export * from '../bean/tableCell.actionDisable.jsx';
+export * from '../bean/tableCell.roleTitle.jsx';
 export * from '../bean/tableCell.userName.jsx';
 import { ITableCellOptionsActionDisable } from '../bean/tableCell.actionDisable.jsx';
+import { ITableCellOptionsRoleTitle } from '../bean/tableCell.roleTitle.jsx';
 import { ITableCellOptionsUserName } from '../bean/tableCell.userName.jsx';
 import 'zova-module-a-table';
 declare module 'zova-module-a-table' {
   
     export interface ITableCellRecord {
       'admin-user:actionDisable': ITableCellOptionsActionDisable;
+'admin-user:roleTitle': ITableCellOptionsRoleTitle;
 'admin-user:userName': ITableCellOptionsUserName;
     }
 
@@ -181,6 +184,17 @@ declare module 'zova-module-admin-user' {
           get $onionOptions(): ITableCellOptionsActionDisable;
         }
 
+        export interface TableCellRoleTitle {
+          /** @internal */
+          get scope(): ScopeModuleAdminUser;
+        }
+
+        export interface TableCellRoleTitle {
+          get $beanFullName(): 'admin-user.tableCell.roleTitle';
+          get $onionName(): 'admin-user:roleTitle';
+          get $onionOptions(): ITableCellOptionsRoleTitle;
+        }
+
         export interface TableCellUserName {
           /** @internal */
           get scope(): ScopeModuleAdminUser;
@@ -195,11 +209,13 @@ declare module 'zova-module-admin-user' {
 /** tableCell: end */
 /** tableCell: begin */
 import { TableCellActionDisable } from '../bean/tableCell.actionDisable.jsx';
+import { TableCellRoleTitle } from '../bean/tableCell.roleTitle.jsx';
 import { TableCellUserName } from '../bean/tableCell.userName.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
     'admin-user.tableCell.actionDisable': TableCellActionDisable;
+'admin-user.tableCell.roleTitle': TableCellRoleTitle;
 'admin-user.tableCell.userName': TableCellUserName;
   }
 }

@@ -111,8 +111,53 @@ declare module 'zova' {
   }
 }
 /** apiSchema: end */
+/** controller: begin */
+export * from '../component/actionReplaceUserRoles/controller.jsx';
+
+import 'zova';
+declare module 'zova' {
+  
+  
+}
+declare module 'zova-module-admin-role' {
+  
+        export interface ControllerActionReplaceUserRoles {
+          /** @internal */
+          get scope(): ScopeModuleAdminRole;
+        } 
+}
+/** controller: end */
+/** controller: begin */
+import { ControllerActionReplaceUserRoles } from '../component/actionReplaceUserRoles/controller.jsx';
+import 'zova';
+declare module 'zova' {
+  export interface IBeanRecordLocal {
+    'admin-role.controller.actionReplaceUserRoles': ControllerActionReplaceUserRoles;
+  }
+}
+/** controller: end */
+
+/** components: begin */
+export * from './component/actionReplaceUserRoles.js';
+import { ZActionReplaceUserRoles } from './component/actionReplaceUserRoles.js';
+export const components = {
+  'actionReplaceUserRoles': ZActionReplaceUserRoles,
+};
+import 'zova';
+declare module 'zova' {
+export interface IComponentRecord {
+  'admin-role:actionReplaceUserRoles': ControllerActionReplaceUserRoles;
+}
+export interface IZovaComponentRecord {
+  'admin-role:actionReplaceUserRoles': typeof ZActionReplaceUserRoles;
+}
+}
+/** components: end */
+/** locale: begin */
+import { locales } from './locales.js';
+/** locale: end */
 /** scope: begin */
-import { BeanScopeBase, type BeanScopeUtil } from 'zova';
+import { BeanScopeBase, type BeanScopeUtil, TypeModuleLocales, TypeLocaleBase } from 'zova';
 import { Scope } from 'zova-module-a-bean';
 
 @Scope()
@@ -120,6 +165,7 @@ export class ScopeModuleAdminRole extends BeanScopeBase {}
 
 export interface ScopeModuleAdminRole {
   util: BeanScopeUtil;
+locale: TypeModuleLocales<(typeof locales)[TypeLocaleBase]>;
 api: IModuleApi;
 apiSchema: IModuleApiSchema;
 }
@@ -132,9 +178,14 @@ declare module 'zova' {
   
   
 
-  
+  export interface IBeanScopeLocale {
+    'admin-role': (typeof locales)[TypeLocaleBase];
+  }
 
   
 }
 
+export function locale<K extends keyof (typeof locales)[TypeLocaleBase]>(key: K): `admin-role::${K}` {
+  return `admin-role::${key}`;
+}
 /** scope: end */

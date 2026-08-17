@@ -49,7 +49,7 @@ The established framework and project surfaces remain authoritative:
 - `homeUser` remains the account persistence implementation;
 - `homeRole` and `homeRoleUser` remain the role and membership facts that Passport consumes.
 
-Ordinary roles retain a stable, locale-neutral role name for authorization. Their title, locales, and site admission remain separate concerns. The detailed CRUD, membership-replacement, and adapter/service contracts will be defined by the SRS.
+Custom roles retain a stable, locale-neutral role name for authorization. Their title, locales, and site admission remain separate concerns. User detail displays all resolved role memberships, while `systemAdmin` carries only a presentation-safe protected marker; backend contracts remain the authority. The detailed CRUD, membership-replacement, and adapter/service contracts are defined by the SRS.
 
 ### Use the existing Start Admin application and Resource owner
 
@@ -61,7 +61,7 @@ Admin navigation will use the established `@SsrMenu` and `presetResource` approa
 
 Phase one supports ordinary `homeRole` CRUD and ordinary user-role assignments. It defers a dynamic role-to-menu, role-to-Resource, role-to-action, and role-to-data-scope policy matrix.
 
-`systemAdmin` is a protected break-glass role. Generic role APIs must not rename, delete, alter the site admission of, or bulk-replace membership for that role. A separate sensitive command owns `systemAdmin` grant and revoke.
+`registeredUser` and `systemAdmin` are fixed framework-role definitions, so generic Role Resource APIs must not create, view, rename, delete, or alter their site admission. Their memberships have intentionally different policy: `registeredUser` is a non-system-administrator membership that generic replacement can add or remove, while `systemAdmin` is a protected break-glass membership. Generic membership APIs must not select, grant, revoke, or bulk-replace `systemAdmin`; a separate sensitive command exclusively owns its grant and revoke.
 
 For every operation that can remove `systemAdmin`, deactivate a System Administrator, delete an administrator account, or otherwise make a System Administrator unable to authenticate or be authorized, server-side behavior must preserve at least one activated `systemAdmin` within the active Vona instance. The sensitive workflow requires server-side authorization, reauthentication, transaction and locking behavior, session invalidation, and immutable audit evidence. The exact API, transaction, error, lock, and audit contracts belong to the SRS.
 

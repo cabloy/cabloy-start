@@ -4,6 +4,7 @@ import { describe, it } from 'node:test';
 import { app } from 'vona-mock';
 
 import { DtoRoleUpdate } from '../src/dto/roleUpdate.tsx';
+import { DtoUserRoleReplace } from '../src/dto/userRoleReplace.ts';
 
 const rolePath = '/admin/role';
 
@@ -32,6 +33,28 @@ describe('role.test.ts', { concurrency: false }, () => {
         return (item as any).rest?.schemaScene === 'form';
       });
       assert.ok(rootMetadata);
+    });
+  });
+
+  it('dto:role:userRoleReplace emits a non-system-administrator multi-select picker', async () => {
+    await app.bean.executor.mockCtx(async () => {
+      const apiJson = await app.bean.openapi.generateJsonOfClass(DtoUserRoleReplace);
+      const component = Object.values(apiJson.components!.schemas as any).find(item => {
+        return (item as any).properties?.roleIds;
+      }) as any;
+      assert.ok(component, JSON.stringify(apiJson.components?.schemas));
+      assert.deepEqual(component.properties.roleIds.rest?.form, {
+        render: 'start-resource:formFieldResourcePicker',
+        options: {
+          resource: 'admin-role:role',
+          actionPath: 'membership-select',
+          selectOptions: {
+            multiple: true,
+            itemValue: 'id',
+            itemTitle: 'title',
+          },
+        },
+      });
     });
   });
 
@@ -71,7 +94,10 @@ describe('role.test.ts', { concurrency: false }, () => {
           roleId = role.id;
           assertRoleProjection(role);
           assert.equal(role.name, roleName);
-          assert.deepEqual(role.titleLocales, { 'zh-cn': '管理员角色', 'retired-locale': 'Retired title' });
+          assert.deepEqual(role.titleLocales, {
+            'zh-cn': '管理员角色',
+            'retired-locale': 'Retired title',
+          });
           assert.deepEqual(role.sites, [{ siteId: 'web', title: 'Web' }]);
 
           const [duplicateResult, duplicateError] = await catchError(() => {
@@ -83,14 +109,16 @@ describe('role.test.ts', { concurrency: false }, () => {
           assert.equal(duplicateError?.code, 'admin-role:1001');
           assert.equal(duplicateError?.status, 409);
 
-          const [builtinResult, builtinError] = await catchError(() => {
-            return app.bean.executor.performAction('post', rolePath, {
-              body: { name: 'systemAdmin', title: 'Protected role', siteIds: ['admin'] },
+          for (const name of ['registeredUser', 'systemAdmin']) {
+            const [builtinResult, builtinError] = await catchError(() => {
+              return app.bean.executor.performAction('post', rolePath, {
+                body: { name, title: 'Protected role', siteIds: ['admin'] },
+              });
             });
-          });
-          assert.equal(builtinResult, undefined);
-          assert.equal(builtinError?.code, 'admin-role:1002');
-          assert.equal(builtinError?.status, 409);
+            assert.equal(builtinResult, undefined);
+            assert.equal(builtinError?.code, 'admin-role:1002');
+            assert.equal(builtinError?.status, 409);
+          }
 
           const [invalidSiteResult, invalidSiteError] = await catchError(() => {
             return app.bean.executor.performAction('post', rolePath, {
@@ -164,43 +192,91 @@ describe('role.test.ts', { concurrency: false }, () => {
 
           const admin = await app.bean.user.findOneByName('admin');
           assert.ok(admin);
+          const homeUser = app.scope('home-user');
+          const registeredUser = await homeUser.model.role.getByName('registeredUser');
+          assert.ok(registeredUser);
+          const systemAdmin = await homeUser.model.role.getByName('systemAdmin');
+          assert.ok(systemAdmin);
+
+          const membershipCandidates = await app.bean.executor.performAction(
+            'get',
+            '/admin/role/membership-select',
+          );
+          assert.equal(
+            membershipCandidates.list.some(item => String(item.id) === String(registeredUser.id)),
+            true,
+          );
+          assert.equal(
+            membershipCandidates.list.some(item => String(item.id) === String(systemAdmin.id)),
+            false,
+          );
+          const filteredMembershipCandidates = await app.bean.executor.performAction(
+            'get',
+            '/admin/role/membership-select',
+            { query: { where: { name: { _eq_: 'systemAdmin' } } } },
+          );
+          assert.deepEqual(filteredMembershipCandidates.list, []);
+
           const replacementResult = await app.bean.executor.performAction(
             'put',
             '/admin/role/user/:userId/roles',
             {
               params: { userId: admin.id },
-              body: { roleIds: [roleId] },
+              body: { roleIds: [registeredUser.id, roleId] },
             },
           );
           assert.equal(replacementResult, null);
+          assert.ok(
+            await homeUser.model.roleUser.get({
+              userId: admin.id,
+              roleId: registeredUser.id,
+            }),
+          );
+          assert.ok(await homeUser.model.roleUser.get({ userId: admin.id, roleId }));
+          assert.ok(
+            await homeUser.model.roleUser.get({
+              userId: admin.id,
+              roleId: systemAdmin.id,
+            }),
+          );
 
-          const homeUser = app.scope('home-user');
-          const ordinaryMembership = await homeUser.model.roleUser.get({
-            userId: admin.id,
-            roleId,
-          });
-          assert.ok(ordinaryMembership);
-          const systemAdmin = await homeUser.model.role.getByName('systemAdmin');
-          assert.ok(systemAdmin);
-          const protectedMembership = await homeUser.model.roleUser.get({
-            userId: admin.id,
-            roleId: systemAdmin.id,
-          });
-          assert.ok(protectedMembership);
+          assert.equal(
+            await app.bean.executor.performAction('put', '/admin/role/user/:userId/roles', {
+              params: { userId: admin.id },
+              body: { roleIds: [roleId] },
+            }),
+            null,
+          );
+          assert.equal(
+            await homeUser.model.roleUser.get({
+              userId: admin.id,
+              roleId: registeredUser.id,
+            }),
+            undefined,
+          );
+          assert.ok(await homeUser.model.roleUser.get({ userId: admin.id, roleId }));
+          assert.ok(
+            await homeUser.model.roleUser.get({
+              userId: admin.id,
+              roleId: systemAdmin.id,
+            }),
+          );
 
           const [__, protectedRoleError] = await catchError(() => {
             return app.bean.executor.performAction('put', '/admin/role/user/:userId/roles', {
               params: { userId: admin.id },
-              body: { roleIds: [systemAdmin.id] },
+              body: { roleIds: [roleId, systemAdmin.id] },
             });
           });
           assert.equal(protectedRoleError?.code, 'admin-role:1002');
           assert.equal(protectedRoleError?.status, 409);
-          assert.ok(
+          assert.ok(await homeUser.model.roleUser.get({ userId: admin.id, roleId }));
+          assert.equal(
             await homeUser.model.roleUser.get({
               userId: admin.id,
-              roleId,
+              roleId: registeredUser.id,
             }),
+            undefined,
           );
           assert.ok(
             await homeUser.model.roleUser.get({
@@ -224,6 +300,30 @@ describe('role.test.ts', { concurrency: false }, () => {
               roleId,
             }),
           );
+
+          for (const fixedRole of [registeredUser, systemAdmin]) {
+            assert.equal(
+              await app.bean.executor.performAction('get', '/admin/role/:id', {
+                params: { id: fixedRole.id },
+              }),
+              undefined,
+            );
+            const [fixedUpdateResult, fixedUpdateError] = await catchError(() => {
+              return app.bean.executor.performAction('patch', '/admin/role/:id', {
+                params: { id: fixedRole.id },
+                body: { name: fixedRole.name, title: 'Protected role update' },
+              });
+            });
+            assert.equal(fixedUpdateResult, undefined);
+            assert.equal(fixedUpdateError?.code, 'admin-role:1002');
+            const [fixedDeleteResult, fixedDeleteError] = await catchError(() => {
+              return app.bean.executor.performAction('delete', '/admin/role/:id', {
+                params: { id: fixedRole.id },
+              });
+            });
+            assert.equal(fixedDeleteResult, undefined);
+            assert.equal(fixedDeleteError?.code, 'admin-role:1002');
+          }
 
           const selected = await app.bean.executor.performAction('get', rolePath, {
             query: { where: { name: { _eq_: roleName } } },
@@ -257,12 +357,14 @@ describe('role.test.ts', { concurrency: false }, () => {
         async () => {
           await app.bean.passport.signinMock();
           try {
-            assert.equal(
-              await app.bean.executor.performAction('get', '/admin/role/:id', {
+            const [viewResult, viewError] = await catchError(() => {
+              return app.bean.executor.performAction('get', '/admin/role/:id', {
                 params: { id: roleId },
-              }),
-              undefined,
-            );
+              });
+            });
+            assert.equal(viewResult, undefined);
+            assert.equal(viewError, undefined);
+
             const roles = await app.bean.executor.performAction('get', rolePath);
             assert.equal(
               roles.list.some(item => String(item.id) === String(roleId)),

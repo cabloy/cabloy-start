@@ -25,21 +25,16 @@ function toRoleItem(role: EntityRole) {
 @Service()
 export class ServiceRole extends BeanBase {
   async select(params?: IQueryParams<ModelRole>): Promise<DtoRoleSelectRes> {
-    const result = await this.$scope.homeUser.model.role.selectAndCount({
-      ...params,
-      where: {
-        _and_: {
-          _and_: params?.where ?? {},
-          name: { _notIn_: [...this.builtinRoleNames] },
-        },
-      },
-    });
-    return { ...result, list: result.list.map(toRoleItem) as DtoRoleSelectRes['list'] };
+    return await this.selectRoles(params, this.fixedRoleDefinitionNames);
+  }
+
+  async selectMembershipCandidates(params?: IQueryParams<ModelRole>): Promise<DtoRoleSelectRes> {
+    return await this.selectRoles(params, new Set(['systemAdmin']));
   }
 
   async view(id: TableIdentity): Promise<DtoRoleView | undefined> {
     const role = await this.$scope.homeUser.model.role.getById(id);
-    if (!role || this.isBuiltinRole(role.name)) return undefined;
+    if (!role || this.isFixedRoleDefinition(role.name)) return undefined;
     return toRoleItem(role) as DtoRoleView;
   }
 
@@ -48,7 +43,7 @@ export class ServiceRole extends BeanBase {
     return await this.$scope.redlock.service.redlock.lock(
       `admin-role.role.name.${role.name.toLocaleLowerCase()}`,
       async () => {
-        this.ensureOrdinaryRoleName(role.name);
+        this.ensureMutableRoleDefinitionName(role.name);
         this.validateSiteIds(role.siteIds);
         const existing = await this.$scope.homeUser.model.role.getForUpdate({
           name: { _eqI_: role.name },
@@ -63,7 +58,7 @@ export class ServiceRole extends BeanBase {
   async update(id: TableIdentity, patch: DtoRoleUpdate): Promise<void> {
     const role = await this.$scope.homeUser.model.role.getByIdForUpdate(id);
     if (!role) this.app.throw(404, 'Role not found');
-    this.ensureOrdinaryRole(role);
+    this.ensureMutableRoleDefinition(role);
     if (patch.siteIds) this.validateSiteIds(patch.siteIds);
     await this.$scope.homeUser.model.role.updateById(role.id, patch);
   }
@@ -72,7 +67,7 @@ export class ServiceRole extends BeanBase {
   async delete(id: TableIdentity): Promise<void> {
     const role = await this.$scope.homeUser.model.role.getByIdForUpdate(id);
     if (!role) this.app.throw(404, 'Role not found');
-    this.ensureOrdinaryRole(role);
+    this.ensureMutableRoleDefinition(role);
     const memberships = await this.$scope.homeUser.model.roleUser.select({
       where: { roleId: role.id },
     });
@@ -94,7 +89,7 @@ export class ServiceRole extends BeanBase {
     });
     const requestedRoles = await this.lockRoles(requestedRoleIds);
     for (const role of requestedRoles.values()) {
-      if (this.isBuiltinRole(role.name)) {
+      if (this.isProtectedMembershipRole(role.name)) {
         this.scope.error.BuiltinRoleProtected.throw();
       }
     }
@@ -109,7 +104,9 @@ export class ServiceRole extends BeanBase {
       .filter(item => {
         const role = rolesById.get(String(item.roleId));
         return (
-          !role || (!this.isBuiltinRole(role.name) && !requestedRoleIdSet.has(String(item.roleId)))
+          !role ||
+          (!this.isProtectedMembershipRole(role.name) &&
+            !requestedRoleIdSet.has(String(item.roleId)))
         );
       })
       .map(item => item.id);
@@ -117,7 +114,7 @@ export class ServiceRole extends BeanBase {
       memberships
         .filter(item => {
           const role = rolesById.get(String(item.roleId));
-          return role && !this.isBuiltinRole(role.name);
+          return role && !this.isProtectedMembershipRole(role.name);
         })
         .map(item => String(item.roleId)),
     );
@@ -136,22 +133,42 @@ export class ServiceRole extends BeanBase {
     }
   }
 
-  private get builtinRoleNames(): Set<string> {
+  private get fixedRoleDefinitionNames(): Set<string> {
     return new Set(Object.keys(this.$scope.homeUser.config.builtinRoles));
   }
 
-  private isBuiltinRole(name: string): boolean {
-    return this.builtinRoleNames.has(name);
+  private async selectRoles(
+    params: IQueryParams<ModelRole> | undefined,
+    excludedRoleNames: Set<string>,
+  ): Promise<DtoRoleSelectRes> {
+    const result = await this.$scope.homeUser.model.role.selectAndCount({
+      ...params,
+      where: {
+        _and_: {
+          _and_: params?.where ?? {},
+          name: { _notIn_: [...excludedRoleNames] },
+        },
+      },
+    });
+    return { ...result, list: result.list.map(toRoleItem) as DtoRoleSelectRes['list'] };
   }
 
-  private ensureOrdinaryRoleName(name: string): void {
-    if (this.isBuiltinRole(name)) {
+  private isFixedRoleDefinition(name: string): boolean {
+    return this.fixedRoleDefinitionNames.has(name);
+  }
+
+  private isProtectedMembershipRole(name: string): boolean {
+    return name === 'systemAdmin';
+  }
+
+  private ensureMutableRoleDefinitionName(name: string): void {
+    if (this.isFixedRoleDefinition(name)) {
       this.scope.error.BuiltinRoleProtected.throw();
     }
   }
 
-  private ensureOrdinaryRole(role: EntityRole): void {
-    this.ensureOrdinaryRoleName(role.name);
+  private ensureMutableRoleDefinition(role: EntityRole): void {
+    this.ensureMutableRoleDefinitionName(role.name);
   }
 
   getUnavailableSiteIds(siteIds: string[]): string[] {

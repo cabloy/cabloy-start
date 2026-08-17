@@ -3,6 +3,7 @@ import assert from 'node:assert';
 import { describe, it } from 'node:test';
 import { app } from 'vona-mock';
 
+import { DtoUserRoleSummary } from '../src/dto/userRoleSummary.ts';
 import { DtoUserUpdate } from '../src/dto/userUpdate.tsx';
 
 const userPath = '/admin/user';
@@ -51,6 +52,21 @@ describe('user.test.ts', { concurrency: false }, () => {
         return (item as any).rest?.schemaScene === 'form';
       });
       assert.ok(rootMetadata);
+    });
+  });
+
+  it('dto:user:role summary emits protected-role presentation and a view-only replacement action', async () => {
+    await app.bean.executor.mockCtx(async () => {
+      const apiJson = await app.bean.openapi.generateJsonOfClass(DtoUserRoleSummary);
+      const component = Object.values(apiJson.components!.schemas as any).find(item => {
+        return (item as any).properties?.name && (item as any).properties?.title;
+      }) as any;
+      assert.ok(component, JSON.stringify(apiJson.components?.schemas));
+      assert.equal(component.properties.title.rest?.table?.render, 'admin-user:roleTitle');
+      assert.equal(component.properties.systemAdmin.rest?.visible, false);
+      const action = component.rest?.blocks?.[0]?.options?.blocks?.[0]?.options?.actions?.[0];
+      assert.equal(action?.render, 'admin-role:actionReplaceUserRoles');
+      assert.deepEqual(action?.options?.permission, { formScene: ['view'] });
     });
   });
 
@@ -133,6 +149,14 @@ describe('user.test.ts', { concurrency: false }, () => {
           });
           assertUserViewProjection(view);
           assert.equal(view.activated, true);
+          assert.deepEqual(view.roles, [
+            {
+              id: (await app.scope('home-user').model.role.getByName('registeredUser'))!.id,
+              name: 'registeredUser',
+              title: 'Registered User',
+              systemAdmin: false,
+            },
+          ]);
 
           const disableResult = await app.bean.executor.performAction(
             'put',

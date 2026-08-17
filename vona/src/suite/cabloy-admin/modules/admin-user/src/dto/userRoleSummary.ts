@@ -12,7 +12,16 @@ export interface IDtoOptionsUserRoleSummary extends IDecoratorDtoOptions {}
 @Dto<IDtoOptionsUserRoleSummary>({
   blocks: [
     ZovaRender.block('start-details:blockDetails', {
-      blocks: [ZovaRender.block('start-details:blockTable')],
+      blocks: [
+        ZovaRender.block('start-details:blockToolbarBulk', {
+          actions: [
+            ZovaRender.detailsActionBulk('admin-role:actionReplaceUserRoles', {
+              permission: { formScene: ['view'] },
+            }),
+          ],
+        }),
+        ZovaRender.block('start-details:blockTable'),
+      ],
     }),
   ],
 })
@@ -23,6 +32,9 @@ export class DtoUserRoleSummary {
   @Api.field(v.title($locale('RoleName')), v.required())
   name: string;
 
-  @Api.field(v.title($locale('RoleTitle')), v.required())
+  @Api.field(v.title($locale('RoleTitle')), ZovaRender.cell('admin-user:roleTitle'), v.required())
   title: string;
+
+  @Api.field(ZovaRender.visible(false), v.required())
+  systemAdmin: boolean;
 }

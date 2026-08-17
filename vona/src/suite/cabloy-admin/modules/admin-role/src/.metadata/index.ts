@@ -622,6 +622,7 @@ declare module 'vona-module-a-web' {
     }
 export interface IApiPathGetRecord{
         '/admin/role': undefined;
+'/admin/role/membership-select': undefined;
 '/admin/role/:id': undefined;
     }
 export interface IApiPathPatchRecord{

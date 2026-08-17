@@ -140,15 +140,16 @@ Primary areas:
 
 Tasks:
 
-- implement ordinary role create/view/update/delete;
-- implement atomic ordinary membership replacement;
-- protect configured built-in identities and exclude `systemAdmin` from generic paths;
-- invalidate effective authentication state where ordinary role changes require it.
+- implement custom-role create/view/update/delete while protecting every configured framework-role definition;
+- implement atomic non-system-administrator membership replacement for custom roles and `registeredUser`;
+- expose a guarded membership-candidate selector that excludes only `systemAdmin` without widening generic Role Resource CRUD;
+- preserve existing `systemAdmin` membership, reject supplied `systemAdmin` IDs, and retain the dedicated protected workflow as the only grant/revoke path;
+- invalidate effective authentication state where membership changes require it.
 
 Acceptance checks:
 
 - role names are active-instance-scoped, case-insensitive, immutable after creation, and transactionally unique;
-- generic actions cannot mutate protected built-in membership;
+- generic Role Resource actions cannot mutate fixed framework-role definitions; generic membership replacement can reconcile `registeredUser` but cannot mutate `systemAdmin` membership;
 - no duplicate role persistence or partial replacement survives failure.
 
 ### Phase 40: Protected system administrator authority
@@ -272,7 +273,7 @@ Acceptance checks:
 
 Tasks:
 
-- expose approved role/membership/manager summaries on account and Department views;
+- expose all assigned role summaries, including a presentation-only protected marker for `systemAdmin`, alongside approved Department membership/manager summaries;
 - verify selector-cache invalidation after custom membership and manager actions;
 - keep list/view contracts distinct from mutations.
 
@@ -350,15 +351,15 @@ npm run test
 
 ## Traceability Matrix
 
-| WBS group | PRD source | SRS source | Required ATP evidence |
-| --- | --- | --- | --- |
-| `WBS-ADM-10-*` | All | All | Traceability review |
-| `WBS-ADM-20-*` | `PRD-ADM-SEC-*`, `PRD-ADM-UI-*` | `SRS-ADM-API-*`, `SRS-ADM-UI-*` | `ATP-ADM-CTR-01`, `ATP-ADM-RES-01`, `ATP-ADM-SSR-01` |
-| `WBS-ADM-30-*` | `PRD-ADM-USR-*`, `PRD-ADM-ROL-*` | `SRS-ADM-USR-*`, `SRS-ADM-ROL-*` | `ATP-ADM-USR-01`, `ATP-ADM-ROL-01` |
-| `WBS-ADM-40-*` | `PRD-ADM-SUP-*` | `SRS-ADM-SUP-*`, `SRS-ADM-TXN-*`, `SRS-ADM-AUD-*` | `ATP-ADM-SUP-01`, `ATP-ADM-SUP-02`, `ATP-ADM-SUP-RACE-01` |
-| `WBS-ADM-50-*` | `PRD-ADM-DEP-*` | `SRS-ADM-DEP-*` | `ATP-ADM-DEP-01`, `ATP-ADM-DEP-02` |
-| `WBS-ADM-60-*` | `PRD-ADM-MEM-*` | `SRS-ADM-MEM-*` | `ATP-ADM-MEM-01`, `ATP-ADM-MEM-02`, `ATP-ADM-MGR-01` |
-| `WBS-ADM-70-*` | All applicable | `SRS-ADM-NFR-*` | All applicable ATP evidence |
+| WBS group      | PRD source                       | SRS source                                        | Required ATP evidence                                     |
+| -------------- | -------------------------------- | ------------------------------------------------- | --------------------------------------------------------- |
+| `WBS-ADM-10-*` | All                              | All                                               | Traceability review                                       |
+| `WBS-ADM-20-*` | `PRD-ADM-SEC-*`, `PRD-ADM-UI-*`  | `SRS-ADM-API-*`, `SRS-ADM-UI-*`                   | `ATP-ADM-CTR-01`, `ATP-ADM-RES-01`, `ATP-ADM-SSR-01`      |
+| `WBS-ADM-30-*` | `PRD-ADM-USR-*`, `PRD-ADM-ROL-*` | `SRS-ADM-USR-*`, `SRS-ADM-ROL-*`                  | `ATP-ADM-USR-01`, `ATP-ADM-ROL-01`                        |
+| `WBS-ADM-40-*` | `PRD-ADM-SUP-*`                  | `SRS-ADM-SUP-*`, `SRS-ADM-TXN-*`, `SRS-ADM-AUD-*` | `ATP-ADM-SUP-01`, `ATP-ADM-SUP-02`, `ATP-ADM-SUP-RACE-01` |
+| `WBS-ADM-50-*` | `PRD-ADM-DEP-*`                  | `SRS-ADM-DEP-*`                                   | `ATP-ADM-DEP-01`, `ATP-ADM-DEP-02`                        |
+| `WBS-ADM-60-*` | `PRD-ADM-MEM-*`                  | `SRS-ADM-MEM-*`                                   | `ATP-ADM-MEM-01`, `ATP-ADM-MEM-02`, `ATP-ADM-MGR-01`      |
+| `WBS-ADM-70-*` | All applicable                   | `SRS-ADM-NFR-*`                                   | All applicable ATP evidence                               |
 
 ## Related Records
 

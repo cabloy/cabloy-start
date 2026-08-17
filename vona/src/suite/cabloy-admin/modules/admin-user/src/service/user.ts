@@ -53,12 +53,19 @@ export class ServiceUser extends BeanBase {
     const roleEntities = roleIds.length
       ? await this.$scope.homeUser.model.role.select({ where: { id: { _in_: roleIds } } })
       : [];
-    const builtinRoleNames = new Set(Object.keys(this.$scope.homeUser.config.builtinRoles));
     const rolesById = new Map(roleEntities.map(role => [String(role.id), role]));
-    const roleSummaries: DtoUserRoleSummary[] = roles
-      .map(item => rolesById.get(String(item.roleId)))
-      .filter(role => role && !builtinRoleNames.has(role.name))
-      .map(role => ({ id: role!.id, name: role!.name, title: role!.title }));
+    const roleSummaries: DtoUserRoleSummary[] = roles.flatMap(item => {
+      const role = rolesById.get(String(item.roleId));
+      if (!role) return [];
+      return [
+        {
+          id: role.id,
+          name: role.name,
+          title: role.title,
+          systemAdmin: role.name === 'systemAdmin',
+        },
+      ];
+    });
 
     const departmentIds = memberships.map(item => item.departmentId);
     const departments = departmentIds.length

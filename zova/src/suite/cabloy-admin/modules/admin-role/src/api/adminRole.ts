@@ -23,6 +23,15 @@ export type ApiApiAdminRolecreateRequestBody = components['schemas']['admin-role
 export type ApiApiAdminRolecreateResponseBody =
   paths[ApiApiAdminRolecreatePath][ApiApiAdminRolecreateMethod]['responses']['200']['content']['application/json']['data'];
 
+/** AdminRole_selectMembershipCandidates */
+export const ApiApiAdminRoleselectMembershipCandidatesPath = '/api/admin/role/membership-select';
+export type ApiApiAdminRoleselectMembershipCandidatesPath = '/api/admin/role/membership-select';
+export type ApiApiAdminRoleselectMembershipCandidatesMethod = 'get';
+export type ApiApiAdminRoleselectMembershipCandidatesRequestQuery =
+  paths[ApiApiAdminRoleselectMembershipCandidatesPath][ApiApiAdminRoleselectMembershipCandidatesMethod]['parameters']['query'];
+export type ApiApiAdminRoleselectMembershipCandidatesResponseBody =
+  paths[ApiApiAdminRoleselectMembershipCandidatesPath][ApiApiAdminRoleselectMembershipCandidatesMethod]['responses']['200']['content']['application/json']['data'];
+
 /** AdminRole_view */
 export const ApiApiAdminRoleviewPath = '/api/admin/role/{id}';
 export type ApiApiAdminRoleviewPath = '/api/admin/role/{id}';
@@ -138,6 +147,17 @@ export class ApiAdminRole extends BeanApiBase {
     return this.$fetch.post<any, ApiApiAdminRolecreateResponseBody>(
       ApiApiAdminRolecreatePath,
       body,
+      this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
+    );
+  }
+
+  selectMembershipCandidates(
+    options?: {
+      query?: ApiApiAdminRoleselectMembershipCandidatesRequestQuery;
+    } & IApiActionOptions,
+  ) {
+    return this.$fetch.get<any, ApiApiAdminRoleselectMembershipCandidatesResponseBody>(
+      ApiApiAdminRoleselectMembershipCandidatesPath,
       this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
     );
   }
