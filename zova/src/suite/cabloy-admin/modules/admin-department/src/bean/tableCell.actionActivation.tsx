@@ -34,17 +34,9 @@ export class TableCellActionActivation extends BeanBase implements ITableCellRen
   ) {
     const { $host, cellContext, ctx } = renderContext;
     const row = cellContext.row.original as DepartmentRow;
-    const enabled =
-      row.enabled === true || row.enabled === 1 || row.enabled === '1';
+    const enabled = row.enabled === true || row.enabled === 1 || row.enabled === '1';
     const disabled = !enabled;
-    const locale = (this.scope as unknown as {
-      locale: {
-        Enable(): string;
-        Disable(): string;
-        EnableDepartmentConfirm(): string;
-        DisableDepartmentConfirm(): string;
-      };
-    }).locale;
+    const locale = this.scope.locale;
     const label = disabled ? locale.Enable() : locale.Disable();
     return (
       <ZButton

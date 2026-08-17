@@ -41,9 +41,7 @@ export class TableCellActionReorder extends BeanBase implements ITableCellRender
   ) {
     const { $host, cellContext, ctx } = renderContext;
     const row = cellContext.row.original as DepartmentRow;
-    const locale = (this.scope as unknown as {
-      locale: { Reorder(): string };
-    }).locale;
+    const locale = this.scope.locale;
     return (
       <ZButton
         class={options.class}
@@ -67,13 +65,7 @@ export class TableCellActionReorder extends BeanBase implements ITableCellRender
     modelDepartment: ModelDepartment,
     row: DepartmentRow,
   ) {
-    const locale = (this.scope as unknown as {
-      locale: {
-        ReorderDepartment(): string;
-        AppendDepartment(): string;
-        Cancel(): string;
-      };
-    }).locale;
+    const locale = this.scope.locale;
     const apiSchemas = modelDepartment.scope.apiSchema.adminDepartment.reorder();
     await apiSchemas.sdk.suspense();
     let dialog: AppModalItem | undefined;
