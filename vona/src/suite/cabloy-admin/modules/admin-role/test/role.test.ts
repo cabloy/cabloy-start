@@ -60,6 +60,7 @@ describe('role.test.ts', { concurrency: false }, () => {
 
   it('action:role:ordinaryLifecycleAndMembershipReplacement', async () => {
     let roleId: string | undefined;
+    const roleIds: string[] = [];
     const userIds: string[] = [];
     const shareTestUserIds: string[] = [];
     try {
@@ -93,6 +94,7 @@ describe('role.test.ts', { concurrency: false }, () => {
             },
           });
           roleId = role.id;
+          roleIds.push(role.id);
           assertRoleProjection(role);
           assert.equal(role.name, roleName);
           assert.deepEqual(role.titleLocales, {
@@ -199,9 +201,23 @@ describe('role.test.ts', { concurrency: false }, () => {
           const systemAdmin = await homeUser.model.role.getByName('systemAdmin');
           assert.ok(systemAdmin);
 
+          const roles = await app.bean.executor.performAction('get', rolePath);
+          assert.equal(
+            roles.list.some(item => item.name === 'registeredUser'),
+            false,
+          );
+          assert.equal(
+            roles.list.some(item => item.name === 'systemAdmin'),
+            false,
+          );
+
           const membershipCandidates = await app.bean.executor.performAction(
             'get',
             '/admin/role/membership-select',
+          );
+          assert.equal(
+            membershipCandidates.list.some(item => String(item.id) === String(roleId)),
+            true,
           );
           assert.equal(
             membershipCandidates.list.some(item => String(item.id) === String(registeredUser.id)),
@@ -302,6 +318,39 @@ describe('role.test.ts', { concurrency: false }, () => {
             }),
           );
 
+          const [missingRoleResult, missingRoleError] = await catchError(() => {
+            return app.bean.executor.performAction('put', '/admin/role/user/:userId/roles', {
+              params: { userId: admin.id },
+              body: { roleIds: [roleId, crypto.randomUUID()] },
+            });
+          });
+          assert.equal(missingRoleResult, undefined);
+          assert.equal(missingRoleError?.code, 'admin-role:1003');
+          assert.equal(missingRoleError?.status, 409);
+          assert.ok(await homeUser.model.roleUser.get({ userId: admin.id, roleId }));
+          assert.equal(
+            await homeUser.model.roleUser.get({
+              userId: admin.id,
+              roleId: registeredUser.id,
+            }),
+            undefined,
+          );
+          assert.ok(
+            await homeUser.model.roleUser.get({
+              userId: admin.id,
+              roleId: systemAdmin.id,
+            }),
+          );
+
+          const [missingUserResult, missingUserError] = await catchError(() => {
+            return app.bean.executor.performAction('put', '/admin/role/user/:userId/roles', {
+              params: { userId: crypto.randomUUID() },
+              body: { roleIds: [roleId] },
+            });
+          });
+          assert.equal(missingUserResult, undefined);
+          assert.equal(missingUserError?.code, 404);
+
           for (const fixedRole of [registeredUser, systemAdmin]) {
             assert.equal(
               await app.bean.executor.performAction('get', '/admin/role/:id', {
@@ -338,6 +387,52 @@ describe('role.test.ts', { concurrency: false }, () => {
             { siteId: 'web', title: 'Web' },
             { siteId: 'admin', title: 'Admin' },
           ]);
+
+          const deletedRole = await app.bean.executor.performAction('post', rolePath, {
+            body: {
+              name: `${roleName}-delete`,
+              title: 'Deleted admin role test',
+              siteIds: ['web'],
+            },
+          });
+          roleIds.push(deletedRole.id);
+          assert.equal(
+            await app.bean.executor.performAction('put', '/admin/role/user/:userId/roles', {
+              params: { userId: ordinaryUser.id },
+              body: { roleIds: [deletedRole.id] },
+            }),
+            null,
+          );
+          assert.ok(
+            await homeUser.model.roleUser.get({
+              userId: ordinaryUser.id,
+              roleId: deletedRole.id,
+            }),
+          );
+          assert.equal(
+            await app.bean.executor.performAction('delete', '/admin/role/:id', {
+              params: { id: deletedRole.id },
+            }),
+            null,
+          );
+          roleIds.splice(roleIds.indexOf(deletedRole.id), 1);
+          assert.equal(
+            await app.bean.executor.performAction('get', '/admin/role/:id', {
+              params: { id: deletedRole.id },
+            }),
+            undefined,
+          );
+          const rolesAfterDelete = await app.bean.executor.performAction('get', rolePath, {
+            query: { where: { id: { _eq_: deletedRole.id } } },
+          });
+          assert.deepEqual(rolesAfterDelete.list, []);
+          assert.equal(
+            await homeUser.model.roleUser.get({
+              userId: ordinaryUser.id,
+              roleId: deletedRole.id,
+            }),
+            undefined,
+          );
         } finally {
           await app.bean.passport.signout();
         }
@@ -415,14 +510,18 @@ describe('role.test.ts', { concurrency: false }, () => {
         );
       });
     } finally {
-      if (roleId) {
+      if (roleIds.length) {
         await app.bean.executor.mockCtx(async () => {
           const homeUser = app.scope('home-user');
-          const memberships = await homeUser.model.roleUser.select({ where: { roleId } });
+          const memberships = await homeUser.model.roleUser.select({
+            where: { roleId: { _in_: roleIds } },
+          });
           if (memberships.length) {
             await homeUser.model.roleUser.deleteBulk(memberships.map(item => item.id));
           }
-          await homeUser.model.role.deleteById(roleId!);
+          for (const roleId of roleIds.reverse()) {
+            await homeUser.model.role.deleteById(roleId);
+          }
         });
       }
       if (userIds.length) {

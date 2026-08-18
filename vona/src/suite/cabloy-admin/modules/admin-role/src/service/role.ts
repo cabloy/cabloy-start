@@ -41,7 +41,7 @@ export class ServiceRole extends BeanBase {
   @Core.transaction()
   async create(role: DtoRoleCreate): Promise<DtoRoleView> {
     return await this.$scope.redlock.service.redlock.lock(
-      `admin-role.role.name.${role.name.toLocaleLowerCase()}`,
+      `admin-role.role.name.${role.name.toLowerCase()}`,
       async () => {
         this.ensureMutableRoleDefinitionName(role.name);
         this.validateSiteIds(role.siteIds);
