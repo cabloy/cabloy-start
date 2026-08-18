@@ -99,6 +99,9 @@ describe('user.test.ts', { concurrency: false }, () => {
             body: {
               avatar: ':emoji:rocket',
               email: updatedEmail,
+              mobile: '10000000000',
+              locale: 'zh-CN',
+              tz: 'Asia/Shanghai',
               name: 'must-not-be-updated',
               activated: true,
               accountStatus: 'disabled',
@@ -116,6 +119,9 @@ describe('user.test.ts', { concurrency: false }, () => {
           assert.equal(view.name, user.name);
           assert.equal(view.avatar, ':emoji:rocket');
           assert.equal(view.email, updatedEmail);
+          assert.equal(view.mobile, '10000000000');
+          assert.equal(view.locale, 'zh-CN');
+          assert.equal(view.tz, 'Asia/Shanghai');
           assert.equal(view.activated, false);
           assert.equal(view.accountStatus, 'active');
 
@@ -192,6 +198,10 @@ describe('user.test.ts', { concurrency: false }, () => {
           });
           assert.equal(protectedTransitionError?.code, 'admin-user:1002');
           assert.equal(protectedTransitionError?.status, 409);
+          const protectedView = await app.bean.executor.performAction('get', '/admin/user/:id', {
+            params: { id: admin.id },
+          });
+          assert.equal(protectedView.accountStatus, 'active');
         } finally {
           await app.bean.passport.signout();
         }
