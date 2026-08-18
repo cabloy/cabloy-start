@@ -12,8 +12,8 @@ export class EntitySystemAdminAudit extends EntityBase {
   @Api.field(v.tableIdentity())
   actorId: TableIdentity;
 
-  @Api.field(v.tableIdentity())
-  targetId: TableIdentity;
+  @Api.field(v.optional(), v.tableIdentity())
+  targetId?: TableIdentity;
 
   @Api.field(z.enum(['grant', 'revoke', 'activate', 'deactivate']))
   command: 'grant' | 'revoke' | 'activate' | 'deactivate';

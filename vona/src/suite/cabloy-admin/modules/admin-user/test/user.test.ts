@@ -236,6 +236,20 @@ describe('user.test.ts', { concurrency: false }, () => {
               users.list.some(item => String(item.id) === String(userId)),
               false,
             );
+            for (const [method, path, body] of [
+              ['patch', '/admin/user/:id', { avatar: ':emoji:alien' }],
+              ['post', '/admin/user/activate/:id', undefined],
+              ['put', '/admin/user/account-status/:id', { accountStatus: 'disabled' }],
+            ] as const) {
+              const [result, error] = await catchError(() => {
+                return app.bean.executor.performAction(method, path, {
+                  params: { id: userId },
+                  body,
+                });
+              });
+              assert.equal(result, undefined);
+              assert.equal(error?.code, 404);
+            }
           } finally {
             await app.bean.passport.signout();
           }
@@ -243,6 +257,12 @@ describe('user.test.ts', { concurrency: false }, () => {
         { instanceName: 'shareTest' as any },
       );
     } finally {
+      await app.bean.executor.mockCtx(async () => {
+        const user = await app.scope('home-user').model.user.getById(userId);
+        assert.equal(user?.avatar, ':emoji:rocket');
+        assert.equal(user?.activated, true);
+        assert.equal(user?.accountStatus, 'active');
+      });
       if (userIds.length) {
         await app.bean.executor.mockCtx(async () => {
           const homeUser = app.scope('home-user');

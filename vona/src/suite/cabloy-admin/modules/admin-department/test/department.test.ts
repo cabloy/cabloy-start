@@ -231,27 +231,36 @@ describe('department.test.ts', { concurrency: false }, () => {
       await app.bean.executor.mockCtx(
         async () => {
           await app.bean.passport.signinMock();
-          const foreignView = await app.bean.executor.performAction('get', '/admin/department/:id', {
-            params: { id: rootId },
-          });
+          const foreignView = await app.bean.executor.performAction(
+            'get',
+            '/admin/department/:id',
+            {
+              params: { id: rootId },
+            },
+          );
           assert.equal(foreignView, undefined);
           const foreignSelect = await app.bean.executor.performAction('get', departmentPath, {
             query: { where: { id: rootId }, pageNo: 1, pageSize: 20 },
           });
-          assert.equal(foreignSelect.list.some(item => String(item.id) === rootId), false);
-          const foreignTree = await app.bean.executor.performAction('get', '/admin/department/tree');
           assert.equal(
-            JSON.stringify(foreignTree).includes(rootId),
+            foreignSelect.list.some(item => String(item.id) === rootId),
             false,
           );
+          const foreignTree = await app.bean.executor.performAction(
+            'get',
+            '/admin/department/tree',
+          );
+          assert.equal(JSON.stringify(foreignTree).includes(rootId), false);
 
-          for (const [path, body] of [
-            ['/admin/department/:id/move', { parentId: null }],
-            ['/admin/department/:id/reorder', { beforeId: null }],
-            ['/admin/department/:id/activation', { enabled: false }],
+          for (const [method, path, body] of [
+            ['patch', '/admin/department/:id', { name: 'Foreign update' }],
+            ['delete', '/admin/department/:id', undefined],
+            ['put', '/admin/department/:id/move', { parentId: null }],
+            ['put', '/admin/department/:id/reorder', { beforeId: null }],
+            ['put', '/admin/department/:id/activation', { enabled: false }],
           ] as const) {
             const [result, error] = await catchError(() => {
-              return app.bean.executor.performAction('put', path, {
+              return app.bean.executor.performAction(method, path, {
                 params: { id: childId },
                 body,
               });
@@ -259,6 +268,14 @@ describe('department.test.ts', { concurrency: false }, () => {
             assert.equal(result, undefined);
             assert.equal(error?.code, 404);
           }
+          const [createResult, createError] = await catchError(() => {
+            return app.bean.executor.performAction('post', departmentPath, {
+              body: { name: `Department-Foreign-Parent-${crypto.randomUUID()}`, parentId: rootId },
+            });
+          });
+          assert.equal(createResult, undefined);
+          assert.equal(createError?.code, 'admin-department:1002');
+          assert.equal(createError?.status, 409);
         },
         { instanceName: 'shareTest' as any },
       );

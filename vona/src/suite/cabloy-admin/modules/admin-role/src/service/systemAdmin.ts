@@ -1,6 +1,6 @@
 import type { TableIdentity } from 'table-identity';
-import type { EntityRole, EntityRoleUser, EntityUser } from 'vona-module-home-user';
 import type { TypeAccountStatus } from 'vona-module-a-user';
+import type { EntityRole, EntityRoleUser, EntityUser } from 'vona-module-home-user';
 
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { BeanBase } from 'vona';
@@ -39,7 +39,10 @@ const FreshProofTtlMilliseconds = 5 * 60 * 1000;
 export class ServiceSystemAdmin extends BeanBase {
   async issueFreshProof(password: string): Promise<DtoSystemAdminFreshProofIssueRes> {
     const actor = await this.getCurrentSystemAdmin();
-    const profileId = await this.$scope.authSimple.service.authSimple.verifyPassword(actor.id, password);
+    const profileId = await this.$scope.authSimple.service.authSimple.verifyPassword(
+      actor.id,
+      password,
+    );
     if (!profileId) this.scope.error.FreshProofInvalid.throw();
     const proof = randomBytes(32).toString('base64url');
     const expiresAt = new Date(Date.now() + FreshProofTtlMilliseconds);
@@ -54,42 +57,52 @@ export class ServiceSystemAdmin extends BeanBase {
   }
 
   async grant(targetId: TableIdentity, command: DtoSystemAdminGrant): Promise<void> {
-    await this.execute(targetId, 'grant', command, async ({ target, role, membership, actorId, commandId }) => {
-      if (membership) this.scope.error.ProtectedCommandInvalid.throw();
-      if (!target.activated || target.accountStatus === 'disabled') {
-        this.scope.error.InactiveSystemAdminTarget.throw();
-      }
-      await this.$scope.homeUser.model.roleUser.insert({ userId: target.id, roleId: role.id });
-      await this.accept(
-        actorId,
-        target.id,
-        'grant',
-        command.reason,
-        commandId,
-        toState(target, false),
-        toState(target, true),
-      );
-    });
+    await this.execute(
+      targetId,
+      'grant',
+      command,
+      async ({ target, role, membership, actorId, commandId }) => {
+        if (membership) this.scope.error.ProtectedCommandInvalid.throw();
+        if (!target.activated || target.accountStatus === 'disabled') {
+          this.scope.error.InactiveSystemAdminTarget.throw();
+        }
+        await this.$scope.homeUser.model.roleUser.insert({ userId: target.id, roleId: role.id });
+        await this.accept(
+          actorId,
+          target.id,
+          'grant',
+          command.reason,
+          commandId,
+          toState(target, false),
+          toState(target, true),
+        );
+      },
+    );
   }
 
   async revoke(targetId: TableIdentity, command: DtoSystemAdminRevoke): Promise<void> {
-    await this.execute(targetId, 'revoke', command, async ({ target, membership, actorId, commandId }) => {
-      if (!membership) {
-        this.scope.error.ProtectedCommandInvalid.throw();
-        throw new Error('system administrator membership is unavailable');
-      }
-      await this.ensureNotFinalSystemAdmin(target.id);
-      await this.$scope.homeUser.model.roleUser.deleteById(membership.id);
-      await this.accept(
-        actorId,
-        target.id,
-        'revoke',
-        command.reason,
-        commandId,
-        toState(target, true),
-        toState(target, false),
-      );
-    });
+    await this.execute(
+      targetId,
+      'revoke',
+      command,
+      async ({ target, membership, actorId, commandId }) => {
+        if (!membership) {
+          this.scope.error.ProtectedCommandInvalid.throw();
+          throw new Error('system administrator membership is unavailable');
+        }
+        await this.ensureNotFinalSystemAdmin(target.id);
+        await this.$scope.homeUser.model.roleUser.deleteById(membership.id);
+        await this.accept(
+          actorId,
+          target.id,
+          'revoke',
+          command.reason,
+          commandId,
+          toState(target, true),
+          toState(target, false),
+        );
+      },
+    );
   }
 
   async updateAccountStatus(
@@ -97,20 +110,28 @@ export class ServiceSystemAdmin extends BeanBase {
     command: DtoSystemAdminAccountStatus,
   ): Promise<void> {
     const action = command.accountStatus === 'disabled' ? 'deactivate' : 'activate';
-    await this.execute(targetId, action, command, async ({ target, membership, actorId, commandId }) => {
-      if (!membership || target.accountStatus === command.accountStatus) {
-        this.scope.error.ProtectedCommandInvalid.throw();
-      }
-      if (command.accountStatus === 'disabled') {
-        await this.ensureNotFinalSystemAdmin(target.id);
-      }
-      const beforeState = toState(target, true);
-      await this.$scope.homeUser.service.userAdapter.setAccountStatus(target.id, command.accountStatus);
-      await this.accept(actorId, target.id, action, command.reason, commandId, beforeState, {
-        ...beforeState,
-        accountStatus: command.accountStatus,
-      });
-    });
+    await this.execute(
+      targetId,
+      action,
+      command,
+      async ({ target, membership, actorId, commandId }) => {
+        if (!membership || target.accountStatus === command.accountStatus) {
+          this.scope.error.ProtectedCommandInvalid.throw();
+        }
+        if (command.accountStatus === 'disabled') {
+          await this.ensureNotFinalSystemAdmin(target.id);
+        }
+        const beforeState = toState(target, true);
+        await this.$scope.homeUser.service.userAdapter.setAccountStatus(
+          target.id,
+          command.accountStatus,
+        );
+        await this.accept(actorId, target.id, action, command.reason, commandId, beforeState, {
+          ...beforeState,
+          accountStatus: command.accountStatus,
+        });
+      },
+    );
   }
 
   async updateActivation(
@@ -118,20 +139,25 @@ export class ServiceSystemAdmin extends BeanBase {
     command: DtoSystemAdminActivation,
   ): Promise<void> {
     const action = command.activated ? 'activate' : 'deactivate';
-    await this.execute(targetId, action, command, async ({ target, membership, actorId, commandId }) => {
-      if (!membership || target.activated === command.activated) {
-        this.scope.error.ProtectedCommandInvalid.throw();
-      }
-      if (!command.activated) {
-        await this.ensureNotFinalSystemAdmin(target.id);
-      }
-      const beforeState = toState(target, true);
-      await this.$scope.homeUser.service.userAdapter.setActivated(target.id, command.activated);
-      await this.accept(actorId, target.id, action, command.reason, commandId, beforeState, {
-        ...beforeState,
-        activated: command.activated,
-      });
-    });
+    await this.execute(
+      targetId,
+      action,
+      command,
+      async ({ target, membership, actorId, commandId }) => {
+        if (!membership || target.activated === command.activated) {
+          this.scope.error.ProtectedCommandInvalid.throw();
+        }
+        if (!command.activated) {
+          await this.ensureNotFinalSystemAdmin(target.id);
+        }
+        const beforeState = toState(target, true);
+        await this.$scope.homeUser.service.userAdapter.setActivated(target.id, command.activated);
+        await this.accept(actorId, target.id, action, command.reason, commandId, beforeState, {
+          ...beforeState,
+          activated: command.activated,
+        });
+      },
+    );
   }
 
   private async execute(
@@ -207,18 +233,18 @@ export class ServiceSystemAdmin extends BeanBase {
     error: unknown,
   ): Promise<void> {
     try {
-      const state = await this.getProtectedState(targetId);
+      const target = await this.getProtectedAuditTarget(targetId);
       await this.scope.model.systemAdminAudit.insert({
         actorId,
-        targetId,
+        targetId: target.id,
         command,
         result: 'rejected',
         reason,
         commandId,
         proofMethod: FreshProofMethod,
         errorCode: errorCode(error),
-        beforeState: state,
-        afterState: state,
+        beforeState: target.state,
+        afterState: target.state,
         occurredAt: new Date(),
       });
     } catch (auditError) {
@@ -226,14 +252,17 @@ export class ServiceSystemAdmin extends BeanBase {
     }
   }
 
-  private async getProtectedState(targetId: TableIdentity): Promise<TypeSystemAdminState | Record<string, never>> {
+  private async getProtectedAuditTarget(targetId: TableIdentity): Promise<{
+    id?: TableIdentity;
+    state: TypeSystemAdminState | Record<string, never>;
+  }> {
     const target = await this.$scope.homeUser.model.user.getById(targetId);
-    if (!target) return {};
+    if (!target) return { state: {} };
     const role = await this.$scope.homeUser.model.role.get({ name: 'systemAdmin' });
     const membership = role
       ? await this.$scope.homeUser.model.roleUser.get({ userId: target.id, roleId: role.id })
       : undefined;
-    return toState(target, !!membership);
+    return { id: target.id, state: toState(target, !!membership) };
   }
 
   private async accept(
@@ -312,7 +341,9 @@ export class ServiceSystemAdmin extends BeanBase {
 
   private async ensureNotFinalSystemAdmin(targetId: TableIdentity): Promise<void> {
     const role = await this.getLockedSystemAdminRole();
-    const memberships = await this.$scope.homeUser.model.roleUser.select({ where: { roleId: role.id } });
+    const memberships = await this.$scope.homeUser.model.roleUser.select({
+      where: { roleId: role.id },
+    });
     let usableCount = 0;
     for (const membership of memberships) {
       const user = await this.$scope.homeUser.model.user.getByIdForUpdate(membership.userId);

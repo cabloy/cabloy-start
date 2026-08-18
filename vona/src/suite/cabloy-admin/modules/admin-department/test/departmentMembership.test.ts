@@ -480,10 +480,7 @@ describe('departmentMembership.test.ts', { concurrency: false }, () => {
         const departmentWithReplacement = await app
           .scope('admin-department')
           .model.department.getById(departmentA.id);
-        assert.equal(
-          String(departmentWithReplacement!.managerId),
-          String(replacementUser.id),
-        );
+        assert.equal(String(departmentWithReplacement!.managerId), String(replacementUser.id));
 
         await app.bean.executor.performAction(
           'delete',
@@ -510,6 +507,7 @@ describe('departmentMembership.test.ts', { concurrency: false }, () => {
     const departmentIds: string[] = [];
     const membershipIds: string[] = [];
     const userIds: string[] = [];
+    const shareTestDepartmentIds: string[] = [];
     try {
       let departmentId: string | undefined;
       let membershipId: string | undefined;
@@ -538,6 +536,10 @@ describe('departmentMembership.test.ts', { concurrency: false }, () => {
           ),
         );
         membershipIds.push(membershipId);
+        await app.bean.executor.performAction('put', '/admin/department/:id/manager', {
+          params: { id: departmentId },
+          body: { membershipId },
+        });
       });
 
       assert.ok(departmentId);
@@ -558,6 +560,29 @@ describe('departmentMembership.test.ts', { concurrency: false }, () => {
           });
           assert.equal(createResult, undefined);
           assert.equal(createError?.code, 404);
+
+          const localDepartment = await departmentService().create({
+            name: `Department-Scoped-Local-${crypto.randomUUID()}`,
+            parentId: null,
+          });
+          shareTestDepartmentIds.push(String(localDepartment.id));
+          const [mixedCreateResult, mixedCreateError] = await catchError(() => {
+            return app.bean.executor.performAction(
+              'post',
+              '/admin/department/:departmentId/memberships',
+              {
+                params: { departmentId: localDepartment.id },
+                body: { userId, position: 'Foreign user' },
+              },
+            );
+          });
+          assert.equal(mixedCreateResult, undefined);
+          assert.equal(mixedCreateError?.code, 'admin-department:1008');
+          assert.equal(mixedCreateError?.status, 409);
+          const localMemberships = await app
+            .scope('admin-department')
+            .model.departmentMembership.select({ where: { departmentId: localDepartment.id } });
+          assert.deepEqual(localMemberships, []);
 
           const [listResult, listError] = await catchError(() => {
             return app.bean.executor.performAction(
@@ -593,6 +618,26 @@ describe('departmentMembership.test.ts', { concurrency: false }, () => {
           });
           assert.equal(deleteResult, undefined);
           assert.equal(deleteError?.code, 404);
+
+          for (const [path, body] of [
+            [
+              '/admin/department/:departmentId/memberships/:membershipId/primary',
+              { primary: true },
+            ],
+            ['/admin/department/:id/manager', { membershipId }],
+            ['/admin/department/:id/manager', { membershipId: null }],
+          ] as const) {
+            const [result, error] = await catchError(() => {
+              return app.bean.executor.performAction('put', path, {
+                params: path.includes(':departmentId')
+                  ? { departmentId, membershipId }
+                  : { id: departmentId },
+                body,
+              });
+            });
+            assert.equal(result, undefined);
+            assert.equal(error?.code, 404);
+          }
         },
         { instanceName: 'shareTest' as any },
       );
@@ -603,8 +648,32 @@ describe('departmentMembership.test.ts', { concurrency: false }, () => {
           .model.departmentMembership.getById(membershipId);
         assert.ok(membership);
         assert.equal(membership!.position, 'Scoped');
+        assert.equal(membership!.primary, false);
+        const department = await app
+          .scope('admin-department')
+          .model.department.getById(departmentId);
+        assert.equal(String(department?.managerId), userId);
       });
     } finally {
+      await app.bean.executor.mockCtx(async () => {
+        const department = departmentIds.length
+          ? await app.scope('admin-department').model.department.getById(departmentIds[0])
+          : undefined;
+        if (department?.managerId) {
+          await departmentService().updateManager(department.id, { membershipId: null });
+        }
+      });
+      if (shareTestDepartmentIds.length) {
+        await app.bean.executor.mockCtx(
+          async () => {
+            for (const id of shareTestDepartmentIds.toReversed()) {
+              const department = await departmentService().view(id);
+              if (department) await departmentService().delete(id);
+            }
+          },
+          { instanceName: 'shareTest' as any },
+        );
+      }
       await deleteMemberships(membershipIds);
       await deleteDepartments(departmentIds);
       await deleteUsers(userIds);

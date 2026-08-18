@@ -61,6 +61,7 @@ describe('role.test.ts', { concurrency: false }, () => {
   it('action:role:ordinaryLifecycleAndMembershipReplacement', async () => {
     let roleId: string | undefined;
     const userIds: string[] = [];
+    const shareTestUserIds: string[] = [];
     try {
       await app.bean.executor.mockCtx(async () => {
         const roleName = `admin-role-test-${crypto.randomUUID()}`;
@@ -357,6 +358,10 @@ describe('role.test.ts', { concurrency: false }, () => {
         async () => {
           await app.bean.passport.signinMock();
           try {
+            const localUser = await app.bean.user.register({
+              name: `admin-role-scoped-${crypto.randomUUID()}`,
+            });
+            shareTestUserIds.push(String(localUser.id));
             const [viewResult, viewError] = await catchError(() => {
               return app.bean.executor.performAction('get', '/admin/role/:id', {
                 params: { id: roleId },
@@ -370,12 +375,45 @@ describe('role.test.ts', { concurrency: false }, () => {
               roles.list.some(item => String(item.id) === String(roleId)),
               false,
             );
+            for (const [method, path, body] of [
+              ['patch', '/admin/role/:id', { name: 'foreign-role', title: 'Foreign update' }],
+              ['delete', '/admin/role/:id', undefined],
+            ] as const) {
+              const [result, error] = await catchError(() => {
+                return app.bean.executor.performAction(method, path, {
+                  params: path.includes(':userId') ? { userId: localUser.id } : { id: roleId },
+                  body,
+                });
+              });
+              assert.equal(result, undefined);
+              assert.equal(error?.code, 404);
+            }
+            const [replaceResult, replaceError] = await catchError(() => {
+              return app.bean.executor.performAction('put', '/admin/role/user/:userId/roles', {
+                params: { userId: localUser.id },
+                body: { roleIds: [String(roleId)] },
+              });
+            });
+            assert.equal(replaceResult, undefined);
+            assert.equal(replaceError?.code, 'admin-role:1003');
           } finally {
             await app.bean.passport.signout();
           }
         },
         { instanceName: 'shareTest' as any },
       );
+
+      await app.bean.executor.mockCtx(async () => {
+        const homeUser = app.scope('home-user');
+        assert.equal(
+          (await homeUser.model.role.getById(roleId!))?.title,
+          'Updated admin role test',
+        );
+        assert.equal(
+          await homeUser.model.roleUser.get({ userId: userIds[0], roleId: roleId! }),
+          undefined,
+        );
+      });
     } finally {
       if (roleId) {
         await app.bean.executor.mockCtx(async () => {
@@ -395,6 +433,18 @@ describe('role.test.ts', { concurrency: false }, () => {
             await app.bean.user.removeById(userId);
           }
         });
+      }
+      if (shareTestUserIds.length) {
+        await app.bean.executor.mockCtx(
+          async () => {
+            const homeUser = app.scope('home-user');
+            await homeUser.model.roleUser.delete({ userId: { _in_: shareTestUserIds } });
+            for (const userId of shareTestUserIds.reverse()) {
+              await app.bean.user.removeById(userId);
+            }
+          },
+          { instanceName: 'shareTest' as any },
+        );
       }
     }
   });
