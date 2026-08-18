@@ -89,8 +89,9 @@ export class ControllerBlockPageDepartments extends BeanControllerBase {
     return (
       <div class={`${props.class ?? ''} d-flex flex-column flex-md-row align-stretch ga-4 h-100`}>
         <VCard class="flex-shrink-0 h-100" width="280" variant="outlined">
-          <VCardText class="h-100 overflow-y-auto">
+          <VCardText class="h-100 overflow-auto">
             <VTreeview
+              minWidth="max-content"
               items={treeItems}
               itemTitle="name"
               itemValue="id"
