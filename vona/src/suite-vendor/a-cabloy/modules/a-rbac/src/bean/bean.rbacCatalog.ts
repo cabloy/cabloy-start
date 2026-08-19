@@ -45,30 +45,51 @@ export class BeanRbacCatalog extends BeanBase {
         });
       }
     }
-    this.validateActionInherit(catalog);
+    this.resolveActionInherit(catalog, routesByController);
     return catalog;
   }
 
-  private validateActionInherit(catalog: ReadonlyMap<string, IRbacActionDescriptor>): void {
+  private resolveActionInherit(
+    catalog: ReadonlyMap<string, IRbacActionDescriptor>,
+    routesByController: Record<string, ContextRoute[]>,
+  ): void {
     for (const descriptor of catalog.values()) {
-      const seen = new Set<string>();
-      let current = descriptor;
-      while (current.options.actionInherit) {
-        if (seen.has(current.actionKey)) {
-          throw new Error(`RBAC actionInherit cycle: ${descriptor.actionKey}`);
-        }
-        seen.add(current.actionKey);
-        const action = current.options.actionInherit;
-        if (action === current.action) {
-          throw new Error(`RBAC actionInherit cannot reference itself: ${current.actionKey}`);
-        }
-        const targetKey = rbacActionKey(current.controllerBeanFullName, action);
-        const target = catalog.get(targetKey);
-        if (!target) {
-          throw new Error(`RBAC actionInherit target not found: ${current.actionKey} -> ${action}`);
-        }
-        current = target;
-      }
+      if (!descriptor.options.actionInherit) continue;
+      const routes = routesByController[descriptor.controllerBeanFullName] ?? [];
+      const routesByAction = new Map(routes.map(route => [route.action, route]));
+      descriptor.actionInheritKey = this.resolveActionInheritKey(
+        descriptor,
+        catalog,
+        routesByAction,
+      );
     }
+  }
+
+  private resolveActionInheritKey(
+    descriptor: IRbacActionDescriptor,
+    catalog: ReadonlyMap<string, IRbacActionDescriptor>,
+    routesByAction: ReadonlyMap<string, ContextRoute>,
+  ): string {
+    const seen = new Set<string>([descriptor.actionKey]);
+    let current = descriptor;
+    while (current.options.actionInherit) {
+      const action = current.options.actionInherit;
+      if (action === current.action) {
+        throw new Error(`RBAC actionInherit cannot reference itself: ${current.actionKey}`);
+      }
+      const route = routesByAction.get(action);
+      if (!route) {
+        throw new Error(`RBAC actionInherit target not found: ${current.actionKey} -> ${action}`);
+      }
+      const targetKey = rbacActionKey(current.controllerBeanFullName, action);
+      if (seen.has(targetKey)) {
+        throw new Error(`RBAC actionInherit cycle: ${descriptor.actionKey}`);
+      }
+      seen.add(targetKey);
+      const target = catalog.get(targetKey);
+      if (!target) return targetKey;
+      current = target;
+    }
+    return current.actionKey;
   }
 }

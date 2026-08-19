@@ -20,13 +20,16 @@ export interface IRbacActionDescriptor {
 
 export interface IRbacPolicyRequest {
   action: IRbacActionDescriptor;
+  policyActionKey: string;
 }
 
-export interface IRbacScopeTerm {
-  dataScope: TypeRbacDataScope;
-  departmentIds?: string[];
-  ownerId?: string;
-}
+export type IRbacScopeTerm =
+  | { dataScope: 'all' }
+  | {
+      dataScope: 'customDepartments' | 'ownDepartment' | 'ownDepartmentAndDescendants';
+      departmentIds: string[];
+    }
+  | { dataScope: 'mine'; ownerId: string };
 
 export interface IRbacPolicyDecision {
   allowed: boolean;
