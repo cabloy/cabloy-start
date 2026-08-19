@@ -7,6 +7,7 @@
   "type": "module",
   "dependencies": {
     "zova-module-admin-department": "^5.0.0",
+    "zova-module-admin-rbac": "^5.0.0",
     "zova-module-admin-role": "^5.0.0",
     "zova-module-admin-user": "^5.0.0"
   },
