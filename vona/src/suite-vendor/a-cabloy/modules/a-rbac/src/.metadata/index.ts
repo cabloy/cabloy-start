@@ -1,7 +1,7 @@
 // eslint-disable
 /** guard: begin */
 export * from '../bean/guard.rbac.ts';
-import type { IGuardOptionsRbac } from '../types/rbac.ts';
+import type { IGuardOptionsRbac } from '../bean/guard.rbac.ts';
 import 'vona-module-a-aspect';
 declare module 'vona-module-a-aspect' {
   
