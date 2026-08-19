@@ -58,7 +58,11 @@ describe('policyInvalidation.test.ts', { concurrency: false }, () => {
   it('service:rbacPolicyRevision maintains state independently by instance', async () => {
     const instanceName = 'isolateTest' as any;
     let revisionId: string | undefined;
+    let defaultRevision: string | undefined;
     try {
+      await app.bean.executor.mockCtx(async () => {
+        defaultRevision = await app.scope('admin-rbac').service.rbacPolicyRevision.current();
+      });
       await app.bean.executor.mockCtx(
         async () => {
           const adminRbac = app.scope('admin-rbac');
@@ -73,7 +77,7 @@ describe('policyInvalidation.test.ts', { concurrency: false }, () => {
       );
       await app.bean.executor.mockCtx(async () => {
         const revision = app.scope('admin-rbac').service.rbacPolicyRevision;
-        assert.equal(await revision.current(), '0');
+        assert.equal(await revision.current(), defaultRevision);
       });
     } finally {
       if (revisionId) {

@@ -269,6 +269,7 @@ declare module 'vona-module-a-orm' {
 export * from '../service/rbacGrant.ts';
 export * from '../service/rbacGrantDepartment.ts';
 export * from '../service/rbacPolicy.ts';
+export * from '../service/rbacPolicyProjection.ts';
 export * from '../service/rbacPolicyRevision.ts';
 
 import 'vona-module-a-bean';
@@ -278,6 +279,7 @@ declare module 'vona-module-a-bean' {
       'admin-rbac:rbacGrant': never;
 'admin-rbac:rbacGrantDepartment': never;
 'admin-rbac:rbacPolicy': never;
+'admin-rbac:rbacPolicyProjection': never;
 'admin-rbac:rbacPolicyRevision': never;
     }
 
@@ -315,6 +317,16 @@ declare module 'vona-module-admin-rbac' {
             get $onionName(): 'admin-rbac:rbacPolicy';
           }
 
+        export interface ServiceRbacPolicyProjection {
+          /** @internal */
+          get scope(): ScopeModuleAdminRbac;
+        }
+
+          export interface ServiceRbacPolicyProjection {
+            get $beanFullName(): 'admin-rbac.service.rbacPolicyProjection';
+            get $onionName(): 'admin-rbac:rbacPolicyProjection';
+          }
+
         export interface ServiceRbacPolicyRevision {
           /** @internal */
           get scope(): ScopeModuleAdminRbac;
@@ -330,11 +342,13 @@ declare module 'vona-module-admin-rbac' {
 import type { ServiceRbacGrant } from '../service/rbacGrant.ts';
 import type { ServiceRbacGrantDepartment } from '../service/rbacGrantDepartment.ts';
 import type { ServiceRbacPolicy } from '../service/rbacPolicy.ts';
+import type { ServiceRbacPolicyProjection } from '../service/rbacPolicyProjection.ts';
 import type { ServiceRbacPolicyRevision } from '../service/rbacPolicyRevision.ts';
 export interface IModuleService {
   'rbacGrant': ServiceRbacGrant;
 'rbacGrantDepartment': ServiceRbacGrantDepartment;
 'rbacPolicy': ServiceRbacPolicy;
+'rbacPolicyProjection': ServiceRbacPolicyProjection;
 'rbacPolicyRevision': ServiceRbacPolicyRevision;
 }
 /** service: end */
@@ -346,6 +360,7 @@ declare module 'vona' {
     'admin-rbac.service.rbacGrant': ServiceRbacGrant;
 'admin-rbac.service.rbacGrantDepartment': ServiceRbacGrantDepartment;
 'admin-rbac.service.rbacPolicy': ServiceRbacPolicy;
+'admin-rbac.service.rbacPolicyProjection': ServiceRbacPolicyProjection;
 'admin-rbac.service.rbacPolicyRevision': ServiceRbacPolicyRevision;
   }
 }
@@ -440,6 +455,11 @@ export * from '../dto/rbacGrantSelectRes.tsx';
 export * from '../dto/rbacGrantSelectResItem.tsx';
 export * from '../dto/rbacGrantUpdate.tsx';
 export * from '../dto/rbacGrantView.tsx';
+export * from '../dto/rbacPolicyCatalogRes.ts';
+export * from '../dto/rbacPolicyCatalogResItem.ts';
+export * from '../dto/rbacPolicyRoleConfigurationAction.ts';
+export * from '../dto/rbacPolicyRoleConfigurationRes.ts';
+export * from '../dto/rbacPolicyRoleConfigurationScope.ts';
 import type { IDtoOptionsRbacGrantCreate } from '../dto/rbacGrantCreate.tsx';
 import type { IDtoOptionsRbacGrantDepartmentCreate } from '../dto/rbacGrantDepartmentCreate.tsx';
 import type { IDtoOptionsRbacGrantDepartmentSelectReq } from '../dto/rbacGrantDepartmentSelectReq.tsx';
@@ -452,6 +472,11 @@ import type { IDtoOptionsRbacGrantSelectRes } from '../dto/rbacGrantSelectRes.ts
 import type { IDtoOptionsRbacGrantSelectResItem } from '../dto/rbacGrantSelectResItem.tsx';
 import type { IDtoOptionsRbacGrantUpdate } from '../dto/rbacGrantUpdate.tsx';
 import type { IDtoOptionsRbacGrantView } from '../dto/rbacGrantView.tsx';
+import type { IDtoOptionsRbacPolicyCatalogRes } from '../dto/rbacPolicyCatalogRes.ts';
+import type { IDtoOptionsRbacPolicyCatalogResItem } from '../dto/rbacPolicyCatalogResItem.ts';
+import type { IDtoOptionsRbacPolicyRoleConfigurationAction } from '../dto/rbacPolicyRoleConfigurationAction.ts';
+import type { IDtoOptionsRbacPolicyRoleConfigurationRes } from '../dto/rbacPolicyRoleConfigurationRes.ts';
+import type { IDtoOptionsRbacPolicyRoleConfigurationScope } from '../dto/rbacPolicyRoleConfigurationScope.ts';
 import 'vona-module-a-web';
 declare module 'vona-module-a-web' {
   
@@ -468,6 +493,11 @@ declare module 'vona-module-a-web' {
 'admin-rbac:rbacGrantSelectResItem': IDtoOptionsRbacGrantSelectResItem;
 'admin-rbac:rbacGrantUpdate': IDtoOptionsRbacGrantUpdate;
 'admin-rbac:rbacGrantView': IDtoOptionsRbacGrantView;
+'admin-rbac:rbacPolicyCatalogRes': IDtoOptionsRbacPolicyCatalogRes;
+'admin-rbac:rbacPolicyCatalogResItem': IDtoOptionsRbacPolicyCatalogResItem;
+'admin-rbac:rbacPolicyRoleConfigurationAction': IDtoOptionsRbacPolicyRoleConfigurationAction;
+'admin-rbac:rbacPolicyRoleConfigurationRes': IDtoOptionsRbacPolicyRoleConfigurationRes;
+'admin-rbac:rbacPolicyRoleConfigurationScope': IDtoOptionsRbacPolicyRoleConfigurationScope;
     }
 
   
@@ -489,6 +519,11 @@ import type { DtoRbacGrantSelectRes } from '../dto/rbacGrantSelectRes.tsx';
 import type { DtoRbacGrantSelectResItem } from '../dto/rbacGrantSelectResItem.tsx';
 import type { DtoRbacGrantUpdate } from '../dto/rbacGrantUpdate.tsx';
 import type { DtoRbacGrantView } from '../dto/rbacGrantView.tsx';
+import type { DtoRbacPolicyCatalogRes } from '../dto/rbacPolicyCatalogRes.ts';
+import type { DtoRbacPolicyCatalogResItem } from '../dto/rbacPolicyCatalogResItem.ts';
+import type { DtoRbacPolicyRoleConfigurationAction } from '../dto/rbacPolicyRoleConfigurationAction.ts';
+import type { DtoRbacPolicyRoleConfigurationRes } from '../dto/rbacPolicyRoleConfigurationRes.ts';
+import type { DtoRbacPolicyRoleConfigurationScope } from '../dto/rbacPolicyRoleConfigurationScope.ts';
 declare module 'vona-module-admin-rbac' {
   
     export interface IDtoOptionsRbacGrantCreate {
@@ -538,19 +573,42 @@ declare module 'vona-module-admin-rbac' {
     export interface IDtoOptionsRbacGrantView {
       fields?: TypeEntityOptionsFields<DtoRbacGrantView, IDtoOptionsRbacGrantView[TypeSymbolKeyFieldsMore]>;
     }
+
+    export interface IDtoOptionsRbacPolicyCatalogRes {
+      fields?: TypeEntityOptionsFields<DtoRbacPolicyCatalogRes, IDtoOptionsRbacPolicyCatalogRes[TypeSymbolKeyFieldsMore]>;
+    }
+
+    export interface IDtoOptionsRbacPolicyCatalogResItem {
+      fields?: TypeEntityOptionsFields<DtoRbacPolicyCatalogResItem, IDtoOptionsRbacPolicyCatalogResItem[TypeSymbolKeyFieldsMore]>;
+    }
+
+    export interface IDtoOptionsRbacPolicyRoleConfigurationAction {
+      fields?: TypeEntityOptionsFields<DtoRbacPolicyRoleConfigurationAction, IDtoOptionsRbacPolicyRoleConfigurationAction[TypeSymbolKeyFieldsMore]>;
+    }
+
+    export interface IDtoOptionsRbacPolicyRoleConfigurationRes {
+      fields?: TypeEntityOptionsFields<DtoRbacPolicyRoleConfigurationRes, IDtoOptionsRbacPolicyRoleConfigurationRes[TypeSymbolKeyFieldsMore]>;
+    }
+
+    export interface IDtoOptionsRbacPolicyRoleConfigurationScope {
+      fields?: TypeEntityOptionsFields<DtoRbacPolicyRoleConfigurationScope, IDtoOptionsRbacPolicyRoleConfigurationScope[TypeSymbolKeyFieldsMore]>;
+    }
 }
 /** dto: end */
 /** controller: begin */
 export * from '../controller/rbacGrant.ts';
 export * from '../controller/rbacGrantDepartment.ts';
+export * from '../controller/rbacPolicy.ts';
 import type { IControllerOptionsRbacGrant } from '../controller/rbacGrant.ts';
 import type { IControllerOptionsRbacGrantDepartment } from '../controller/rbacGrantDepartment.ts';
+import type { IControllerOptionsRbacPolicy } from '../controller/rbacPolicy.ts';
 import 'vona-module-a-web';
 declare module 'vona-module-a-web' {
   
     export interface IControllerRecord {
       'admin-rbac:rbacGrant': IControllerOptionsRbacGrant;
 'admin-rbac:rbacGrantDepartment': IControllerOptionsRbacGrantDepartment;
+'admin-rbac:rbacPolicy': IControllerOptionsRbacPolicy;
     }
 
   
@@ -577,6 +635,17 @@ declare module 'vona-module-admin-rbac' {
             get $beanFullName(): 'admin-rbac.controller.rbacGrantDepartment';
             get $onionName(): 'admin-rbac:rbacGrantDepartment';
             get $onionOptions(): IControllerOptionsRbacGrantDepartment;
+          }
+
+        export interface ControllerRbacPolicy {
+          /** @internal */
+          get scope(): ScopeModuleAdminRbac;
+        }
+
+          export interface ControllerRbacPolicy {
+            get $beanFullName(): 'admin-rbac.controller.rbacPolicy';
+            get $onionName(): 'admin-rbac:rbacPolicy';
+            get $onionOptions(): IControllerOptionsRbacPolicy;
           } 
 }
 /** controller: end */
@@ -585,6 +654,8 @@ declare module 'vona-module-admin-rbac' {
 import type { ControllerRbacGrant } from '../controller/rbacGrant.ts';
 // @ts-ignore ignore
 import type { ControllerRbacGrantDepartment } from '../controller/rbacGrantDepartment.ts';
+// @ts-ignore ignore
+import type { ControllerRbacPolicy } from '../controller/rbacPolicy.ts';
 declare module 'vona-module-admin-rbac' {
   
     export interface IControllerOptionsRbacGrant {
@@ -593,6 +664,10 @@ declare module 'vona-module-admin-rbac' {
 
     export interface IControllerOptionsRbacGrantDepartment {
       actions?: TypeControllerOptionsActions<ControllerRbacGrantDepartment>;
+    }
+
+    export interface IControllerOptionsRbacPolicy {
+      actions?: TypeControllerOptionsActions<ControllerRbacPolicy>;
     }
 }
 declare module 'vona-module-a-web' {
@@ -605,6 +680,8 @@ export interface IApiPathGetRecord{
 '/admin/rbac/rbacGrant/:id': undefined;
 '/admin/rbac/rbacGrantDepartment': undefined;
 '/admin/rbac/rbacGrantDepartment/:id': undefined;
+'/admin/rbac/rbacPolicy/catalog': undefined;
+'/admin/rbac/rbacPolicy/roles/:roleId/configuration': undefined;
     }
 export interface IApiPathPatchRecord{
         '/admin/rbac/rbacGrant/:id': undefined;

@@ -13,7 +13,11 @@ import type { DtoRbacGrantView } from '../dto/rbacGrantView.tsx';
 import type { EntityRbacGrant } from '../entity/rbacGrant.tsx';
 import type { ModelRbacGrant } from '../model/rbacGrant.ts';
 
-import { getRbacPolicyActions, isRbacDataScopeCompatible } from '../lib/rbacPolicy.ts';
+import {
+  getRbacGrantablePolicyAction,
+  isRbacDataScopeCompatible,
+  isRbacPolicyRoleAvailable,
+} from '../lib/rbacPolicy.ts';
 
 @Service()
 export class ServiceRbacGrant extends BeanBase {
@@ -89,24 +93,9 @@ export class ServiceRbacGrant extends BeanBase {
   }
 
   private requireAction(actionKey: string): IRbacActionDescriptor {
-    const actions = getRbacPolicyActions(this.bean.rbacCatalog.getCatalog(), actionKey);
-    if (!actions.length) this.app.throw(422, 'RBAC action is unavailable');
-    const [action, ...rest] = actions;
-    if (!rest.every(item => this.hasCompatibleScopeOptions(item, action))) {
-      this.app.throw(422, 'RBAC action has incompatible aliases');
-    }
-    return action;
-  }
-
-  private hasCompatibleScopeOptions(
-    left: IRbacActionDescriptor,
-    right: IRbacActionDescriptor,
-  ): boolean {
-    return (
-      left.options.dataScope === right.options.dataScope &&
-      left.options.dataScopeField === right.options.dataScopeField &&
-      left.options.dataScopeMineField === right.options.dataScopeMineField
-    );
+    const action = getRbacGrantablePolicyAction(this.bean.rbacCatalog.getCatalog(), actionKey);
+    if (!action) this.app.throw(422, 'RBAC action is unavailable');
+    return action.action;
   }
 
   private requireCompatibleDataScope(
@@ -129,6 +118,6 @@ export class ServiceRbacGrant extends BeanBase {
 
   private async ensureMutableRole(roleId: TableIdentity): Promise<void> {
     const role = await this.$scope.homeUser.model.role.getByIdForUpdate(roleId);
-    if (!role || role.name === 'systemAdmin') this.app.throw(422, 'RBAC grant role is unavailable');
+    if (!isRbacPolicyRoleAvailable(role)) this.app.throw(422, 'RBAC grant role is unavailable');
   }
 }
