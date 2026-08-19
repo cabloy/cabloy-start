@@ -13,8 +13,17 @@ import type { ModelRbacGrantDepartment } from '../model/rbacGrantDepartment.ts';
 
 @Service()
 export class ServiceRbacGrantDepartment extends BeanBase {
-  @Core.transaction()
   async create(
+    rbacGrantDepartment: DtoRbacGrantDepartmentCreate,
+  ): Promise<EntityRbacGrantDepartment> {
+    return await this.$scope.redlock.service.redlock.lockIsolate(
+      `admin-rbac.grant-department.${rbacGrantDepartment.rbacGrantId}.${rbacGrantDepartment.departmentId}`,
+      async () => await this.createInTransaction(rbacGrantDepartment),
+    );
+  }
+
+  @Core.transaction()
+  private async createInTransaction(
     rbacGrantDepartment: DtoRbacGrantDepartmentCreate,
   ): Promise<EntityRbacGrantDepartment> {
     const grant = await this.scope.model.rbacGrant.getByIdForUpdate(
@@ -37,7 +46,7 @@ export class ServiceRbacGrantDepartment extends BeanBase {
       rbacGrantId: grant.id,
       departmentId: department.id,
     });
-    await this.bean.permission.clearAllCaches();
+    await this.invalidatePolicy();
     return row;
   }
 
@@ -56,6 +65,11 @@ export class ServiceRbacGrantDepartment extends BeanBase {
     const row = await this.scope.model.rbacGrantDepartment.getByIdForUpdate(id);
     if (!row) this.app.throw(404, 'RBAC grant department not found');
     await this.scope.model.rbacGrantDepartment.deleteById(row.id);
-    await this.bean.permission.clearAllCaches();
+    await this.invalidatePolicy();
+  }
+
+  private async invalidatePolicy(): Promise<void> {
+    await this.scope.service.rbacPolicyRevision.invalidate();
+    this.ctx.db.commit(() => this.bean.permission.clearAllCaches());
   }
 }

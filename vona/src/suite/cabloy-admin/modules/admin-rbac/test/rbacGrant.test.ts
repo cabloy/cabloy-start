@@ -1,87 +1,154 @@
-import type {
-  DtoRbacGrantCreate,
-  DtoRbacGrantSelectRes,
-  DtoRbacGrantUpdate,
-  EntityRbacGrant,
-} from 'vona-module-admin-rbac';
-
+import { catchError } from '@cabloy/utils';
 import assert from 'node:assert';
-import { describe, it } from 'node:test';
+import { describe, it, mock } from 'node:test';
 import { app } from 'vona-mock';
 
-describe('rbacGrant.test.ts', () => {
-  it('action:rbacGrant', async () => {
+import { DtoRbacGrantCreate, DtoRbacGrantUpdate } from '../src/index.ts';
+
+describe('rbacGrant.test.ts', { concurrency: false }, () => {
+  it('dto:rbacGrant emits metadata', async () => {
     await app.bean.executor.mockCtx(async () => {
-      // data
-      const data: DtoRbacGrantCreate = {
-        name: '__Tom__',
-        description: 'This is a test',
-      };
-      const dataUpdate: DtoRbacGrantUpdate = {
-        name: '__TomNew__',
-        description: 'This is a test',
-      };
-      // role-less authenticated users cannot access generated admin actions
-      await app.bean.passport.signinMock();
-      try {
-        app.bean.passport.current!.roles = [];
-        const actions = ['create', 'select', 'view', 'update', 'delete'];
-        const permissions = await Promise.all(
-          actions.map(action =>
-            app.bean.permission.retrievePermissionAction('admin-rbac:rbacGrant', action),
-          ),
-        );
-        assert.deepEqual(
-          permissions,
-          actions.map(() => false),
-        );
-      } finally {
-        await app.bean.passport.signout();
+      for (const DtoClass of [DtoRbacGrantCreate, DtoRbacGrantUpdate]) {
+        const apiJson = await app.bean.openapi.generateJsonOfClass(DtoClass);
+        assert.ok(apiJson.components?.schemas);
       }
-      // login as system admin
-      await app.bean.passport.signinMock();
-      // create
-      const rbacGrantId = await app.bean.executor.performAction('post', '/admin/rbac/rbacGrant', {
-        body: data,
-      });
-      assert.equal(!!rbacGrantId, true);
-      // findMany
-      const selectRes: DtoRbacGrantSelectRes = await app.bean.executor.performAction(
-        'get',
-        '/admin/rbac/rbacGrant',
-      );
-      assert.equal(selectRes.list.findIndex(item => item.name === data.name) > -1, true);
-      // update
-      const updateRes = await app.bean.executor.performAction(
-        'patch',
-        '/admin/rbac/rbacGrant/:id',
-        {
-          params: { id: rbacGrantId },
-          body: dataUpdate,
-        },
-      );
-      assert.equal(updateRes, null);
-      // findOne
-      let rbacGrant: EntityRbacGrant = await app.bean.executor.performAction(
-        'get',
-        '/admin/rbac/rbacGrant/:id',
-        { params: { id: rbacGrantId } },
-      );
-      assert.equal(rbacGrant.name, dataUpdate.name);
-      // delete
-      const deleteRes = await app.bean.executor.performAction(
-        'delete',
-        '/admin/rbac/rbacGrant/:id',
-        { params: { id: rbacGrant.id } },
-      );
-      assert.equal(deleteRes, null);
-      // findOne
-      rbacGrant = await app.bean.executor.performAction('get', '/admin/rbac/rbacGrant/:id', {
-        params: { id: rbacGrant.id },
-      });
-      assert.equal(rbacGrant, undefined);
-      // logout
-      await app.bean.passport.signout();
     });
+  });
+
+  it('action:rbacGrant protects its control plane and rejects unavailable actions', async () => {
+    const roleName = `admin-rbac-invalid-${crypto.randomUUID()}`;
+    let roleId: string | undefined;
+    try {
+      await app.bean.executor.mockCtx(async () => {
+        const role = await app.scope('admin-role').service.role.create({
+          name: roleName,
+          title: 'RBAC validation fixture',
+          siteIds: ['admin'],
+        });
+        roleId = String(role.id);
+      });
+
+      await app.bean.executor.mockCtx(async () => {
+        const [result, error] = await catchError(() =>
+          app.bean.executor.performAction('post', '/admin/rbac/rbacGrant', {
+            innerAccess: false,
+            body: {
+              roleId,
+              actionKey: 'test:controller#unavailable',
+              dataScope: 'all',
+              enabled: true,
+            },
+          }),
+        );
+        assert.equal(result, undefined);
+        assert.equal(error?.code, 401);
+      });
+
+      await app.bean.executor.mockCtx(async () => {
+        await app.bean.passport.signinMock();
+        try {
+          const [result, error] = await catchError(() =>
+            app.bean.executor.performAction('post', '/admin/rbac/rbacGrant', {
+              body: {
+                roleId,
+                actionKey: 'test:controller#unavailable',
+                dataScope: 'all',
+                enabled: true,
+              },
+            }),
+          );
+          assert.equal(result, undefined);
+          assert.equal(error?.code, 422);
+          const grants = await app.scope('admin-rbac').model.rbacGrant.select({
+            where: { roleId },
+          });
+          assert.equal(grants.length, 0);
+        } finally {
+          await app.bean.passport.signout();
+        }
+      });
+    } finally {
+      await app.bean.executor.mockCtx(async () => {
+        if (!roleId) return;
+        const role = await app.scope('home-user').model.role.getById(roleId);
+        if (role) await app.scope('admin-role').service.role.delete(role.id);
+      });
+    }
+  });
+
+  it('service:rbacGrant serializes duplicate creation', async () => {
+    const roleName = `admin-rbac-grant-race-${crypto.randomUUID()}`;
+    const actionKey = 'test:controller#create';
+    const getCatalog = mock.method(
+      app.bean.rbacCatalog,
+      'getCatalog',
+      () =>
+        new Map([
+          [
+            actionKey,
+            {
+              actionKey,
+              controllerBeanFullName: 'test:controller',
+              action: 'create',
+              options: {},
+            },
+          ],
+        ]),
+    );
+    let roleId: string | undefined;
+    try {
+      await app.bean.executor.mockCtx(async () => {
+        const role = await app.scope('admin-role').service.role.create({
+          name: roleName,
+          title: 'RBAC duplicate grant race',
+          siteIds: ['admin'],
+        });
+        roleId = String(role.id);
+      });
+
+      assert.ok(roleId);
+      const create = () =>
+        app.bean.executor.mockCtx(async () => {
+          return await catchError(() =>
+            app.scope('admin-rbac').service.rbacGrant.create({
+              roleId: roleId!,
+              actionKey,
+              dataScope: 'all',
+              enabled: true,
+            }),
+          );
+        });
+      const results = await Promise.all([create(), create()]);
+      const created = results.flatMap(([grant]) => (grant ? [grant] : []));
+
+      assert.equal(created.length, 1);
+      assert.equal(results.filter(([, error]) => error?.code === 409).length, 1);
+
+      await app.bean.executor.mockCtx(async () => {
+        const grants = await app.scope('admin-rbac').model.rbacGrant.select({
+          where: { roleId: roleId!, actionKey, dataScope: 'all' },
+        });
+        assert.equal(grants.length, 1);
+        assert.equal(String(grants[0].id), String(created[0].id));
+      });
+    } finally {
+      try {
+        await app.bean.executor.mockCtx(async () => {
+          const adminRbac = app.scope('admin-rbac');
+          if (roleId) {
+            const grants = await adminRbac.model.rbacGrant.select({
+              where: { roleId, actionKey, dataScope: 'all' },
+            });
+            for (const grant of grants.reverse()) {
+              await adminRbac.service.rbacGrant.delete(grant.id);
+            }
+            const role = await app.scope('home-user').model.role.getById(roleId);
+            if (role) await app.scope('admin-role').service.role.delete(role.id);
+          }
+        });
+      } finally {
+        getCatalog.mock.restore();
+      }
+    }
   });
 });

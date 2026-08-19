@@ -36,12 +36,14 @@ export class ServiceDepartment extends BeanBase {
     return await this.withNamespaces([parentId], async () => {
       await this.ensureParent(parentId);
       await this.ensureNameAvailable(command.name, parentId);
-      return await this.scope.model.department.insert({
+      const department = await this.scope.model.department.insert({
         name: command.name,
         parentId,
         enabled: true,
         sortOrder: await this.getNextSortOrder(parentId),
       });
+      await this.invalidatePolicy();
+      return department;
     });
   }
 
@@ -121,6 +123,7 @@ export class ServiceDepartment extends BeanBase {
         parentId,
         sortOrder: await this.getNextSortOrder(parentId),
       });
+      await this.invalidatePolicy();
     });
   }
 
@@ -153,6 +156,7 @@ export class ServiceDepartment extends BeanBase {
         await this.assertLifecycleChangeAllowed(current);
       }
       await this.scope.model.department.updateById(current.id, { enabled: command.enabled });
+      await this.invalidatePolicy();
     });
   }
 
@@ -163,6 +167,7 @@ export class ServiceDepartment extends BeanBase {
       const current = await this.requireDepartmentForUpdate(id);
       await this.assertLifecycleChangeAllowed(current);
       await this.scope.model.department.deleteById(current.id);
+      await this.invalidatePolicy([String(current.id)]);
     });
   }
 
@@ -196,13 +201,15 @@ export class ServiceDepartment extends BeanBase {
       userId,
     });
     if (existing) this.scope.error.DepartmentMembershipAlreadyExists.throw();
-    return await this.scope.model.departmentMembership.insert({
+    const membership = await this.scope.model.departmentMembership.insert({
       departmentId: department.id,
       userId,
       position: command.position || undefined,
       enabled: true,
       primary: false,
     });
+    await this.invalidatePolicy();
+    return membership;
   }
 
   async updateMembership(
@@ -237,6 +244,7 @@ export class ServiceDepartment extends BeanBase {
     if (command.enabled !== undefined) patch.enabled = command.enabled;
     if (disabling && membership.primary) patch.primary = false;
     await this.scope.model.departmentMembership.updateById(membership.id, patch);
+    await this.invalidatePolicy();
   }
 
   async deleteMembership(
@@ -263,6 +271,7 @@ export class ServiceDepartment extends BeanBase {
       await this.scope.model.departmentMembership.updateById(membership.id, { primary: false });
     }
     await this.scope.model.departmentMembership.deleteById(membership.id);
+    await this.invalidatePolicy();
   }
 
   async updateMembershipPrimary(
@@ -287,6 +296,7 @@ export class ServiceDepartment extends BeanBase {
     if (!command.primary) {
       if (membership.primary) {
         await this.scope.model.departmentMembership.updateById(membership.id, { primary: false });
+        await this.invalidatePolicy();
       }
       return;
     }
@@ -302,6 +312,7 @@ export class ServiceDepartment extends BeanBase {
       }
     }
     await this.scope.model.departmentMembership.updateById(membership.id, { primary: true });
+    await this.invalidatePolicy();
   }
 
   @Core.transaction()
@@ -320,6 +331,13 @@ export class ServiceDepartment extends BeanBase {
     );
     await this.scope.model.department.updateById(department.id, {
       managerId: membership.userId,
+    });
+  }
+
+  private async invalidatePolicy(removedScopeIds?: string[]): Promise<void> {
+    await this.app.scope('a-rbac').event.policyInvalidated.emit({
+      kind: 'scopeTopology',
+      ...(removedScopeIds?.length ? { removedScopeIds } : {}),
     });
   }
 

@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "vona-module-a-rbac": "workspace:^",
+    "vona-module-a-redlock": "workspace:^",
     "vona-module-admin-department": "workspace:^",
     "vona-module-home-user": "workspace:^"
   },
@@ -52,6 +53,7 @@
     "dependencies": {
       "a-vona": "5.0.0",
       "a-rbac": "5.0.0",
+      "a-redlock": "5.0.0",
       "admin-department": "5.0.0",
       "home-user": "5.0.0"
     },

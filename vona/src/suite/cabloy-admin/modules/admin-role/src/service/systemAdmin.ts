@@ -67,6 +67,7 @@ export class ServiceSystemAdmin extends BeanBase {
           this.scope.error.InactiveSystemAdminTarget.throw();
         }
         await this.$scope.homeUser.model.roleUser.insert({ userId: target.id, roleId: role.id });
+        await this.app.scope('a-rbac').event.policyInvalidated.emit({ kind: 'role' });
         await this.accept(
           actorId,
           target.id,
@@ -92,6 +93,7 @@ export class ServiceSystemAdmin extends BeanBase {
         }
         await this.ensureNotFinalSystemAdmin(target.id);
         await this.$scope.homeUser.model.roleUser.deleteById(membership.id);
+        await this.app.scope('a-rbac').event.policyInvalidated.emit({ kind: 'role' });
         await this.accept(
           actorId,
           target.id,
@@ -194,7 +196,7 @@ export class ServiceSystemAdmin extends BeanBase {
     const target = await this.getLockedUser(targetId);
     const membership = await this.getLockedSystemAdminMembership(target.id, role.id);
     await operation({ actorId: actor.id, commandId, target, role, membership });
-    await this.bean.permission.clearAllCaches();
+    this.ctx.db.commit(() => this.bean.permission.clearAllCaches());
   }
 
   @Core.transaction({ propagation: 'REQUIRES_NEW' })

@@ -75,7 +75,10 @@ export class ServiceRole extends BeanBase {
       await this.$scope.homeUser.model.roleUser.deleteBulk(memberships.map(item => item.id));
     }
     await this.$scope.homeUser.model.role.deleteById(role.id);
-    await this.bean.permission.clearAllCaches();
+    await this.app.scope('a-rbac').event.policyInvalidated.emit({
+      kind: 'role',
+      removedRoleIds: [String(role.id)],
+    });
   }
 
   @Core.transaction()
@@ -129,7 +132,7 @@ export class ServiceRole extends BeanBase {
       );
     }
     if (obsoleteMembershipIds.length || missingRoleIds.length) {
-      await this.bean.permission.clearAllCaches();
+      await this.app.scope('a-rbac').event.policyInvalidated.emit({ kind: 'role' });
     }
   }
 

@@ -1,5 +1,6 @@
 import type { TableIdentity } from 'table-identity';
 import type { IQueryParams } from 'vona-module-a-orm';
+import type { IRbacActionDescriptor, TypeRbacDataScope } from 'vona-module-a-rbac';
 
 import { BeanBase } from 'vona';
 import { Service } from 'vona-module-a-bean';
@@ -12,10 +13,21 @@ import type { DtoRbacGrantView } from '../dto/rbacGrantView.tsx';
 import type { EntityRbacGrant } from '../entity/rbacGrant.tsx';
 import type { ModelRbacGrant } from '../model/rbacGrant.ts';
 
+import { getRbacPolicyActions, isRbacDataScopeCompatible } from '../lib/rbacPolicy.ts';
+
 @Service()
 export class ServiceRbacGrant extends BeanBase {
-  @Core.transaction()
   async create(rbacGrant: DtoRbacGrantCreate): Promise<EntityRbacGrant> {
+    return await this.$scope.redlock.service.redlock.lockIsolate(
+      `admin-rbac.grant.${rbacGrant.roleId}.${rbacGrant.actionKey}.${rbacGrant.dataScope}`,
+      async () => await this.createInTransaction(rbacGrant),
+    );
+  }
+
+  @Core.transaction()
+  private async createInTransaction(rbacGrant: DtoRbacGrantCreate): Promise<EntityRbacGrant> {
+    const action = this.requireAction(rbacGrant.actionKey);
+    this.requireCompatibleDataScope(action, rbacGrant.dataScope);
     await this.ensureRole(rbacGrant.roleId);
     const existing = await this.scope.model.rbacGrant.getForUpdate({
       roleId: rbacGrant.roleId,
@@ -24,7 +36,7 @@ export class ServiceRbacGrant extends BeanBase {
     });
     if (existing) this.app.throw(409, 'RBAC grant already exists');
     const grant = await this.scope.model.rbacGrant.insert(rbacGrant);
-    await this.bean.permission.clearAllCaches();
+    await this.invalidatePolicy();
     return grant;
   }
 
@@ -38,14 +50,22 @@ export class ServiceRbacGrant extends BeanBase {
 
   @Core.transaction()
   async update(id: TableIdentity, patch: DtoRbacGrantUpdate): Promise<void> {
+    const roleId = await this.getGrantRoleId(id);
+    await this.ensureMutableRole(roleId);
     const grant = await this.scope.model.rbacGrant.getByIdForUpdate(id);
     if (!grant) this.app.throw(404, 'RBAC grant not found');
+    if (patch.enabled !== false) {
+      const action = this.requireAction(grant.actionKey);
+      this.requireCompatibleDataScope(action, grant.dataScope);
+    }
     await this.scope.model.rbacGrant.updateById(grant.id, patch);
-    await this.bean.permission.clearAllCaches();
+    await this.invalidatePolicy();
   }
 
   @Core.transaction()
   async delete(id: TableIdentity): Promise<void> {
+    const roleId = await this.getGrantRoleId(id);
+    await this.ensureMutableRole(roleId);
     const grant = await this.scope.model.rbacGrant.getByIdForUpdate(id);
     if (!grant) this.app.throw(404, 'RBAC grant not found');
     const departments = await this.scope.model.rbacGrantDepartment.select({
@@ -55,11 +75,60 @@ export class ServiceRbacGrant extends BeanBase {
       await this.scope.model.rbacGrantDepartment.deleteBulk(departments.map(item => item.id));
     }
     await this.scope.model.rbacGrant.deleteById(grant.id);
-    await this.bean.permission.clearAllCaches();
+    await this.invalidatePolicy();
+  }
+
+  private async getGrantRoleId(id: TableIdentity): Promise<TableIdentity> {
+    const grant = await this.scope.model.rbacGrant.getById(id, {
+      disableCacheEntity: true,
+      disableCacheQuery: true,
+      columns: ['roleId'],
+    });
+    if (!grant) this.app.throw(404, 'RBAC grant not found');
+    return grant.roleId;
+  }
+
+  private requireAction(actionKey: string): IRbacActionDescriptor {
+    const actions = getRbacPolicyActions(this.bean.rbacCatalog.getCatalog(), actionKey);
+    if (!actions.length) this.app.throw(422, 'RBAC action is unavailable');
+    const [action, ...rest] = actions;
+    if (!rest.every(item => this.hasCompatibleScopeOptions(item, action))) {
+      this.app.throw(422, 'RBAC action has incompatible aliases');
+    }
+    return action;
+  }
+
+  private hasCompatibleScopeOptions(
+    left: IRbacActionDescriptor,
+    right: IRbacActionDescriptor,
+  ): boolean {
+    return (
+      left.options.dataScope === right.options.dataScope &&
+      left.options.dataScopeField === right.options.dataScopeField &&
+      left.options.dataScopeMineField === right.options.dataScopeMineField
+    );
+  }
+
+  private requireCompatibleDataScope(
+    action: IRbacActionDescriptor,
+    dataScope: TypeRbacDataScope,
+  ): void {
+    if (!isRbacDataScopeCompatible(action, dataScope)) {
+      this.app.throw(422, 'RBAC data scope is incompatible with the action');
+    }
+  }
+
+  private async invalidatePolicy(): Promise<void> {
+    await this.scope.service.rbacPolicyRevision.invalidate();
+    this.ctx.db.commit(() => this.bean.permission.clearAllCaches());
   }
 
   private async ensureRole(roleId: TableIdentity): Promise<void> {
+    await this.ensureMutableRole(roleId);
+  }
+
+  private async ensureMutableRole(roleId: TableIdentity): Promise<void> {
     const role = await this.$scope.homeUser.model.role.getByIdForUpdate(roleId);
-    if (!role) this.app.throw(422, 'RBAC grant role is unavailable');
+    if (!role || role.name === 'systemAdmin') this.app.throw(422, 'RBAC grant role is unavailable');
   }
 }

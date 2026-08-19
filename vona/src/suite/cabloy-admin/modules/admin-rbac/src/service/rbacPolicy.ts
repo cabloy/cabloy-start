@@ -1,5 +1,6 @@
 import type { TableIdentity } from 'table-identity';
 import type {
+  IRbacActionDescriptor,
   IRbacPolicyDecision,
   IRbacPolicyRequest,
   IRbacScopeTerm,
@@ -10,14 +11,24 @@ import type { EntityDepartment } from 'vona-module-admin-department';
 import { BeanBase } from 'vona';
 import { Service } from 'vona-module-a-bean';
 
+import {
+  getRbacPolicyActions,
+  isRbacDataScope,
+  isRbacDataScopeCompatible,
+} from '../lib/rbacPolicy.ts';
+
 @Service()
 export class ServiceRbacPolicy extends BeanBase {
   async resolve(request: IRbacPolicyRequest): Promise<IRbacPolicyDecision> {
+    const revision = await this.scope.service.rbacPolicyRevision.current();
+    const action = this.resolvePolicyAction(request);
+    if (!action) return this.deny(request, revision);
+
     const user = this.bean.passport.currentUser;
-    if (!user || user.anonymous) return this.deny(request);
+    if (!user || user.anonymous) return this.deny(request, revision);
 
     const roleIds = (this.bean.passport.currentRoles ?? []).map(role => role.id);
-    if (!roleIds.length) return this.deny(request);
+    if (!roleIds.length) return this.deny(request, revision);
 
     const grants = await this.scope.model.rbacGrant.select({
       where: {
@@ -28,10 +39,12 @@ export class ServiceRbacPolicy extends BeanBase {
         },
       },
     });
-    if (!grants.length) return this.deny(request);
+    if (!grants.length) return this.deny(request, revision);
 
-    if (!request.action.options.dataScope) {
-      return this.allow(request);
+    if (!action.options.dataScope) {
+      return grants.every(grant => grant.dataScope === 'all')
+        ? this.allow(request, revision)
+        : this.deny(request, revision);
     }
 
     const terms: IRbacScopeTerm[] = [];
@@ -39,8 +52,10 @@ export class ServiceRbacPolicy extends BeanBase {
     const customGrantIds: TableIdentity[] = [];
     for (const grant of grants) {
       const dataScope = grant.dataScope as TypeRbacDataScope;
-      if (!this.isDataScope(dataScope)) return this.deny(request);
-      if (dataScope === 'all') return this.allow(request);
+      if (!isRbacDataScope(dataScope) || !isRbacDataScopeCompatible(action, dataScope)) {
+        return this.deny(request, revision);
+      }
+      if (dataScope === 'all') return this.allow(request, revision);
       if (dataScope === 'mine') {
         terms.push({ dataScope, ownerId: String(user.id) });
       } else if (dataScope === 'customDepartments') {
@@ -66,26 +81,30 @@ export class ServiceRbacPolicy extends BeanBase {
         terms.push({ dataScope: 'ownDepartmentAndDescendants', departmentIds });
       }
     }
-    if (!terms.length) return this.deny(request);
-    return { allowed: true, actionKey: request.action.actionKey, action: request.action, terms };
+    if (!terms.length) return this.deny(request, revision);
+    return {
+      allowed: true,
+      actionKey: request.action.actionKey,
+      action: request.action,
+      terms,
+      revision,
+    };
   }
 
-  private allow(request: IRbacPolicyRequest): IRbacPolicyDecision {
-    return { allowed: true, actionKey: request.action.actionKey, action: request.action };
+  private resolvePolicyAction(request: IRbacPolicyRequest): IRbacActionDescriptor | undefined {
+    const actions = getRbacPolicyActions(
+      this.bean.rbacCatalog.getCatalog(),
+      request.policyActionKey,
+    );
+    return actions.find(action => action.actionKey === request.action.actionKey);
   }
 
-  private deny(request: IRbacPolicyRequest): IRbacPolicyDecision {
-    return { allowed: false, actionKey: request.action.actionKey, action: request.action };
+  private allow(request: IRbacPolicyRequest, revision: string): IRbacPolicyDecision {
+    return { allowed: true, actionKey: request.action.actionKey, action: request.action, revision };
   }
 
-  private isDataScope(value: unknown): value is TypeRbacDataScope {
-    return [
-      'all',
-      'customDepartments',
-      'ownDepartment',
-      'ownDepartmentAndDescendants',
-      'mine',
-    ].includes(value as TypeRbacDataScope);
+  private deny(request: IRbacPolicyRequest, revision: string): IRbacPolicyDecision {
+    return { allowed: false, actionKey: request.action.actionKey, action: request.action, revision };
   }
 
   private async resolveCustomDepartmentIds(grantIds: TableIdentity[]): Promise<string[]> {

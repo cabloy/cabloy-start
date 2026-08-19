@@ -1,10 +1,18 @@
-import type { IMetaVersionUpdate, IMetaVersionUpdateOptions } from 'vona-module-a-version';
+import type {
+  IMetaVersionSeed,
+  IMetaVersionUpdate,
+  IMetaVersionUpdateOptions,
+} from 'vona-module-a-version';
 
 import { BeanBase } from 'vona';
 import { Meta } from 'vona-module-a-meta';
 
 @Meta()
-export class MetaVersion extends BeanBase implements IMetaVersionUpdate {
+export class MetaVersion extends BeanBase implements IMetaVersionSeed, IMetaVersionUpdate {
+  async seed() {
+    await this.scope.model.policyRevision.insert({ revision: 0 });
+  }
+
   async update(options: IMetaVersionUpdateOptions) {
     if (options.version === 1) {
       const entityRbacGrant = this.scope.entity.rbacGrant;
@@ -36,6 +44,11 @@ export class MetaVersion extends BeanBase implements IMetaVersionUpdate {
       await this.bean.model.alterTable(grantDepartment.$table, table => {
         table.tableIdentity(grantDepartment.rbacGrantId);
         table.tableIdentity(grantDepartment.departmentId);
+      });
+      const policyRevision = this.scope.entity.policyRevision;
+      await this.bean.model.createTable(policyRevision.$table, table => {
+        table.basicFields();
+        table.integer(policyRevision.revision).defaultTo(0);
       });
     }
   }

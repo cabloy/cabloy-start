@@ -3178,6 +3178,10 @@ importers:
         version: link:modules/admin-user
 
   src/suite/cabloy-admin/modules/admin-department:
+    dependencies:
+      vona-module-a-rbac:
+        specifier: workspace:^
+        version: link:../../../../suite-vendor/a-cabloy/modules/a-rbac
     devDependencies:
       clean-package:
         specifier: ^2.2.0
@@ -3191,6 +3195,9 @@ importers:
       vona-module-a-rbac:
         specifier: workspace:^
         version: link:../../../../suite-vendor/a-cabloy/modules/a-rbac
+      vona-module-a-redlock:
+        specifier: workspace:^
+        version: link:../../../../suite-vendor/a-vona/modules/a-redlock
       vona-module-admin-department:
         specifier: workspace:^
         version: link:../admin-department
@@ -3207,6 +3214,9 @@ importers:
 
   src/suite/cabloy-admin/modules/admin-role:
     dependencies:
+      vona-module-a-rbac:
+        specifier: workspace:^
+        version: link:../../../../suite-vendor/a-cabloy/modules/a-rbac
       vona-module-auth-simple:
         specifier: workspace:^
         version: link:../../../../suite-vendor/a-auth/modules/auth-simple

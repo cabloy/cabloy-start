@@ -3,15 +3,18 @@ import type { TypeEntityMeta,TypeModelsClassLikeGeneral,TypeSymbolKeyFieldsMore 
 import type { TypeEntityOptionsFields,TypeControllerOptionsActions } from 'vona-module-a-openapi';
 import type { TableIdentity } from 'table-identity';
 /** entity: begin */
+export * from '../entity/policyRevision.tsx';
 export * from '../entity/rbacGrant.tsx';
 export * from '../entity/rbacGrantDepartment.tsx';
+import type { IEntityOptionsPolicyRevision } from '../entity/policyRevision.tsx';
 import type { IEntityOptionsRbacGrant } from '../entity/rbacGrant.tsx';
 import type { IEntityOptionsRbacGrantDepartment } from '../entity/rbacGrantDepartment.tsx';
 import 'vona-module-a-orm';
 declare module 'vona-module-a-orm' {
   
     export interface IEntityRecord {
-      'admin-rbac:rbacGrant': IEntityOptionsRbacGrant;
+      'admin-rbac:policyRevision': IEntityOptionsPolicyRevision;
+'admin-rbac:rbacGrant': IEntityOptionsRbacGrant;
 'admin-rbac:rbacGrantDepartment': IEntityOptionsRbacGrantDepartment;
     }
 
@@ -22,26 +25,35 @@ declare module 'vona-module-admin-rbac' {
 }
 /** entity: end */
 /** entity: begin */
+import type { EntityPolicyRevision } from '../entity/policyRevision.tsx';
 import type { EntityRbacGrant } from '../entity/rbacGrant.tsx';
 import type { EntityRbacGrantDepartment } from '../entity/rbacGrantDepartment.tsx';
 export interface IModuleEntity {
-  'rbacGrant': EntityRbacGrantMeta;
+  'policyRevision': EntityPolicyRevisionMeta;
+'rbacGrant': EntityRbacGrantMeta;
 'rbacGrantDepartment': EntityRbacGrantDepartmentMeta;
 }
 /** entity: end */
 /** entity: begin */
+export type EntityPolicyRevisionTableName = 'adminRbacPolicyRevision';
 export type EntityRbacGrantTableName = 'adminRbacRbacGrant';
 export type EntityRbacGrantDepartmentTableName = 'adminRbacRbacGrantDepartment';
+export type EntityPolicyRevisionMeta=TypeEntityMeta<EntityPolicyRevision,EntityPolicyRevisionTableName>;
 export type EntityRbacGrantMeta=TypeEntityMeta<EntityRbacGrant,EntityRbacGrantTableName>;
 export type EntityRbacGrantDepartmentMeta=TypeEntityMeta<EntityRbacGrantDepartment,EntityRbacGrantDepartmentTableName>;
 declare module 'vona-module-a-orm' {
   export interface ITableRecord {
-    'adminRbacRbacGrant': EntityRbacGrantMeta;
+    'adminRbacPolicyRevision': EntityPolicyRevisionMeta;
+'adminRbacRbacGrant': EntityRbacGrantMeta;
 'adminRbacRbacGrantDepartment': EntityRbacGrantDepartmentMeta;
   }
 }
 declare module 'vona-module-admin-rbac' {
   
+    export interface IEntityOptionsPolicyRevision {
+      fields?: TypeEntityOptionsFields<EntityPolicyRevision, IEntityOptionsPolicyRevision[TypeSymbolKeyFieldsMore]>;
+    }
+
     export interface IEntityOptionsRbacGrant {
       fields?: TypeEntityOptionsFields<EntityRbacGrant, IEntityOptionsRbacGrant[TypeSymbolKeyFieldsMore]>;
     }
@@ -52,15 +64,18 @@ declare module 'vona-module-admin-rbac' {
 }
 /** entity: end */
 /** model: begin */
+export * from '../model/policyRevision.ts';
 export * from '../model/rbacGrant.ts';
 export * from '../model/rbacGrantDepartment.ts';
+import type { IModelOptionsPolicyRevision } from '../model/policyRevision.ts';
 import type { IModelOptionsRbacGrant } from '../model/rbacGrant.ts';
 import type { IModelOptionsRbacGrantDepartment } from '../model/rbacGrantDepartment.ts';
 import 'vona-module-a-orm';
 declare module 'vona-module-a-orm' {
   
     export interface IModelRecord {
-      'admin-rbac:rbacGrant': IModelOptionsRbacGrant;
+      'admin-rbac:policyRevision': IModelOptionsPolicyRevision;
+'admin-rbac:rbacGrant': IModelOptionsRbacGrant;
 'admin-rbac:rbacGrantDepartment': IModelOptionsRbacGrantDepartment;
     }
 
@@ -68,6 +83,17 @@ declare module 'vona-module-a-orm' {
 }
 declare module 'vona-module-admin-rbac' {
   
+        export interface ModelPolicyRevision {
+          /** @internal */
+          get scope(): ScopeModuleAdminRbac;
+        }
+
+          export interface ModelPolicyRevision {
+            get $beanFullName(): 'admin-rbac.model.policyRevision';
+            get $onionName(): 'admin-rbac:policyRevision';
+            get $onionOptions(): IModelOptionsPolicyRevision;
+          }
+
         export interface ModelRbacGrant {
           /** @internal */
           get scope(): ScopeModuleAdminRbac;
@@ -92,10 +118,12 @@ declare module 'vona-module-admin-rbac' {
 }
 /** model: end */
 /** model: begin */
+import type { ModelPolicyRevision } from '../model/policyRevision.ts';
 import type { ModelRbacGrant } from '../model/rbacGrant.ts';
 import type { ModelRbacGrantDepartment } from '../model/rbacGrantDepartment.ts';
 export interface IModuleModel {
-  'rbacGrant': ModelRbacGrant;
+  'policyRevision': ModelPolicyRevision;
+'rbacGrant': ModelRbacGrant;
 'rbacGrantDepartment': ModelRbacGrantDepartment;
 }
 /** model: end */
@@ -104,7 +132,8 @@ export interface IModuleModel {
 import 'vona';
 declare module 'vona' {
   export interface IBeanRecordGeneral {
-    'admin-rbac.model.rbacGrant': ModelRbacGrant;
+    'admin-rbac.model.policyRevision': ModelPolicyRevision;
+'admin-rbac.model.rbacGrant': ModelRbacGrant;
 'admin-rbac.model.rbacGrantDepartment': ModelRbacGrantDepartment;
   }
 }
@@ -114,7 +143,44 @@ import type { IModelGetOptions, IModelMethodOptions, IModelSelectParams, TypeMod
 import { SymbolKeyEntity, SymbolKeyEntityMeta, SymbolKeyModelOptions } from 'vona-module-a-orm';
 declare module 'vona-module-admin-rbac' {
   
-  export interface ModelRbacGrant {
+  export interface ModelPolicyRevision {
+      [SymbolKeyEntity]: EntityPolicyRevision;
+      [SymbolKeyEntityMeta]: EntityPolicyRevisionMeta;
+      [SymbolKeyModelOptions]: IModelOptionsPolicyRevision;
+      get<T extends IModelGetOptions<EntityPolicyRevision,ModelPolicyRevision>>(where: TypeModelWhere<EntityPolicyRevision>, options?: T): Promise<TypeModelRelationResult<EntityPolicyRevision, ModelPolicyRevision, T> | undefined>;
+      /**
+       * Retrieves one matching primary row with a pessimistic FOR UPDATE lock.
+       * Requires an active transaction. The lock is released when that transaction completes.
+       * Entity and query caches are bypassed.
+       */
+      getForUpdate<T extends IModelGetOptions<EntityPolicyRevision,ModelPolicyRevision>>(where: TypeModelWhere<EntityPolicyRevision>, options?: T): Promise<TypeModelRelationResult<EntityPolicyRevision, ModelPolicyRevision, T> | undefined>;
+      /**
+       * Retrieves a primary row by ID with the same pessimistic FOR UPDATE lock semantics.
+       * Requires an active transaction. The lock is released when that transaction completes.
+       * Entity and query caches are bypassed.
+       */
+      getByIdForUpdate<T extends IModelGetOptions<EntityPolicyRevision,ModelPolicyRevision>>(id: TableIdentity, options?: T): Promise<TypeModelRelationResult<EntityPolicyRevision, ModelPolicyRevision, T> | undefined>;
+      mget<T extends IModelGetOptions<EntityPolicyRevision,ModelPolicyRevision>>(ids: TableIdentity[], options?: T): Promise<TypeModelRelationResult<EntityPolicyRevision, ModelPolicyRevision, T>[]>;
+      selectAndCount<T extends IModelSelectParams<EntityPolicyRevision,ModelPolicyRevision,ModelJoins>, ModelJoins extends TypeModelsClassLikeGeneral | undefined = undefined>(params?: T, options?: IModelMethodOptions, modelJoins?: ModelJoins): Promise<TypeModelSelectAndCount<EntityPolicyRevision, ModelPolicyRevision, T>>;
+      select<T extends IModelSelectParams<EntityPolicyRevision,ModelPolicyRevision,ModelJoins>, ModelJoins extends TypeModelsClassLikeGeneral | undefined = undefined>(params?: T, options?: IModelMethodOptions, modelJoins?: ModelJoins): Promise<TypeModelRelationResult<EntityPolicyRevision, ModelPolicyRevision, T>[]>;
+      insert<T extends IModelInsertOptions<EntityPolicyRevision,ModelPolicyRevision>>(data?: TypeModelMutateRelationData<EntityPolicyRevision,ModelPolicyRevision, T>, options?: T): Promise<TypeModelMutateRelationData<EntityPolicyRevision,ModelPolicyRevision, T, true>>;
+      insertBulk<T extends IModelInsertOptions<EntityPolicyRevision,ModelPolicyRevision>>(items: TypeModelMutateRelationData<EntityPolicyRevision,ModelPolicyRevision, T>[], options?: T): Promise<TypeModelMutateRelationData<EntityPolicyRevision,ModelPolicyRevision, T, true>[]>;
+      update<T extends IModelUpdateOptions<EntityPolicyRevision,ModelPolicyRevision>>(data: TypeModelMutateRelationData<EntityPolicyRevision,ModelPolicyRevision, T>, options?: T): Promise<TypeModelMutateRelationData<EntityPolicyRevision,ModelPolicyRevision, T>>;
+      updateBulk<T extends IModelUpdateOptions<EntityPolicyRevision,ModelPolicyRevision>>(items: TypeModelMutateRelationData<EntityPolicyRevision,ModelPolicyRevision, T>[], options?: T): Promise<TypeModelMutateRelationData<EntityPolicyRevision,ModelPolicyRevision, T>[]>;
+      delete<T extends IModelDeleteOptions<EntityPolicyRevision,ModelPolicyRevision>>(where?: TypeModelWhere<EntityPolicyRevision>, options?: T): Promise<void>;
+      deleteBulk<T extends IModelDeleteOptions<EntityPolicyRevision,ModelPolicyRevision>>(ids: TableIdentity[], options?: T): Promise<void>;
+      mutate<T extends IModelMutateOptions<EntityPolicyRevision,ModelPolicyRevision>>(data?: TypeModelMutateRelationData<EntityPolicyRevision,ModelPolicyRevision, T>, options?: T): Promise<TypeModelMutateRelationData<EntityPolicyRevision,ModelPolicyRevision, T>>;
+      mutateBulk<T extends IModelMutateOptions<EntityPolicyRevision,ModelPolicyRevision>>(items: TypeModelMutateRelationData<EntityPolicyRevision,ModelPolicyRevision, T>[], options?: T): Promise<TypeModelMutateRelationData<EntityPolicyRevision,ModelPolicyRevision, T>[]>;
+      count<T extends IModelSelectCountParams<EntityPolicyRevision,ModelPolicyRevision,ModelJoins>, ModelJoins extends TypeModelsClassLikeGeneral | undefined = undefined>(params?: T, options?: IModelMethodOptions, modelJoins?: ModelJoins): Promise<string | undefined>;
+      increment<T extends IModelIncrementParams<EntityPolicyRevision,ModelPolicyRevision,ModelJoins>, ModelJoins extends TypeModelsClassLikeGeneral | undefined = undefined>(params?: T, options?: IModelMethodOptions, modelJoins?: ModelJoins): Promise<number>;
+      decrement<T extends IModelIncrementParams<EntityPolicyRevision,ModelPolicyRevision,ModelJoins>, ModelJoins extends TypeModelsClassLikeGeneral | undefined = undefined>(params?: T, options?: IModelMethodOptions, modelJoins?: ModelJoins): Promise<number>;
+      aggregate<T extends IModelSelectAggrParams<EntityPolicyRevision,ModelPolicyRevision,ModelJoins>, ModelJoins extends TypeModelsClassLikeGeneral | undefined = undefined>(params?: T, options?: IModelMethodOptions, modelJoins?: ModelJoins): Promise<TypeModelAggrRelationResult<T>>;
+      group<T extends IModelSelectGroupParams<EntityPolicyRevision,ModelPolicyRevision,ModelJoins>, ModelJoins extends TypeModelsClassLikeGeneral | undefined = undefined>(params?: T, options?: IModelMethodOptions, modelJoins?: ModelJoins): Promise<TypeModelGroupRelationResult<EntityPolicyRevision, T>[]>;
+      getById<T extends IModelGetOptions<EntityPolicyRevision,ModelPolicyRevision>>(id: TableIdentity, options?: T): Promise<TypeModelRelationResult<EntityPolicyRevision, ModelPolicyRevision, T> | undefined>;
+updateById<T extends IModelUpdateOptions<EntityPolicyRevision,ModelPolicyRevision>>(id: TableIdentity, data: TypeModelMutateRelationData<EntityPolicyRevision,ModelPolicyRevision, T>, options?: T): Promise<TypeModelMutateRelationData<EntityPolicyRevision,ModelPolicyRevision, T>>;
+deleteById<T extends IModelDeleteOptions<EntityPolicyRevision,ModelPolicyRevision>>(id: TableIdentity, options?: T): Promise<void>;
+    }
+export interface ModelRbacGrant {
       [SymbolKeyEntity]: EntityRbacGrant;
       [SymbolKeyEntityMeta]: EntityRbacGrantMeta;
       [SymbolKeyModelOptions]: IModelOptionsRbacGrant;
@@ -193,7 +259,8 @@ deleteById<T extends IModelDeleteOptions<EntityRbacGrantDepartment,ModelRbacGran
 }
 declare module 'vona-module-a-orm' {
   export interface IModelClassRecord {
-    'admin-rbac:rbacGrant': ModelRbacGrant;
+    'admin-rbac:policyRevision': ModelPolicyRevision;
+'admin-rbac:rbacGrant': ModelRbacGrant;
 'admin-rbac:rbacGrantDepartment': ModelRbacGrantDepartment;
   }
 }
@@ -202,6 +269,7 @@ declare module 'vona-module-a-orm' {
 export * from '../service/rbacGrant.ts';
 export * from '../service/rbacGrantDepartment.ts';
 export * from '../service/rbacPolicy.ts';
+export * from '../service/rbacPolicyRevision.ts';
 
 import 'vona-module-a-bean';
 declare module 'vona-module-a-bean' {
@@ -210,6 +278,7 @@ declare module 'vona-module-a-bean' {
       'admin-rbac:rbacGrant': never;
 'admin-rbac:rbacGrantDepartment': never;
 'admin-rbac:rbacPolicy': never;
+'admin-rbac:rbacPolicyRevision': never;
     }
 
   
@@ -224,7 +293,6 @@ declare module 'vona-module-admin-rbac' {
           export interface ServiceRbacGrant {
             get $beanFullName(): 'admin-rbac.service.rbacGrant';
             get $onionName(): 'admin-rbac:rbacGrant';
-            
           }
 
         export interface ServiceRbacGrantDepartment {
@@ -235,7 +303,6 @@ declare module 'vona-module-admin-rbac' {
           export interface ServiceRbacGrantDepartment {
             get $beanFullName(): 'admin-rbac.service.rbacGrantDepartment';
             get $onionName(): 'admin-rbac:rbacGrantDepartment';
-            
           }
 
         export interface ServiceRbacPolicy {
@@ -246,7 +313,16 @@ declare module 'vona-module-admin-rbac' {
           export interface ServiceRbacPolicy {
             get $beanFullName(): 'admin-rbac.service.rbacPolicy';
             get $onionName(): 'admin-rbac:rbacPolicy';
-            
+          }
+
+        export interface ServiceRbacPolicyRevision {
+          /** @internal */
+          get scope(): ScopeModuleAdminRbac;
+        }
+
+          export interface ServiceRbacPolicyRevision {
+            get $beanFullName(): 'admin-rbac.service.rbacPolicyRevision';
+            get $onionName(): 'admin-rbac:rbacPolicyRevision';
           } 
 }
 /** service: end */
@@ -254,10 +330,12 @@ declare module 'vona-module-admin-rbac' {
 import type { ServiceRbacGrant } from '../service/rbacGrant.ts';
 import type { ServiceRbacGrantDepartment } from '../service/rbacGrantDepartment.ts';
 import type { ServiceRbacPolicy } from '../service/rbacPolicy.ts';
+import type { ServiceRbacPolicyRevision } from '../service/rbacPolicyRevision.ts';
 export interface IModuleService {
   'rbacGrant': ServiceRbacGrant;
 'rbacGrantDepartment': ServiceRbacGrantDepartment;
 'rbacPolicy': ServiceRbacPolicy;
+'rbacPolicyRevision': ServiceRbacPolicyRevision;
 }
 /** service: end */
 /** service: begin */
@@ -268,23 +346,37 @@ declare module 'vona' {
     'admin-rbac.service.rbacGrant': ServiceRbacGrant;
 'admin-rbac.service.rbacGrantDepartment': ServiceRbacGrantDepartment;
 'admin-rbac.service.rbacPolicy': ServiceRbacPolicy;
+'admin-rbac.service.rbacPolicyRevision': ServiceRbacPolicyRevision;
   }
 }
 /** service: end */
 /** eventListener: begin */
+export * from '../bean/eventListener.policyInvalidated.ts';
 export * from '../bean/eventListener.policyResolver.ts';
 
 import { type IDecoratorEventListenerOptions } from 'vona-module-a-event';
 declare module 'vona-module-a-event' {
   
     export interface IEventListenerRecord {
-      'admin-rbac:policyResolver': IDecoratorEventListenerOptions;
+      'admin-rbac:policyInvalidated': IDecoratorEventListenerOptions;
+'admin-rbac:policyResolver': IDecoratorEventListenerOptions;
     }
 
   
 }
 declare module 'vona-module-admin-rbac' {
   
+        export interface EventListenerPolicyInvalidated {
+          /** @internal */
+          get scope(): ScopeModuleAdminRbac;
+        }
+
+          export interface EventListenerPolicyInvalidated {
+            get $beanFullName(): 'admin-rbac.eventListener.policyInvalidated';
+            get $onionName(): 'admin-rbac:policyInvalidated';
+            get $onionOptions(): IDecoratorEventListenerOptions;
+          }
+
         export interface EventListenerPolicyResolver {
           /** @internal */
           get scope(): ScopeModuleAdminRbac;
@@ -332,7 +424,6 @@ declare module 'vona-module-admin-rbac' {
           export interface MetaVersion {
             get $beanFullName(): 'admin-rbac.meta.version';
             get $onionName(): 'admin-rbac:version';
-            
           } 
 }
 /** meta: end */

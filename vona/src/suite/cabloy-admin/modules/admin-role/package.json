@@ -31,6 +31,7 @@
     "postpack": "clean-package restore"
   },
   "dependencies": {
+    "vona-module-a-rbac": "workspace:^",
     "vona-module-auth-simple": "workspace:^",
     "vona-module-home-user": "workspace:^"
   },
@@ -51,6 +52,7 @@
     "fileVersion": 1,
     "dependencies": {
       "a-index": "5.0.0",
+      "a-rbac": "5.0.0",
       "a-queue": "5.0.0",
       "a-redlock": "5.0.0",
       "a-schedule": "5.0.0",
