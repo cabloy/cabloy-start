@@ -23,7 +23,7 @@ export class ServiceRbacPolicy extends BeanBase {
       where: {
         _and_: {
           roleId: { _in_: roleIds },
-          actionKey: request.action.actionKey,
+          actionKey: request.policyActionKey,
           enabled: true,
         },
       },
