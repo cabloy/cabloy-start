@@ -2,7 +2,7 @@
 
 ## Purpose and Authority
 
-This specification translates the [Cabloy Admin PRD](./prd.md) and [ADR 0001](./decisions/0001-admin-mvp-boundaries.md) into implementable, testable technical contracts. It is the authority for data and capability ownership, server-side authorization, API and DTO boundaries, transactions, invariants, cache ownership, and contract-loop behavior. The [PDP/WBS](./pdp-wbs.md) sequences delivery; the [test plan](./test-plan.md) defines how these contracts are proved.
+This specification translates the [Cabloy Admin PRD](./prd.md), [ADR 0001](./decisions/0001-admin-mvp-boundaries.md), and [ADR 0002](./decisions/0002-dynamic-rbac-and-data-scope.md) into implementable, testable technical contracts. It is the authority for data and capability ownership, server-side authorization, API and DTO boundaries, transactions, invariants, cache ownership, and contract-loop behavior. The [PDP/WBS](./pdp-wbs.md) sequences delivery; the [test plan](./test-plan.md) defines how these contracts are proved.
 
 This document does not expand product scope or supersede the PRD or ADR.
 
@@ -33,6 +33,8 @@ Phase one creates no new Admin SSR site, public path, flavor, or independent app
 | `admin-user`           | Account-management projections, permitted profile updates, activation commands, role/Department composition                             | Account identity, credentials, auth providers, Passport persistence |
 | `admin-role`           | Custom-role lifecycle façade, non-system-administrator memberships, protected `systemAdmin` workflow, sensitive-operation audit         | A replacement role or role-membership entity                        |
 | `admin-department`     | Department forest, Department memberships, position text, primary membership, manager lifecycle                                         | Tenant identity, Organization, dynamic data scope                   |
+| `a-rbac`               | Reusable RBAC decorator/guard, canonical action catalog, policy decision contracts, safe predicate/capability contracts                | Department semantics, Start grant persistence, `systemAdmin` policy, Admin UI |
+| `admin-rbac`           | Start role-action grants, custom Department associations, policy resolution, catalog projection, policy revision/invalidation, policy UI | Identity, role, Department, or Passport fact ownership              |
 | `home-user` / `a-user` | `homeUser`, `homeRole`, `homeRoleUser`, authentication, Passport, tokens, stable `bean.user`, `bean.role`, and `bean.passport` surfaces | Cabloy Admin operational use cases                                  |
 | `rest-resource`        | Conventional Admin Resource bootstrap, schemas, permissions, queries, mutations, query keys, and invalidation                           | Domain-specific custom-command semantics                            |
 
@@ -44,8 +46,8 @@ Phase one creates no new Admin SSR site, public path, flavor, or independent app
 - **SRS-ADM-TEN-02**: Every new Department, membership, and sensitive-operation audit model uses normal active-instance scope. No Cabloy Admin model sets `disableInstance`.
 - **SRS-ADM-TEN-03**: Request DTOs never accept authoritative `iid`, instance ID, instance name, actor identity, or Department scope. The server derives each authority from the active context and protected resource lookup.
 - **SRS-ADM-TEN-04**: A cross-instance record is treated as absent. Services must not use an unscoped probe merely to distinguish `403` from a scoped not-found result.
-- **SRS-ADM-AUT-01**: Every phase-one operational API is independently protected by `@Passport.systemAdmin()` or an equivalent server-side guard. Menu visibility, route admission, and browser filters are not API authority.
-- **SRS-ADM-AUT-02**: Standard Passport admission remains in effect: unauthenticated requests are rejected, inactive callers cannot use protected administration, and the active caller must hold `systemAdmin`.
+- **SRS-ADM-AUT-01**: Every phase-one operational API is independently protected by its applicable server-side contract. Legacy actions retain their existing guards; explicitly opted-in actions additionally evaluate independent `@Passport.rbac(...)` policy. Menu visibility, route admission, and browser filters are not API authority.
+- **SRS-ADM-AUT-02**: Standard Passport admission remains in effect: unauthenticated requests are rejected and inactive callers cannot use protected administration. `systemAdmin` remains mandatory for protected control-plane workflows, while an opted-in delegated action may admit a caller through a valid RBAC decision without the RBAC guard inspecting or duplicating `systemAdmin` logic.
 - **SRS-ADM-AUT-03**: Domain conflicts use stable application error codes and `409`; authentication failures remain `401`, and authorization failures remain `403`.
 
 ## Account Management Contracts
@@ -109,6 +111,39 @@ Phase one creates no new Admin SSR site, public path, flavor, or independent app
 - **SRS-ADM-MEM-04**: A Department manager is represented by `managerId`, the account identity of an enabled membership of that exact Department. The manager-assignment command accepts `membershipId` to validate this relationship; assignment never creates a membership implicitly.
 - **SRS-ADM-MEM-05**: Removing or disabling a manager membership requires an explicit replacement membership or clear command in the same transaction. The service persists the replacement membership's `userId` as `managerId`; an invalid manager relation is rejected with `409`.
 
+## Dynamic RBAC and Data-Scope Contracts
+
+### Action catalog and policy resolution
+
+- **SRS-ADM-POL-01**: The reusable `a-rbac` catalog is built from registered Controller routes and includes only actions explicitly decorated with `@Passport.rbac(...)`. The catalog includes decorated actions even when their Controller is not annotated with `@Resource()`. A Controller with no decorated action remains outside dynamic RBAC; undecorated legacy actions require no migration or grant.
+- **SRS-ADM-POL-02**: The canonical policy identity is `<controllerBeanFullName>#<action>`. HTTP method, route path, Resource identity, display label, and frontend permission metadata are not authorization identity. Catalog entries retain route/display metadata separately from the stable action key.
+- **SRS-ADM-POL-03**: `actionInherit` may reference only an action in the current Controller's routed action list. Missing targets, self-reference, and cycles fail catalog construction or policy admission closed. Alias resolution does not cross Controllers and does not inspect frontend `permissionHint.actionInherit`.
+- **SRS-ADM-POL-04**: `a-rbac` emits a typed policy request containing the catalog action descriptor and effective decorator options. `admin-rbac` resolves that request from active-instance identity, role, grant, and Department facts. A missing resolver, invalid decision, missing grant, unavailable target mapping, or stale action key returns deny; `a-rbac` does not import `admin-rbac`.
+- **SRS-ADM-POL-05**: Grant lookup matches the exact canonical action key and enabled role/grant state in the active instance. A custom role has no dynamic authority until an enabled grant exists. Grant creation, update, Department association, deletion, role membership change, Department lifecycle change, and Department membership change participate in policy revision invalidation.
+- **SRS-ADM-POL-06**: RBAC guard evaluation is independent from `systemAdmin` and other guards. It uses normal `GuardBase` behavior: a matching decision returns success unless `passWhenMatched === false`, in which case the chain continues; a mismatch rejects unless `rejectWhenDismatched === false`, in which case the chain continues. The RBAC guard must not smuggle in, duplicate, or bypass another guard's decision.
+- **SRS-ADM-POL-07**: Policy administration and protected bootstrap/recovery operations remain protected control-plane operations. Mutable grants cannot remove the protected `systemAdmin` recovery authority. A protected baseline grant, if implemented, is explicit and scoped to named opted-in actions; it is not an implicit allow-all bypass.
+- **SRS-ADM-POL-08**: RBAC policy decisions are cached separately from coarse `a-permission` action projections. Any decision cache is keyed by active instance, subject/role revision, action key, and relevant Department/policy revision. Invalidation is revision-aware and must not expose a stale decision after a committed policy, membership, or Department-tree mutation.
+- **SRS-ADM-POL-09**: Catalog and policy-editor projections expose only safe action metadata, supported scope options, and effective summaries. They must not expose raw policy predicates, hidden Department topology, grant internals, or server-only capability material that is not required for the operation.
+
+### Scope semantics and server enforcement
+
+- **SRS-ADM-SCP-01**: Supported terms are `all`, `customDepartments`, `ownDepartment`, `ownDepartmentAndDescendants`, and `mine`. An `all` term means unrestricted rows within the active instance; it never crosses the tenant boundary.
+- **SRS-ADM-SCP-02**: `customDepartments` matches only explicitly selected enabled Departments; it does not imply descendants. `ownDepartment` matches the caller's enabled Department memberships. `ownDepartmentAndDescendants` matches those enabled membership roots plus recursively discovered enabled descendants. Descendant traversal is cycle-safe and unavailable/disabled Departments do not match.
+- **SRS-ADM-SCP-03**: `mine` matches only the authenticated subject's server-derived owner identity against the configured server-controlled owner field. The client cannot select the owner identity or substitute a different scope field. A missing or invalid target mapping denies rather than widening access.
+- **SRS-ADM-SCP-04**: Effective grants combine as a logical union. `all` dominates; otherwise each valid Department or owner term remains an independent OR alternative. Scope kinds are not converted into a numeric ranking, and an empty restricted term set is distinct from unrestricted access and denies.
+- **SRS-ADM-SCP-05**: Caller-supplied filters and server policy predicates are combined by structural logical AND. Implementations must not merge predicates by object spreading or allow an empty predicate to change denied, constrained, or unrestricted state. Active-instance filtering remains present in every ordinary model operation.
+- **SRS-ADM-SCP-06**: Guards provide action admission only. Services must resolve and apply the effective policy for select, view, create, update, delete, bulk, custom, and nested operations. `@Arg.filter(...)`, validation pipes, frontend filters, menus, route permissions, and opaque capabilities are ergonomics or UX projections, not authorization boundaries.
+- **SRS-ADM-SCP-07**: Select applies the effective scope before the single authoritative query/count. View treats an out-of-scope row as absent. Update, delete, custom mutation, and nested mutation lock and scope-check the target in one transaction. Bulk mutation locks every requested ID, requires exact scoped-count equality, and commits all changes atomically or none.
+- **SRS-ADM-SCP-08**: Create derives owner and Department fields from the authenticated subject, parent resource, or protected server context. It rejects or ignores client attempts to forge those fields. A resource with no valid policy mapping or no valid scope decision is denied by default.
+- **SRS-ADM-SCP-09**: Backend-derived row/detail capabilities may be emitted as opaque, minimal UX booleans only. They never contain raw predicates, role/grant topology, hidden Department IDs, or authority that the backend does not re-evaluate on every direct request.
+
+### Training acceptance slice
+
+- **SRS-ADM-SCP-10**: Deliberately opted-in `training-student:student` and `training-record:record` actions are the first scoped acceptance resources; unrelated existing Controllers remain unchanged unless explicitly decorated.
+- **SRS-ADM-SCP-11**: Student and Record persist server-controlled `departmentId` and `userIdOwner` fields. Student ownership is derived from the authenticated user and is immutable. Record Department and owner values always match its Student and cannot be supplied or overridden by the client.
+- **SRS-ADM-SCP-12**: Student create/update and nested Record writes stamp and validate inherited scope atomically. Standalone Record create locks and scope-checks its Student before copying scope. Record reparenting is rejected unless a separately authorized reparenting contract is introduced; nested writes cannot bypass the Record service policy.
+- **SRS-ADM-SCP-13**: Training schema changes are folded into the existing version-1 creation paths. `training-student` and `training-record` retain `vonaModule.fileVersion: 1`; no version-2 migration is introduced by this slice. Any `meta.version.ts` change requires the repository test database reset and `npm run test`.
+
 ## API, DTO, and Frontend State Contracts
 
 - **SRS-ADM-API-01**: Resource identities are `admin-user:user`, `admin-role:role`, and `admin-department:department`. Conventional Resource operations are exposed only when their lifecycle is supported; `admin-user` has no create action until an authentication/credential creation workflow exists.
@@ -136,7 +171,9 @@ Phase one creates no new Admin SSR site, public path, flavor, or independent app
 | `PRD-ADM-SUP-*`                 | `SRS-ADM-SUP-*`, `SRS-ADM-TXN-*`, `SRS-ADM-AUD-*`                 | `WBS-ADM-40-*`                 | `ATP-ADM-SUP-*`                                                                          |
 | `PRD-ADM-DEP-*`                 | `SRS-ADM-DEP-*`                                                   | `WBS-ADM-50-*`                 | `ATP-ADM-DEP-*`                                                                          |
 | `PRD-ADM-MEM-*`                 | `SRS-ADM-MEM-*`                                                   | `WBS-ADM-60-*`                 | `ATP-ADM-MEM-*`, `ATP-ADM-MGR-01`                                                        |
-| `PRD-ADM-SEC-*`, `PRD-ADM-UI-*` | `SRS-ADM-TEN-*`, `SRS-ADM-AUT-*`, `SRS-ADM-API-*`, `SRS-ADM-UI-*` | `WBS-ADM-20-*`, `WBS-ADM-70-*` | `ATP-ADM-TEN-01`, `ATP-ADM-AUT-01`, `ATP-ADM-CTR-01`, `ATP-ADM-RES-01`, `ATP-ADM-SSR-01` |
+| `PRD-ADM-POL-*`                 | `SRS-ADM-POL-*`                                                   | `WBS-ADM-80-01`, `WBS-ADM-80-02`, `WBS-ADM-80-04` | `ATP-ADM-POL-01`, `ATP-ADM-POL-02`, `ATP-ADM-POL-03`                                      |
+| `PRD-ADM-SCP-*`                 | `SRS-ADM-SCP-*`                                                   | `WBS-ADM-80-02`, `WBS-ADM-80-03` | `ATP-ADM-SCP-01`, `ATP-ADM-SCP-02`                                                        |
+| `PRD-ADM-SEC-*`, `PRD-ADM-UI-*` | `SRS-ADM-TEN-*`, `SRS-ADM-AUT-*`, `SRS-ADM-API-*`, `SRS-ADM-UI-*` | `WBS-ADM-20-*`, `WBS-ADM-70-*`, `WBS-ADM-80-*` | `ATP-ADM-TEN-01`, `ATP-ADM-AUT-01`, `ATP-ADM-CTR-01`, `ATP-ADM-RES-01`, `ATP-ADM-SSR-01`, `ATP-ADM-POL-03` |
 
 ## Related Records
 
@@ -146,6 +183,7 @@ Phase one creates no new Admin SSR site, public path, flavor, or independent app
 - [Test Strategy and Acceptance Plan](./test-plan.md)
 - [Delivery Progress](./progress.md)
 - [ADR 0001: Establish Cabloy Admin MVP Boundaries](./decisions/0001-admin-mvp-boundaries.md)
+- [ADR 0002: Dynamic RBAC and Department Data Scope](./decisions/0002-dynamic-rbac-and-data-scope.md)
 - [User Access Guide](../../../cabloy-docs/backend/user-access-guide.md)
 - [Contract Loop Playbook](../../../cabloy-docs/fullstack/contract-loop-playbook.md)
 - [Admin Resource and Web Self-Service](../../../cabloy-docs/fullstack/admin-resource-and-web-self-service.md)

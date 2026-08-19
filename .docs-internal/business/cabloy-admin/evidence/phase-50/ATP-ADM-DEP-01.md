@@ -5,6 +5,7 @@
 | Field | Value |
 | --- | --- |
 | ATP | `ATP-ADM-DEP-01` |
+| PRD | `PRD-ADM-DEP-01` through `PRD-ADM-DEP-04`, `PRD-ADM-SEC-01` |
 | SRS | `SRS-ADM-DEP-01` through `SRS-ADM-DEP-04`, `SRS-ADM-TEN-04` |
 | WBS | `WBS-ADM-50-01`, `WBS-ADM-50-02` |
 | Tested revision | Uncommitted working tree based on `ff7270f` |

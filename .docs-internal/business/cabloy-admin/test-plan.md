@@ -10,7 +10,7 @@ PRD requirement -> SRS contract -> PDP/WBS task -> ATP scenario -> observed evid
 
 The [PRD](./prd.md) owns product outcomes and business acceptance. The [SRS](./srs.md) owns technical contracts and invariants. The [PDP/WBS](./pdp-wbs.md) owns delivery sequence. This document defines how those decisions are proved and must not redefine them.
 
-No Cabloy Admin implementation or acceptance evidence exists when this document is created.
+The initial Phase 10–60 implementation and acceptance records are retained in their phase-specific evidence directories. The dynamic RBAC/data-scope increment is not yet verified; no Phase 80 RBAC-specific retained evidence exists when this document is updated.
 
 ## Scope and Quality Priorities
 
@@ -25,9 +25,13 @@ The phase-one risks requiring repeatable proof are:
 7. Department root, parent, move, lifecycle, sibling, and cycle invariants;
 8. multiple memberships, membership uniqueness, primary membership, and manager eligibility;
 9. Vona-first generated contracts and paired Start Admin reverse handoff; and
-10. `presetResource` integration with one selector-scoped generic Resource cache owner.
+10. `presetResource` integration with one selector-scoped generic Resource cache owner;
+11. explicit RBAC action opt-in, canonical action identity, default deny, independent guard composition, and same-Controller inheritance;
+12. five data scopes, union semantics, disabled/cyclic Department handling, and active-instance isolation;
+13. direct server-side Student/Record enforcement, forged scope resistance, nested transactional behavior, and unchanged training module file versions; and
+14. safe policy projections, generated contract synchronization, and SSR/API separation.
 
-Dynamic RBAC, recursive Department data scopes, a Position catalog, Organization, employment workflows, external identity synchronization, and a new Admin SSR application remain out of scope.
+The Phase 80 increment covers dynamic RBAC only for explicitly decorated actions and the five accepted data-scope terms. A Position catalog, Organization, employment workflows, manager-derived authorization, external identity synchronization, and a new Admin SSR application remain out of scope. No Phase 80-specific retained evidence exists yet.
 
 ## Verification Model
 
@@ -77,6 +81,9 @@ vona/src/suite/cabloy-admin/modules/admin-role/test/systemAdminProtection.test.t
 vona/src/suite/cabloy-admin/modules/admin-department/test/department.test.ts
 vona/src/suite/cabloy-admin/modules/admin-department/test/departmentTree.test.ts
 vona/src/suite/cabloy-admin/modules/admin-department/test/departmentMembership.test.ts
+vona/src/suite/cabloy-admin/modules/admin-rbac/test/**/*.test.ts
+vona/src/suite/a-training/modules/training-student/test/**/*.test.ts
+vona/src/suite/a-training/modules/training-record/test/**/*.test.ts
 ```
 
 Tests remain with the module that owns the invariant: identity projection in `admin-user`, ordinary/protected role behavior in `admin-role`, and tree/membership/manager facts in `admin-department`.
@@ -94,7 +101,11 @@ Isolation and concurrency tests prepare at least:
 - multiple root Departments, child Departments, and a disabled Department in instance A;
 - equivalent business names in distinct instances and sibling scopes where relevant;
 - one account with multiple Department memberships, one enabled primary membership, and one eligible manager membership; and
-- deterministic fixtures for competing revoke/deactivate, move, duplicate-membership, and primary-membership operations.
+- deterministic fixtures for competing revoke/deactivate, move, duplicate-membership, and primary-membership operations;
+- one decorated and one undecorated action, including a non-Resource Controller action and valid/invalid same-Controller aliases;
+- ordinary roles with no grant, disabled grant, each supported scope, multiple grants, and custom Department associations;
+- enabled/disabled Department roots and descendants, users with multiple memberships, owner identities, and records in two active instances; and
+- Student/Record rows with distinct server-derived `departmentId` and `userIdOwner` values for direct, bulk, nested, and forged-input tests.
 
 Shared durable fixtures are created only by the owning module `meta.version.ts` `seed()` hook and are read-only to tests. Test-local records are explicitly cleaned up in `finally`.
 
@@ -132,6 +143,11 @@ A local pass may establish `implementation-complete`; only retained, traceable e
 | `ATP-ADM-RES-02`      | In rendered Department detail, add, edit, set/clear primary, set/clear manager, and delete a membership.                                                        | Each custom command refreshes the visible membership/manager state through the existing Department Resource selector without a full-page reload; fixture APIs only arrange and clean test data, and no generic Department PATCH handles these commands. | Resource, browser      | `SRS-ADM-MEM-01`–`SRS-ADM-MEM-05`, `SRS-ADM-UI-01`, `SRS-ADM-UI-02`; `WBS-ADM-60-01`–`WBS-ADM-60-03`                    |
 | `ATP-ADM-RES-03`      | In rendered User detail, display all roles, label `systemAdmin` as protected, and replace non-system-administrator memberships through the generated picker.    | The picker includes `registeredUser` and custom roles but never `systemAdmin`; the dedicated command excludes `systemAdmin`, refreshes the affected User Resource item without reload, and no generic User PATCH occurs.                                | Resource, browser      | `SRS-ADM-USR-06`, `SRS-ADM-ROL-04`–`SRS-ADM-ROL-07`, `SRS-ADM-UI-01`, `SRS-ADM-UI-02`; `WBS-ADM-30-02`, `WBS-ADM-60-03` |
 | `ATP-ADM-SSR-01`      | Load Start Admin SSR, hydrate, navigate menus/routes, and compare direct API outcomes for ordinary and privileged callers.                                      | SSR/hydration, menu/route admission, and Vona API authorization are independently correct.                                                                                                                                                              | SSR, browser, API      | `SRS-ADM-AUT-*`, `SRS-ADM-UI-03`; `WBS-ADM-20-02`, `WBS-ADM-70-02`                                                      |
+| `ATP-ADM-POL-01`      | Build the RBAC catalog with decorated Resource and non-Resource actions, an undecorated action, and same-Controller valid, missing, self, cycle, and cross-Controller aliases. | Only explicitly decorated actions appear; canonical keys are stable; invalid aliases fail closed; legacy undecorated actions remain outside dynamic RBAC. | Unit, API | `PRD-ADM-POL-01`–`PRD-ADM-POL-03`; `SRS-ADM-POL-01`–`SRS-ADM-POL-04`; `WBS-ADM-80-01` |
+| `ATP-ADM-POL-02`      | Exercise no grant, disabled grant, valid grant, protected policy administration, revision invalidation, and independent RBAC/systemAdmin guard composition with fall-through options. | Missing/disabled policy denies; valid decisions admit only their own guard; protected control-plane authority remains protected; committed changes do not serve stale policy. | API, transaction | `PRD-ADM-POL-02`, `PRD-ADM-POL-04`, `PRD-ADM-SCP-01`; `SRS-ADM-POL-04`–`SRS-ADM-POL-08`; `WBS-ADM-80-02` |
+| `ATP-ADM-SCP-01`      | Exercise all five scopes across multiple grants, custom Department associations, enabled/disabled recursive Departments, owner terms, empty terms, and two active instances. | `all` dominates; otherwise valid terms union as OR alternatives; disabled/cross-instance/empty terms do not widen access; structural AND preserves caller filters. | Service, API, transaction | `PRD-ADM-SCP-01`–`PRD-ADM-SCP-04`; `SRS-ADM-SCP-01`–`SRS-ADM-SCP-05`; `WBS-ADM-80-02` |
+| `ATP-ADM-SCP-02`      | Call opted-in Student and Record list/view/create/update/delete/bulk/nested APIs directly with forged owner/Department/instance fields and out-of-scope IDs. | Server derives and enforces scope; out-of-scope rows are absent; nested Record scope follows Student; exact bulk locking and rollback prevent partial writes; client fields cannot widen access. | API, transaction, PostgreSQL | `PRD-ADM-SCP-04`, `PRD-ADM-SCP-05`; `SRS-ADM-SCP-06`–`SRS-ADM-SCP-13`; `WBS-ADM-80-03` |
+| `ATP-ADM-POL-03`      | Render policy catalog/editor and row/detail capabilities through Admin SSR and browser hydration, then call the direct API with stale or forged capability values. | Only safe metadata/opaque UX booleans are emitted; SSR remains hydration-equivalent; capabilities and menus never authorize a direct request. | SSR, browser, API | `PRD-ADM-POL-01`, `PRD-ADM-SCP-04`; `SRS-ADM-POL-09`, `SRS-ADM-SCP-09`; `WBS-ADM-80-04` |
 
 ## Commands
 
@@ -170,6 +186,7 @@ The clean E2E command resets its managed test state and drives the Vona SSR runt
 | Department      | `ATP-ADM-DEP-*`, `ATP-ADM-MEM-*`, and `ATP-ADM-MGR-01` prove tree, lifecycle, membership, and manager invariants.                                                       |
 | Contract        | `ATP-ADM-CTR-01` proves Vona-forward and Start Admin paired reverse loops without generated-file edits.                                                                 |
 | Admin runtime   | `ATP-ADM-RES-01`, `ATP-ADM-RES-02`, and `ATP-ADM-SSR-01` prove resource ownership, rendered Department membership commands, Admin browser behavior, and API separation. |
+| Dynamic RBAC   | `ATP-ADM-POL-01`–`ATP-ADM-POL-03` and `ATP-ADM-SCP-01`–`ATP-ADM-SCP-02` prove catalog opt-in, default deny, independent guards, five scopes, union, service enforcement, training inheritance, and capability/API separation before Phase 80 verification. |
 | Release closure | All applicable WBS acceptance checks are satisfied, evidence is retained, and no expired waiver or severity-one invariant failure remains.                              |
 
 ## Related Records
@@ -180,3 +197,4 @@ The clean E2E command resets its managed test state and drives the Vona SSR runt
 - [Product Delivery Plan and Work Breakdown Structure](./pdp-wbs.md)
 - [Delivery Progress](./progress.md)
 - [ADR 0001: Establish Cabloy Admin MVP Boundaries](./decisions/0001-admin-mvp-boundaries.md)
+- [ADR 0002: Dynamic RBAC and Department Data Scope](./decisions/0002-dynamic-rbac-and-data-scope.md)

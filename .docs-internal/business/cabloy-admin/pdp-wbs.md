@@ -2,7 +2,7 @@
 
 ## Delivery Objective
 
-Deliver Cabloy Start system management as verified vertical increments: management façades over established accounts and roles, protected `systemAdmin` recovery authority, and a tenant-local Department forest with memberships and managers.
+Deliver Cabloy Start system management as verified vertical increments: management façades over established accounts and roles, protected `systemAdmin` recovery authority, a tenant-local Department forest with memberships and managers, and an explicitly opted-in dynamic RBAC/data-scope acceptance slice.
 
 This document owns delivery sequencing and completion checks. The [PRD](./prd.md) owns desired outcomes and business acceptance; the [SRS](./srs.md) owns technical contracts.
 
@@ -15,7 +15,7 @@ This document owns delivery sequencing and completion checks. The [PRD](./prd.md
 - Change backend contract truth first and regenerate consumers; do not edit generated output.
 - Build the Start Admin SSR and REST artifacts together before `npm run deps:vona` for reverse-chain changes.
 - Enforce tenant-scoped business uniqueness through transactions and service logic, not `table.unique(...)`.
-- Do not pull dynamic RBAC, recursive data scopes, a Position catalog, Organization, employment workflows, or a new Admin application into this plan.
+- Keep dynamic RBAC limited to explicitly opted-in actions and the five accepted data-scope terms; Position catalog, Organization, employment workflows, manager-derived authorization, role hierarchy, and a new Admin application remain outside this plan.
 
 ## Work Breakdown Structure
 
@@ -328,6 +328,99 @@ Acceptance checks:
 - no expired waiver or open severity-one invariant failure remains;
 - release status is derived in [progress.md](./progress.md).
 
+### Phase 80: Dynamic RBAC and Department data-scope acceptance
+
+Dependencies: `WBS-ADM-20-*`, `WBS-ADM-30-*`, `WBS-ADM-40-*`, `WBS-ADM-50-*`, `WBS-ADM-60-*`, `WBS-ADM-70-*`.
+
+#### WBS-ADM-80-01: Complete reusable RBAC catalog and guard contracts
+
+Primary areas:
+
+- `a-rbac` catalog, `@Passport.rbac(...)`, typed policy event, guard, alias validation, and request-local decision state
+
+Tasks:
+
+- freeze explicit decorator opt-in and canonical `<controllerBeanFullName>#<action>` identity;
+- include decorated actions from non-`@Resource()` Controllers and exclude undecorated actions;
+- validate same-Controller `actionInherit`, default deny, and independent `GuardBase` composition;
+- define safe predicate composition and opaque capability contracts without importing Start policy semantics.
+
+Acceptance checks:
+
+- missing, invalid, self-referential, cyclic, or cross-Controller aliases fail closed;
+- the required `systemAdmin`/RBAC composition exercises match and mismatch fall-through independently;
+- no legacy action requires migration merely because the catalog exists.
+
+#### WBS-ADM-80-02: Deliver Start grants, Department resolution, and policy invalidation
+
+Primary areas:
+
+- `admin-rbac` grant and Department-association persistence, policy service, catalog projection, revision/invalidation, protected policy administration
+
+Tasks:
+
+- complete role-to-action grant validation and enabled-state handling;
+- resolve `all`, `customDepartments`, `ownDepartment`, `ownDepartmentAndDescendants`, and `mine` terms in active-instance scope;
+- preserve union semantics, disabled-Department behavior, protected control-plane authority, and revision-aware invalidation;
+- expose safe policy-editor metadata and effective summaries without raw predicates or hidden topology.
+
+Acceptance checks:
+
+- absent/disabled/invalid grants and empty restricted terms deny;
+- multiple grants union, `all` dominates, and custom Departments do not imply descendants;
+- grant, role-membership, Department, and membership mutations invalidate policy decisions independently of coarse permission caches.
+
+#### WBS-ADM-80-03: Enforce Student and Record scoped operations
+
+Primary areas:
+
+- `training-student`, `training-record` entities, version-1 schema paths, DTOs, services, nested relation mutations, focused tests
+
+Tasks:
+
+- add server-controlled `departmentId` and `userIdOwner` while retaining both module `fileVersion: 1` values;
+- deliberately opt in the acceptance actions and enforce scope for select, view, create, update, delete, bulk, and nested operations;
+- derive Student ownership and validate Department/owner transitions; inherit both fields from Student for Record writes;
+- lock and scope-check targets transactionally and reject forged or cross-instance relationship fields.
+
+Acceptance checks:
+
+- direct API calls cannot widen scope through filters, guessed IDs, nested writes, bulk IDs, or submitted owner/Department fields;
+- out-of-scope rows are absent, bulk mutations require exact scoped count, and failed nested mutations roll back atomically;
+- no version-2 migration is introduced; changed version paths are covered by `npm run test`.
+
+#### WBS-ADM-80-04: Deliver policy-editor and capability UX
+
+Primary areas:
+
+- Cabloy Start Admin policy editor, generated contracts, safe catalog projections, row/detail capability rendering
+
+Tasks:
+
+- add policy catalog/grant management UI using generated backend contracts;
+- render only opaque, server-derived row/detail capabilities as UX hints;
+- preserve Resource ownership and SSR/hydration equivalence while keeping backend authority independent of menus and capabilities.
+
+Acceptance checks:
+
+- policy editor cannot submit hidden topology or raw predicates;
+- stale or forged capability values do not authorize direct API calls;
+- applicable Admin SSR/REST artifacts are built together before `deps:vona`.
+
+#### WBS-ADM-80-05: Close contract loop and acceptance evidence
+
+Tasks:
+
+- regenerate metadata and consumers from Vona contract truth;
+- run focused, transaction, PostgreSQL contention, direct API, SSR/browser, type, lint, format, and repository checks as applicable;
+- retain traceable Phase 80 ATP evidence and reconcile all planning identifiers.
+
+Acceptance checks:
+
+- all applicable `ATP-ADM-POL-*` and `ATP-ADM-SCP-*` scenarios pass with identified source revision and retained evidence;
+- no generated output is hand-edited, no stale dependency link remains, and all open gates/waivers are recorded;
+- Phase 70 release closure remains blocked until Phase 80 and all prior applicable gates are complete.
+
 ## Future Implementation Commands
 
 These are implementation-phase commands, not checks for the current Markdown batch:
@@ -359,6 +452,11 @@ npm run test
 | `WBS-ADM-40-*` | `PRD-ADM-SUP-*`                  | `SRS-ADM-SUP-*`, `SRS-ADM-TXN-*`, `SRS-ADM-AUD-*` | `ATP-ADM-SUP-01`, `ATP-ADM-SUP-02`, `ATP-ADM-SUP-RACE-01` |
 | `WBS-ADM-50-*` | `PRD-ADM-DEP-*`                  | `SRS-ADM-DEP-*`                                   | `ATP-ADM-DEP-01`, `ATP-ADM-DEP-02`                        |
 | `WBS-ADM-60-*` | `PRD-ADM-MEM-*`                  | `SRS-ADM-MEM-*`                                   | `ATP-ADM-MEM-01`, `ATP-ADM-MEM-02`, `ATP-ADM-MGR-01`      |
+| `WBS-ADM-80-01` | `PRD-ADM-POL-*`                 | `SRS-ADM-POL-01`–`SRS-ADM-POL-09`                 | `ATP-ADM-POL-01`                                         |
+| `WBS-ADM-80-02` | `PRD-ADM-POL-*`, `PRD-ADM-SCP-*` | `SRS-ADM-POL-*`, `SRS-ADM-SCP-01`–`SRS-ADM-SCP-05` | `ATP-ADM-POL-02`, `ATP-ADM-SCP-01`                       |
+| `WBS-ADM-80-03` | `PRD-ADM-SCP-*`                 | `SRS-ADM-SCP-06`–`SRS-ADM-SCP-13`                  | `ATP-ADM-SCP-02`                                         |
+| `WBS-ADM-80-04` | `PRD-ADM-POL-*`, `PRD-ADM-SCP-*` | `SRS-ADM-POL-09`, `SRS-ADM-SCP-09`                 | `ATP-ADM-POL-03`                                         |
+| `WBS-ADM-80-05` | All Phase 80                    | `SRS-ADM-API-*`, `SRS-ADM-NFR-*`                  | All applicable Phase 80 ATP evidence                   |
 | `WBS-ADM-70-*` | All applicable                   | `SRS-ADM-NFR-*`                                   | All applicable ATP evidence                               |
 
 ## Related Records
@@ -369,5 +467,6 @@ npm run test
 - [Test Strategy and Acceptance Plan](./test-plan.md)
 - [Delivery Progress](./progress.md)
 - [ADR 0001: Establish Cabloy Admin MVP Boundaries](./decisions/0001-admin-mvp-boundaries.md)
+- [ADR 0002: Dynamic RBAC and Department Data Scope](./decisions/0002-dynamic-rbac-and-data-scope.md)
 - [Suites and Modules](../../../cabloy-docs/fullstack/suites-and-modules.md)
 - [Contract Loop Playbook](../../../cabloy-docs/fullstack/contract-loop-playbook.md)

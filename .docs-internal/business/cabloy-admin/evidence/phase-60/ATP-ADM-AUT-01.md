@@ -5,7 +5,7 @@
 | Field                  | Value                                                                                                              |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | ATP                    | `ATP-ADM-AUT-01`                                                                                                   |
-| PRD                    | `PRD-ADM-AUT-*`; `PRD-ADM-UI-*`                                                                                    |
+| PRD                    | `PRD-ADM-SEC-*`; `PRD-ADM-UI-*`                                                                                    |
 | SRS                    | `SRS-ADM-AUT-*`                                                                                                    |
 | WBS                    | `WBS-ADM-20-02`                                                                                                    |
 | Tested source revision | `26c11a76f85969a071757a02089f03665a45ed9f` plus the uncommitted authorization suites and retained evidence updates |

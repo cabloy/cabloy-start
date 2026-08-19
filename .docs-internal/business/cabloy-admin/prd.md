@@ -23,7 +23,7 @@ A `systemAdmin` is the phase-one operational authority for Cabloy Admin. They ma
 
 ### Future Management Operator
 
-A future ordinary management role may perform selected administrative tasks after a dynamic permission model is introduced. Phase one does not promise any independent authority for this persona; all operational APIs remain protected by the existing `systemAdmin` baseline.
+An ordinary management role may perform explicitly granted administrative tasks after the dynamic policy model is configured. Creating a role or assigning a role does not grant authority by itself. Legacy actions remain protected by their existing guards, while only deliberately opted-in actions participate in dynamic RBAC.
 
 ### Managed Account
 
@@ -43,6 +43,8 @@ An authorized administrator who maintains the Department forest, assigns members
 - Display every assigned account role and assign or revoke every non-system-administrator membership, including the fixed `registeredUser` membership.
 - Exclude `systemAdmin` membership from generic role edit, delete, candidate-selection, and bulk-replacement operations.
 - Grant or revoke `systemAdmin` only through a dedicated protected workflow.
+- Configure explicit role-to-action policy grants for opted-in actions without changing undecorated legacy actions.
+- Resolve Department and owner data scope on the server for deliberately opted-in operational actions.
 - Create, view, maintain, enable, disable, and rearrange the Department forest in the active instance.
 - Treat `parentId = null` as a top-level Department.
 - Assign one account to multiple Department memberships.
@@ -52,11 +54,9 @@ An authorized administrator who maintains the Department forest, assigns members
 
 ### Deferred
 
-- Dynamic role-to-menu, role-to-Resource, role-to-action, or role-to-data-scope permission matrices.
 - Multiple Organizations, organization-scoped Department forests, and organization-aware authorization or query rules.
 - A normalized Position catalog, `admin-position` module, `positionId`, job grades, headcount, or position-based authorization.
-- Recursive Department data scopes, manager-derived authorization, and role hierarchy.
-- Employment history, organization approval flows, reporting lines, scheduling, and attendance.
+- Manager-derived authorization, role hierarchy, employment history, organization approval flows, reporting lines, scheduling, and attendance.
 - Organization merge, split, archival migration, or cross-Organization tree migration workflows.
 - SSO synchronization, SCIM, external identity synchronization, and credential-provider redesign.
 - A new Admin SSR site, public path, flavor, or independent Admin application.
@@ -100,6 +100,20 @@ An authorized administrator who maintains the Department forest, assigns members
 3. Before a revoke or other administrator-disabling operation completes, the system verifies that the active instance retains at least one activated `systemAdmin`.
 4. The system rejects an operation that would remove the final activated `systemAdmin` and retains evidence of the attempted sensitive operation according to the future technical contract.
 
+### Configure an opted-in action policy
+
+1. A protected policy administrator opens the server-derived action catalog.
+2. They select an action explicitly opted into dynamic RBAC; undecorated actions and their existing guards remain unchanged.
+3. They assign an ordinary role one or more allowed scope terms without changing the canonical action identity.
+4. The server validates the grant, keeps protected bootstrap authority outside mutable policy, and exposes only safe metadata and effective summaries.
+
+### Operate within a Department and owner scope
+
+1. An ordinary role holder calls an opted-in operational action directly or through the Admin UI.
+2. The server resolves their active-instance roles, Department memberships, enabled Department descendants, and authenticated owner identity.
+3. Matching grants combine as a union of `all`, custom Departments, own Department, own Department plus descendants, and `mine` terms.
+4. The server applies the resulting scope to reads and mutations; stale or missing browser capabilities never widen authority.
+
 ## Product Requirements
 
 ### Account Management
@@ -113,7 +127,19 @@ An authorized administrator who maintains the Department forest, assigns members
 - **PRD-ADM-ROL-01**: A System Administrator can create, inspect, edit, and delete custom roles in the active instance; configured framework-role definitions remain unavailable to generic Role Resource CRUD.
 - **PRD-ADM-ROL-02**: A System Administrator can assign and revoke non-system-administrator membership for accounts, including `registeredUser`.
 - **PRD-ADM-ROL-03**: Generic role administration cannot rename, delete, alter the site admission of, select as a replacement candidate, grant, revoke, or bulk-replace the protected `systemAdmin` membership.
-- **PRD-ADM-ROL-04**: A newly created custom role does not imply a dynamic permission matrix in phase one.
+- **PRD-ADM-ROL-04**: A newly created custom role has no authority until a protected policy administrator creates an enabled policy grant for an explicitly opted-in action.
+
+### Dynamic Policy and Data Scope
+
+- **PRD-ADM-POL-01**: A protected policy administrator can inspect a server-derived catalog of explicitly opted-in actions, including eligible non-Resource actions, without changing the authorization behavior of undecorated legacy actions.
+- **PRD-ADM-POL-02**: A protected policy administrator can grant an ordinary role access to an opted-in action and choose an allowed data-scope term when that action supports data scope.
+- **PRD-ADM-POL-03**: A policy grant has one stable canonical action identity and cannot use an HTTP path, browser route, or mutable display label as authorization identity.
+- **PRD-ADM-POL-04**: Mutable policy administration cannot remove the protected `systemAdmin` recovery authority or convert protected control-plane workflows into ordinary delegated actions.
+- **PRD-ADM-SCP-01**: An opted-in action defaults to deny when no effective allowed policy grant exists for the caller in the active instance.
+- **PRD-ADM-SCP-02**: Matching grants combine as a logical union: `all` is unrestricted; custom Department, own Department, own Department plus descendant, and mine terms remain independent alternatives.
+- **PRD-ADM-SCP-03**: Department scope recognizes only enabled Department facts in the active instance. Custom Departments do not imply descendants; own-plus-descendants resolves enabled descendants recursively.
+- **PRD-ADM-SCP-04**: A browser menu, route, filter, permission hint, or opaque row capability does not authorize an API or data mutation; the server remains authoritative.
+- **PRD-ADM-SCP-05**: Selected Student and Record actions provide the first acceptance slice for scoped reads and writes; this does not require migration of unrelated existing Controllers.
 
 ### Protected System Administrator Authority
 
@@ -167,8 +193,10 @@ The phase-one Cabloy Admin baseline is ready for acceptance when:
 - Department-tree administration preserves active-instance boundaries, top-level-root semantics, and cycle protection;
 - cross-instance records are absent from ordinary administration operations;
 - Admin menu visibility, backend authorization, and data scope remain independently enforced;
+- explicitly opted-in actions use the canonical catalog identity and default-deny policy behavior;
+- selected Student and Record flows preserve server-derived Department and owner scope;
 - the Vona-to-Zova contract path and the Start Admin paired build path are proven for the implemented resource slices; and
-- each delivered requirement has repeatable test or acceptance evidence when the future test plan is established.
+- each delivered requirement has repeatable test or acceptance evidence in the applicable acceptance plan.
 
 ## Requirement Traceability
 
@@ -179,7 +207,9 @@ The phase-one Cabloy Admin baseline is ready for acceptance when:
 | Protected administrator authority | `PRD-ADM-SUP-*`                 | `SRS-ADM-SUP-*`, `SRS-ADM-TXN-*`, `SRS-ADM-AUD-*`                 | `WBS-ADM-40-*`                 | `ATP-ADM-SUP-*`                                                                          |
 | Departments                       | `PRD-ADM-DEP-*`                 | `SRS-ADM-DEP-*`                                                   | `WBS-ADM-50-*`                 | `ATP-ADM-DEP-*`                                                                          |
 | Membership                        | `PRD-ADM-MEM-*`                 | `SRS-ADM-MEM-*`                                                   | `WBS-ADM-60-*`                 | `ATP-ADM-MEM-*`, `ATP-ADM-MGR-01`                                                        |
-| Security and operational UI       | `PRD-ADM-SEC-*`, `PRD-ADM-UI-*` | `SRS-ADM-TEN-*`, `SRS-ADM-AUT-*`, `SRS-ADM-API-*`, `SRS-ADM-UI-*` | `WBS-ADM-20-*`, `WBS-ADM-70-*` | `ATP-ADM-TEN-01`, `ATP-ADM-AUT-01`, `ATP-ADM-CTR-01`, `ATP-ADM-RES-01`, `ATP-ADM-SSR-01` |
+| Dynamic policy                    | `PRD-ADM-POL-*`                 | `SRS-ADM-POL-*`                                                   | `WBS-ADM-80-01`, `WBS-ADM-80-02`, `WBS-ADM-80-04` | `ATP-ADM-POL-01`, `ATP-ADM-POL-02`, `ATP-ADM-POL-03`                              |
+| Department and owner data scope   | `PRD-ADM-SCP-*`                 | `SRS-ADM-SCP-*`                                                   | `WBS-ADM-80-02`, `WBS-ADM-80-03` | `ATP-ADM-SCP-01`, `ATP-ADM-SCP-02`                                                    |
+| Security and operational UI       | `PRD-ADM-SEC-*`, `PRD-ADM-UI-*` | `SRS-ADM-TEN-*`, `SRS-ADM-AUT-*`, `SRS-ADM-API-*`, `SRS-ADM-UI-*` | `WBS-ADM-20-*`, `WBS-ADM-70-*`, `WBS-ADM-80-*` | `ATP-ADM-TEN-01`, `ATP-ADM-AUT-01`, `ATP-ADM-CTR-01`, `ATP-ADM-RES-01`, `ATP-ADM-SSR-01`, `ATP-ADM-POL-03` |
 
 The complete traceability chain is PRD requirement → SRS contract → delivery task → acceptance scenario → observed evidence.
 
@@ -190,3 +220,4 @@ The complete traceability chain is PRD requirement → SRS contract → delivery
 - [Product Delivery Plan and Work Breakdown Structure](./pdp-wbs.md)
 - [Test Strategy and Acceptance Plan](./test-plan.md)
 - [ADR 0001: Establish Cabloy Admin MVP Boundaries](./decisions/0001-admin-mvp-boundaries.md)
+- [ADR 0002: Dynamic RBAC and Department Data Scope](./decisions/0002-dynamic-rbac-and-data-scope.md)
