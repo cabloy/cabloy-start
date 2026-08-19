@@ -51,6 +51,7 @@ declare module 'vona' {
 }
 /** bean: end */
 /** event: begin */
+export * from '../bean/event.policyInvalidated.ts';
 export * from '../bean/event.resolvePolicy.ts';
 
 import 'vona';
@@ -60,6 +61,16 @@ declare module 'vona' {
 }
 declare module 'vona-module-a-rbac' {
   
+        export interface EventPolicyInvalidated {
+          /** @internal */
+          get scope(): ScopeModuleARbac;
+        }
+
+          export interface EventPolicyInvalidated {
+            get $beanFullName(): 'a-rbac.event.policyInvalidated';
+            get $onionName(): 'a-rbac:policyInvalidated';
+          }
+
         export interface EventResolvePolicy {
           /** @internal */
           get scope(): ScopeModuleARbac;
@@ -68,22 +79,25 @@ declare module 'vona-module-a-rbac' {
           export interface EventResolvePolicy {
             get $beanFullName(): 'a-rbac.event.resolvePolicy';
             get $onionName(): 'a-rbac:resolvePolicy';
-            
           } 
 }
 /** event: end */
 /** event: begin */
+import type { EventPolicyInvalidated } from '../bean/event.policyInvalidated.ts';
 import type { EventResolvePolicy } from '../bean/event.resolvePolicy.ts';
 export interface IModuleEvent {
-  'resolvePolicy': EventResolvePolicy;
+  'policyInvalidated': EventPolicyInvalidated;
+'resolvePolicy': EventResolvePolicy;
 }
 /** event: end */
 /** event: begin */
+import type { TypeEventPolicyInvalidatedData, TypeEventPolicyInvalidatedResult } from '../bean/event.policyInvalidated.ts';
 import type { TypeEventResolvePolicyData, TypeEventResolvePolicyResult } from '../bean/event.resolvePolicy.ts';
 import type { EventOn } from 'vona-module-a-event'; 
 declare module 'vona-module-a-event' {
   export interface IEventRecord {
-    'a-rbac:resolvePolicy': EventOn<TypeEventResolvePolicyData, TypeEventResolvePolicyResult>;
+    'a-rbac:policyInvalidated': EventOn<TypeEventPolicyInvalidatedData, TypeEventPolicyInvalidatedResult>;
+'a-rbac:resolvePolicy': EventOn<TypeEventResolvePolicyData, TypeEventResolvePolicyResult>;
   }
 }
 /** event: end */
