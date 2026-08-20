@@ -5,14 +5,14 @@ import { ZPageState } from './.metadata/page/state.js';
 import { ZPageStyle } from './.metadata/page/style.js';
 
 export const routes: IModuleRoute[] = [
-  { path: 'state', component: ZPageState, meta: { requiresAuth: false, ssrProfile: 'session' } },
+  { path: 'state', component: ZPageState, meta: { requiresAuth: false, ssrProfile: 'public' } },
   {
     path: 'component',
     component: ZPageComponent,
     meta: {
       requiresAuth: false,
-      ssrProfile: 'session',
+      ssrProfile: 'public',
     },
   },
-  { path: 'style', component: ZPageStyle, meta: { requiresAuth: false, ssrProfile: 'session' } },
+  { path: 'style', component: ZPageStyle, meta: { requiresAuth: false, ssrProfile: 'public' } },
 ];
