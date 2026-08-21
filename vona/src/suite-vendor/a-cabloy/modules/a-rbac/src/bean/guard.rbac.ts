@@ -9,7 +9,7 @@ import type {
   TypeRbacDataScope,
 } from '../types/rbac.ts';
 
-import { createRbacAllScopeDecision, setRbacDecision } from '../lib/rbac.ts';
+import { clearRbacDecision, createRbacAllScopeDecision, setRbacDecision } from '../lib/rbac.ts';
 
 export interface IGuardOptionsRbac extends IDecoratorGuardOptions {
   dataScope?: boolean;
@@ -24,6 +24,7 @@ export interface IGuardOptionsRbac extends IDecoratorGuardOptions {
 })
 export class GuardRbac extends GuardBase {
   async check(options: IGuardOptionsRbac): Promise<boolean> {
+    clearRbacDecision(this.ctx);
     const action = this.bean.rbacCatalog.getAction(this.ctx.route);
     if (!action) return false;
     const effectiveAction = { ...action, options: { ...action.options, ...options } };
@@ -39,9 +40,9 @@ export class GuardRbac extends GuardBase {
       },
       async () => undefined,
     );
-    if (!this.isValidDecision(decision, effectiveAction)) return false;
+    if (!this.isValidDecision(decision, effectiveAction) || !decision.allowed) return false;
     setRbacDecision(this.ctx, { ...decision, action: effectiveAction });
-    return decision.allowed;
+    return true;
   }
 
   private isValidDecision(
@@ -53,7 +54,8 @@ export class GuardRbac extends GuardBase {
     if (typeof value.allowed !== 'boolean' || value.actionKey !== action.actionKey) return false;
     if (!this.isValidAction(value.action, action)) return false;
     if (value.revision !== undefined && typeof value.revision !== 'string') return false;
-    return value.terms === undefined || this.isValidTerms(value.terms);
+    if (value.terms !== undefined && !this.isValidTerms(value.terms)) return false;
+    return !value.allowed || !action.options.dataScope || this.isValidTerms(value.terms);
   }
 
   private isValidAction(value: unknown, action: IRbacActionDescriptor): boolean {

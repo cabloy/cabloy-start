@@ -3,7 +3,9 @@ import type { ContextRoute } from 'vona-module-a-web';
 
 import assert from 'node:assert';
 import { describe, it } from 'node:test';
-import { beanFullNameFromOnionName } from 'vona';
+import { appMetadata, beanFullNameFromOnionName } from 'vona';
+import { SymbolUseOnionOptions } from 'vona-module-a-onion';
+import { Passport } from 'vona-module-a-user';
 import { getCacheControllerRoutes } from 'vona-module-a-web';
 
 import type {
@@ -13,8 +15,15 @@ import type {
 } from '../src/types/rbac.ts';
 
 import { BeanRbacCatalog } from '../src/bean/bean.rbacCatalog.ts';
+import { BeanRbacScope } from '../src/bean/bean.rbacScope.ts';
 import { GuardRbac } from '../src/bean/guard.rbac.ts';
-import { getRbacDecision, rbacActionKey } from '../src/lib/rbac.ts';
+import {
+  createRbacCapability,
+  getRbacDecision,
+  isRbacCapability,
+  rbacActionKey,
+  setRbacDecision,
+} from '../src/lib/rbac.ts';
 
 const BeanFullNameGuardRbac = beanFullNameFromOnionName('a-rbac:rbac', 'guard');
 
@@ -69,18 +78,50 @@ function createDescriptor(action = 'select', actionInheritKey?: string): IRbacAc
   };
 }
 
+function createScopedGuard(
+  action: IRbacActionDescriptor,
+  ctx: VonaContext,
+): { current: () => Promise<void> } {
+  const scope = Object.create(BeanRbacScope.prototype) as { current: () => Promise<void> };
+  Object.defineProperties(scope, {
+    app: {
+      value: {
+        throw(status: number): never {
+          const error = new Error(`status ${status}`) as Error & { code?: number };
+          error.code = status;
+          throw error;
+        },
+      },
+    },
+    bean: { value: { rbacCatalog: { getCatalog: () => new Map([[action.actionKey, action]]) } } },
+    ctx: { value: ctx },
+  });
+  return scope;
+}
+
 function createGuard(
   action: IRbacActionDescriptor,
   decision: IRbacPolicyDecision | undefined,
   unrestricted = false,
+  catalogAction: IRbacActionDescriptor | null = action,
+  resolverReject?: Error,
 ): { guard: GuardRbac; request: () => IRbacPolicyRequest | undefined; ctx: VonaContext } {
   let policyRequest: IRbacPolicyRequest | undefined;
   const ctx = { route: action.route } as VonaContext;
   const guard = Object.create(GuardRbac.prototype) as GuardRbac;
   Object.defineProperties(guard, {
+    app: {
+      value: {
+        throw(status: number): never {
+          const error = new Error(`status ${status}`) as Error & { code?: number };
+          error.code = status;
+          throw error;
+        },
+      },
+    },
     bean: {
       value: {
-        rbacCatalog: { getAction: () => action },
+        rbacCatalog: { getAction: () => catalogAction ?? undefined },
         rbacScope: { isUnrestricted: async () => unrestricted },
       },
     },
@@ -91,6 +132,7 @@ function createGuard(
           resolvePolicy: {
             emit: async (request: IRbacPolicyRequest) => {
               policyRequest = request;
+              if (resolverReject) throw resolverReject;
               return decision;
             },
           },
@@ -115,6 +157,32 @@ describe('rbacCatalogGuard.test.ts', { concurrency: false }, () => {
     assert.equal(catalog.getAction(undecorated), undefined);
     assert.equal(catalog.getAction(resource)?.route.routePath, '/test:resource/select');
     assert.equal(rbacActionKey('test:resource', 'select'), 'test:resource#select');
+  });
+
+  it('treats an explicit no-options decorator as an action opt-in', () => {
+    class Controller {}
+    const descriptor = Object.getOwnPropertyDescriptor(Controller.prototype, 'select') ?? {
+      value: () => undefined,
+      configurable: true,
+      writable: true,
+    };
+    Passport.rbac()(Controller.prototype, 'select', descriptor);
+    const metadata = appMetadata.getOwnMetadata<Record<string, unknown>>(
+      SymbolUseOnionOptions,
+      Controller.prototype,
+      'select',
+    );
+    const route = createRoute('test:decorated', 'select');
+    route.controller = Controller;
+    route.route.meta = metadata ?? {};
+
+    const catalog = createCatalog([route]);
+    assert.deepEqual(catalog.getCatalog().get('test:decorated#select')?.options, {});
+  });
+
+  it('rejects class-level RBAC decoration', () => {
+    class Controller {}
+    assert.throws(() => Passport.rbac()(Controller), /must decorate an action/);
   });
 
   it('resolves aliases to the terminal same-controller grant identity', () => {
@@ -244,14 +312,13 @@ describe('rbacCatalogGuard.test.ts', { concurrency: false }, () => {
     assert.deepEqual(getRbacDecision(ctx)?.action.options, action.options);
   });
 
-  it('returns valid deny decisions to GuardBase without treating them as malformed', async () => {
+  it('returns valid deny decisions to GuardBase without retaining authorization state', async () => {
     const action = createDescriptor();
     const decision: IRbacPolicyDecision = { allowed: false, actionKey: action.actionKey, action };
     const { guard, ctx } = createGuard(action, decision);
 
     assert.equal(await guard.check({}), false);
-    assert.equal(getRbacDecision(ctx)?.action.route, action.route);
-    assert.deepEqual(getRbacDecision(ctx)?.action.options, action.options);
+    assert.equal(getRbacDecision(ctx), undefined);
   });
 
   it('stores an all-scope decision without resolving policy for unrestricted access', async () => {
@@ -266,5 +333,113 @@ describe('rbacCatalogGuard.test.ts', { concurrency: false }, () => {
       action,
       terms: [{ dataScope: 'all' }],
     });
+  });
+
+  it('clears a prior decision before catalog misses, resolver rejection, invalid results, and deny', async () => {
+    const action = createDescriptor();
+    const priorDecision: IRbacPolicyDecision = {
+      allowed: true,
+      actionKey: action.actionKey,
+      action,
+      terms: [{ dataScope: 'all' }],
+    };
+    const denied = createGuard(action, { ...priorDecision, allowed: false });
+    setRbacDecision(denied.ctx, priorDecision);
+    assert.equal(await denied.guard.check({}), false);
+    assert.equal(getRbacDecision(denied.ctx), undefined);
+
+    const invalid = createGuard(action, undefined);
+    setRbacDecision(invalid.ctx, priorDecision);
+    assert.equal(await invalid.guard.check({}), false);
+    assert.equal(getRbacDecision(invalid.ctx), undefined);
+
+    const resolverRejected = createGuard(
+      action,
+      undefined,
+      false,
+      action,
+      new Error('resolver failed'),
+    );
+    setRbacDecision(resolverRejected.ctx, priorDecision);
+    await assert.rejects(() => resolverRejected.guard.check({}), /resolver failed/);
+    assert.equal(getRbacDecision(resolverRejected.ctx), undefined);
+
+    const missingCatalog = createGuard(action, undefined, false, null);
+    setRbacDecision(missingCatalog.ctx, priorDecision);
+    assert.equal(await missingCatalog.guard.check({}), false);
+    assert.equal(getRbacDecision(missingCatalog.ctx), undefined);
+  });
+
+  it('rejects allowed data-scoped decisions without effective terms', async () => {
+    const action = { ...createDescriptor(), options: { dataScope: true } };
+    for (const terms of [undefined, []]) {
+      const { guard, ctx } = createGuard(action, {
+        allowed: true,
+        actionKey: action.actionKey,
+        action,
+        terms,
+      });
+      assert.equal(await guard.check({}), false);
+      assert.equal(getRbacDecision(ctx), undefined);
+    }
+  });
+
+  it('keeps capability values opaque and minimal', () => {
+    const capability = createRbacCapability('student.update', true);
+    assert.deepEqual(capability, { key: 'student.update', allowed: true });
+    assert.equal(isRbacCapability(capability), true);
+    assert.equal(isRbacCapability({ key: 'student.update', allowed: true, predicate: {} }), false);
+    assert.equal(
+      isRbacCapability({ key: 'student.update', allowed: true, departmentIds: ['1'] }),
+      false,
+    );
+    assert.equal(isRbacCapability({ key: '', allowed: true }), false);
+    assert.equal(isRbacCapability({ key: 'student.update', allowed: 'yes' }), false);
+  });
+
+  it('preserves GuardBase pass and reject options without stale scope state', async () => {
+    const action = createDescriptor();
+    const allowed: IRbacPolicyDecision = {
+      allowed: true,
+      actionKey: action.actionKey,
+      action,
+      terms: [{ dataScope: 'all' }],
+    };
+    const matched = createGuard(action, allowed);
+    let nextCount = 0;
+    assert.equal(await matched.guard.execute({}, async () => ++nextCount > 0), true);
+    assert.equal(nextCount, 0);
+
+    const matchedFallThrough = createGuard(action, allowed);
+    assert.equal(
+      await matchedFallThrough.guard.execute(
+        { passWhenMatched: false },
+        async () => ++nextCount > 0,
+      ),
+      true,
+    );
+    assert.equal(nextCount, 1);
+
+    const unmatchedFallThrough = createGuard(action, undefined);
+    setRbacDecision(unmatchedFallThrough.ctx, allowed);
+    assert.equal(
+      await unmatchedFallThrough.guard.execute(
+        { rejectWhenDismatched: false },
+        async () => ++nextCount > 0,
+      ),
+      true,
+    );
+    assert.equal(nextCount, 2);
+    assert.equal(getRbacDecision(unmatchedFallThrough.ctx), undefined);
+    await assert.rejects(
+      () => createScopedGuard(action, unmatchedFallThrough.ctx).current(),
+      error => (error as { code?: number }).code === 403,
+    );
+
+    const rejected = createGuard(action, undefined);
+    await assert.rejects(
+      () => rejected.guard.execute({}, async () => true),
+      error => (error as { code?: number }).code === 403,
+    );
   });
 });

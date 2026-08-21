@@ -38,3 +38,9 @@ export interface IRbacPolicyDecision {
   terms?: IRbacScopeTerm[];
   revision?: string;
 }
+
+/** A server-derived UX hint; it never grants backend authority. */
+export interface IRbacCapability {
+  key: string;
+  allowed: boolean;
+}
