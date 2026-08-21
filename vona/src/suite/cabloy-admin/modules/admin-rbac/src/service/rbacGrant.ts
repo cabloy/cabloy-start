@@ -108,8 +108,7 @@ export class ServiceRbacGrant extends BeanBase {
   }
 
   private async invalidatePolicy(): Promise<void> {
-    await this.scope.service.rbacPolicyRevision.invalidate();
-    this.ctx.db.commit(() => this.bean.permission.clearAllCaches());
+    await this.app.scope('a-rbac').event.policyInvalidated.emit({ kind: 'policy' });
   }
 
   private async ensureRole(roleId: TableIdentity): Promise<void> {

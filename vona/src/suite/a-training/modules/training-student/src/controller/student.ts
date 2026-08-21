@@ -1,6 +1,6 @@
 import type { TableIdentity } from 'table-identity';
 import type { IQueryParams } from 'vona-module-a-orm';
-import type { IRbacScopeAccess } from 'vona-module-a-rbac';
+import type { IRbacScopeAccess, IRbacScopeOwnerValues } from 'vona-module-a-rbac';
 import type { IDecoratorControllerOptions } from 'vona-module-a-web';
 
 import { BeanBase } from 'vona';
@@ -33,7 +33,9 @@ export class ControllerStudent extends BeanBase {
     @Arg.rbacScopeCurrent() rbacScopeCurrent: IRbacScopeAccess,
   ): Promise<TableIdentity> {
     return (
-      await this.scope.service.student.create(this._prepareStudentCreateData(student, rbacScopeCurrent))
+      await this.scope.service.student.create(
+        this._prepareStudentCreateData(student, rbacScopeCurrent),
+      )
     ).id;
   }
 
@@ -73,10 +75,14 @@ export class ControllerStudent extends BeanBase {
     @Arg.rbacScopeCurrent() rbacScopeCurrent: IRbacScopeAccess,
   ): Promise<void> {
     const data = await this.scope.model.student.getById(id);
+    if (!data) this.app.throw(404, 'Student not found');
     rbacScopeCurrent.checkEntry(data);
     await this.scope.service.student.update(id, {
       ...student,
-      trainingRecords: this._prepareTrainingRecords(student.trainingRecords, rbacScopeCurrent),
+      trainingRecords: this._prepareTrainingRecords(student.trainingRecords, {
+        departmentId: data.departmentId,
+        userIdOwner: data.userIdOwner,
+      }),
     });
   }
 
@@ -136,23 +142,22 @@ export class ControllerStudent extends BeanBase {
     await this.scope.service.student.deleteBulk(command.ids);
   }
 
-  private _prepareStudentCreateData(
-    student: DtoStudentCreate,
-    rbacScopeCurrent: IRbacScopeAccess,
-  ) {
+  private _prepareStudentCreateData(student: DtoStudentCreate, rbacScopeCurrent: IRbacScopeAccess) {
+    const ownerValues = rbacScopeCurrent.ownerValues();
     return {
       ...student,
-      ...rbacScopeCurrent.ownerValues(),
-      trainingRecords: this._prepareTrainingRecords(student.trainingRecords, rbacScopeCurrent),
+      ...ownerValues,
+      trainingRecords: this._prepareTrainingRecords(student.trainingRecords, ownerValues),
     };
   }
 
   private _prepareTrainingRecords<T extends object>(
     trainingRecords: T[] | undefined,
-    rbacScopeCurrent: IRbacScopeAccess,
+    ownerValues: IRbacScopeOwnerValues | undefined,
   ): T[] | undefined {
-    const ownerValues = rbacScopeCurrent.ownerValues();
-    return trainingRecords?.map(item => ({
+    if (!trainingRecords) return undefined;
+    if (!ownerValues) this.app.throw(500, 'Student scope owner values are unavailable');
+    return trainingRecords.map(item => ({
       ...item,
       ...ownerValues,
     }));

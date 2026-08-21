@@ -96,6 +96,13 @@ describe('rbacGrant.test.ts', { concurrency: false }, () => {
         ]),
     );
     let roleId: string | undefined;
+    const invalidationEvents: unknown[] = [];
+    const policyInvalidated = app.scope('a-rbac').event.policyInvalidated;
+    const originalEmit = policyInvalidated.emit.bind(policyInvalidated);
+    const emitMock = mock.method(policyInvalidated, 'emit', async data => {
+      invalidationEvents.push(data);
+      return await originalEmit(data);
+    });
     try {
       await app.bean.executor.mockCtx(async () => {
         const role = await app.scope('admin-role').service.role.create({
@@ -123,6 +130,7 @@ describe('rbacGrant.test.ts', { concurrency: false }, () => {
 
       assert.equal(created.length, 1);
       assert.equal(results.filter(([, error]) => error?.code === 409).length, 1);
+      assert.deepEqual(invalidationEvents, [{ kind: 'policy' }]);
 
       await app.bean.executor.mockCtx(async () => {
         const grants = await app.scope('admin-rbac').model.rbacGrant.select({
@@ -147,6 +155,7 @@ describe('rbacGrant.test.ts', { concurrency: false }, () => {
           }
         });
       } finally {
+        emitMock.mock.restore();
         getCatalog.mock.restore();
       }
     }
