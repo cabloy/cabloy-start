@@ -55,7 +55,7 @@ export class ServiceRbacPolicy extends BeanBase {
       if (!isRbacDataScope(dataScope) || !isRbacDataScopeCompatible(action, dataScope)) {
         return this.deny(request, revision);
       }
-      if (dataScope === 'all') return this.allow(request, revision);
+      if (dataScope === 'all') return this.allow(request, revision, [{ dataScope: 'all' }]);
       if (dataScope === 'mine') {
         terms.push({ dataScope, ownerId: String(user.id) });
       } else if (dataScope === 'customDepartments') {
@@ -99,12 +99,27 @@ export class ServiceRbacPolicy extends BeanBase {
     return actions.find(action => action.actionKey === request.action.actionKey);
   }
 
-  private allow(request: IRbacPolicyRequest, revision: string): IRbacPolicyDecision {
-    return { allowed: true, actionKey: request.action.actionKey, action: request.action, revision };
+  private allow(
+    request: IRbacPolicyRequest,
+    revision: string,
+    terms?: IRbacScopeTerm[],
+  ): IRbacPolicyDecision {
+    return {
+      allowed: true,
+      actionKey: request.action.actionKey,
+      action: request.action,
+      terms,
+      revision,
+    };
   }
 
   private deny(request: IRbacPolicyRequest, revision: string): IRbacPolicyDecision {
-    return { allowed: false, actionKey: request.action.actionKey, action: request.action, revision };
+    return {
+      allowed: false,
+      actionKey: request.action.actionKey,
+      action: request.action,
+      revision,
+    };
   }
 
   private async resolveCustomDepartmentIds(grantIds: TableIdentity[]): Promise<string[]> {

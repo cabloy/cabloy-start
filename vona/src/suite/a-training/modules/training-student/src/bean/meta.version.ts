@@ -15,6 +15,10 @@ export class MetaVersion extends BeanBase implements IMetaVersionUpdate {
         table.string(entityStudent.description, 255).comment(entityStudent.$comment.description);
         table.string(entityStudent.mobile, 50).comment(entityStudent.$comment.mobile);
         table.tableIdentity(entityStudent.imageId).comment(entityStudent.$comment.imageId);
+        table
+          .tableIdentity(entityStudent.departmentId)
+          .comment(entityStudent.$comment.departmentId);
+        table.tableIdentity(entityStudent.userIdOwner).comment(entityStudent.$comment.userIdOwner);
         table.integer(entityStudent.level).comment(entityStudent.$comment.level);
       });
     }

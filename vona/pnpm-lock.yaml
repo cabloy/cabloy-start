@@ -1772,6 +1772,9 @@ importers:
       vona-module-a-aspect:
         specifier: workspace:^
         version: link:../../../a-vona/modules/a-aspect
+      vona-module-a-orm:
+        specifier: workspace:^
+        version: link:../../../a-vona/modules/a-orm
       vona-module-a-user:
         specifier: workspace:^
         version: link:../../../a-vona/modules/a-user
@@ -3136,6 +3139,10 @@ importers:
         version: link:modules/training-student
 
   src/suite/a-training/modules/training-record:
+    dependencies:
+      vona-module-a-rbac:
+        specifier: workspace:^
+        version: link:../../../../suite-vendor/a-cabloy/modules/a-rbac
     devDependencies:
       clean-package:
         specifier: ^2.2.0
@@ -3154,6 +3161,10 @@ importers:
         version: 6.1.3
 
   src/suite/a-training/modules/training-student:
+    dependencies:
+      vona-module-a-rbac:
+        specifier: workspace:^
+        version: link:../../../../suite-vendor/a-cabloy/modules/a-rbac
     devDependencies:
       clean-package:
         specifier: ^2.2.0

@@ -18,7 +18,7 @@ import { ModelRecord } from '../src/model/record.ts';
 const dossierTextAttendance = Buffer.from('attendance dossier file');
 const dossierTextAssessment = Buffer.from('assessment dossier file');
 
-describe('record.test.ts', () => {
+describe('record.test.ts', { concurrency: false }, () => {
   it('action:record:resolvesNamedRelationLazily', async () => {
     await app.bean.executor.mockCtx(async () => {
       const ModelRecordRef = appResource.getBean('training-record.model.record')!
@@ -138,15 +138,19 @@ describe('record.test.ts', () => {
           ],
         } as any as DtoRecordCreate;
         const studentId = await app.bean.executor.performAction('post', '/training/student', {
+          innerAccess: false,
           body: studentData,
         });
         recordData.studentId = studentId;
         const recordId = await app.bean.executor.performAction('post', '/training/record', {
+          innerAccess: false,
           body: recordData,
         });
         assert.equal(!!recordId, true);
 
-        const selectRes: any = await app.bean.executor.performAction('get', '/training/record');
+        const selectRes: any = await app.bean.executor.performAction('get', '/training/record', {
+          innerAccess: false,
+        });
         const recordItem = selectRes.list.find((item: any) => String(item.id) === String(recordId));
         assert.equal(!!recordItem, true);
         assert.equal(recordItem!.name, recordData.name);
@@ -157,6 +161,7 @@ describe('record.test.ts', () => {
         assert.equal(recordItem!.dossierFiles?.[0]?.filename, 'attendance.txt');
 
         let record: any = await app.bean.executor.performAction('get', '/training/record/:id', {
+          innerAccess: false,
           params: { id: recordId },
         });
         const recordSubject = record.trainingRecordSubjects?.[0];
@@ -189,6 +194,7 @@ describe('record.test.ts', () => {
         assert.equal(await downloadResponse.text(), dossierTextAttendance.toString());
 
         let student: any = await app.bean.executor.performAction('get', '/training/student/:id', {
+          innerAccess: false,
           params: { id: studentId },
         });
         let studentRecord = student.trainingRecords?.find(
@@ -236,12 +242,14 @@ describe('record.test.ts', () => {
           ],
         } as any as DtoRecordUpdate;
         const updateRes = await app.bean.executor.performAction('patch', '/training/record/:id', {
+          innerAccess: false,
           params: { id: recordId },
           body: dataUpdate,
         });
         assert.equal(updateRes, null);
 
         record = await app.bean.executor.performAction('get', '/training/record/:id', {
+          innerAccess: false,
           params: { id: recordId },
         });
         const [updatedMathSubject, updatedEnglishSubject] = record.trainingRecordSubjects ?? [];
@@ -267,6 +275,7 @@ describe('record.test.ts', () => {
         assert.equal(updatedEnglishSubject?.score, 87);
 
         student = await app.bean.executor.performAction('get', '/training/student/:id', {
+          innerAccess: false,
           params: { id: studentId },
         });
         studentRecord = student.trainingRecords?.find(
@@ -277,16 +286,19 @@ describe('record.test.ts', () => {
         assert.equal(studentRecord?.trainingRecordSubjects?.length, 2);
 
         const deleteRes = await app.bean.executor.performAction('delete', '/training/record/:id', {
+          innerAccess: false,
           params: { id: recordId },
         });
         assert.equal(deleteRes, null);
 
         record = await app.bean.executor.performAction('get', '/training/record/:id', {
+          innerAccess: false,
           params: { id: recordId },
         });
         assert.equal(record, undefined);
 
         student = await app.bean.executor.performAction('get', '/training/student/:id', {
+          innerAccess: false,
           params: { id: studentId },
         });
         studentRecord = student.trainingRecords?.find(
@@ -300,10 +312,12 @@ describe('record.test.ts', () => {
         assert.equal(!!retainedDossierFileAssessment, true);
 
         await app.bean.executor.performAction('delete', '/training/student/:id', {
+          innerAccess: false,
           params: { id: studentId },
         });
 
         student = await app.bean.executor.performAction('get', '/training/student/:id', {
+          innerAccess: false,
           params: { id: studentId },
         });
         assert.equal(student, undefined);

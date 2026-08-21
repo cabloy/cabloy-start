@@ -57,20 +57,9 @@ export class DtoRbacGrantCreate {
   @Api.field(
     v.title($locale('DataScope')),
     v.required(),
-    z.enum([
-      'all',
-      'customDepartments',
-      'ownDepartment',
-      'ownDepartmentAndDescendants',
-      'mine',
-    ]),
+    z.enum(['all', 'customDepartments', 'ownDepartment', 'ownDepartmentAndDescendants', 'mine']),
   )
-  dataScope:
-    | 'all'
-    | 'customDepartments'
-    | 'ownDepartment'
-    | 'ownDepartmentAndDescendants'
-    | 'mine';
+  dataScope: 'all' | 'customDepartments' | 'ownDepartment' | 'ownDepartmentAndDescendants' | 'mine';
 
   @Api.field(v.title($locale('Enabled')), v.required())
   enabled: boolean;

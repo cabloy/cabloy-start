@@ -1,11 +1,5 @@
-import type {
-  IEventExecute,
-  NextEvent,
-} from 'vona-module-a-event';
-import type {
-  TypeEventResolvePolicyData,
-  TypeEventResolvePolicyResult,
-} from 'vona-module-a-rbac';
+import type { IEventExecute, NextEvent } from 'vona-module-a-event';
+import type { TypeEventResolvePolicyData, TypeEventResolvePolicyResult } from 'vona-module-a-rbac';
 
 import { BeanBase } from 'vona';
 import { EventListener } from 'vona-module-a-event';

@@ -17,7 +17,9 @@ function getRecordSubjectsInclude(): { trainingRecordSubjects: true; student: tr
 
 @Service()
 export class ServiceRecord extends BeanBase {
-  async create(record: DtoRecordCreate): Promise<EntityRecord> {
+  async create(
+    record: DtoRecordCreate & Pick<EntityRecord, 'departmentId' | 'userIdOwner'>,
+  ): Promise<EntityRecord> {
     return await this.scope.model.record.insert(record, {
       include: getRecordSubjectsInclude(),
     });
@@ -36,14 +38,20 @@ export class ServiceRecord extends BeanBase {
     });
   }
 
-  async update(id: TableIdentity, record: DtoRecordUpdate) {
-    return await this.scope.model.record.updateById(id, record, {
+  async update(id: TableIdentity, record: DtoRecordUpdate): Promise<void> {
+    await this.scope.model.record.updateById(id, record, {
       include: getRecordSubjectsInclude(),
     });
   }
 
-  async delete(id: TableIdentity) {
-    return await this.scope.model.record.deleteById(id, {
+  async delete(id: TableIdentity): Promise<void> {
+    await this.scope.model.record.deleteById(id, {
+      include: getRecordSubjectsInclude(),
+    });
+  }
+
+  async deleteBulk(ids: TableIdentity[]): Promise<void> {
+    await this.scope.model.record.deleteBulk(ids, {
       include: getRecordSubjectsInclude(),
     });
   }

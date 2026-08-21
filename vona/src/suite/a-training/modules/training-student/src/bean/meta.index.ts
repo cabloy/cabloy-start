@@ -7,6 +7,8 @@ import { $tableColumns } from 'vona-module-a-ormutils';
 @Meta<IMetaOptionsIndex>({
   indexes: {
     ...$tableColumns('trainingStudent', 'name'),
+    ...$tableColumns('trainingStudent', 'departmentId'),
+    ...$tableColumns('trainingStudent', 'userIdOwner'),
   },
 })
 export class MetaIndex extends BeanBase {}

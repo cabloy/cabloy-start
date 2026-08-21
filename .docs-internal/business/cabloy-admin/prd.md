@@ -110,9 +110,9 @@ An authorized administrator who maintains the Department forest, assigns members
 ### Operate within a Department and owner scope
 
 1. An ordinary role holder calls an opted-in operational action directly or through the Admin UI.
-2. The server resolves their active-instance roles, Department memberships, enabled Department descendants, and authenticated owner identity.
+2. The opted-in Controller/action boundary resolves their active-instance roles, Department memberships, enabled Department descendants, and authenticated owner identity, then constructs a private typed scope context; public DTOs cannot carry authority.
 3. Matching grants combine as a union of `all`, custom Departments, own Department, own Department plus descendants, and `mine` terms.
-4. The server applies the resulting scope to reads and mutations; stale or missing browser capabilities never widen authority.
+4. Neutral domain services apply the supplied scope context to reads and mutations while preserving owner, Department, parent, relationship, and transaction invariants; stale or missing browser capabilities never widen authority.
 
 ## Product Requirements
 

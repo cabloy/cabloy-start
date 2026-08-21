@@ -30,6 +30,12 @@ export interface IEntityOptionsRecord extends IDecoratorEntityOptions {}
   },
 })
 export class EntityRecord extends EntityBase {
+  @Api.field(ZovaRender.visible(false), v.nullable(), v.tableIdentity())
+  departmentId: TableIdentity | null;
+
+  @Api.field(ZovaRender.visible(false), v.required(), v.tableIdentity())
+  userIdOwner: TableIdentity;
+
   @Api.field(
     v.title($locale('TrainingRecordName')),
     v.required(),

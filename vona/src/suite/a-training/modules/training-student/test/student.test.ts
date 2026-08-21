@@ -13,7 +13,7 @@ import {
 import { DtoDetailRecordResItem } from '../src/dto/detailRecordResItem.tsx';
 import { DtoStudentSummary } from '../src/dto/studentSummary.tsx';
 
-describe('student.test.ts', () => {
+describe('student.test.ts', { concurrency: false }, () => {
   it('action:student:formLayoutMetadata', async () => {
     await app.bean.executor.mockCtx(async () => {
       for (const DtoClass of [DtoStudentCreate, DtoStudentUpdate, DtoStudentView]) {
@@ -79,9 +79,11 @@ describe('student.test.ts', () => {
   it('action:student:emittedDtoSchemas', async () => {
     await app.bean.executor.mockCtx(async () => {
       const summaryApiJson = await app.bean.openapi.generateJsonOfClass(DtoStudentSummary);
-      const summaryComponent = Object.values(summaryApiJson.components!.schemas as any).find(item => {
-        return (item as any).properties?.summaryText;
-      }) as any;
+      const summaryComponent = Object.values(summaryApiJson.components!.schemas as any).find(
+        item => {
+          return (item as any).properties?.summaryText;
+        },
+      ) as any;
       assert.ok(summaryComponent);
       assert.deepEqual(
         Object.keys(summaryComponent.properties).sort(),
@@ -97,7 +99,8 @@ describe('student.test.ts', () => {
         ].sort(),
       );
 
-      const detailRecordApiJson = await app.bean.openapi.generateJsonOfClass(DtoDetailRecordResItem);
+      const detailRecordApiJson =
+        await app.bean.openapi.generateJsonOfClass(DtoDetailRecordResItem);
       const detailRecordComponent = Object.values(
         detailRecordApiJson.components!.schemas as any,
       ).find(item => (item as any).properties?._lineNumber) as any;
@@ -142,6 +145,7 @@ describe('student.test.ts', () => {
       await app.bean.passport.signinMock();
       // create
       const studentId = await app.bean.executor.performAction('post', '/training/student', {
+        innerAccess: false,
         body: data,
       });
       assert.equal(!!studentId, true);
@@ -149,6 +153,7 @@ describe('student.test.ts', () => {
       const selectRes: DtoStudentSelectRes = await app.bean.executor.performAction(
         'get',
         '/training/student',
+        { innerAccess: false },
       );
       const studentItem = selectRes.list.find(item => item.name === data.name);
       assert.equal(!!studentItem, true);
@@ -159,6 +164,7 @@ describe('student.test.ts', () => {
         'get',
         '/training/student',
         {
+          innerAccess: false,
           query: {
             level: data.level,
           },
@@ -174,6 +180,7 @@ describe('student.test.ts', () => {
       );
       // findOne and nested create check
       let student: any = await app.bean.executor.performAction('get', '/training/student/:id', {
+        innerAccess: false,
         params: { id: studentId },
       });
       const record = student.trainingRecords?.[0];
@@ -219,12 +226,14 @@ describe('student.test.ts', () => {
         ],
       } as any as DtoStudentUpdate;
       const updateRes = await app.bean.executor.performAction('patch', '/training/student/:id', {
+        innerAccess: false,
         params: { id: studentId },
         body: dataUpdate,
       });
       assert.equal(updateRes, null);
       // findOne after nested update
       student = await app.bean.executor.performAction('get', '/training/student/:id', {
+        innerAccess: false,
         params: { id: studentId },
       });
       const updatedRecord = student.trainingRecords?.[0];
@@ -255,7 +264,7 @@ describe('student.test.ts', () => {
       const summary: DtoStudentSummary = await app.bean.executor.performAction(
         'get',
         '/training/student/summary/:id',
-        { params: { id: studentId } },
+        { innerAccess: false, params: { id: studentId } },
       );
       assert.equal(summary.name, dataUpdate.name);
       assert.equal(summary.mobile, maskedMobileUpdate);
@@ -265,22 +274,26 @@ describe('student.test.ts', () => {
       assert.equal(typeof summary.summaryText, 'string');
       // delete
       const deleteRes = await app.bean.executor.performAction('delete', '/training/student/:id', {
+        innerAccess: false,
         params: { id: student.id },
       });
       assert.equal(deleteRes, null);
       // findOne
       student = await app.bean.executor.performAction('get', '/training/student/:id', {
+        innerAccess: false,
         params: { id: student.id },
       });
       assert.equal(student, undefined);
       // create again for force delete
       const studentIdForce = await app.bean.executor.performAction('post', '/training/student', {
+        innerAccess: false,
         body: data,
       });
       const deleteForceRes = await app.bean.executor.performAction(
         'delete',
         '/training/student/deleteForce/:id',
         {
+          innerAccess: false,
           params: { id: studentIdForce },
         },
       );
@@ -322,6 +335,7 @@ describe('student.test.ts', () => {
       await app.bean.passport.signinMock();
       await assert.rejects(async () => {
         await app.bean.executor.performAction('post', '/training/student', {
+          innerAccess: false,
           body: {
             name: '__Tom__',
             description: 'This is a test',
@@ -339,6 +353,7 @@ describe('student.test.ts', () => {
       await app.bean.passport.signinMock();
       await assert.rejects(async () => {
         await app.bean.executor.performAction('post', '/training/student', {
+          innerAccess: false,
           body: {
             name: '__Tom__',
             description: 'This is a test',
@@ -355,6 +370,7 @@ describe('student.test.ts', () => {
       await app.bean.passport.signinMock();
       await assert.rejects(async () => {
         await app.bean.executor.performAction('post', '/training/student', {
+          innerAccess: false,
           body: {
             name: '__Tom__',
             description: 'This is a test',

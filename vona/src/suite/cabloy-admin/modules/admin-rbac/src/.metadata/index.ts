@@ -271,6 +271,7 @@ export * from '../service/rbacGrantDepartment.ts';
 export * from '../service/rbacPolicy.ts';
 export * from '../service/rbacPolicyProjection.ts';
 export * from '../service/rbacPolicyRevision.ts';
+export * from '../service/rbacScopeAdapter.ts';
 
 import 'vona-module-a-bean';
 declare module 'vona-module-a-bean' {
@@ -281,6 +282,7 @@ declare module 'vona-module-a-bean' {
 'admin-rbac:rbacPolicy': never;
 'admin-rbac:rbacPolicyProjection': never;
 'admin-rbac:rbacPolicyRevision': never;
+'admin-rbac:rbacScopeAdapter': never;
     }
 
   
@@ -335,6 +337,16 @@ declare module 'vona-module-admin-rbac' {
           export interface ServiceRbacPolicyRevision {
             get $beanFullName(): 'admin-rbac.service.rbacPolicyRevision';
             get $onionName(): 'admin-rbac:rbacPolicyRevision';
+          }
+
+        export interface ServiceRbacScopeAdapter {
+          /** @internal */
+          get scope(): ScopeModuleAdminRbac;
+        }
+
+          export interface ServiceRbacScopeAdapter {
+            get $beanFullName(): 'admin-rbac.service.rbacScopeAdapter';
+            get $onionName(): 'admin-rbac:rbacScopeAdapter';
           } 
 }
 /** service: end */
@@ -344,12 +356,14 @@ import type { ServiceRbacGrantDepartment } from '../service/rbacGrantDepartment.
 import type { ServiceRbacPolicy } from '../service/rbacPolicy.ts';
 import type { ServiceRbacPolicyProjection } from '../service/rbacPolicyProjection.ts';
 import type { ServiceRbacPolicyRevision } from '../service/rbacPolicyRevision.ts';
+import type { ServiceRbacScopeAdapter } from '../service/rbacScopeAdapter.ts';
 export interface IModuleService {
   'rbacGrant': ServiceRbacGrant;
 'rbacGrantDepartment': ServiceRbacGrantDepartment;
 'rbacPolicy': ServiceRbacPolicy;
 'rbacPolicyProjection': ServiceRbacPolicyProjection;
 'rbacPolicyRevision': ServiceRbacPolicyRevision;
+'rbacScopeAdapter': ServiceRbacScopeAdapter;
 }
 /** service: end */
 /** service: begin */
@@ -362,6 +376,7 @@ declare module 'vona' {
 'admin-rbac.service.rbacPolicy': ServiceRbacPolicy;
 'admin-rbac.service.rbacPolicyProjection': ServiceRbacPolicyProjection;
 'admin-rbac.service.rbacPolicyRevision': ServiceRbacPolicyRevision;
+'admin-rbac.service.rbacScopeAdapter': ServiceRbacScopeAdapter;
   }
 }
 /** service: end */

@@ -342,13 +342,14 @@ Tasks:
 
 - freeze explicit decorator opt-in and canonical `<controllerBeanFullName>#<action>` identity;
 - include decorated actions from non-`@Resource()` Controllers and exclude undecorated actions;
-- validate same-Controller `actionInherit`, default deny, and independent `GuardBase` composition;
+- validate same-Controller `actionInherit`, default deny, request-local decision handoff, and normal `GuardBase` options;
+- make adapter-defined unrestricted admission produce an action-bound `all` decision before policy resolution without importing Start policy semantics;
 - define safe predicate composition and opaque capability contracts without importing Start policy semantics.
 
 Acceptance checks:
 
 - missing, invalid, self-referential, cyclic, or cross-Controller aliases fail closed;
-- the required `systemAdmin`/RBAC composition exercises match and mismatch fall-through independently;
+- the configured unrestricted adapter path stores an action-bound `all` decision without policy resolution, ordinary RBAC decisions retain default-deny behavior, and normal guard options remain covered;
 - no legacy action requires migration merely because the catalog exists.
 
 #### WBS-ADM-80-02: Deliver Start grants, Department resolution, and policy invalidation
@@ -360,8 +361,8 @@ Primary areas:
 Tasks:
 
 - complete role-to-action grant validation and enabled-state handling;
-- resolve `all`, `customDepartments`, `ownDepartment`, `ownDepartmentAndDescendants`, and `mine` terms in active-instance scope;
-- preserve union semantics, disabled-Department behavior, protected control-plane authority, and revision-aware invalidation;
+- resolve `all`, `customDepartments`, `ownDepartment`, `ownDepartmentAndDescendants`, and `mine` terms in active-instance scope, emitting an explicit `all` term for an ordinary scoped `all` grant;
+- preserve union semantics, adapter-defined unrestricted admission, disabled-Department behavior, protected control-plane authority, and revision-aware invalidation;
 - expose safe policy-editor metadata and effective summaries without raw predicates or hidden topology.
 
 Acceptance checks:
@@ -374,20 +375,21 @@ Acceptance checks:
 
 Primary areas:
 
-- `training-student`, `training-record` entities, version-1 schema paths, DTOs, services, nested relation mutations, focused tests
+- `training-student`, `training-record` entities, version-1 schema paths, DTOs, opted-in Controller/action policy boundaries, typed internal scope handoff, neutral services, nested relation mutations, focused tests
 
 Tasks:
 
 - add server-controlled `departmentId` and `userIdOwner` while retaining both module `fileVersion: 1` values;
-- deliberately opt in the acceptance actions and enforce scope for select, view, create, update, delete, bulk, and nested operations;
-- derive Student ownership and validate Department/owner transitions; inherit both fields from Student for Record writes;
-- lock and scope-check targets transactionally and reject forged or cross-instance relationship fields.
+- deliberately opt in the acceptance actions; resolve policy and scope at the Controller/action boundary, and apply scope for select, view, create, update, delete, bulk, and nested operations;
+- derive Student ownership at the Controller/action boundary on create, preserve it on update, and inherit both fields from Student for Record writes;
+- expose Student bulk deletion as `DELETE /training/student/bulk` with the ids-only `DtoStudentBulkDelete` command; no Student bulk-update action is part of this slice;
+- validate the complete unique bulk target set before mutation and reject forged or cross-instance relationship fields; the training Record service deliberately uses direct ORM operations without application-level transactions or row locks, while services must not independently derive caller authority.
 
 Acceptance checks:
 
-- direct API calls cannot widen scope through filters, guessed IDs, nested writes, bulk IDs, or submitted owner/Department fields;
-- out-of-scope rows are absent, bulk mutations require exact scoped count, and failed nested mutations roll back atomically;
-- no version-2 migration is introduced; changed version paths are covered by `npm run test`.
+- adapter-defined unrestricted requests produce and consume an active-instance `all` decision before scoped argument extraction, while direct API calls cannot widen ordinary scopes through filters, guessed IDs, nested writes, bulk IDs, or submitted owner/Department fields;
+- present out-of-scope rows are rejected at the Controller boundary, Student and Record bulk DELETE reject empty/duplicate/missing/mixed-scope targets before mutation, and inherited `summary`/force-delete/bulk-delete actions resolve their `view`/`delete` policy keys;
+- Record nested and multi-row operations intentionally do not claim rollback or row-lock guarantees; no version-2 migration is introduced and changed version paths are covered by `npm run test`.
 
 #### WBS-ADM-80-04: Deliver policy-editor and capability UX
 

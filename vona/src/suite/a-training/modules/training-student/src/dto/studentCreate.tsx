@@ -50,7 +50,10 @@ export interface IDtoOptionsStudentCreate extends IDecoratorDtoOptions {}
                         title: $locale('TrainingRecords'),
                         children: [
                           { type: 'field', name: 'level' },
-                          { type: 'section', children: [{ type: 'field', name: 'trainingRecords' }] },
+                          {
+                            type: 'section',
+                            children: [{ type: 'field', name: 'trainingRecords' }],
+                          },
                         ],
                       },
                     ],
@@ -81,6 +84,7 @@ export interface IDtoOptionsStudentCreate extends IDecoratorDtoOptions {}
   },
 })
 export class DtoStudentCreate extends $Dto.create(() => ModelStudent, {
+  columns: ['name', 'description', 'mobile', 'imageId', 'level'],
   include: { trainingRecords: { dtoClass: DtoDetailRecordMutate } },
 }) {
   @Api.field(ZovaRender.visible(false), v.optional(), v.array(DtoDetailRecordResItem))

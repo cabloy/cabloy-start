@@ -71,4 +71,10 @@ export class ServiceStudent extends BeanBase {
       include: getStudentRecordSubjectsInclude(),
     });
   }
+
+  async deleteBulk(ids: TableIdentity[]): Promise<void> {
+    await this.scope.model.student.deleteBulk(ids, {
+      include: getStudentRecordSubjectsInclude(),
+    });
+  }
 }

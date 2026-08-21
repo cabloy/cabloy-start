@@ -36,12 +36,7 @@ export interface IEntityOptionsRbacGrant extends IDecoratorEntityOptions {}
   },
 })
 export class EntityRbacGrant extends EntityBase {
-  @Api.field(
-    v.title($locale('Role')),
-    v.required(),
-    v.tableIdentity(),
-    ZovaRender.order(1),
-  )
+  @Api.field(v.title($locale('Role')), v.required(), v.tableIdentity(), ZovaRender.order(1))
   roleId: TableIdentity;
 
   @Api.field(v.title($locale('ActionKey')), v.required(), v.min(1), ZovaRender.order(2))
@@ -51,13 +46,7 @@ export class EntityRbacGrant extends EntityBase {
     v.title($locale('DataScope')),
     v.required(),
     ZovaRender.order(3),
-    z.enum([
-      'all',
-      'customDepartments',
-      'ownDepartment',
-      'ownDepartmentAndDescendants',
-      'mine',
-    ]),
+    z.enum(['all', 'customDepartments', 'ownDepartment', 'ownDepartmentAndDescendants', 'mine']),
   )
   dataScope: TypeRbacGrantDataScope;
 

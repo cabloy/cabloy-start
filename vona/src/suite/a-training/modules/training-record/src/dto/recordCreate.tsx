@@ -40,6 +40,17 @@ export interface IDtoOptionsRecordCreate extends IDecoratorDtoOptions {}
   },
 })
 export class DtoRecordCreate extends $Dto.create(() => ModelRecord, {
+  columns: [
+    'studentId',
+    'name',
+    'subjectCount',
+    'totalScore',
+    'averageScore',
+    'trainingTime',
+    'sceneImageIds',
+    'dossierFileIds',
+    'description',
+  ],
   include: { trainingRecordSubjects: { dtoClass: DtoDetailRecordSubjectMutate } },
 }) {
   @Api.field(ZovaRender.visible(false), v.optional(), v.array(DtoDetailRecordSubjectResItem))

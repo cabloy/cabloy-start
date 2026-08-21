@@ -7,6 +7,7 @@ describe('policyInvalidation.test.ts', { concurrency: false }, () => {
   it('event:policyInvalidated advances revision and clears projections only after commit', async () => {
     const instanceName = 'shareTest' as any;
     let revisionId: string | undefined;
+    let existingRevision: number | undefined;
     let cacheClearCount = 0;
     const clearAllCaches = mock.method(app.bean.permission, 'clearAllCaches', async () => {
       cacheClearCount += 1;
@@ -16,7 +17,7 @@ describe('policyInvalidation.test.ts', { concurrency: false }, () => {
         async () => {
           const adminRbac = app.scope('admin-rbac');
           const existing = await adminRbac.model.policyRevision.get({});
-          assert.equal(existing, undefined);
+          existingRevision = existing?.revision;
           const revision = adminRbac.service.rbacPolicyRevision;
           const before = Number(await revision.current());
           revisionId = String((await adminRbac.model.policyRevision.get({}))?.id);
@@ -44,7 +45,12 @@ describe('policyInvalidation.test.ts', { concurrency: false }, () => {
         if (revisionId) {
           await app.bean.executor.mockCtx(
             async () => {
-              await app.scope('admin-rbac').model.policyRevision.deleteById(revisionId!);
+              const policyRevision = app.scope('admin-rbac').model.policyRevision;
+              if (existingRevision === undefined) {
+                await policyRevision.deleteById(revisionId!);
+              } else {
+                await policyRevision.updateById(revisionId!, { revision: existingRevision });
+              }
             },
             { instanceName },
           );

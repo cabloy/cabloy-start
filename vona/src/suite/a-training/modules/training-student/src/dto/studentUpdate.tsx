@@ -83,6 +83,7 @@ export interface IDtoOptionsStudentUpdate extends IDecoratorDtoOptions {}
   },
 })
 export class DtoStudentUpdate extends $Dto.update(() => ModelStudent, {
+  columns: ['name', 'description', 'mobile', 'imageId', 'level'],
   include: { trainingRecords: { dtoClass: DtoDetailRecordMutate } },
 }) {
   @Api.field(ZovaRender.visible(false), v.optional(), v.array(DtoDetailRecordResItem))

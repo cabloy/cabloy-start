@@ -40,6 +40,16 @@ export interface IDtoOptionsRecordUpdate extends IDecoratorDtoOptions {}
   },
 })
 export class DtoRecordUpdate extends $Dto.update(() => ModelRecord, {
+  columns: [
+    'name',
+    'subjectCount',
+    'totalScore',
+    'averageScore',
+    'trainingTime',
+    'sceneImageIds',
+    'dossierFileIds',
+    'description',
+  ],
   include: { trainingRecordSubjects: { dtoClass: DtoDetailRecordSubjectMutate } },
 }) {
   @Api.field(ZovaRender.visible(false), v.optional(), v.array(DtoDetailRecordSubjectResItem))
