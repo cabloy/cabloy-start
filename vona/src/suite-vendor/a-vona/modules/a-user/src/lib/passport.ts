@@ -1,6 +1,7 @@
+import type { IGuardOptionsRbac } from 'vona-module-a-rbac';
+
 import { Aspect } from 'vona-module-a-aspect';
 
-import type { IGuardOptionsRbac } from 'vona-module-a-rbac';
 import type { IGuardOptionsRoleName } from '../bean/guard.roleName.ts';
 
 function Public(_public: boolean = true): ClassDecorator & MethodDecorator {
@@ -24,8 +25,14 @@ function SystemAdmin(
   );
 }
 
-function Rbac(options?: Partial<IGuardOptionsRbac>): ClassDecorator & MethodDecorator {
-  return Aspect.guard('a-rbac:rbac', options);
+function Rbac(options?: Partial<IGuardOptionsRbac>): MethodDecorator {
+  const decorator = Aspect.guard('a-rbac:rbac', { ...options });
+  return (target, propertyKey, descriptor) => {
+    if (propertyKey === undefined) {
+      throw new Error('Passport.rbac must decorate an action');
+    }
+    return decorator(target, propertyKey, descriptor);
+  };
 }
 
 export interface IDecoratorGroupPassport {
