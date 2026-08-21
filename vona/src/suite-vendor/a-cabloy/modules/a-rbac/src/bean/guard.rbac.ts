@@ -9,7 +9,7 @@ import type {
   TypeRbacDataScope,
 } from '../types/rbac.ts';
 
-import { setRbacDecision } from '../lib/rbac.ts';
+import { createRbacAllScopeDecision, setRbacDecision } from '../lib/rbac.ts';
 
 export interface IGuardOptionsRbac extends IDecoratorGuardOptions {
   dataScope?: boolean;
@@ -27,6 +27,11 @@ export class GuardRbac extends GuardBase {
     const action = this.bean.rbacCatalog.getAction(this.ctx.route);
     if (!action) return false;
     const effectiveAction = { ...action, options: { ...action.options, ...options } };
+    if (await this.bean.rbacScope.isUnrestricted()) {
+      setRbacDecision(this.ctx, createRbacAllScopeDecision(effectiveAction));
+      return true;
+    }
+
     const decision = await this.scope.event.resolvePolicy.emit(
       {
         action: effectiveAction,

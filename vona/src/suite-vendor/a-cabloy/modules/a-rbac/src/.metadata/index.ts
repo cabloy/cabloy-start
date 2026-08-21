@@ -27,6 +27,7 @@ declare module 'vona-module-a-rbac' {
 /** guard: end */
 /** bean: begin */
 export * from '../bean/bean.rbacCatalog.ts';
+export * from '../bean/bean.rbacScope.ts';
 
 import 'vona';
 declare module 'vona' {
@@ -38,15 +39,22 @@ declare module 'vona-module-a-rbac' {
         export interface BeanRbacCatalog {
           /** @internal */
           get scope(): ScopeModuleARbac;
+        }
+
+        export interface BeanRbacScope {
+          /** @internal */
+          get scope(): ScopeModuleARbac;
         } 
 }
 /** bean: end */
 /** bean: begin */
 import type { BeanRbacCatalog } from '../bean/bean.rbacCatalog.ts';
+import type { BeanRbacScope } from '../bean/bean.rbacScope.ts';
 import 'vona';
 declare module 'vona' {
   export interface IBeanRecordGlobal {
     'rbacCatalog': BeanRbacCatalog;
+    'rbacScope': BeanRbacScope;
   }
 }
 /** bean: end */
@@ -101,8 +109,12 @@ declare module 'vona-module-a-event' {
   }
 }
 /** event: end */
+/** config: begin */
+export * from '../config/config.ts';
+import type { config } from '../config/config.ts';
+/** config: end */
 /** scope: begin */
-import { BeanScopeBase, type BeanScopeUtil } from 'vona';
+import { BeanScopeBase, type BeanScopeUtil, type TypeModuleConfig } from 'vona';
 import { Scope } from 'vona-module-a-bean';
 
 @Scope()
@@ -110,6 +122,7 @@ export class ScopeModuleARbac extends BeanScopeBase {}
 
 export interface ScopeModuleARbac {
   util: BeanScopeUtil;
+config: TypeModuleConfig<typeof config>;
 event: IModuleEvent;
 }
 
@@ -123,7 +136,9 @@ declare module 'vona' {
     rbac: ScopeModuleARbac;
   }
   
-  
+  export interface IBeanScopeConfig {
+    'a-rbac': ReturnType<typeof config>;
+  }
 
   
 

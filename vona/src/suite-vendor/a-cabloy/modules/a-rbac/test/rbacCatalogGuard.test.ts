@@ -1,9 +1,9 @@
+import type { VonaContext } from 'vona';
 import type { ContextRoute } from 'vona-module-a-web';
 
 import assert from 'node:assert';
 import { describe, it } from 'node:test';
 import { beanFullNameFromOnionName } from 'vona';
-import { GuardRoleName } from 'vona-module-a-user';
 import { getCacheControllerRoutes } from 'vona-module-a-web';
 
 import type {
@@ -69,25 +69,22 @@ function createDescriptor(action = 'select', actionInheritKey?: string): IRbacAc
   };
 }
 
-function createRoleGuard(matched: boolean): GuardRoleName {
-  const guard = Object.create(GuardRoleName.prototype) as GuardRoleName;
-  Object.defineProperties(guard, {
-    bean: { value: { passport: { checkRoleName: async () => matched } } },
-    app: { value: { throw: async () => false } },
-  });
-  return guard;
-}
-
 function createGuard(
   action: IRbacActionDescriptor,
   decision: IRbacPolicyDecision | undefined,
-): { guard: GuardRbac; request: () => IRbacPolicyRequest | undefined; state: object } {
+  unrestricted = false,
+): { guard: GuardRbac; request: () => IRbacPolicyRequest | undefined; ctx: VonaContext } {
   let policyRequest: IRbacPolicyRequest | undefined;
-  const state = {};
+  const ctx = { route: action.route } as VonaContext;
   const guard = Object.create(GuardRbac.prototype) as GuardRbac;
   Object.defineProperties(guard, {
-    bean: { value: { rbacCatalog: { getAction: () => action } } },
-    ctx: { value: { route: action.route, state } },
+    bean: {
+      value: {
+        rbacCatalog: { getAction: () => action },
+        rbacScope: { isUnrestricted: async () => unrestricted },
+      },
+    },
+    ctx: { value: ctx },
     scope: {
       value: {
         event: {
@@ -101,7 +98,7 @@ function createGuard(
       },
     },
   });
-  return { guard, request: () => policyRequest, state };
+  return { guard, request: () => policyRequest, ctx };
 }
 
 describe('rbacCatalogGuard.test.ts', { concurrency: false }, () => {
@@ -181,11 +178,11 @@ describe('rbacCatalogGuard.test.ts', { concurrency: false }, () => {
       action,
       terms: [{ dataScope: 'mine', ownerId: '1' }],
     };
-    const { guard, request, state } = createGuard(action, decision);
+    const { guard, request, ctx } = createGuard(action, decision);
 
     assert.equal(await guard.check({}), true);
     assert.equal(request()?.policyActionKey, 'test:controller#update');
-    assert.deepEqual(getRbacDecision({ state }), decision);
+    assert.deepEqual(getRbacDecision(ctx), decision);
   });
 
   it('denies malformed policy decisions without storing them', async () => {
@@ -227,9 +224,9 @@ describe('rbacCatalogGuard.test.ts', { concurrency: false }, () => {
       },
     ];
     for (const decision of cases) {
-      const { guard, state } = createGuard(action, decision);
+      const { guard, ctx } = createGuard(action, decision);
       assert.equal(await guard.check({}), false);
-      assert.equal(getRbacDecision({ state }), undefined);
+      assert.equal(getRbacDecision(ctx), undefined);
     }
   });
 
@@ -240,51 +237,34 @@ describe('rbacCatalogGuard.test.ts', { concurrency: false }, () => {
       actionKey: action.actionKey,
       action: { ...action, route: undefined as never, options: undefined as never },
     };
-    const { guard, state } = createGuard(action, decision);
+    const { guard, ctx } = createGuard(action, decision);
 
     assert.equal(await guard.check({}), true);
-    assert.equal(getRbacDecision({ state })?.action.route, action.route);
-    assert.deepEqual(getRbacDecision({ state })?.action.options, action.options);
+    assert.equal(getRbacDecision(ctx)?.action.route, action.route);
+    assert.deepEqual(getRbacDecision(ctx)?.action.options, action.options);
   });
 
   it('returns valid deny decisions to GuardBase without treating them as malformed', async () => {
     const action = createDescriptor();
     const decision: IRbacPolicyDecision = { allowed: false, actionKey: action.actionKey, action };
-    const { guard, state } = createGuard(action, decision);
+    const { guard, ctx } = createGuard(action, decision);
 
     assert.equal(await guard.check({}), false);
-    assert.equal(getRbacDecision({ state })?.action.route, action.route);
-    assert.deepEqual(getRbacDecision({ state })?.action.options, action.options);
+    assert.equal(getRbacDecision(ctx)?.action.route, action.route);
+    assert.deepEqual(getRbacDecision(ctx)?.action.options, action.options);
   });
 
-  it('preserves independent systemAdmin and RBAC guard composition', async () => {
+  it('stores an all-scope decision without resolving policy for unrestricted access', async () => {
     const action = createDescriptor();
-    const decision: IRbacPolicyDecision = { allowed: true, actionKey: action.actionKey, action };
-    const rbacGuard = createGuard(action, decision).guard;
-    let nextCalls = 0;
-    const rbacNext = async () => {
-      nextCalls++;
-      return await rbacGuard.execute({}, async () => true);
-    };
+    const { guard, request, ctx } = createGuard(action, undefined, true);
 
-    const systemAdminMatch = createRoleGuard(true);
-    assert.equal(
-      await systemAdminMatch.execute(
-        { name: 'systemAdmin', passWhenMatched: true, rejectWhenDismatched: false },
-        rbacNext,
-      ),
-      true,
-    );
-    assert.equal(nextCalls, 0);
-
-    const systemAdminMismatch = createRoleGuard(false);
-    assert.equal(
-      await systemAdminMismatch.execute(
-        { name: 'systemAdmin', passWhenMatched: true, rejectWhenDismatched: false },
-        rbacNext,
-      ),
-      true,
-    );
-    assert.equal(nextCalls, 1);
+    assert.equal(await guard.check({}), true);
+    assert.equal(request(), undefined);
+    assert.deepEqual(getRbacDecision(ctx), {
+      allowed: true,
+      actionKey: action.actionKey,
+      action,
+      terms: [{ dataScope: 'all' }],
+    });
   });
 });
