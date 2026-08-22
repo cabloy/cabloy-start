@@ -101,6 +101,12 @@ export interface IRbacPolicyEditorData {
   list: IRbacPolicyEditorAction[];
 }
 
+export interface IRbacPolicyGrantColumnData {
+  actionKeys: string[];
+  enabled: boolean;
+  departmentIds?: TableIdentity[];
+}
+
 @Model<IModelOptionsRbacPolicy>()
 export class ModelRbacPolicy extends BeanModelBase {
   catalog() {
@@ -187,6 +193,36 @@ export class ModelRbacPolicy extends BeanModelBase {
     });
   }
 
+  setGrantColumn(roleId: TableIdentity, dataScope: TypeRbacPolicyDataScope, actionKeys: string[]) {
+    return this.$useMutationData<TableIdentity[], IRbacPolicyGrantColumnData>({
+      mutationKey: ['setGrantColumn', roleId, dataScope, actionKeys],
+      mutationFn: async ({ actionKeys, enabled, departmentIds }) => {
+        const grantIds: TableIdentity[] = [];
+        for (const actionKey of [...new Set(actionKeys)]) {
+          const grant = await this._setGrantEnabled(roleId, actionKey, dataScope, enabled);
+          if (grant && dataScope === 'customDepartments' && enabled) {
+            await this._replaceGrantDepartments(grant, departmentIds ?? []);
+            grantIds.push(grant);
+          }
+        }
+        return grantIds;
+      },
+      onSuccess: async (grantIds, { enabled }) => {
+        await this._invalidateRolePolicy(roleId);
+        if (dataScope === 'customDepartments' && enabled) {
+          await Promise.all(
+            grantIds.map(grantId =>
+              this.$invalidateQueries({ queryKey: ['grantDepartments', grantId] }),
+            ),
+          );
+        }
+      },
+      onError: async () => {
+        await this._invalidateRolePolicy(roleId);
+      },
+    });
+  }
+
   deleteGrant(roleId: TableIdentity, actionKey: string, dataScope: TypeRbacPolicyDataScope) {
     return this.$useMutationData<void, void>({
       mutationKey: ['deleteGrant', roleId, actionKey, dataScope],
@@ -267,6 +303,49 @@ export class ModelRbacPolicy extends BeanModelBase {
         await this._invalidateRolePolicy(roleId, grantId);
       },
     });
+  }
+
+  private async _setGrantEnabled(
+    roleId: TableIdentity,
+    actionKey: string,
+    dataScope: TypeRbacPolicyDataScope,
+    enabled: boolean,
+  ): Promise<TableIdentity | undefined> {
+    const grant = await this._findGrant(roleId, actionKey, dataScope);
+    if (grant) {
+      await this.scope.api.adminRbacRbacGrant.update({ enabled }, { params: { id: grant.id } });
+      return grant.id;
+    }
+    if (!enabled) return undefined;
+    return await this.scope.api.adminRbacRbacGrant.create({
+      roleId,
+      actionKey,
+      dataScope,
+      enabled: true,
+    });
+  }
+
+  private async _replaceGrantDepartments(grantId: TableIdentity, departmentIds: TableIdentity[]) {
+    const result = await this._selectAllGrantDepartments(grantId);
+    const existingByDepartmentId = new Map(
+      result.list.map(mapping => [String(mapping.departmentId), mapping]),
+    );
+    const departmentIdsByKey = new Map(
+      departmentIds.map(departmentId => [String(departmentId), departmentId]),
+    );
+    for (const departmentId of departmentIdsByKey.values()) {
+      if (existingByDepartmentId.has(String(departmentId))) continue;
+      await this.scope.api.adminRbacRbacGrantDepartment.create({
+        rbacGrantId: grantId,
+        departmentId,
+      });
+    }
+    for (const mapping of result.list) {
+      if (departmentIdsByKey.has(String(mapping.departmentId))) continue;
+      await this.scope.api.adminRbacRbacGrantDepartment.delete({
+        params: { id: mapping.id },
+      });
+    }
   }
 
   private async _selectAllGrants(

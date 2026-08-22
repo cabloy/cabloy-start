@@ -17,4 +17,7 @@ export default {
   DepartmentsNotConfigured: '部门尚未配置',
   LoadFailed: '无法加载策略数据',
   Retry: '重试',
+  ToggleColumn: '切换所有适用权限：',
+  ConfigureColumnDepartments: '配置列部门',
+  ConfigureColumnDepartmentsHint: '所选部门将应用于所有适用权限。',
 };

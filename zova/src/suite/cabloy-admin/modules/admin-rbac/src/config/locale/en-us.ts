@@ -17,4 +17,8 @@ export default {
   DepartmentsNotConfigured: 'Departments are not configured',
   LoadFailed: 'Policy data could not be loaded',
   Retry: 'Retry',
+  ToggleColumn: 'Toggle all applicable permissions for',
+  ConfigureColumnDepartments: 'Configure Departments for Column',
+  ConfigureColumnDepartmentsHint:
+    'The selected departments will apply to every applicable permission.',
 };

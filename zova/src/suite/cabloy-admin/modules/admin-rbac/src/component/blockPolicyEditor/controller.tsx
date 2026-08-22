@@ -51,6 +51,28 @@ interface DepartmentTreeItem {
 
 type PolicyAction = IRbacPolicyEditorAction;
 
+interface PolicyColumnOperation {
+  token: number;
+  actionKeys: string[];
+  dataScope: TypeRbacPolicyDataScope;
+}
+
+interface PolicyScopeState {
+  enabled: boolean;
+  departmentIds?: TableIdentity[];
+  departmentDataPending: boolean;
+  departmentDataError: boolean;
+}
+
+interface PolicyColumnState {
+  actionKeys: string[];
+  allEqual: boolean;
+  enabled: boolean;
+  departmentIds?: TableIdentity[];
+  departmentDataPending: boolean;
+  departmentDataError: boolean;
+}
+
 @Controller()
 export class ControllerBlockPolicyEditor extends BeanControllerBase {
   static $propsDefault = {};
@@ -60,6 +82,9 @@ export class ControllerBlockPolicyEditor extends BeanControllerBase {
   modelDepartment: ModelDepartment;
   departmentDialogSelectedIds: TableIdentity[] = [];
   departmentDialogSaving = false;
+  departmentColumnDialogOperation: PolicyColumnOperation | undefined;
+  pendingColumnOperations: Record<string, PolicyColumnOperation | undefined> = {};
+  nextColumnOperationToken = 0;
   expandedControllerNames: string[] = [];
   enabledScopes: Record<string, boolean | undefined> = {};
 
@@ -242,7 +267,7 @@ export class ControllerBlockPolicyEditor extends BeanControllerBase {
               <th scope="col">{locale.ActionKey()}</th>
               {dataScopes.map(dataScope => (
                 <th key={dataScope} scope="col">
-                  {this._dataScopeTitle(dataScope)}
+                  {this._renderScopeHeader(actions, dataScope)}
                 </th>
               ))}
             </tr>
@@ -267,6 +292,40 @@ export class ControllerBlockPolicyEditor extends BeanControllerBase {
       case 'mine':
         return locale.DataScopeMine();
     }
+  }
+
+  private _renderScopeHeader(
+    actions: IRbacPolicyCatalogActionView[],
+    dataScope: TypeRbacPolicyDataScope,
+    title = this._dataScopeTitle(dataScope),
+  ) {
+    const locale = this.scope.locale;
+    const actionKeys = actions
+      .filter(action => action.dataScopes.includes(dataScope))
+      .map(action => action.actionKey);
+    const state = this._getColumnState(actionKeys, dataScope);
+    return (
+      <div class="d-flex flex-column align-center ga-1">
+        <span>{title}</span>
+        <VCheckbox
+          color="primary"
+          density="compact"
+          hideDetails
+          aria-label={`${locale.ToggleColumn()} ${this._dataScopeTitle(dataScope)}`}
+          modelValue={state.allEqual && state.enabled}
+          indeterminate={!state.allEqual}
+          disabled={
+            actionKeys.length === 0 ||
+            state.departmentDataPending ||
+            state.departmentDataError ||
+            this._isColumnPending(dataScope, actionKeys)
+          }
+          onUpdate:modelValue={() => {
+            void this._toggleScopeColumn(actionKeys, dataScope);
+          }}
+        ></VCheckbox>
+      </div>
+    );
   }
 
   private _renderScopedActionRow(
@@ -298,7 +357,7 @@ export class ControllerBlockPolicyEditor extends BeanControllerBase {
           <thead>
             <tr>
               <th scope="col">{locale.ActionKey()}</th>
-              <th scope="col">{locale.Authorization()}</th>
+              <th scope="col">{this._renderScopeHeader(actions, 'all', locale.Authorization())}</th>
             </tr>
           </thead>
           <tbody>
@@ -387,9 +446,16 @@ export class ControllerBlockPolicyEditor extends BeanControllerBase {
             size="small"
             variant="tonal"
             aria-label={locale.RemoveDepartment()}
-            disabled={removeMutation.isPending}
+            disabled={
+              removeMutation.isPending ||
+              this._isMutationPending(grant.actionKey, 'customDepartments')
+            }
             onClick:close={async () => {
-              if (removeMutation.isPending) return;
+              if (
+                removeMutation.isPending ||
+                this._isMutationPending(grant.actionKey, 'customDepartments')
+              )
+                return;
               try {
                 await removeMutation.mutateAsync(mapping.id);
               } catch (error) {
@@ -541,6 +607,249 @@ export class ControllerBlockPolicyEditor extends BeanControllerBase {
     );
   }
 
+  private _getColumnState(
+    actionKeys: string[],
+    dataScope: TypeRbacPolicyDataScope,
+  ): PolicyColumnState {
+    const states = actionKeys.map(actionKey => this._getScopeState(actionKey, dataScope));
+    const firstState = states[0];
+    if (!firstState) {
+      return {
+        actionKeys,
+        allEqual: true,
+        enabled: false,
+        departmentDataPending: false,
+        departmentDataError: false,
+      };
+    }
+    const allEqual = states.every(state => this._scopeStatesEqual(firstState, state, dataScope));
+    return {
+      actionKeys,
+      allEqual,
+      enabled: firstState.enabled,
+      departmentIds: allEqual ? firstState.departmentIds : undefined,
+      departmentDataPending: states.some(state => state.departmentDataPending),
+      departmentDataError: states.some(state => state.departmentDataError),
+    };
+  }
+
+  private _getScopeState(actionKey: string, dataScope: TypeRbacPolicyDataScope): PolicyScopeState {
+    const scope = this._findConfiguredScope(actionKey, dataScope);
+    if (dataScope !== 'customDepartments') {
+      return {
+        enabled: this._scopeEnabled(actionKey, dataScope, scope?.enabled ?? false),
+        departmentDataPending: false,
+        departmentDataError: false,
+      };
+    }
+    const grant = this.modelRbacPolicy.grant(this.roleId, actionKey, dataScope);
+    const query = grant ? this._grantDepartments(grant) : undefined;
+    return {
+      enabled: this._scopeEnabled(actionKey, dataScope, scope?.enabled ?? false),
+      departmentIds: query?.data?.list.map(mapping => mapping.departmentId) ?? [],
+      departmentDataPending: query?.isPending ?? false,
+      departmentDataError: query?.isError ?? false,
+    };
+  }
+
+  private _scopeStatesEqual(
+    left: PolicyScopeState,
+    right: PolicyScopeState,
+    dataScope: TypeRbacPolicyDataScope,
+  ) {
+    if (left.enabled !== right.enabled) return false;
+    if (dataScope !== 'customDepartments') return true;
+    return this._departmentIdsEqual(left.departmentIds ?? [], right.departmentIds ?? []);
+  }
+
+  private _departmentIdsEqual(left: TableIdentity[], right: TableIdentity[]) {
+    const leftKeys = this._normalizeDepartmentIds(left);
+    const rightKeys = this._normalizeDepartmentIds(right);
+    return (
+      leftKeys.length === rightKeys.length && leftKeys.every((id, index) => id === rightKeys[index])
+    );
+  }
+
+  private _normalizeDepartmentIds(ids: TableIdentity[]): string[] {
+    return [...new Set(ids.map(id => String(id)))].toSorted();
+  }
+
+  private _columnKey(dataScope: TypeRbacPolicyDataScope, actionKeys: string[]) {
+    return `${dataScope}:${[...actionKeys].toSorted().join('|')}`;
+  }
+
+  private _isColumnPending(dataScope: TypeRbacPolicyDataScope, actionKeys: string[]) {
+    const actionKeySet = new Set(actionKeys);
+    return (
+      Object.values(this.pendingColumnOperations).some(
+        operation =>
+          operation?.dataScope === dataScope &&
+          operation.actionKeys.some(actionKey => actionKeySet.has(actionKey)),
+      ) ||
+      actionKeys.some(
+        actionKey =>
+          this.modelRbacPolicy.setGrantEnabled(this.roleId, actionKey, dataScope).isPending,
+      )
+    );
+  }
+
+  private async _toggleScopeColumn(actionKeys: string[], dataScope: TypeRbacPolicyDataScope) {
+    const state = this._getColumnState(actionKeys, dataScope);
+    if (
+      actionKeys.length === 0 ||
+      state.departmentDataPending ||
+      state.departmentDataError ||
+      this._isColumnPending(dataScope, actionKeys)
+    ) {
+      return;
+    }
+    const operation: PolicyColumnOperation = {
+      token: ++this.nextColumnOperationToken,
+      actionKeys,
+      dataScope,
+    };
+    this.pendingColumnOperations[this._columnKey(dataScope, actionKeys)] = operation;
+    const enabled = state.allEqual ? !state.enabled : true;
+    if (dataScope === 'customDepartments' && enabled) {
+      this.departmentColumnDialogOperation = operation;
+      this.departmentDialogSelectedIds = state.allEqual ? (state.departmentIds ?? []) : [];
+      this._openDepartmentColumnDialog(operation);
+      return;
+    }
+    const completed = await this._applyColumnOperation(operation, enabled);
+    if (!completed) this._releaseColumnOperation(operation);
+  }
+
+  private _openDepartmentColumnDialog(operation: PolicyColumnOperation) {
+    const locale = this.scope.locale as typeof this.scope.locale & {
+      Cancel(): string;
+      Save(): string;
+    };
+    this.$appModal.dialog(
+      {
+        title: locale.ConfigureColumnDepartments(),
+        slotDefault: () => (
+          <div class="d-flex flex-column ga-4">
+            <p class="text-body-2 text-medium-emphasis">
+              {locale.ConfigureColumnDepartmentsHint()}
+            </p>
+            <VTreeview
+              items={this.departmentTree}
+              itemTitle="name"
+              itemValue="id"
+              itemChildren="children"
+              selectable
+              selected={this.departmentDialogSelectedIds}
+              selectStrategy="independent"
+              openAll
+              density="compact"
+              onUpdate:selected={value => {
+                this.departmentDialogSelectedIds = this._getSelectedIds(value);
+              }}
+            ></VTreeview>
+          </div>
+        ),
+        slotActions: modal => (
+          <>
+            <VBtn
+              variant="text"
+              disabled={this.departmentDialogSaving}
+              nativeOnClick={() => modal.close()}
+            >
+              {locale.Cancel()}
+            </VBtn>
+            <VBtn
+              color="primary"
+              loading={this.departmentDialogSaving}
+              disabled={this.departmentDialogSaving}
+              nativeOnClick={async () => {
+                await this._saveDepartmentColumnDialog(operation, modal.close);
+              }}
+            >
+              {locale.Save()}
+            </VBtn>
+          </>
+        ),
+        onClose: () => {
+          this.departmentDialogSelectedIds = [];
+          this.departmentColumnDialogOperation = undefined;
+          this._releaseColumnOperation(operation);
+        },
+      },
+      { maxWidth: 640 },
+    );
+  }
+
+  private async _saveDepartmentColumnDialog(operation: PolicyColumnOperation, close: () => void) {
+    if (
+      this.departmentDialogSaving ||
+      this.departmentColumnDialogOperation?.token !== operation.token
+    ) {
+      return;
+    }
+    this.departmentDialogSaving = true;
+    try {
+      const completed = await this._applyColumnOperation(
+        operation,
+        true,
+        this.departmentDialogSelectedIds,
+      );
+      if (completed) close();
+    } finally {
+      this.departmentDialogSaving = false;
+    }
+  }
+
+  private async _applyColumnOperation(
+    operation: PolicyColumnOperation,
+    enabled: boolean,
+    departmentIds?: TableIdentity[],
+  ) {
+    const mutation = this.modelRbacPolicy.setGrantColumn(
+      this.roleId,
+      operation.dataScope,
+      operation.actionKeys,
+    );
+    if (mutation.isPending) return false;
+    for (const actionKey of operation.actionKeys) {
+      this.enabledScopes[this._scopeKey(actionKey, operation.dataScope)] = enabled;
+    }
+    try {
+      await mutation.mutateAsync({
+        actionKeys: operation.actionKeys,
+        enabled,
+        departmentIds,
+      });
+      await this._reloadRolePolicy();
+      this._clearColumnEnabledOverrides(operation);
+      this._releaseColumnOperation(operation);
+      return true;
+    } catch (error) {
+      this._clearColumnEnabledOverrides(operation);
+      await this._reloadRolePolicy();
+      await this._showMutationError(error);
+      return false;
+    }
+  }
+
+  private _clearColumnEnabledOverrides(operation: PolicyColumnOperation) {
+    for (const actionKey of operation.actionKeys) {
+      delete this.enabledScopes[this._scopeKey(actionKey, operation.dataScope)];
+    }
+  }
+
+  private _releaseColumnOperation(operation: PolicyColumnOperation) {
+    const operationKey = this._columnKey(operation.dataScope, operation.actionKeys);
+    if (this.pendingColumnOperations[operationKey]?.token === operation.token) {
+      delete this.pendingColumnOperations[operationKey];
+    }
+  }
+
+  private async _reloadRolePolicy() {
+    await Promise.all([this.queryConfiguration.refetch(), this.queryGrants.refetch()]);
+    await Promise.all(this.queryGrantDepartments.map(query => query.refetch()));
+  }
+
   private _isPending() {
     return (
       this.queryCatalog.isPending ||
@@ -562,7 +871,12 @@ export class ControllerBlockPolicyEditor extends BeanControllerBase {
   }
 
   private _isMutationPending(actionKey: string, dataScope: TypeRbacPolicyDataScope) {
-    return this.modelRbacPolicy.setGrantEnabled(this.roleId, actionKey, dataScope).isPending;
+    return (
+      this.modelRbacPolicy.setGrantEnabled(this.roleId, actionKey, dataScope).isPending ||
+      Object.values(this.pendingColumnOperations).some(
+        operation => operation?.dataScope === dataScope && operation.actionKeys.includes(actionKey),
+      )
+    );
   }
 
   private async _showMutationError(error: unknown) {

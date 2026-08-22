@@ -642,10 +642,15 @@ test(
         'Own Department and Descendants',
         'My Data',
       ]);
+      const allDataColumnToggle = scopedPolicyTable.getByRole('checkbox', {
+        name: 'Toggle all applicable permissions for All Data',
+        exact: true,
+      });
       const firstPolicyCheckbox = scopedPolicyTable.getByRole('checkbox', {
         name: 'training-record.controller.record#create all',
         exact: true,
       });
+      await expect(allDataColumnToggle).toBeVisible();
       await expect(firstPolicyCheckbox).toBeVisible();
       await expect(firstPolicyCheckbox).not.toBeChecked();
       const firstCustomDepartmentsCheckbox = scopedPolicyTable.getByRole('checkbox', {
@@ -808,6 +813,40 @@ test(
       });
       await expect(secondPolicyCheckbox).toBeVisible();
       await expect(secondPolicyCheckbox).not.toBeChecked();
+      const secondScopedPolicyTable = secondRoleDetail
+        .getByRole('button', {
+          name: /Student Training Record Management training-record\.controller\.record/,
+          exact: true,
+        })
+        .locator('xpath=following-sibling::*[1]')
+        .getByRole('table');
+      const secondAllDataColumnToggle = secondScopedPolicyTable.getByRole('checkbox', {
+        name: 'Toggle all applicable permissions for All Data',
+        exact: true,
+      });
+      await expect(secondAllDataColumnToggle).toBeVisible();
+      await secondAllDataColumnToggle.click();
+      const secondAllDataCells = secondScopedPolicyTable.locator('tbody tr td:nth-child(2) input');
+      await expect
+        .poll(async () => {
+          const checked = await secondAllDataCells.evaluateAll(elements =>
+            elements.every(element => (element as HTMLInputElement).checked),
+          );
+          return checked;
+        })
+        .toBe(true);
+      await expect
+        .poll(async () => {
+          const configuration = await getRolePolicyConfiguration(page, secondRoleId!);
+          return Boolean(
+            configuration.list
+              .find(action => action.actionKey === 'training-record.controller.record#create')
+              ?.dataScopes.find(scope => scope.dataScope === 'all')?.enabled,
+          );
+        })
+        .toBe(true);
+      await expect(secondAllDataColumnToggle).toBeEnabled();
+      await expect(secondPolicyCheckbox).toBeChecked();
       expect(pageErrors).toEqual([]);
     } finally {
       if (secondRoleId !== undefined) await deleteRole(page, secondRoleId);
