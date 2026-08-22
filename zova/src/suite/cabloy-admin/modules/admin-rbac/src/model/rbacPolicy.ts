@@ -150,16 +150,17 @@ export class ModelRbacPolicy extends BeanModelBase {
       queryFn: async () => {
         return await this.scope.api.adminRbacRbacPolicy.roleConfiguration({ params: { roleId } });
       },
-      select: data => ({
-        ...data,
-        list: data.list.map(action => ({
-          ...action,
-          dataScopes: action.dataScopes.map(scope => ({
-            ...scope,
-            enabled: Boolean(scope.enabled),
+      select: data =>
+        ({
+          ...data,
+          list: data.list.map(action => ({
+            ...action,
+            dataScopes: action.dataScopes.map(scope => ({
+              ...scope,
+              enabled: Boolean(scope.enabled),
+            })),
           })),
-        })),
-      }) as IRbacPolicyEditorData,
+        }) as IRbacPolicyEditorData,
     });
   }
 
@@ -211,6 +212,45 @@ export class ModelRbacPolicy extends BeanModelBase {
       },
       onSuccess: async () => {
         await this._invalidateRolePolicy(roleId, grantId);
+      },
+    });
+  }
+
+  replaceGrantDepartments(roleId: TableIdentity, grantId: TableIdentity) {
+    return this.$useMutationData<
+      void,
+      {
+        mappings: TypeRbacGrantDepartment[];
+        departmentIds: TableIdentity[];
+      }
+    >({
+      mutationKey: ['replaceGrantDepartments', roleId, grantId],
+      mutationFn: async ({ mappings, departmentIds }) => {
+        const existingByDepartmentId = new Map(
+          mappings.map(mapping => [String(mapping.departmentId), mapping]),
+        );
+        const departmentIdsByKey = new Map(
+          departmentIds.map(departmentId => [String(departmentId), departmentId]),
+        );
+        for (const departmentId of departmentIdsByKey.values()) {
+          if (existingByDepartmentId.has(String(departmentId))) continue;
+          await this.scope.api.adminRbacRbacGrantDepartment.create({
+            rbacGrantId: grantId,
+            departmentId,
+          });
+        }
+        for (const mapping of mappings) {
+          if (departmentIdsByKey.has(String(mapping.departmentId))) continue;
+          await this.scope.api.adminRbacRbacGrantDepartment.delete({
+            params: { id: mapping.id },
+          });
+        }
+      },
+      onSuccess: async () => {
+        await this._invalidateRolePolicy(roleId, grantId);
+      },
+      onError: async () => {
+        await this.$invalidateQueries({ queryKey: ['grantDepartments', grantId] });
       },
     });
   }

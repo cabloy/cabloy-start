@@ -12,6 +12,7 @@ export default {
   DataScopeMine: 'My Data',
   Enabled: 'Enabled',
   AddDepartment: 'Add Department',
+  ConfigureDepartments: 'Configure Departments',
   RemoveDepartment: 'Remove Department',
   DepartmentsNotConfigured: 'Departments are not configured',
   LoadFailed: 'Policy data could not be loaded',

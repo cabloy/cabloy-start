@@ -12,6 +12,7 @@ export default {
   DataScopeMine: '我的数据',
   Enabled: '启用',
   AddDepartment: '添加部门',
+  ConfigureDepartments: '配置部门',
   RemoveDepartment: '移除部门',
   DepartmentsNotConfigured: '部门尚未配置',
   LoadFailed: '无法加载策略数据',

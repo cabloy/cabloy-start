@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import type { Page, Response } from '@playwright/test';
 
 import { expect, test } from '@playwright/test';
 
@@ -577,9 +577,15 @@ test(
 
     let firstRoleId: number | string | undefined;
     let secondRoleId: number | string | undefined;
+    let firstDepartmentId: number | string | undefined;
+    let secondDepartmentId: number | string | undefined;
+    const firstDepartmentName = `ATP Policy Department A ${suffix}`;
+    const secondDepartmentName = `ATP Policy Department B ${suffix}`;
     try {
       firstRoleId = (await createRole(page, firstRoleName)).id;
       secondRoleId = (await createRole(page, secondRoleName)).id;
+      firstDepartmentId = await createDepartment(page, firstDepartmentName);
+      secondDepartmentId = await createDepartment(page, secondDepartmentName);
 
       await page.goto(resourcePath('admin-role:role'), { waitUntil: 'load' });
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
@@ -642,6 +648,11 @@ test(
       });
       await expect(firstPolicyCheckbox).toBeVisible();
       await expect(firstPolicyCheckbox).not.toBeChecked();
+      const firstCustomDepartmentsCheckbox = scopedPolicyTable.getByRole('checkbox', {
+        name: 'training-record.controller.record#create customDepartments',
+        exact: true,
+      });
+      await expect(firstCustomDepartmentsCheckbox).not.toBeChecked();
       const firstGrantCreate = waitForApiResponse(page, 'POST', /^\/api\/admin\/rbac\/rbacGrant$/);
       await firstPolicyCheckbox.click();
       const firstGrantCreateResponse = await firstGrantCreate;
@@ -669,6 +680,74 @@ test(
           ?.dataScopes.find(scope => scope.dataScope === 'all')?.enabled,
       ).toBeTruthy();
 
+      const firstCustomGrantCreate = waitForApiResponse(
+        page,
+        'POST',
+        /^\/api\/admin\/rbac\/rbacGrant$/,
+      );
+      await firstCustomDepartmentsCheckbox.click();
+      const firstCustomGrantCreateResponse = await firstCustomGrantCreate;
+      const firstCustomGrantCreateBody = firstCustomGrantCreateResponse
+        .request()
+        .postDataJSON() as {
+        roleId: number | string;
+        actionKey: string;
+        dataScope: string;
+        enabled: boolean;
+      };
+      expect(String(firstCustomGrantCreateBody.roleId)).toBe(String(firstRoleId));
+      expect(firstCustomGrantCreateBody.actionKey).toBe('training-record.controller.record#create');
+      expect(firstCustomGrantCreateBody.dataScope).toBe('customDepartments');
+      expect(firstCustomGrantCreateBody.enabled).toBe(true);
+
+      const configureDepartments = page.getByRole('button', {
+        name: 'Configure Departments',
+        exact: true,
+      });
+      await expect(configureDepartments).toBeVisible();
+      await configureDepartments.click();
+      const departmentDialog = page.getByRole('dialog');
+      await expect(departmentDialog).toBeVisible({ timeout: 5000 });
+      const firstDepartmentTreeItem = departmentDialog
+        .getByText(firstDepartmentName, { exact: true })
+        .locator('xpath=ancestor::div[contains(@class, "v-treeview-item")][1]');
+      const secondDepartmentTreeItem = departmentDialog
+        .getByText(secondDepartmentName, { exact: true })
+        .locator('xpath=ancestor::div[contains(@class, "v-treeview-item")][1]');
+      await expect(firstDepartmentTreeItem).toBeVisible();
+      await expect(secondDepartmentTreeItem).toBeVisible();
+      await firstDepartmentTreeItem.getByRole('checkbox').click();
+      await secondDepartmentTreeItem.getByRole('checkbox').click();
+      await expect(
+        departmentDialog.getByRole('button', { name: 'Save', exact: true }),
+      ).toBeEnabled();
+      const mappingBodies: Array<{ departmentId: number | string }> = [];
+      const collectDepartmentMapping = (response: Response) => {
+        const url = new URL(response.url());
+        if (
+          response.request().method() === 'POST' &&
+          response.ok() &&
+          url.pathname === '/api/admin/rbac/rbacGrantDepartment'
+        ) {
+          mappingBodies.push(
+            response.request().postDataJSON() as { departmentId: number | string },
+          );
+        }
+      };
+      page.on('response', collectDepartmentMapping);
+      try {
+        await departmentDialog.getByRole('button', { name: 'Save', exact: true }).click();
+        await expect.poll(() => mappingBodies.length).toBe(2);
+      } finally {
+        page.off('response', collectDepartmentMapping);
+      }
+      expect(mappingBodies.map(body => String(body.departmentId))).toEqual(
+        expect.arrayContaining([String(firstDepartmentId), String(secondDepartmentId)]),
+      );
+      await expect(departmentDialog).toBeHidden();
+      await expect(page.getByText(firstDepartmentName, { exact: true })).toBeVisible();
+      await expect(page.getByText(secondDepartmentName, { exact: true })).toBeVisible();
+
       await page.reload({ waitUntil: 'load' });
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
       const reloadedConfiguration = await getRolePolicyConfiguration(page, firstRoleId);
@@ -689,6 +768,30 @@ test(
           exact: true,
         }),
       ).toBeChecked();
+      await expect(page.getByText(firstDepartmentName, { exact: true })).toBeVisible();
+      await expect(page.getByText(secondDepartmentName, { exact: true })).toBeVisible();
+      const reloadedConfigureDepartments = page.getByRole('button', {
+        name: 'Configure Departments',
+        exact: true,
+      });
+      await reloadedConfigureDepartments.click();
+      const reloadedDepartmentDialog = page.getByRole('dialog');
+      await expect(reloadedDepartmentDialog).toBeVisible();
+      await expect(
+        reloadedDepartmentDialog.getByText(firstDepartmentName, { exact: true }),
+      ).toBeVisible();
+      const reloadedFirstDepartmentTreeItem = reloadedDepartmentDialog
+        .getByText(firstDepartmentName, { exact: true })
+        .locator('xpath=ancestor::div[contains(@class, "v-treeview-item")][1]');
+      const reloadedSecondDepartmentTreeItem = reloadedDepartmentDialog
+        .getByText(secondDepartmentName, { exact: true })
+        .locator('xpath=ancestor::div[contains(@class, "v-treeview-item")][1]');
+      await expect(reloadedFirstDepartmentTreeItem).toBeVisible();
+      await expect(reloadedSecondDepartmentTreeItem).toBeVisible();
+      await expect(reloadedFirstDepartmentTreeItem.getByRole('checkbox')).toBeChecked();
+      await expect(reloadedSecondDepartmentTreeItem.getByRole('checkbox')).toBeChecked();
+      await reloadedDepartmentDialog.getByRole('button', { name: 'Cancel', exact: true }).click();
+      await expect(reloadedDepartmentDialog).toBeHidden();
 
       await page.goto(`${resourcePath('admin-role:role')}/${secondRoleId}`, { waitUntil: 'load' });
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
@@ -709,6 +812,8 @@ test(
     } finally {
       if (secondRoleId !== undefined) await deleteRole(page, secondRoleId);
       if (firstRoleId !== undefined) await deleteRole(page, firstRoleId);
+      if (secondDepartmentId !== undefined) await deleteDepartment(page, secondDepartmentId);
+      if (firstDepartmentId !== undefined) await deleteDepartment(page, firstDepartmentId);
     }
   },
 );

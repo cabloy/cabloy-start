@@ -18,7 +18,6 @@ import {
   VProgressCircular,
   VTable,
   VTreeview,
-  VTreeviewItem,
 } from 'vuetify/components';
 import { BeanControllerBase } from 'zova';
 import { Controller } from 'zova-module-a-bean';
@@ -59,8 +58,8 @@ export class ControllerBlockPolicyEditor extends BeanControllerBase {
 
   modelRbacPolicy: ModelRbacPolicy;
   modelDepartment: ModelDepartment;
-  selectedGrantId: TableIdentity | undefined;
-  selectedDepartmentId: TableIdentity | undefined;
+  departmentDialogSelectedIds: TableIdentity[] = [];
+  departmentDialogSaving = false;
   expandedControllerNames: string[] = [];
   enabledScopes: Record<string, boolean | undefined> = {};
 
@@ -378,91 +377,113 @@ export class ControllerBlockPolicyEditor extends BeanControllerBase {
     if (query.isPending) return <VProgressCircular indeterminate size="20"></VProgressCircular>;
     if (query.isError) return <span class="text-error">{locale.LoadFailed()}</span>;
     const mappings = query.data?.list ?? [];
-    const activated =
-      this.selectedGrantId === grant.id && this.selectedDepartmentId !== undefined
-        ? [this.selectedDepartmentId]
-        : [];
+    const removeMutation = this.modelRbacPolicy.removeGrantDepartment(this.roleId, grant.id);
     return (
-      <div class="d-flex flex-column ga-2 ms-4">
-        <VTreeview
-          items={this.departmentTree}
-          itemTitle="name"
-          itemValue="id"
-          itemChildren="children"
-          activatable
-          activated={activated}
-          activeStrategy="single-independent"
-          openAll
-          density="compact"
-          onUpdate:activated={value => {
-            this.selectedGrantId = grant.id;
-            this.selectedDepartmentId = this._getActivatedId(value);
-          }}
-          v-slots={{
-            header: ({ props: itemProps, item }: any) => this._renderTreeItem(itemProps, item),
-            item: ({ props: itemProps, item }: any) => this._renderTreeItem(itemProps, item),
-          }}
-        ></VTreeview>
+      <div class="d-flex flex-wrap align-center ga-2 ms-4">
+        {mappings.map(mapping => (
+          <VChip
+            key={mapping.id}
+            closable
+            size="small"
+            variant="tonal"
+            aria-label={locale.RemoveDepartment()}
+            disabled={removeMutation.isPending}
+            onClick:close={async () => {
+              if (removeMutation.isPending) return;
+              try {
+                await removeMutation.mutateAsync(mapping.id);
+              } catch (error) {
+                await this._showMutationError(error);
+              }
+            }}
+          >
+            {this._departmentTitle(mapping.departmentId)}
+          </VChip>
+        ))}
         <VBtn
-          class="align-self-start"
+          icon="$plus"
           size="small"
-          variant="outlined"
-          disabled={
-            this.selectedGrantId !== grant.id ||
-            this.selectedDepartmentId === undefined ||
-            this.modelRbacPolicy.addGrantDepartment(this.roleId, grant.id).isPending
-          }
-          nativeOnClick={async () => {
-            const departmentId = this.selectedDepartmentId;
-            if (departmentId === undefined) return;
-            const mutation = this.modelRbacPolicy.addGrantDepartment(this.roleId, grant.id);
-            if (mutation.isPending) return;
-            try {
-              await mutation.mutateAsync(departmentId);
-            } catch (error) {
-              await this._showMutationError(error);
-            }
+          variant="text"
+          aria-label={locale.ConfigureDepartments()}
+          nativeOnClick={() => {
+            this._openDepartmentDialog(grant);
           }}
-        >
-          {locale.AddDepartment()}
-        </VBtn>
-        <div class="d-flex flex-wrap ga-2">
-          {mappings.map(mapping => (
-            <VChip
-              key={mapping.id}
-              closable
-              size="small"
-              variant="tonal"
-              aria-label={locale.RemoveDepartment()}
-              disabled={this.modelRbacPolicy.removeGrantDepartment(this.roleId, grant.id).isPending}
-              onClick:close={async () => {
-                const mutation = this.modelRbacPolicy.removeGrantDepartment(this.roleId, grant.id);
-                if (mutation.isPending) return;
-                try {
-                  await mutation.mutateAsync(mapping.id);
-                } catch (error) {
-                  await this._showMutationError(error);
-                }
-              }}
-            >
-              {this._departmentTitle(mapping.departmentId)}
-            </VChip>
-          ))}
-        </div>
+        ></VBtn>
       </div>
     );
   }
 
-  private _renderTreeItem(itemProps: any, item: DepartmentTreeItem) {
-    return (
-      <VTreeviewItem
-        {...itemProps}
-        onClick={(event: MouseEvent) => {
-          itemProps.onClick?.(event);
-          this.selectedDepartmentId = item.id;
-        }}
-      ></VTreeviewItem>
+  private _openDepartmentDialog(grant: TypeRbacGrant) {
+    const locale = this.scope.locale as typeof this.scope.locale & {
+      Cancel(): string;
+      Save(): string;
+    };
+    const mappings = this._grantDepartments(grant).data?.list ?? [];
+    this.departmentDialogSelectedIds = mappings.map(mapping => mapping.departmentId);
+    const dialog = this.$appModal.dialog(
+      {
+        title: locale.ConfigureDepartments(),
+        slotDefault: () => (
+          <VTreeview
+            items={this.departmentTree}
+            itemTitle="name"
+            itemValue="id"
+            itemChildren="children"
+            selectable
+            selected={this.departmentDialogSelectedIds}
+            selectStrategy="independent"
+            openAll
+            density="compact"
+            onUpdate:selected={value => {
+              this.departmentDialogSelectedIds = this._getSelectedIds(value);
+            }}
+          ></VTreeview>
+        ),
+        slotActions: modal => (
+          <>
+            <VBtn
+              variant="text"
+              disabled={this.departmentDialogSaving}
+              nativeOnClick={() => modal.close()}
+            >
+              {locale.Cancel()}
+            </VBtn>
+            <VBtn
+              color="primary"
+              loading={this.departmentDialogSaving}
+              disabled={this.departmentDialogSaving}
+              nativeOnClick={async () => {
+                await this._saveDepartmentDialog(grant, modal.close);
+              }}
+            >
+              {locale.Save()}
+            </VBtn>
+          </>
+        ),
+        onClose: () => {
+          this.departmentDialogSelectedIds = [];
+        },
+      },
+      { maxWidth: 640 },
     );
+    return dialog;
+  }
+
+  private async _saveDepartmentDialog(grant: TypeRbacGrant, close: () => void) {
+    const mutation = this.modelRbacPolicy.replaceGrantDepartments(this.roleId, grant.id);
+    if (this.departmentDialogSaving || mutation.isPending) return;
+    this.departmentDialogSaving = true;
+    try {
+      await mutation.mutateAsync({
+        mappings: this._grantDepartments(grant).data?.list ?? [],
+        departmentIds: this.departmentDialogSelectedIds,
+      });
+      close();
+    } catch (error) {
+      await this._showMutationError(error);
+    } finally {
+      this.departmentDialogSaving = false;
+    }
   }
 
   private async _setEnabled(
@@ -482,11 +503,7 @@ export class ControllerBlockPolicyEditor extends BeanControllerBase {
     }
   }
 
-  private _scopeEnabled(
-    actionKey: string,
-    dataScope: TypeRbacPolicyDataScope,
-    fallback: boolean,
-  ) {
+  private _scopeEnabled(actionKey: string, dataScope: TypeRbacPolicyDataScope, fallback: boolean) {
     const scopeKey = this._scopeKey(actionKey, dataScope);
     return this.enabledScopes[scopeKey] ?? fallback;
   }
@@ -517,11 +534,11 @@ export class ControllerBlockPolicyEditor extends BeanControllerBase {
     return undefined;
   }
 
-  private _getActivatedId(value: unknown): TableIdentity | undefined {
-    const activated =
-      value instanceof Set ? value.values().next().value : Array.isArray(value) ? value[0] : value;
-    if (typeof activated === 'number' || typeof activated === 'string') return activated;
-    return undefined;
+  private _getSelectedIds(value: unknown): TableIdentity[] {
+    const selected = value instanceof Set ? [...value] : Array.isArray(value) ? value : [value];
+    return selected.filter(
+      (item): item is TableIdentity => typeof item === 'number' || typeof item === 'string',
+    );
   }
 
   private _isPending() {
