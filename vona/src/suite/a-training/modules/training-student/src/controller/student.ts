@@ -12,6 +12,7 @@ import { z } from 'zod';
 
 import type { ModelStudent } from '../model/student.ts';
 
+import { $locale } from '../.metadata/locales.ts';
 import { DtoStudentBulkDelete } from '../dto/studentBulkDelete.ts';
 import { DtoStudentCreate } from '../dto/studentCreate.tsx';
 import { DtoStudentSelectReq } from '../dto/studentSelectReq.tsx';
@@ -22,10 +23,12 @@ import { DtoStudentView } from '../dto/studentView.tsx';
 
 export interface IControllerOptionsStudent extends IDecoratorControllerOptions {}
 
-@Controller<IControllerOptionsStudent>('student')
+@Controller<IControllerOptionsStudent>('student', {
+  summary: $locale('StudentController'),
+})
 @Resource()
 export class ControllerStudent extends BeanBase {
-  @Web.post()
+  @Web.post({ summary: $locale('StudentCreate') })
   @Api.body(v.tableIdentity())
   @Passport.rbac({ dataScope: true })
   async create(
@@ -39,7 +42,7 @@ export class ControllerStudent extends BeanBase {
     ).id;
   }
 
-  @Web.get()
+  @Web.get({ summary: $locale('StudentSelect') })
   @Api.body(DtoStudentSelectRes)
   @Core.serializer()
   @Passport.rbac({ dataScope: true })
@@ -53,7 +56,7 @@ export class ControllerStudent extends BeanBase {
     });
   }
 
-  @Web.get(':id')
+  @Web.get(':id', { summary: $locale('StudentView') })
   @Api.body(v.optional(), v.object(DtoStudentView))
   @Core.serializer()
   @Passport.rbac({ dataScope: true })
@@ -66,7 +69,7 @@ export class ControllerStudent extends BeanBase {
     return data;
   }
 
-  @Web.patch(':id')
+  @Web.patch(':id', { summary: $locale('StudentUpdate') })
   @Api.body(z.null())
   @Passport.rbac({ dataScope: true })
   async update(
@@ -86,7 +89,7 @@ export class ControllerStudent extends BeanBase {
     });
   }
 
-  @Web.get('summary/:id')
+  @Web.get('summary/:id', { summary: $locale('StudentSummary') })
   @Api.body(v.optional(), v.object(DtoStudentSummary))
   @Core.serializer()
   @Passport.rbac({ dataScope: true, actionInherit: 'view' })
@@ -99,7 +102,7 @@ export class ControllerStudent extends BeanBase {
     return await this.scope.service.student.summary(id);
   }
 
-  @Web.delete(':id')
+  @Web.delete(':id', { summary: $locale('StudentDelete') })
   @Api.body(z.null())
   @Passport.rbac({ dataScope: true })
   async delete(
@@ -111,7 +114,7 @@ export class ControllerStudent extends BeanBase {
     await this.scope.service.student.delete(id);
   }
 
-  @Web.delete('deleteForce/:id')
+  @Web.delete('deleteForce/:id', { summary: $locale('StudentDeleteForce') })
   @Api.body(z.null())
   @Passport.rbac({ dataScope: true, actionInherit: 'delete' })
   async deleteForce(
@@ -123,7 +126,7 @@ export class ControllerStudent extends BeanBase {
     await this.scope.service.student.deleteForce(id);
   }
 
-  @Web.delete('bulk')
+  @Web.delete('bulk', { summary: $locale('StudentDeleteBulk') })
   @Api.body(z.null())
   @Passport.rbac({ dataScope: true, actionInherit: 'delete' })
   async deleteBulk(

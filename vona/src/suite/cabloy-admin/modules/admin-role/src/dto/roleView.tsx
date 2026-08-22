@@ -1,5 +1,6 @@
 import type { IDecoratorDtoOptions } from 'vona-module-a-web';
 
+import { cel } from '@cabloy/utils';
 import { $Dto } from 'vona-module-a-orm';
 import { Dto } from 'vona-module-a-web';
 import { ModelRole } from 'vona-module-home-user';
@@ -20,16 +21,33 @@ export interface IDtoOptionsRoleView extends IDecoratorDtoOptions {}
               formLayout: {
                 children: [
                   {
-                    type: 'group',
-                    title: $locale('Role'),
+                    type: 'tabs',
                     children: [
                       {
-                        type: 'section',
-                        columns: { default: 1, md: 2 },
+                        type: 'tab',
+                        title: $locale('Role'),
                         children: [
-                          { type: 'field', name: 'name' },
-                          { type: 'field', name: 'title' },
-                          { type: 'field', name: 'siteIds' },
+                          {
+                            type: 'section',
+                            columns: { default: 1, md: 2 },
+                            children: [
+                              { type: 'field', name: 'name' },
+                              { type: 'field', name: 'title' },
+                              { type: 'field', name: 'siteIds' },
+                            ],
+                          },
+                        ],
+                      },
+                      {
+                        type: 'tab',
+                        title: $locale('ResourcePermissions'),
+                        children: [
+                          {
+                            type: 'block',
+                            block: ZovaRender.block('admin-rbac:blockPolicyEditor', {
+                              roleId: cel('id'),
+                            }),
+                          },
                         ],
                       },
                     ],

@@ -1,7 +1,10 @@
 import { catchError } from '@cabloy/utils';
 import assert from 'node:assert';
 import { describe, it, mock } from 'node:test';
+import { appMetadata } from 'vona';
 import { app } from 'vona-mock';
+import { SymbolOpenApiOptions } from 'vona-module-a-openapiutils';
+import { $locale as $localeRecord } from 'vona-module-training-record';
 
 import {
   DtoRbacPolicyCatalogRes,
@@ -17,6 +20,40 @@ const ActionKeyAlias = 'test:policy#alias';
 const ActionKeyIncompatible = 'test:policy#incompatible';
 const ActionKeyInvalidField = 'test:policy#invalidField';
 
+class TestPolicyController {}
+class TestPolicyFallbackController {}
+
+function defineOpenApiMetadata(
+  controller: any,
+  actionSummaries: Record<string, unknown>,
+  controllerSummary?: unknown,
+) {
+  const controllerOptions = appMetadata.getOwnMetadataMap(
+    false,
+    SymbolOpenApiOptions,
+    controller,
+  ) as Record<string, unknown>;
+  if (controllerSummary !== undefined) controllerOptions.summary = controllerSummary;
+  for (const [action, summary] of Object.entries(actionSummaries)) {
+    const actionOptions = appMetadata.getOwnMetadataMap(
+      false,
+      SymbolOpenApiOptions,
+      controller.prototype,
+      action,
+    ) as Record<string, unknown>;
+    actionOptions.summary = summary;
+  }
+}
+
+defineOpenApiMetadata(
+  TestPolicyController,
+  {
+    all: $localeRecord('RecordCreate'),
+    scoped: $localeRecord('RecordView'),
+  },
+  $localeRecord('RecordController'),
+);
+
 function createCatalog() {
   return new Map([
     [
@@ -25,7 +62,10 @@ function createCatalog() {
         actionKey: ActionKeyAll,
         controllerBeanFullName: 'test:policy',
         action: 'all',
-        route: { secretRouteValue: 'must not be exposed' },
+        route: {
+          controller: TestPolicyController,
+          secretRouteValue: 'must not be exposed',
+        },
         options: { secretOptionValue: 'must not be exposed' },
       },
     ],
@@ -35,7 +75,10 @@ function createCatalog() {
         actionKey: ActionKeyScoped,
         controllerBeanFullName: 'test:policy',
         action: 'scoped',
-        route: { secretRouteValue: 'must not be exposed' },
+        route: {
+          controller: TestPolicyController,
+          secretRouteValue: 'must not be exposed',
+        },
         options: {
           dataScope: true,
           dataScopeField: 'departmentId',
@@ -50,7 +93,10 @@ function createCatalog() {
         actionInheritKey: ActionKeyScoped,
         controllerBeanFullName: 'test:policy',
         action: 'alias',
-        route: { secretRouteValue: 'must not be exposed' },
+        route: {
+          controller: TestPolicyController,
+          secretRouteValue: 'must not be exposed',
+        },
         options: {
           dataScope: true,
           dataScopeField: 'departmentId',
@@ -64,7 +110,10 @@ function createCatalog() {
         actionKey: ActionKeyIncompatible,
         controllerBeanFullName: 'test:policy',
         action: 'incompatible',
-        route: { secretRouteValue: 'must not be exposed' },
+        route: {
+          controller: TestPolicyFallbackController,
+          secretRouteValue: 'must not be exposed',
+        },
         options: { dataScope: true, dataScopeField: 'departmentId' },
       },
     ],
@@ -85,7 +134,10 @@ function createCatalog() {
         actionKey: ActionKeyInvalidField,
         controllerBeanFullName: 'test:policy',
         action: 'invalidField',
-        route: { secretRouteValue: 'must not be exposed' },
+        route: {
+          controller: TestPolicyFallbackController,
+          secretRouteValue: 'must not be exposed',
+        },
         options: { dataScope: true, dataScopeField: 'department-id', dataScopeMineField: '' },
       },
     ],
@@ -112,7 +164,14 @@ describe('rbacPolicyProjection.test.ts', { concurrency: false }, () => {
         return (item as any).properties?.actionKey && (item as any).properties?.dataScopes;
       }) as any;
       assert.ok(component);
-      assert.deepEqual(Object.keys(component.properties).sort(), ['actionKey', 'dataScopes']);
+      assert.deepEqual(Object.keys(component.properties).sort(), [
+        'action',
+        'actionKey',
+        'actionSummary',
+        'controllerBeanFullName',
+        'controllerSummary',
+        'dataScopes',
+      ]);
     });
   });
 
@@ -129,48 +188,90 @@ describe('rbacPolicyProjection.test.ts', { concurrency: false }, () => {
         assert.equal(error?.code, 401);
       });
 
-      await app.bean.executor.mockCtx(async () => {
-        await app.bean.passport.signinMock();
-        try {
-          const result = await app.bean.executor.performAction(
-            'get',
-            '/admin/rbac/rbacPolicy/catalog',
-            { innerAccess: false },
-          );
-          assert.equal(typeof result.revision, 'string');
-          assert.deepEqual(result.list, [
-            { actionKey: ActionKeyAll, dataScopes: ['all'] },
-            {
-              actionKey: ActionKeyInvalidField,
-              dataScopes: ['all'],
-            },
-            {
-              actionKey: ActionKeyScoped,
-              dataScopes: [
-                'all',
-                'customDepartments',
-                'ownDepartment',
-                'ownDepartmentAndDescendants',
-                'mine',
-              ],
-            },
-          ]);
-          const serialized = JSON.stringify(result);
-          for (const forbidden of [
-            'route',
-            'options',
-            'secretRouteValue',
-            'secretOptionValue',
-            'dataScopeField',
-            'dataScopeMineField',
-            'actionInherit',
-          ]) {
-            assert.equal(serialized.includes(forbidden), false, forbidden);
+      await app.bean.executor.mockCtx(
+        async () => {
+          await app.bean.passport.signinMock();
+          try {
+            const result = await app.bean.executor.performAction(
+              'get',
+              '/admin/rbac/rbacPolicy/catalog',
+              { innerAccess: false },
+            );
+            assert.equal(typeof result.revision, 'string');
+            assert.deepEqual(result.list, [
+              {
+                controllerBeanFullName: 'test:policy',
+                controllerSummary: 'Student Training Record Management',
+                action: 'all',
+                actionSummary: 'Create Student Training Record',
+                actionKey: ActionKeyAll,
+                dataScopes: ['all'],
+              },
+              {
+                controllerBeanFullName: 'test:policy',
+                action: 'invalidField',
+                actionKey: ActionKeyInvalidField,
+                dataScopes: ['all'],
+              },
+              {
+                controllerBeanFullName: 'test:policy',
+                controllerSummary: 'Student Training Record Management',
+                action: 'scoped',
+                actionSummary: 'View Student Training Record',
+                actionKey: ActionKeyScoped,
+                dataScopes: [
+                  'all',
+                  'customDepartments',
+                  'ownDepartment',
+                  'ownDepartmentAndDescendants',
+                  'mine',
+                ],
+              },
+            ]);
+            const serialized = JSON.stringify(result);
+            for (const forbidden of [
+              'route',
+              'options',
+              'secretRouteValue',
+              'secretOptionValue',
+              'dataScopeField',
+              'dataScopeMineField',
+              'actionInherit',
+            ]) {
+              assert.equal(serialized.includes(forbidden), false, forbidden);
+            }
+          } finally {
+            await app.bean.passport.signout();
           }
-        } finally {
-          await app.bean.passport.signout();
-        }
-      });
+        },
+        { locale: 'en-us' },
+      );
+    } finally {
+      getCatalog.mock.restore();
+    }
+  });
+
+  it('service:rbacPolicyProjection resolves localized metadata per request locale', async () => {
+    const getCatalog = mock.method(app.bean.rbacCatalog, 'getCatalog', createCatalog);
+    try {
+      await app.bean.executor.mockCtx(
+        async () => {
+          await app.bean.passport.signinMock();
+          try {
+            const result = await app.bean.executor.performAction(
+              'get',
+              '/admin/rbac/rbacPolicy/catalog',
+              { innerAccess: false },
+            );
+            assert.equal(result.list[0].controllerSummary, '学生培训记录管理');
+            assert.equal(result.list[0].actionSummary, '创建学生培训记录');
+            assert.equal(result.list[2].actionSummary, '查看学生培训记录');
+          } finally {
+            await app.bean.passport.signout();
+          }
+        },
+        { locale: 'zh-cn' },
+      );
     } finally {
       getCatalog.mock.restore();
     }

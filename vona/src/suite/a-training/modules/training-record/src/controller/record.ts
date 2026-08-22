@@ -12,6 +12,7 @@ import { z } from 'zod';
 
 import type { ModelRecord } from '../model/record.ts';
 
+import { $locale } from '../.metadata/locales.ts';
 import { DtoRecordBulkDelete } from '../dto/recordBulkDelete.ts';
 import { DtoRecordCreate } from '../dto/recordCreate.tsx';
 import { DtoRecordSelectReq } from '../dto/recordSelectReq.tsx';
@@ -21,10 +22,12 @@ import { DtoRecordView } from '../dto/recordView.tsx';
 
 export interface IControllerOptionsRecord extends IDecoratorControllerOptions {}
 
-@Controller<IControllerOptionsRecord>('record')
+@Controller<IControllerOptionsRecord>('record', {
+  summary: $locale('RecordController'),
+})
 @Resource()
 export class ControllerRecord extends BeanBase {
-  @Web.post()
+  @Web.post({ summary: $locale('RecordCreate') })
   @Api.body(v.tableIdentity())
   @Passport.rbac({ dataScope: true })
   async create(
@@ -45,7 +48,7 @@ export class ControllerRecord extends BeanBase {
     ).id;
   }
 
-  @Web.get()
+  @Web.get({ summary: $locale('RecordSelect') })
   @Api.body(DtoRecordSelectRes)
   @Core.serializer()
   @Passport.rbac({ dataScope: true })
@@ -59,7 +62,7 @@ export class ControllerRecord extends BeanBase {
     });
   }
 
-  @Web.get(':id')
+  @Web.get(':id', { summary: $locale('RecordView') })
   @Api.body(v.optional(), v.object(DtoRecordView))
   @Core.serializer()
   @Passport.rbac({ dataScope: true })
@@ -72,7 +75,7 @@ export class ControllerRecord extends BeanBase {
     return data;
   }
 
-  @Web.patch(':id')
+  @Web.patch(':id', { summary: $locale('RecordUpdate') })
   @Api.body(z.null())
   @Passport.rbac({ dataScope: true })
   async update(
@@ -85,7 +88,7 @@ export class ControllerRecord extends BeanBase {
     await this.scope.service.record.update(id, record);
   }
 
-  @Web.delete(':id')
+  @Web.delete(':id', { summary: $locale('RecordDelete') })
   @Api.body(z.null())
   @Passport.rbac({ dataScope: true })
   async delete(
@@ -97,7 +100,7 @@ export class ControllerRecord extends BeanBase {
     await this.scope.service.record.delete(id);
   }
 
-  @Web.delete('bulk')
+  @Web.delete('bulk', { summary: $locale('RecordDeleteBulk') })
   @Api.body(z.null())
   @Passport.rbac({ dataScope: true, actionInherit: 'delete' })
   async deleteBulk(

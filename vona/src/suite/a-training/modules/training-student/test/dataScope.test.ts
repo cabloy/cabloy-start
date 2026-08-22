@@ -119,6 +119,23 @@ describe('dataScope.test.ts', { concurrency: false }, () => {
           );
           assert.equal(result, undefined);
           assert.equal(error?.code, 403);
+
+          const [forgedCapabilityResult, forgedCapabilityError] = await catchError(() =>
+            app.bean.executor.performAction('post', '/training/student', {
+              innerAccess: false,
+              body: {
+                name: `Forged capability ${suffix}`,
+                mobile: `135${String(Date.now()).slice(-8)}`,
+                level: 1,
+                capability: {
+                  key: 'training-student.controller.student#create',
+                  allowed: true,
+                },
+              },
+            }),
+          );
+          assert.equal(forgedCapabilityResult, undefined);
+          assert.equal(forgedCapabilityError?.code, 403);
         } finally {
           await app.bean.passport.signout();
         }

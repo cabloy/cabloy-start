@@ -1,9 +1,13 @@
 import type { TableIdentity } from 'table-identity';
+import type { IOpenapiOptions } from 'vona-module-a-openapiutils';
+import type { IRbacActionDescriptor, TypeRbacDataScope } from 'vona-module-a-rbac';
 
-import { BeanBase } from 'vona';
+import { appMetadata, BeanBase } from 'vona';
 import { Service } from 'vona-module-a-bean';
+import { SymbolOpenApiOptions } from 'vona-module-a-openapiutils';
 
 import type { DtoRbacPolicyCatalogRes } from '../dto/rbacPolicyCatalogRes.ts';
+import type { DtoRbacPolicyCatalogResItem } from '../dto/rbacPolicyCatalogResItem.ts';
 import type { DtoRbacPolicyRoleConfigurationAction } from '../dto/rbacPolicyRoleConfigurationAction.ts';
 import type { DtoRbacPolicyRoleConfigurationRes } from '../dto/rbacPolicyRoleConfigurationRes.ts';
 import type { DtoRbacPolicyRoleConfigurationScope } from '../dto/rbacPolicyRoleConfigurationScope.ts';
@@ -24,12 +28,50 @@ export class ServiceRbacPolicyProjection extends BeanBase {
     ).toSorted();
     const list = actionKeys.flatMap(actionKey => {
       const action = getRbacGrantablePolicyAction(catalog, actionKey);
-      return action ? [{ actionKey, dataScopes: action.dataScopes }] : [];
+      return action ? [this._projectCatalogAction(action.action, action.dataScopes)] : [];
     });
     return {
       revision: await this.scope.service.rbacPolicyRevision.current(),
       list,
     };
+  }
+
+  private _projectCatalogAction(
+    action: IRbacActionDescriptor,
+    dataScopes: TypeRbacDataScope[],
+  ): DtoRbacPolicyCatalogResItem {
+    const controller = action.route?.controller;
+    const controllerOptions = controller
+      ? appMetadata.getMetadata<IOpenapiOptions>(SymbolOpenApiOptions, controller)
+      : undefined;
+    const actionOptions = controller
+      ? appMetadata.getMetadata<IOpenapiOptions>(
+          SymbolOpenApiOptions,
+          controller.prototype,
+          action.action,
+        )
+      : undefined;
+    const controllerSummary = this._resolveSummary(controllerOptions?.summary);
+    const actionSummary = this._resolveSummary(actionOptions?.summary);
+    return {
+      controllerBeanFullName: action.controllerBeanFullName,
+      ...(controllerSummary ? { controllerSummary } : {}),
+      action: action.action,
+      ...(actionSummary ? { actionSummary } : {}),
+      actionKey: action.actionKey,
+      dataScopes,
+    };
+  }
+
+  private _resolveSummary(summary: IOpenapiOptions['summary'] | undefined): string | undefined {
+    if (summary === undefined) return undefined;
+    try {
+      const value = this.app.meta.text.locale(this.ctx.locale, summary);
+      const trimmed = value?.trim();
+      return trimmed || undefined;
+    } catch {
+      return undefined;
+    }
   }
 
   async roleConfiguration(roleId: TableIdentity): Promise<DtoRbacPolicyRoleConfigurationRes> {

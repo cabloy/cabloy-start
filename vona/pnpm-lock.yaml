@@ -3203,6 +3203,9 @@ importers:
 
   src/suite/cabloy-admin/modules/admin-rbac:
     dependencies:
+      vona-module-a-openapiutils:
+        specifier: workspace:^
+        version: link:../../../../suite-vendor/a-vona/modules/a-openapiutils
       vona-module-a-rbac:
         specifier: workspace:^
         version: link:../../../../suite-vendor/a-cabloy/modules/a-rbac

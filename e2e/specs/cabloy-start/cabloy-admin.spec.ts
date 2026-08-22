@@ -109,9 +109,14 @@ async function createMembership(
   departmentId: number | string,
   userId: number | string,
 ) {
-  const response = await requestApi(page, 'POST', `/api/admin/department/${departmentId}/memberships`, {
-    userId,
-  });
+  const response = await requestApi(
+    page,
+    'POST',
+    `/api/admin/department/${departmentId}/memberships`,
+    {
+      userId,
+    },
+  );
   return (await response.json()).data as number | string;
 }
 
@@ -164,6 +169,24 @@ async function replaceUserRoles(
 
 async function deleteRole(page: Page, roleId: number | string) {
   await requestApi(page, 'DELETE', `/api/admin/role/${roleId}`);
+}
+
+async function getRolePolicyConfiguration(page: Page, roleId: number | string) {
+  const response = await requestApi(
+    page,
+    'GET',
+    `/api/admin/rbac/rbacPolicy/roles/${roleId}/configuration`,
+  );
+  const payload = (await response.json()) as {
+    data?: {
+      list: Array<{
+        actionKey: string;
+        dataScopes: Array<{ dataScope: string; enabled: boolean }>;
+      }>;
+    };
+  };
+  if (!payload.data) throw new Error('Missing role policy configuration');
+  return payload.data;
 }
 
 test(
@@ -538,6 +561,137 @@ test(
 );
 
 test(
+  'ATP-ADM-POL-03: Role details expose an isolated resource-permissions tab',
+  { tag: ['@admin', '@cabloy-admin'] },
+  async ({ page }) => {
+    const pageErrors = collectPageErrors(page);
+    const suffix = `${test.info().workerIndex}-${Date.now()}`;
+    const firstRoleName = `ATP Policy Role A ${suffix}`;
+    const secondRoleName = `ATP Policy Role B ${suffix}`;
+    await loginAsAdmin(page);
+
+    let firstRoleId: number | string | undefined;
+    let secondRoleId: number | string | undefined;
+    try {
+      firstRoleId = (await createRole(page, firstRoleName)).id;
+      secondRoleId = (await createRole(page, secondRoleName)).id;
+
+      await page.goto(resourcePath('admin-role:role'), { waitUntil: 'load' });
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+      const firstRoleRow = page.getByRole('row').filter({ hasText: firstRoleName });
+      const secondRoleRow = page.getByRole('row').filter({ hasText: secondRoleName });
+      await expect(firstRoleRow).toBeVisible();
+      await expect(secondRoleRow).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: 'Resource Permissions', exact: true }),
+      ).toHaveCount(0);
+
+      const firstRoleDetailResponse = await page.goto(
+        `${resourcePath('admin-role:role')}/${firstRoleId}`,
+        { waitUntil: 'load' },
+      );
+      const firstRoleDetailHtml = await firstRoleDetailResponse!.text();
+      expect(firstRoleDetailHtml).toContain('data-server-rendered');
+      expect(firstRoleDetailHtml.toLowerCase()).not.toContain('data-zova-hydrated');
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+      const firstRoleDetail = page.locator('main');
+      const firstRoleTab = firstRoleDetail.getByRole('tab', { name: 'Role', exact: true });
+      const firstPermissionsTab = firstRoleDetail.getByRole('tab', {
+        name: 'Resource Permissions',
+        exact: true,
+      });
+      await expect(firstRoleTab).toHaveAttribute('aria-selected', 'true');
+      await expect(firstRoleTab).toBeVisible();
+      await expect(page.getByLabel('Role Name', { exact: true })).toBeVisible();
+      await firstPermissionsTab.click();
+      await expect(firstPermissionsTab).toHaveAttribute('aria-selected', 'true');
+      await expect(
+        firstRoleDetail.getByText('Student Training Record Management', { exact: true }),
+      ).toBeVisible();
+      await expect(
+        firstRoleDetail.getByText('training-record.controller.record', { exact: true }),
+      ).toBeVisible();
+      await expect(
+        firstRoleDetail.getByText('Create Student Training Record', { exact: true }),
+      ).toBeVisible();
+      await expect(firstRoleDetail.getByText('create', { exact: true }).first()).toBeVisible();
+      const scopedPolicyTable = firstRoleDetail
+        .getByRole('button', {
+          name: /Student Training Record Management training-record\.controller\.record/,
+          exact: true,
+        })
+        .locator('xpath=following-sibling::*[1]')
+        .getByRole('table');
+      await expect(scopedPolicyTable).toBeVisible();
+      await expect(scopedPolicyTable.getByRole('columnheader')).toHaveText([
+        'Action Identifier',
+        'all',
+        'customDepartments',
+        'ownDepartment',
+        'ownDepartmentAndDescendants',
+        'mine',
+      ]);
+      const createPolicyRow = scopedPolicyTable.getByRole('row').filter({
+        hasText: 'training-record.controller.record#create',
+      });
+      await expect(createPolicyRow).toBeVisible();
+      const firstPolicyCheckbox = page.getByRole('checkbox', {
+        name: 'training-record.controller.record#create all',
+        exact: true,
+      });
+      await expect(firstPolicyCheckbox).toBeVisible();
+      await expect(firstPolicyCheckbox).not.toBeChecked();
+      const firstGrantCreate = waitForApiResponse(page, 'POST', /^\/api\/admin\/rbac\/rbacGrant$/);
+      await firstPolicyCheckbox.click();
+      const firstGrantCreateResponse = await firstGrantCreate;
+      const firstGrantCreateBody = firstGrantCreateResponse.request().postDataJSON() as {
+        roleId: number | string;
+        actionKey: string;
+        dataScope: string;
+        enabled: boolean;
+      };
+      expect(String(firstGrantCreateBody.roleId)).toBe(String(firstRoleId));
+      expect(firstGrantCreateBody.actionKey).toBe('training-record.controller.record#create');
+      expect(firstGrantCreateBody.dataScope).toBe('all');
+      expect(firstGrantCreateBody.enabled).toBe(true);
+      expect(Object.keys(firstGrantCreateBody).sort()).toEqual([
+        'actionKey',
+        'dataScope',
+        'enabled',
+        'roleId',
+      ]);
+      await expect(firstPolicyCheckbox).toBeChecked();
+      const firstConfiguration = await getRolePolicyConfiguration(page, firstRoleId);
+      expect(
+        firstConfiguration.list
+          .find(action => action.actionKey === 'training-record.controller.record#create')
+          ?.dataScopes.find(scope => scope.dataScope === 'all')?.enabled,
+      ).toBeTruthy();
+
+      await page.goto(`${resourcePath('admin-role:role')}/${secondRoleId}`, { waitUntil: 'load' });
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+      const secondRoleDetail = page.locator('main');
+      const secondPermissionsTab = secondRoleDetail.getByRole('tab', {
+        name: 'Resource Permissions',
+        exact: true,
+      });
+      await secondPermissionsTab.click();
+      await expect(secondPermissionsTab).toHaveAttribute('aria-selected', 'true');
+      const secondPolicyCheckbox = page.getByRole('checkbox', {
+        name: 'training-record.controller.record#create all',
+        exact: true,
+      });
+      await expect(secondPolicyCheckbox).toBeVisible();
+      await expect(secondPolicyCheckbox).not.toBeChecked();
+      expect(pageErrors).toEqual([]);
+    } finally {
+      if (secondRoleId !== undefined) await deleteRole(page, secondRoleId);
+      if (firstRoleId !== undefined) await deleteRole(page, firstRoleId);
+    }
+  },
+);
+
+test(
   'ATP-ADM-RES-01: Start Admin Resources render account projections and refresh Department state after Move',
   { tag: ['@admin', '@cabloy-admin'] },
   async ({ page }) => {
@@ -606,21 +760,29 @@ test(
       await expect(reorderDialog.getByText('Append', { exact: true })).toBeVisible();
       await expect(reorderDialog.getByText(rootA, { exact: true })).toHaveCount(0);
       await expect(reorderDialog.getByText(rootB, { exact: true })).toHaveCount(0);
-      const reordered = waitForApiResponse(page, 'PUT', /\/api\/admin\/department\/[^/]+\/reorder$/);
+      const reordered = waitForApiResponse(
+        page,
+        'PUT',
+        /\/api\/admin\/department\/[^/]+\/reorder$/,
+      );
       await reorderDialog.getByRole('button', { name: 'Reorder Department', exact: true }).click();
       await reordered;
       await expect(reorderDialog).toBeHidden();
 
       await movedChildRow.getByRole('button', { name: 'Disable', exact: true }).click();
       const confirmation = page.getByRole('dialog');
-      await expect(confirmation.getByText('Disable this Department?', { exact: true })).toBeVisible();
-      const disabled = waitForApiResponse(page, 'PUT', /\/api\/admin\/department\/[^/]+\/activation$/);
+      await expect(
+        confirmation.getByText('Disable this Department?', { exact: true }),
+      ).toBeVisible();
+      const disabled = waitForApiResponse(
+        page,
+        'PUT',
+        /\/api\/admin\/department\/[^/]+\/activation$/,
+      );
       await confirmation.getByRole('button', { name: 'Yes', exact: true }).click();
       const disabledResponse = await disabled;
       expect(disabledResponse.request().postDataJSON()).toEqual({ enabled: false });
-      await expect
-        .poll(async () => (await getDepartment(page, childId!)).enabled)
-        .toBeFalsy();
+      await expect.poll(async () => (await getDepartment(page, childId!)).enabled).toBeFalsy();
       await page.goto(resourcePath('admin-department:department'), { waitUntil: 'load' });
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
       const disabledChildRow = page.getByRole('row').filter({ hasText: child });
@@ -651,7 +813,9 @@ test(
       await expect(lifecycleAlert).toBeVisible();
       await lifecycleAlert.getByRole('button', { name: 'Close', exact: true }).click();
       await expect(lifecycleAlert).not.toBeVisible();
-      await expect(protectedRow.getByRole('button', { name: 'Disable', exact: true })).toBeVisible();
+      await expect(
+        protectedRow.getByRole('button', { name: 'Disable', exact: true }),
+      ).toBeVisible();
       await requestApi(page, 'PUT', `/api/admin/department/${protectedDepartmentId}/manager`, {
         membershipId: null,
       });
@@ -676,9 +840,7 @@ test(
       await page.goto(resourcePath('admin-department:department'), { waitUntil: 'load' });
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
       protectedRow = page.getByRole('row').filter({ hasText: protectedDepartment });
-      await expect(
-        protectedRow.getByRole('button', { name: 'Enable', exact: true }),
-      ).toBeVisible();
+      await expect(protectedRow.getByRole('button', { name: 'Enable', exact: true })).toBeVisible();
       expect(genericDepartmentPatchRequests).toBe(0);
       expect(pageErrors).toEqual([]);
     } finally {

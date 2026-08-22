@@ -10,6 +10,18 @@ export interface IDtoOptionsRbacPolicyCatalogResItem extends IDecoratorDtoOption
 @Dto<IDtoOptionsRbacPolicyCatalogResItem>()
 export class DtoRbacPolicyCatalogResItem {
   @Api.field(v.required())
+  controllerBeanFullName: string;
+
+  @Api.field(v.optional())
+  controllerSummary?: string;
+
+  @Api.field(v.required())
+  action: string;
+
+  @Api.field(v.optional())
+  actionSummary?: string;
+
+  @Api.field(v.required())
   actionKey: string;
 
   @Api.field(

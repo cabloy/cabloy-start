@@ -15,7 +15,7 @@ const RecordActions = [
   'training-record.controller.record#delete',
 ] as const;
 describe('dataScope.test.ts', { concurrency: false }, () => {
-  it('ATP-ADM-SCP-03 scopes Records, inherits Student scope, and protects Subjects', async () => {
+  it('ATP-ADM-SCP-02 scopes Records, inherits Student scope, and protects Subjects', async () => {
     const suffix = crypto.randomUUID();
     const studentIds: string[] = [];
     const recordIds: string[] = [];
@@ -169,6 +169,22 @@ describe('dataScope.test.ts', { concurrency: false }, () => {
           );
           assert.equal(hiddenResult, undefined);
           assert.equal(hiddenError?.code, 403);
+
+          const [forgedCapabilityResult, forgedCapabilityError] = await catchError(() =>
+            app.bean.executor.performAction('patch', '/training/record/:id', {
+              innerAccess: false,
+              params: { id: foreignRecordId },
+              body: {
+                name: `Forged capability ${suffix}`,
+                capability: {
+                  key: 'training-record.controller.record#update',
+                  allowed: true,
+                },
+              },
+            }),
+          );
+          assert.equal(forgedCapabilityResult, undefined);
+          assert.equal(forgedCapabilityError?.code, 403);
 
           const [updateResult, updateError] = await catchError(() =>
             app.bean.executor.performAction('patch', '/training/record/:id', {
