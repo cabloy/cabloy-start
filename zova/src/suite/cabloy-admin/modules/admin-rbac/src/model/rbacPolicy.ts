@@ -150,7 +150,16 @@ export class ModelRbacPolicy extends BeanModelBase {
       queryFn: async () => {
         return await this.scope.api.adminRbacRbacPolicy.roleConfiguration({ params: { roleId } });
       },
-      select: data => data as IRbacPolicyEditorData,
+      select: data => ({
+        ...data,
+        list: data.list.map(action => ({
+          ...action,
+          dataScopes: action.dataScopes.map(scope => ({
+            ...scope,
+            enabled: Boolean(scope.enabled),
+          })),
+        })),
+      }) as IRbacPolicyEditorData,
     });
   }
 

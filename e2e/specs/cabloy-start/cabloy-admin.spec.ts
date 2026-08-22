@@ -184,9 +184,14 @@ async function getRolePolicyConfiguration(page: Page, roleId: number | string) {
         dataScopes: Array<{ dataScope: string; enabled: boolean }>;
       }>;
     };
+    list?: Array<{
+      actionKey: string;
+      dataScopes: Array<{ dataScope: string; enabled: boolean }>;
+    }>;
   };
-  if (!payload.data) throw new Error('Missing role policy configuration');
-  return payload.data;
+  const configuration = payload.data ?? payload;
+  if (!configuration.list) throw new Error('Missing role policy configuration');
+  return configuration;
 }
 
 test(
@@ -625,17 +630,13 @@ test(
       await expect(scopedPolicyTable).toBeVisible();
       await expect(scopedPolicyTable.getByRole('columnheader')).toHaveText([
         'Action Identifier',
-        'all',
-        'customDepartments',
-        'ownDepartment',
-        'ownDepartmentAndDescendants',
-        'mine',
+        'All Data',
+        'Specified Departments',
+        'Own Department',
+        'Own Department and Descendants',
+        'My Data',
       ]);
-      const createPolicyRow = scopedPolicyTable.getByRole('row').filter({
-        hasText: 'training-record.controller.record#create',
-      });
-      await expect(createPolicyRow).toBeVisible();
-      const firstPolicyCheckbox = page.getByRole('checkbox', {
+      const firstPolicyCheckbox = scopedPolicyTable.getByRole('checkbox', {
         name: 'training-record.controller.record#create all',
         exact: true,
       });
@@ -667,6 +668,27 @@ test(
           .find(action => action.actionKey === 'training-record.controller.record#create')
           ?.dataScopes.find(scope => scope.dataScope === 'all')?.enabled,
       ).toBeTruthy();
+
+      await page.reload({ waitUntil: 'load' });
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+      const reloadedConfiguration = await getRolePolicyConfiguration(page, firstRoleId);
+      expect(
+        reloadedConfiguration.list
+          .find(action => action.actionKey === 'training-record.controller.record#create')
+          ?.dataScopes.find(scope => scope.dataScope === 'all')?.enabled,
+      ).toBeTruthy();
+      const reloadedPermissionsTab = page.locator('main').getByRole('tab', {
+        name: 'Resource Permissions',
+        exact: true,
+      });
+      await reloadedPermissionsTab.click();
+      await expect(reloadedPermissionsTab).toHaveAttribute('aria-selected', 'true');
+      await expect(
+        page.getByRole('checkbox', {
+          name: 'training-record.controller.record#create all',
+          exact: true,
+        }),
+      ).toBeChecked();
 
       await page.goto(`${resourcePath('admin-role:role')}/${secondRoleId}`, { waitUntil: 'load' });
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');

@@ -62,6 +62,7 @@ export class ControllerBlockPolicyEditor extends BeanControllerBase {
   selectedGrantId: TableIdentity | undefined;
   selectedDepartmentId: TableIdentity | undefined;
   expandedControllerNames: string[] = [];
+  enabledScopes: Record<string, boolean | undefined> = {};
 
   get roleId(): TableIdentity {
     const roleId = this.$props.roleId;
@@ -342,7 +343,7 @@ export class ControllerBlockPolicyEditor extends BeanControllerBase {
         color="primary"
         density="compact"
         hideDetails
-        modelValue={scope?.enabled ?? false}
+        modelValue={this._scopeEnabled(actionKey, dataScope, scope?.enabled ?? false)}
         aria-label={`${actionKey} ${dataScope}`}
         disabled={this._isMutationPending(actionKey, dataScope)}
         onUpdate:modelValue={value => {
@@ -471,11 +472,27 @@ export class ControllerBlockPolicyEditor extends BeanControllerBase {
   ) {
     const mutation = this.modelRbacPolicy.setGrantEnabled(this.roleId, actionKey, dataScope);
     if (mutation.isPending) return;
+    const scopeKey = this._scopeKey(actionKey, dataScope);
+    this.enabledScopes[scopeKey] = enabled;
     try {
       await mutation.mutateAsync(enabled);
     } catch (error) {
+      delete this.enabledScopes[scopeKey];
       await this._showMutationError(error);
     }
+  }
+
+  private _scopeEnabled(
+    actionKey: string,
+    dataScope: TypeRbacPolicyDataScope,
+    fallback: boolean,
+  ) {
+    const scopeKey = this._scopeKey(actionKey, dataScope);
+    return this.enabledScopes[scopeKey] ?? fallback;
+  }
+
+  private _scopeKey(actionKey: string, dataScope: TypeRbacPolicyDataScope) {
+    return `${actionKey}:${dataScope}`;
   }
 
   private _findConfiguredScope(actionKey: string, dataScope: TypeRbacPolicyDataScope) {
