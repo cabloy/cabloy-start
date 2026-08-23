@@ -31,6 +31,9 @@
     "prepack": "clean-package",
     "postpack": "clean-package restore"
   },
+  "dependencies": {
+    "vona-module-a-rbac": "workspace:^"
+  },
   "devDependencies": {
     "clean-package": "^2.2.0",
     "rimraf": "^6.1.3"

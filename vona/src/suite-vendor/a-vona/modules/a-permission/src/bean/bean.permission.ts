@@ -11,6 +11,7 @@ import type { ContextRoute, IRecordResourceNameToRoutePathItem } from 'vona-modu
 import { appResource, BeanBase, beanFullNameFromOnionName } from 'vona';
 import { Bean } from 'vona-module-a-bean';
 import { Caching } from 'vona-module-a-caching';
+import { clearRbacDecision, setRbacDecision, SymbolRbacDecision } from 'vona-module-a-rbac';
 import {
   composeGuards,
   getCacheControllerRoutes,
@@ -203,15 +204,16 @@ export class BeanPermission extends BeanBase {
     return true;
   }
 
-  private async _evaluatePermissionAction(
-    route: ContextRoute,
-  ): Promise<IOpenapiPermissionAction> {
+  private async _evaluatePermissionAction(route: ContextRoute): Promise<IOpenapiPermissionAction> {
     const ctx = this.ctx as any;
     const routePrevious = ctx.route;
     const innerAccessPrevious = ctx.innerAccess;
+    const rbacDecisionHadOwnProperty = Object.hasOwn(ctx, SymbolRbacDecision);
+    const rbacDecisionPrevious = ctx[SymbolRbacDecision];
     try {
       ctx.route = route;
       ctx.innerAccess = false;
+      clearRbacDecision(ctx);
       const result = await composeGuards(this.app, route)(this.ctx);
       if (result === false) return false;
       if (!route.route.meta?.[BeanFullNameGuardRbac]) return true;
@@ -221,6 +223,11 @@ export class BeanPermission extends BeanBase {
       if ([401, 403].includes(err?.code)) return false;
       throw err;
     } finally {
+      if (rbacDecisionHadOwnProperty) {
+        setRbacDecision(ctx, rbacDecisionPrevious);
+      } else {
+        clearRbacDecision(ctx);
+      }
       ctx.route = routePrevious;
       ctx.innerAccess = innerAccessPrevious;
     }

@@ -1,8 +1,10 @@
 import type { ICachingActionKeyInfo } from 'vona-module-a-caching';
+import type { IRbacPolicyDecision } from 'vona-module-a-rbac';
 
 import assert from 'node:assert';
 import { describe, it } from 'node:test';
 import { beanFullNameFromOnionName } from 'vona';
+import { getRbacDecision, setRbacDecision, SymbolRbacDecision } from 'vona-module-a-rbac';
 
 import { BeanPermission } from '../src/bean/bean.permission.ts';
 
@@ -222,18 +224,143 @@ describe('permission.test.ts', { concurrency: false }, () => {
     ]);
   });
 
+  it('isolates RBAC decisions when a decorated guard is skipped', async () => {
+    const BeanFullNameGuardRbac = beanFullNameFromOnionName('a-rbac:rbac', 'guard');
+    const route = {
+      controllerBeanFullName: 'test:controller',
+      action: 'select',
+      route: { meta: { [BeanFullNameGuardRbac]: {} } },
+    } as any;
+    const ctx = { route: { action: 'previous' }, innerAccess: true } as any;
+    const observedDecisions: Array<IRbacPolicyDecision | undefined> = [];
+    const permission = Object.create(BeanPermission.prototype) as BeanPermission;
+    Object.defineProperties(permission, {
+      app: {
+        value: {
+          meta: {},
+          bean: {
+            onion: {
+              guard: {
+                compose: () => async () => true,
+              },
+            },
+          },
+        },
+      },
+      bean: {
+        value: {
+          rbacScope: {
+            current: async () => {
+              observedDecisions.push(getRbacDecision(ctx));
+              const error = new Error('forbidden') as Error & { code: number };
+              error.code = 403;
+              throw error;
+            },
+          },
+        },
+      },
+      ctx: { value: ctx },
+    });
+    const previousDecision = {
+      allowed: true,
+      actionKey: 'previous:controller#select',
+      action: {
+        actionKey: 'previous:controller#select',
+        controllerBeanFullName: 'previous:controller',
+        action: 'select',
+      },
+      terms: [{ dataScope: 'all' }],
+    } as IRbacPolicyDecision;
+
+    assert.equal(await (permission as any)._evaluatePermissionAction(route), false);
+    assert.deepEqual(observedDecisions, [undefined]);
+    assert.equal(Object.hasOwn(ctx, SymbolRbacDecision), false);
+    assert.deepEqual(ctx, { route: { action: 'previous' }, innerAccess: true });
+
+    ctx[SymbolRbacDecision] = undefined;
+    assert.equal(await (permission as any)._evaluatePermissionAction(route), false);
+    assert.deepEqual(observedDecisions, [undefined, undefined]);
+    assert.equal(Object.hasOwn(ctx, SymbolRbacDecision), true);
+    assert.equal(ctx[SymbolRbacDecision], undefined);
+    assert.deepEqual(ctx.route, { action: 'previous' });
+    assert.equal(ctx.innerAccess, true);
+
+    setRbacDecision(ctx, previousDecision);
+    assert.equal(await (permission as any)._evaluatePermissionAction(route), false);
+    assert.deepEqual(observedDecisions, [undefined, undefined, undefined]);
+    assert.equal(getRbacDecision(ctx), previousDecision);
+    assert.equal(Object.hasOwn(ctx, SymbolRbacDecision), true);
+    assert.deepEqual(ctx.route, { action: 'previous' });
+    assert.equal(ctx.innerAccess, true);
+  });
+
+  it('restores RBAC decisions when guard composition throws', async () => {
+    const BeanFullNameGuardRbac = beanFullNameFromOnionName('a-rbac:rbac', 'guard');
+    const route = {
+      controllerBeanFullName: 'test:controller',
+      action: 'select',
+      route: { meta: { [BeanFullNameGuardRbac]: {} } },
+    } as any;
+    const ctx = { route: { action: 'previous' }, innerAccess: true } as any;
+    const previousDecision = {
+      allowed: true,
+      actionKey: 'previous:controller#select',
+      action: {
+        actionKey: 'previous:controller#select',
+        controllerBeanFullName: 'previous:controller',
+        action: 'select',
+      },
+      terms: [{ dataScope: 'all' }],
+    } as IRbacPolicyDecision;
+    setRbacDecision(ctx, previousDecision);
+    const failure = new Error('guard failure');
+    const permission = Object.create(BeanPermission.prototype) as BeanPermission;
+    Object.defineProperties(permission, {
+      app: {
+        value: {
+          meta: {},
+          bean: {
+            onion: {
+              guard: {
+                compose: () => async () => {
+                  assert.equal(getRbacDecision(ctx), undefined);
+                  throw failure;
+                },
+              },
+            },
+          },
+        },
+      },
+      ctx: { value: ctx },
+    });
+
+    await assert.rejects(() => (permission as any)._evaluatePermissionAction(route), failure);
+    assert.equal(getRbacDecision(ctx), previousDecision);
+    assert.equal(Object.hasOwn(ctx, SymbolRbacDecision), true);
+    assert.deepEqual(ctx.route, { action: 'previous' });
+    assert.equal(ctx.innerAccess, true);
+  });
+
   it('reduces an RBAC action projection to its final boolean result', async () => {
     const allowed = createPermission({});
     const denied = createPermission({});
     const legacy = createPermission({});
     Object.defineProperties(allowed, {
       retrievePermissionAction: {
-        value: async () => ({ key: 'test:controller#select', allowed: true, matcher: { mode: 'all' } }),
+        value: async () => ({
+          key: 'test:controller#select',
+          allowed: true,
+          matcher: { mode: 'all' },
+        }),
       },
     });
     Object.defineProperties(denied, {
       retrievePermissionAction: {
-        value: async () => ({ key: 'test:controller#select', allowed: false, matcher: { mode: 'all' } }),
+        value: async () => ({
+          key: 'test:controller#select',
+          allowed: false,
+          matcher: { mode: 'all' },
+        }),
       },
     });
     Object.defineProperties(legacy, {
