@@ -49,6 +49,23 @@ export function parseRbacActionKey(
   };
 }
 
+const RbacPolicyActionOrder = ['create', 'select', 'view', 'update', 'delete'] as const;
+
+function compareRbacPolicyActions(
+  left: IRbacPolicyCatalogActionView,
+  right: IRbacPolicyCatalogActionView,
+) {
+  const leftIndex = RbacPolicyActionOrder.indexOf(
+    left.action as (typeof RbacPolicyActionOrder)[number],
+  );
+  const rightIndex = RbacPolicyActionOrder.indexOf(
+    right.action as (typeof RbacPolicyActionOrder)[number],
+  );
+  const leftOrder = leftIndex === -1 ? RbacPolicyActionOrder.length : leftIndex;
+  const rightOrder = rightIndex === -1 ? RbacPolicyActionOrder.length : rightIndex;
+  return leftOrder - rightOrder || left.actionKey.localeCompare(right.actionKey);
+}
+
 export function groupRbacPolicyActions(
   actions: IRbacPolicyCatalogAction[],
 ): IRbacPolicyCatalogActionGroup[] {
@@ -78,9 +95,7 @@ export function groupRbacPolicyActions(
     )
     .map(group => ({
       ...group,
-      actions: group.actions.toSorted((left, right) =>
-        left.actionKey.localeCompare(right.actionKey),
-      ),
+      actions: group.actions.toSorted(compareRbacPolicyActions),
     }));
 }
 
