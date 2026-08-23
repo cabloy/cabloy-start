@@ -341,11 +341,12 @@ describe('record.test.ts', { concurrency: false }, () => {
       try {
         app.bean.passport.current!.roles = [];
         const actions = ['create', 'select', 'view', 'update', 'delete'];
-        const permissions = await Promise.all(
-          actions.map(action =>
-            app.bean.permission.retrievePermissionAction('training-record:record', action),
-          ),
-        );
+        const permissions = [];
+        for (const action of actions) {
+          permissions.push(
+            await app.bean.permission.checkPermissionAction('training-record:record', action),
+          );
+        }
         assert.deepEqual(
           permissions,
           actions.map(() => false),

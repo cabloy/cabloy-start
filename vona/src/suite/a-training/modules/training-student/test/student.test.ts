@@ -315,11 +315,12 @@ describe('student.test.ts', { concurrency: false }, () => {
       try {
         app.bean.passport.current!.roles = [];
         const actions = ['create', 'select', 'view', 'update', 'summary', 'delete', 'deleteForce'];
-        const permissions = await Promise.all(
-          actions.map(action =>
-            app.bean.permission.retrievePermissionAction('training-student:student', action),
-          ),
-        );
+        const permissions = [];
+        for (const action of actions) {
+          permissions.push(
+            await app.bean.permission.checkPermissionAction('training-student:student', action),
+          );
+        }
         assert.deepEqual(
           permissions,
           actions.map(() => false),
