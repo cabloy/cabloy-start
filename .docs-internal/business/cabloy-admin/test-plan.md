@@ -31,7 +31,7 @@ The phase-one risks requiring repeatable proof are:
 13. direct server-side Student/Record enforcement, forged scope resistance, nested transactional behavior, and unchanged training module file versions; and
 14. safe policy projections, generated contract synchronization, and SSR/API separation.
 
-The Phase 80 increment covers dynamic RBAC only for explicitly decorated actions and the five accepted data-scope terms. A Position catalog, Organization, employment workflows, manager-derived authorization, external identity synchronization, and a new Admin SSR application remain out of scope. Phase 80-specific retained evidence exists for implementation slices, but the complete dynamic RBAC/data-scope increment remains unverified.
+The Phase 80 increment covers dynamic RBAC only for explicitly decorated actions and the five accepted data-scope terms. A Position catalog, Organization, employment workflows, manager-derived authorization, external identity synchronization, and a new Admin SSR application remain out of scope. Nested Start Details rows and bulk renderers are generally embedded in the primary form and intentionally do not consume the matcher in this increment. The existing Cabloy Admin User/Role/Department system-management controllers remain protected by `systemAdmin` and are not dynamic-RBAC migration targets. Phase 80-specific retained evidence exists for implementation slices, but the complete dynamic RBAC/data-scope increment remains unverified.
 
 ## Verification Model
 
