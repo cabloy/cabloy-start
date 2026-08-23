@@ -1772,6 +1772,9 @@ importers:
       vona-module-a-aspect:
         specifier: workspace:^
         version: link:../../../a-vona/modules/a-aspect
+      vona-module-a-openapi:
+        specifier: workspace:^
+        version: link:../../../a-vona/modules/a-openapi
       vona-module-a-orm:
         specifier: workspace:^
         version: link:../../../a-vona/modules/a-orm
