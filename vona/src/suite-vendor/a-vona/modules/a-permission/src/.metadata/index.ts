@@ -45,7 +45,6 @@ declare module 'vona-module-a-permission' {
           export interface EventRetrievePermissionAction {
             get $beanFullName(): 'a-permission.event.retrievePermissionAction';
             get $onionName(): 'a-permission:retrievePermissionAction';
-            
           }
 
         export interface EventRetrievePermissions {
@@ -56,7 +55,6 @@ declare module 'vona-module-a-permission' {
           export interface EventRetrievePermissions {
             get $beanFullName(): 'a-permission.event.retrievePermissions';
             get $onionName(): 'a-permission:retrievePermissions';
-            
           } 
 }
 /** event: end */
@@ -81,6 +79,7 @@ declare module 'vona-module-a-event' {
 /** event: end */
 /** summerCache: begin */
 export * from '../bean/summerCache.permissionActionByRoles.ts';
+export * from '../bean/summerCache.permissionActionByUser.ts';
 export * from '../bean/summerCache.permissionUser.ts';
 
 import { type IDecoratorSummerCacheOptions } from 'vona-module-a-summer';
@@ -88,6 +87,7 @@ declare module 'vona-module-a-summer' {
   
     export interface ISummerCacheRecord {
       'a-permission:permissionActionByRoles': IDecoratorSummerCacheOptions;
+'a-permission:permissionActionByUser': IDecoratorSummerCacheOptions;
 'a-permission:permissionUser': IDecoratorSummerCacheOptions;
     }
 
@@ -106,6 +106,17 @@ declare module 'vona-module-a-permission' {
             get $onionOptions(): IDecoratorSummerCacheOptions;
           }
 
+        export interface SummerCachePermissionActionByUser {
+          /** @internal */
+          get scope(): ScopeModuleAPermission;
+        }
+
+          export interface SummerCachePermissionActionByUser {
+            get $beanFullName(): 'a-permission.summerCache.permissionActionByUser';
+            get $onionName(): 'a-permission:permissionActionByUser';
+            get $onionOptions(): IDecoratorSummerCacheOptions;
+          }
+
         export interface SummerCachePermissionUser {
           /** @internal */
           get scope(): ScopeModuleAPermission;
@@ -120,9 +131,11 @@ declare module 'vona-module-a-permission' {
 /** summerCache: end */
 /** summerCache: begin */
 import type { SummerCachePermissionActionByRoles } from '../bean/summerCache.permissionActionByRoles.ts';
+import type { SummerCachePermissionActionByUser } from '../bean/summerCache.permissionActionByUser.ts';
 import type { SummerCachePermissionUser } from '../bean/summerCache.permissionUser.ts';
 export interface IModuleSummerCache {
   'permissionActionByRoles': SummerCachePermissionActionByRoles;
+'permissionActionByUser': SummerCachePermissionActionByUser;
 'permissionUser': SummerCachePermissionUser;
 }
 /** summerCache: end */

@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "vona-module-a-aspect": "workspace:^",
+    "vona-module-a-openapi": "workspace:^",
     "vona-module-a-orm": "workspace:^",
     "vona-module-a-user": "workspace:^",
     "vona-module-a-web": "workspace:^"

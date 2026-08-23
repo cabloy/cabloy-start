@@ -85,7 +85,39 @@ export class BeanRbacScope extends BeanBase {
           if (!this.matches(action, decision, unrestricted, entry)) this.app.throw(403);
         }
       },
+      permissionProjection: () => this.permissionProjection(action, decision, unrestricted),
     };
+  }
+
+  private permissionProjection(
+    action: IRbacActionDescriptor,
+    decision: IRbacPolicyDecision,
+    unrestricted: boolean,
+  ) {
+    const matcher = unrestricted || !action.options.dataScope
+      ? { mode: 'all' as const }
+      : {
+          mode: 'any' as const,
+          rules: (decision.terms ?? []).flatMap(term => {
+            if (term.dataScope === 'all') return [];
+            if (term.dataScope === 'mine') {
+              return [
+                {
+                  field: action.options.dataScopeMineField ?? 'userIdOwner',
+                  values: [term.ownerId],
+                },
+              ];
+            }
+            return [
+              {
+                field: action.options.dataScopeField ?? 'departmentId',
+                values: [...term.departmentIds],
+              },
+            ];
+          }),
+        };
+    if (matcher.mode === 'any' && matcher.rules.length === 0) this.app.throw(403);
+    return { key: action.actionKey, allowed: decision.allowed, matcher };
   }
 
   private where(

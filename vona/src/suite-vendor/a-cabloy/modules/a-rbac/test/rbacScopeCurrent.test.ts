@@ -79,6 +79,11 @@ describe('rbacScopeCurrent.test.ts', { concurrency: false }, () => {
     const access = await scope.current();
     const callerWhere = { name: 'visible' } as TypeModelWhere<any>;
     assert.equal(access.unrestricted, true);
+    assert.deepEqual(access.permissionProjection(), {
+      key: action.actionKey,
+      allowed: true,
+      matcher: { mode: 'all' },
+    });
     assert.equal(access.decision, decision);
     assert.deepEqual(access.where(callerWhere), callerWhere);
     access.checkEntry({ departmentId: 'other' });
@@ -104,6 +109,11 @@ describe('rbacScopeCurrent.test.ts', { concurrency: false }, () => {
 
     const access = await scope.current();
     assert.equal(access.unrestricted, false);
+    assert.deepEqual(access.permissionProjection(), {
+      key: action.actionKey,
+      allowed: true,
+      matcher: { mode: 'any', rules: [{ field: 'userIdOwner', values: ['user-1'] }] },
+    });
     assert.deepEqual(access.where(), { userIdOwner: 'user-1' });
     assert.deepEqual(access.where({ level: 1 } as TypeModelWhere<any>), {
       _and_: { _and_: { level: 1 }, _and_0: { userIdOwner: 'user-1' } },
@@ -152,6 +162,11 @@ describe('rbacScopeCurrent.test.ts', { concurrency: false }, () => {
     );
 
     const access = await scope.current();
+    assert.deepEqual(access.permissionProjection(), {
+      key: action.actionKey,
+      allowed: true,
+      matcher: { mode: 'any', rules: [{ field: 'departmentId', values: ['department-1'] }] },
+    });
     assert.deepEqual(access.ownerValues(), {
       departmentId: 'department-1',
       userIdOwner: 'user-1',
