@@ -1,6 +1,6 @@
 # Phase 80 Acceptance Evidence Index
 
-This retained evidence set covers the reusable RBAC contract-hardening increment, the local Start grant/scope-resolution/invalidation implementation evidence, and the Student/Record controller scope slice. It does not close the remaining policy-editor, Dynamic RBAC, Department data-scope, PostgreSQL, or SSR/browser acceptance work.
+This retained evidence set covers the reusable RBAC contract-hardening increment, the local Start grant/scope-resolution/invalidation implementation evidence, the Student/Record controller scope slice, and the Role-detail policy-editor slice. Subsequent source revisions add a browser-safe RBAC action projection and generic Start row/detail data handoff, but those changes are not covered by the retained execution records. The set does not close the remaining opted-in Resource capability rendering, Dynamic RBAC, Department data-scope, PostgreSQL, external API, contract-loop, or SSR/browser acceptance work.
 
 ## Evidence set
 
@@ -27,7 +27,7 @@ This retained evidence set covers the reusable RBAC contract-hardening increment
 
 - The evidence records explicit decorator opt-in, canonical identity, alias fail-closed behavior, unrestricted action-bound decisions, request-local fail-closed handoff, scoped decision validation, GuardBase options, opaque capability contract validation, committed invalidation behavior, and five-scope resolution.
 - The `WBS-ADM-80-02` records are local managed-SQLite implementation evidence. They do not establish PostgreSQL contention/transaction proof or complete direct external API acceptance.
-- This index does not claim `WBS-ADM-80-01` through `WBS-ADM-80-05` verified. Complete Student/Record ATP coverage, policy editor/capability UX, generated contract-loop synchronization, PostgreSQL gates, and SSR/browser evidence remain pending.
+- This index does not claim `WBS-ADM-80-01` through `WBS-ADM-80-05` verified. The retained records do not cover the post-projection Resource action integration end to end. Local Student/Record and policy-editor slices exist; opted-in Resource row/detail rendering, stale-projection direct external API proof, generated contract-loop synchronization, PostgreSQL gates, and complete SSR/browser evidence remain pending.
 - No waivers are recorded.
 
 The [test plan](../../test-plan.md#evidence-record) defines evidence-record requirements and owns ATP acceptance criteria.

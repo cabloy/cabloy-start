@@ -65,7 +65,7 @@ ATP-ADM-SCP-02 scopes Records, inherits Student scope, and protects Subjects
 
 ## Verification boundary
 
-This record is retained evidence for the local implementation slice, not a final `verified` claim for `WBS-ADM-80-03`. The run used managed SQLite (`better-sqlite3`) and does not establish PostgreSQL-specific contention or transaction behavior, direct external HTTP API evidence, or the later SSR/browser policy-editor gates. Those remain open under `WBS-ADM-80-03`, `WBS-ADM-80-04`, and `WBS-ADM-80-05`.
+This record is retained evidence for the local implementation slice, not a final `verified` claim for `WBS-ADM-80-03`. The run used managed SQLite (`better-sqlite3`) and does not establish PostgreSQL-specific contention or transaction behavior or direct external HTTP API evidence. The Role-detail policy-editor slice is retained separately in `ATP-ADM-POL-03`; post-projection Resource rendering and complete SSR/browser closure remain open under `WBS-ADM-80-03`, `WBS-ADM-80-04`, and `WBS-ADM-80-05`.
 
 No schema, `meta.version.ts`, environment configuration, or port configuration changed for this acceptance run.
 

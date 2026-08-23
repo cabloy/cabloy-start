@@ -57,7 +57,7 @@ The test also verifies cleanup in reverse dependency order for grant-Department 
 
 ## Verification boundary
 
-This record is retained evidence for the local implementation slice, not a final `verified` claim for `WBS-ADM-80-02`. The run used managed SQLite (`better-sqlite3`). It does not include PostgreSQL contention/transaction evidence, a dedicated two-database PostgreSQL scope run, or the separate Student/Record `ATP-ADM-SCP-02` closure. Structural AND composition and full direct external API coverage remain part of the broader Phase 80 closure work where applicable.
+This record is retained evidence for the local implementation slice, not a final `verified` claim for `WBS-ADM-80-02`. The run used managed SQLite (`better-sqlite3`). It does not include PostgreSQL contention/transaction evidence or a dedicated two-database PostgreSQL scope run. The separate local Student/Record `ATP-ADM-SCP-02` record now exists, while structural AND composition and full direct external API coverage remain part of the broader Phase 80 closure work where applicable.
 
 No schema, `meta.version.ts`, generated frontend artifact, or environment configuration was changed.
 

@@ -60,7 +60,7 @@ The expected `401`, `403`, `422`, and duplicate/conflict errors emitted during n
 
 ## Verification boundary
 
-This record is retained evidence for the local implementation slice, not a final `verified` claim for `WBS-ADM-80-02`. The run used managed SQLite (`better-sqlite3`). It does not include PostgreSQL contention/transaction evidence, direct external API acceptance for every policy mutation path, or SSR/browser policy-editor evidence. Those remain open under `WBS-ADM-80-02`, `WBS-ADM-80-04`, and `WBS-ADM-80-05`.
+This record is retained evidence for the local implementation slice, not a final `verified` claim for `WBS-ADM-80-02`. The run used managed SQLite (`better-sqlite3`). It does not include PostgreSQL contention/transaction evidence or direct external API acceptance for every policy mutation path. The later `ATP-ADM-POL-03` record provides a bounded policy-editor slice, while post-projection Resource rendering, direct external API, and full SSR/browser closure remain open under `WBS-ADM-80-02`, `WBS-ADM-80-04`, and `WBS-ADM-80-05`.
 
 No schema, `meta.version.ts`, generated frontend artifact, or environment configuration was changed.
 

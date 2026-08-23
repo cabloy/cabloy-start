@@ -76,7 +76,7 @@ and the equivalent Student-create value. Callers without the required current se
 
 ## Verification boundary
 
-This record does not claim full `ATP-ADM-POL-03` or Phase 80 verification. The repository still has no Admin row/detail capability projection wired to the reusable opaque capability type, so this record cannot claim capability rendering coverage. It also does not establish PostgreSQL contention/transaction proof, a direct external HTTP session for a delegated browser caller, or complete SSR-to-hydration DOM equivalence beyond the server marker/hydration-marker boundary checked here. Those remain open under `WBS-ADM-80-04` and `WBS-ADM-80-05`.
+This record does not claim full `ATP-ADM-POL-03` or Phase 80 verification. Subsequent source revisions `568becf`, `c46e48a`, and `b743415` add a browser-safe RBAC action projection, focused frontend matcher coverage, Start table row-data handoff, and persisted page-entry/form-data handoff; those changes are outside this retained execution record and were not exercised by the browser procedure above. The nested Start Details action-row and bulk renderers still do not consume the matcher, and this record therefore cannot claim complete Admin row/detail capability rendering coverage. It also does not establish PostgreSQL contention/transaction proof, a direct external HTTP session for a delegated browser caller, a stale-projection direct API scenario, or complete SSR-to-hydration DOM equivalence beyond the server marker/hydration-marker boundary checked here. Those remain open under `WBS-ADM-80-04` and `WBS-ADM-80-05`.
 
 No schema, `meta.version.ts`, environment configuration, or port configuration changed for these checks.
 

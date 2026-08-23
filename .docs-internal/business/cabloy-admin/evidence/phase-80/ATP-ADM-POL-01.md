@@ -48,7 +48,7 @@ The reusable catalog/guard suites cover:
 - non-empty terms for allowed data-scoped decisions;
 - GuardBase default, pass-through, and reject options;
 - child/request decision isolation; and
-- minimal opaque capability identity/boolean values rejecting predicates and Department topology.
+- the then-current minimal `{ key, allowed }` opaque-capability helper, rejecting predicates and Department topology.
 
 ## Expected and observed result
 
@@ -58,7 +58,7 @@ The expected authorization errors emitted by the broader suites were asserted ne
 
 ## Implementation boundary
 
-This evidence closes the reusable contract-hardening portion of `WBS-ADM-80-01` as implementation-complete evidence for this slice. It does not verify the remaining Phase 80 work: Start revision/cache freshness and PostgreSQL policy contention, complete Student/Record ATP evidence, policy editor/capability UI, generated Admin contract-loop evidence, or SSR/browser acceptance. Those remain pending under `WBS-ADM-80-02` through `WBS-ADM-80-05`.
+This evidence closes the reusable contract-hardening portion of `WBS-ADM-80-01` as implementation-complete evidence for this slice. The later Resource permission projection with normalized matcher rules is outside this retained execution and is not claimed here. It does not verify the remaining Phase 80 work: Start revision/cache freshness and PostgreSQL policy contention, complete Student/Record ATP evidence, policy editor/capability UI, generated Admin contract-loop evidence, or SSR/browser acceptance. Those remain pending under `WBS-ADM-80-02` through `WBS-ADM-80-05`.
 
 No schema, `meta.version.ts`, generated frontend artifact, or environment configuration was changed.
 

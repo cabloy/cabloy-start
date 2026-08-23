@@ -138,7 +138,7 @@ An authorized administrator who maintains the Department forest, assigns members
 - **PRD-ADM-SCP-01**: An opted-in action defaults to deny when no effective allowed policy grant exists for the caller in the active instance.
 - **PRD-ADM-SCP-02**: Matching grants combine as a logical union: `all` is unrestricted; custom Department, own Department, own Department plus descendant, and mine terms remain independent alternatives.
 - **PRD-ADM-SCP-03**: Department scope recognizes only enabled Department facts in the active instance. Custom Departments do not imply descendants; own-plus-descendants resolves enabled descendants recursively.
-- **PRD-ADM-SCP-04**: A browser menu, route, filter, permission hint, or opaque row capability does not authorize an API or data mutation; the server remains authoritative.
+- **PRD-ADM-SCP-04**: A browser menu, route, filter, permission hint, or browser-safe row/detail action projection does not authorize an API or data mutation; the server remains authoritative.
 - **PRD-ADM-SCP-05**: Selected Student and Record actions provide the first acceptance slice for scoped reads and writes; this does not require migration of unrelated existing Controllers.
 
 ### Protected System Administrator Authority
