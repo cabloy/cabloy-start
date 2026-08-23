@@ -1,9 +1,9 @@
+import type { IOpenapiPermissionActionRbac } from 'zova-module-a-openapi';
+
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import type { IOpenapiPermissionActionRbac } from 'zova-module-a-openapi';
-
-import { matchPermissionAction } from '../../src/lib/permissionActionMatcher.ts';
+import { matchPermissionAction } from '../../src/lib/permissionActionMatcher.js';
 
 const action = (
   matcher: IOpenapiPermissionActionRbac['matcher'],
@@ -43,8 +43,14 @@ test('requires every selected row to match', () => {
     rules: [{ field: 'departmentId', values: ['7', '8'] }],
   });
 
-  assert.equal(matchPermissionAction(permission, [{ departmentId: 7 }, { departmentId: '8' }]), true);
-  assert.equal(matchPermissionAction(permission, [{ departmentId: 7 }, { departmentId: 9 }]), false);
+  assert.equal(
+    matchPermissionAction(permission, [{ departmentId: 7 }, { departmentId: '8' }]),
+    true,
+  );
+  assert.equal(
+    matchPermissionAction(permission, [{ departmentId: 7 }, { departmentId: 9 }]),
+    false,
+  );
   assert.equal(matchPermissionAction(permission, []), false);
 });
 

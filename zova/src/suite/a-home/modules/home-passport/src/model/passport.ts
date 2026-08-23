@@ -18,7 +18,7 @@ import {
 } from 'zova-module-a-openapi';
 import { ApiApiHomeUserPassportloginOauthPath, OpenApiBaseURL } from 'zova-module-home-api';
 
-import { matchPermissionAction } from '../lib/permissionActionMatcher.ts';
+import { matchPermissionAction } from '../lib/permissionActionMatcher.js';
 
 export interface IModelOptionsPassport extends IDecoratorModelOptions {}
 
