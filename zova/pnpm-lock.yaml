@@ -327,9 +327,6 @@ importers:
       zova-module-start-pageentry:
         specifier: workspace:^
         version: link:src/suite/cabloy-start/modules/start-pageentry
-      zova-module-start-paypal:
-        specifier: workspace:^
-        version: link:src/suite/cabloy-start/modules/start-paypal
       zova-module-start-resource:
         specifier: workspace:^
         version: link:src/suite/cabloy-start/modules/start-resource
@@ -1777,9 +1774,6 @@ importers:
       zova-module-start-pageentry:
         specifier: ^5.0.0
         version: link:modules/start-pageentry
-      zova-module-start-paypal:
-        specifier: ^5.0.0
-        version: link:modules/start-paypal
       zova-module-start-resource:
         specifier: ^5.0.0
         version: link:modules/start-resource
@@ -1998,15 +1992,6 @@ importers:
         version: 2.2.0
       rimraf:
         specifier: ^6.1.3
-        version: 6.1.3
-
-  src/suite/cabloy-start/modules/start-paypal:
-    devDependencies:
-      clean-package:
-        specifier: ^2.2.0
-        version: 2.2.0
-      rimraf:
-        specifier: ^6.0.1
         version: 6.1.3
 
   src/suite/cabloy-start/modules/start-resource:
