@@ -4,15 +4,15 @@ export * from '../model/image.js';
 import { IModelOptionsImage } from '../model/image.js';
 import 'zova-module-a-model';
 declare module 'zova-module-a-model' {
-  
+
     export interface IModelRecord {
       'start-image:image': IModelOptionsImage;
     }
 
-  
+
 }
 declare module 'zova-module-start-image' {
-  
+
         export interface ModelImage {
           /** @internal */
           get scope(): ScopeModuleStartImage;
@@ -22,7 +22,7 @@ declare module 'zova-module-start-image' {
           get $beanFullName(): 'start-image.model.image';
           get $onionName(): 'start-image:image';
           get $onionOptions(): IModelOptionsImage;
-        } 
+        }
 }
 /** model: end */
 /** model: begin */
@@ -39,11 +39,11 @@ export * from '../api/image.js';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-start-image' {
-  
+
         export interface ApiImage {
           /** @internal */
           get scope(): ScopeModuleStartImage;
@@ -52,8 +52,8 @@ declare module 'zova-module-start-image' {
         export interface ApiImage {
           get $beanFullName(): 'start-image.api.image';
           get $onionName(): 'start-image:image';
-          
-        } 
+
+        }
 }
 /** api: end */
 /** api: begin */
@@ -79,11 +79,11 @@ export * from '../apiSchema/image.js';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-start-image' {
-  
+
         export interface ApiSchemaImage {
           /** @internal */
           get scope(): ScopeModuleStartImage;
@@ -92,8 +92,8 @@ declare module 'zova-module-start-image' {
         export interface ApiSchemaImage {
           get $beanFullName(): 'start-image.apiSchema.image';
           get $onionName(): 'start-image:image';
-          
-        } 
+
+        }
 }
 /** apiSchema: end */
 /** apiSchema: begin */
@@ -113,26 +113,34 @@ declare module 'zova' {
 /** apiSchema: end */
 /** controller: begin */
 export * from '../component/formFieldImage/controller.jsx';
+export * from '../component/imageUploader/controller.jsx';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-start-image' {
-  
+
         export interface ControllerFormFieldImage {
           /** @internal */
           get scope(): ScopeModuleStartImage;
-        } 
+        }
+
+        export interface ControllerImageUploader {
+          /** @internal */
+          get scope(): ScopeModuleStartImage;
+        }
 }
 /** controller: end */
 /** controller: begin */
 import { ControllerFormFieldImage } from '../component/formFieldImage/controller.jsx';
+import { ControllerImageUploader } from '../component/imageUploader/controller.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
     'start-image.controller.formFieldImage': ControllerFormFieldImage;
+'start-image.controller.imageUploader': ControllerImageUploader;
   }
 }
 /** controller: end */
@@ -140,16 +148,21 @@ declare module 'zova' {
 /** components: begin */
 export * from './component/formFieldImage.js';
 import { ZFormFieldImage } from './component/formFieldImage.js';
+export * from './component/imageUploader.js';
+import { ZImageUploader } from './component/imageUploader.js';
 export const components = {
   'formFieldImage': ZFormFieldImage,
+'imageUploader': ZImageUploader,
 };
 import 'zova';
 declare module 'zova' {
 export interface IComponentRecord {
   'start-image:formFieldImage': ControllerFormFieldImage;
+'start-image:imageUploader': ControllerImageUploader;
 }
 export interface IZovaComponentRecord {
   'start-image:formFieldImage': typeof ZFormFieldImage;
+'start-image:imageUploader': typeof ZImageUploader;
 }
 }
 /** components: end */
@@ -158,15 +171,15 @@ export * from '../bean/tableCell.image.jsx';
 import { ITableCellOptionsImage } from '../bean/tableCell.image.jsx';
 import 'zova-module-a-table';
 declare module 'zova-module-a-table' {
-  
+
     export interface ITableCellRecord {
       'start-image:image': ITableCellOptionsImage;
     }
 
-  
+
 }
 declare module 'zova-module-start-image' {
-  
+
         export interface TableCellImage {
           /** @internal */
           get scope(): ScopeModuleStartImage;
@@ -176,7 +189,7 @@ declare module 'zova-module-start-image' {
           get $beanFullName(): 'start-image.tableCell.image';
           get $onionName(): 'start-image:image';
           get $onionOptions(): ITableCellOptionsImage;
-        } 
+        }
 }
 /** tableCell: end */
 /** tableCell: begin */
@@ -210,14 +223,14 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'start-image': ScopeModuleStartImage;
   }
-  
-  
+
+
 
   export interface IBeanScopeLocale {
     'start-image': (typeof locales)[TypeLocaleBase];
   }
 
-  
+
 }
 
 export function locale<K extends keyof (typeof locales)[TypeLocaleBase]>(key: K): `start-image::${K}` {
