@@ -17,4 +17,5 @@ export default {
   'Locale': 'Locale',
   'Todo: CRUD': 'Todo: CRUD',
   'Docs': 'Docs',
+  'AccountSettings': 'Account Settings',
 };

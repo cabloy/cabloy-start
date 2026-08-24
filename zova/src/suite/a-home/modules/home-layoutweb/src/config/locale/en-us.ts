@@ -7,4 +7,6 @@ export default {
   ThemeDefault: 'Default',
   ThemeOrange: 'Orange',
   ThemeBlue: 'Blue',
+  Login: 'Login',
+  AccountSettings: 'Account Settings',
 };

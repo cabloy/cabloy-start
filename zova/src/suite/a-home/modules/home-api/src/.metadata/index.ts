@@ -5,15 +5,16 @@ export * from '../api/home.js';
 export * from '../api/homeBaseMenu.js';
 export * from '../api/homeBasePermission.js';
 export * from '../api/homeBaseSiteCatalog.js';
+export * from '../api/homeUserAccount.js';
 export * from '../api/homeUserPassport.js';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-home-api' {
-  
+
         export interface ApiCaptcha {
           /** @internal */
           get scope(): ScopeModuleHomeApi;
@@ -22,7 +23,7 @@ declare module 'zova-module-home-api' {
         export interface ApiCaptcha {
           get $beanFullName(): 'home-api.api.captcha';
           get $onionName(): 'home-api:captcha';
-          
+
         }
 
         export interface ApiHome {
@@ -33,7 +34,7 @@ declare module 'zova-module-home-api' {
         export interface ApiHome {
           get $beanFullName(): 'home-api.api.home';
           get $onionName(): 'home-api:home';
-          
+
         }
 
         export interface ApiHomeBaseMenu {
@@ -44,7 +45,7 @@ declare module 'zova-module-home-api' {
         export interface ApiHomeBaseMenu {
           get $beanFullName(): 'home-api.api.homeBaseMenu';
           get $onionName(): 'home-api:homeBaseMenu';
-          
+
         }
 
         export interface ApiHomeBasePermission {
@@ -55,7 +56,7 @@ declare module 'zova-module-home-api' {
         export interface ApiHomeBasePermission {
           get $beanFullName(): 'home-api.api.homeBasePermission';
           get $onionName(): 'home-api:homeBasePermission';
-          
+
         }
 
         export interface ApiHomeBaseSiteCatalog {
@@ -66,7 +67,18 @@ declare module 'zova-module-home-api' {
         export interface ApiHomeBaseSiteCatalog {
           get $beanFullName(): 'home-api.api.homeBaseSiteCatalog';
           get $onionName(): 'home-api:homeBaseSiteCatalog';
-          
+
+        }
+
+        export interface ApiHomeUserAccount {
+          /** @internal */
+          get scope(): ScopeModuleHomeApi;
+        }
+
+        export interface ApiHomeUserAccount {
+          get $beanFullName(): 'home-api.api.homeUserAccount';
+          get $onionName(): 'home-api:homeUserAccount';
+
         }
 
         export interface ApiHomeUserPassport {
@@ -77,8 +89,8 @@ declare module 'zova-module-home-api' {
         export interface ApiHomeUserPassport {
           get $beanFullName(): 'home-api.api.homeUserPassport';
           get $onionName(): 'home-api:homeUserPassport';
-          
-        } 
+
+        }
 }
 /** api: end */
 /** api: begin */
@@ -87,6 +99,7 @@ import { ApiHome } from '../api/home.js';
 import { ApiHomeBaseMenu } from '../api/homeBaseMenu.js';
 import { ApiHomeBasePermission } from '../api/homeBasePermission.js';
 import { ApiHomeBaseSiteCatalog } from '../api/homeBaseSiteCatalog.js';
+import { ApiHomeUserAccount } from '../api/homeUserAccount.js';
 import { ApiHomeUserPassport } from '../api/homeUserPassport.js';
 export interface IModuleApi {
   'captcha': ApiCaptcha;
@@ -94,6 +107,7 @@ export interface IModuleApi {
 'homeBaseMenu': ApiHomeBaseMenu;
 'homeBasePermission': ApiHomeBasePermission;
 'homeBaseSiteCatalog': ApiHomeBaseSiteCatalog;
+'homeUserAccount': ApiHomeUserAccount;
 'homeUserPassport': ApiHomeUserPassport;
 }
 /** api: end */
@@ -107,6 +121,7 @@ declare module 'zova' {
 'home-api.api.homeBaseMenu': ApiHomeBaseMenu;
 'home-api.api.homeBasePermission': ApiHomeBasePermission;
 'home-api.api.homeBaseSiteCatalog': ApiHomeBaseSiteCatalog;
+'home-api.api.homeUserAccount': ApiHomeUserAccount;
 'home-api.api.homeUserPassport': ApiHomeUserPassport;
   }
 }
@@ -120,15 +135,16 @@ export * from '../apiSchema/home.js';
 export * from '../apiSchema/homeBaseMenu.js';
 export * from '../apiSchema/homeBasePermission.js';
 export * from '../apiSchema/homeBaseSiteCatalog.js';
+export * from '../apiSchema/homeUserAccount.js';
 export * from '../apiSchema/homeUserPassport.js';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-home-api' {
-  
+
         export interface ApiSchemaCaptcha {
           /** @internal */
           get scope(): ScopeModuleHomeApi;
@@ -137,7 +153,7 @@ declare module 'zova-module-home-api' {
         export interface ApiSchemaCaptcha {
           get $beanFullName(): 'home-api.apiSchema.captcha';
           get $onionName(): 'home-api:captcha';
-          
+
         }
 
         export interface ApiSchemaHome {
@@ -148,7 +164,7 @@ declare module 'zova-module-home-api' {
         export interface ApiSchemaHome {
           get $beanFullName(): 'home-api.apiSchema.home';
           get $onionName(): 'home-api:home';
-          
+
         }
 
         export interface ApiSchemaHomeBaseMenu {
@@ -159,7 +175,7 @@ declare module 'zova-module-home-api' {
         export interface ApiSchemaHomeBaseMenu {
           get $beanFullName(): 'home-api.apiSchema.homeBaseMenu';
           get $onionName(): 'home-api:homeBaseMenu';
-          
+
         }
 
         export interface ApiSchemaHomeBasePermission {
@@ -170,7 +186,7 @@ declare module 'zova-module-home-api' {
         export interface ApiSchemaHomeBasePermission {
           get $beanFullName(): 'home-api.apiSchema.homeBasePermission';
           get $onionName(): 'home-api:homeBasePermission';
-          
+
         }
 
         export interface ApiSchemaHomeBaseSiteCatalog {
@@ -181,7 +197,18 @@ declare module 'zova-module-home-api' {
         export interface ApiSchemaHomeBaseSiteCatalog {
           get $beanFullName(): 'home-api.apiSchema.homeBaseSiteCatalog';
           get $onionName(): 'home-api:homeBaseSiteCatalog';
-          
+
+        }
+
+        export interface ApiSchemaHomeUserAccount {
+          /** @internal */
+          get scope(): ScopeModuleHomeApi;
+        }
+
+        export interface ApiSchemaHomeUserAccount {
+          get $beanFullName(): 'home-api.apiSchema.homeUserAccount';
+          get $onionName(): 'home-api:homeUserAccount';
+
         }
 
         export interface ApiSchemaHomeUserPassport {
@@ -192,8 +219,8 @@ declare module 'zova-module-home-api' {
         export interface ApiSchemaHomeUserPassport {
           get $beanFullName(): 'home-api.apiSchema.homeUserPassport';
           get $onionName(): 'home-api:homeUserPassport';
-          
-        } 
+
+        }
 }
 /** apiSchema: end */
 /** apiSchema: begin */
@@ -202,6 +229,7 @@ import { ApiSchemaHome } from '../apiSchema/home.js';
 import { ApiSchemaHomeBaseMenu } from '../apiSchema/homeBaseMenu.js';
 import { ApiSchemaHomeBasePermission } from '../apiSchema/homeBasePermission.js';
 import { ApiSchemaHomeBaseSiteCatalog } from '../apiSchema/homeBaseSiteCatalog.js';
+import { ApiSchemaHomeUserAccount } from '../apiSchema/homeUserAccount.js';
 import { ApiSchemaHomeUserPassport } from '../apiSchema/homeUserPassport.js';
 export interface IModuleApiSchema {
   'captcha': ApiSchemaCaptcha;
@@ -209,6 +237,7 @@ export interface IModuleApiSchema {
 'homeBaseMenu': ApiSchemaHomeBaseMenu;
 'homeBasePermission': ApiSchemaHomeBasePermission;
 'homeBaseSiteCatalog': ApiSchemaHomeBaseSiteCatalog;
+'homeUserAccount': ApiSchemaHomeUserAccount;
 'homeUserPassport': ApiSchemaHomeUserPassport;
 }
 /** apiSchema: end */
@@ -222,6 +251,7 @@ declare module 'zova' {
 'home-api.apiSchema.homeBaseMenu': ApiSchemaHomeBaseMenu;
 'home-api.apiSchema.homeBasePermission': ApiSchemaHomeBasePermission;
 'home-api.apiSchema.homeBaseSiteCatalog': ApiSchemaHomeBaseSiteCatalog;
+'home-api.apiSchema.homeUserAccount': ApiSchemaHomeUserAccount;
 'home-api.apiSchema.homeUserPassport': ApiSchemaHomeUserPassport;
   }
 }
@@ -231,15 +261,15 @@ export * from '../service/jwtAdapter.js';
 
 import 'zova-module-a-bean';
 declare module 'zova-module-a-bean' {
-  
+
     export interface IServiceRecord {
       'home-api:jwtAdapter': never;
     }
 
-  
+
 }
 declare module 'zova-module-home-api' {
-  
+
         export interface ServiceJwtAdapter {
           /** @internal */
           get scope(): ScopeModuleHomeApi;
@@ -248,8 +278,8 @@ declare module 'zova-module-home-api' {
         export interface ServiceJwtAdapter {
           get $beanFullName(): 'home-api.service.jwtAdapter';
           get $onionName(): 'home-api:jwtAdapter';
-          
-        } 
+
+        }
 }
 /** service: end */
 /** service: begin */
@@ -279,12 +309,12 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'home-api': ScopeModuleHomeApi;
   }
-  
-  
 
-  
 
-  
+
+
+
+
 }
 
 /** scope: end */

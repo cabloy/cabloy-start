@@ -3,4 +3,13 @@ export default {
   YourPassword: '您的密码',
   Login: '登录',
   LoginGitHub: '使用GitHub登录',
+  Register: '注册',
+  RegisterHelp: '创建账户以继续。',
+  RegisterActivationPending: '请检查您的邮箱，并在登录前激活账户。',
+  AlreadyHaveAccount: '已有账户？',
+  PasswordReset: '重置密码',
+  PasswordResetHelp: '输入您的邮箱；若账户符合条件，我们将发送重置说明。',
+  PasswordResetRequestAccepted: '如果存在符合条件的账户，重置说明已发送。',
+  BackToLogin: '返回登录',
+  YourEmail: '您的邮箱',
 };

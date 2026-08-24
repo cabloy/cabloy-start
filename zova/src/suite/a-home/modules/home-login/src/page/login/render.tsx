@@ -30,6 +30,7 @@ export class RenderPageLogin extends BeanRenderBase {
               </h2>
               <div class="pa-4">
                 {this._renderForm()}
+                {this._renderAccountLinks()}
                 <VDivider style={{ marginTop: '12px', marginBottom: '12px' }}></VDivider>
                 {this._renderGithub()}
               </div>
@@ -100,6 +101,19 @@ export class RenderPageLogin extends BeanRenderBase {
           }}
         ></ZFormFieldBlank>
       </ZForm>
+    );
+  }
+
+  _renderAccountLinks() {
+    return (
+      <div class="d-flex justify-center ga-2 mt-3">
+        <VBtn variant="text" nativeOnClick={() => this.gotoRegister()}>
+          {this.scope.locale.Register()}
+        </VBtn>
+        <VBtn variant="text" nativeOnClick={() => this.gotoPasswordResetRequest()}>
+          {this.scope.locale.PasswordReset()}
+        </VBtn>
+      </div>
     );
   }
 

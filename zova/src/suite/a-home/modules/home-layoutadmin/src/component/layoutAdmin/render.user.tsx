@@ -1,6 +1,7 @@
 import { VAvatar, VBtn, VList, VListItem, VMenu } from 'vuetify/components';
 import { BeanRenderBase, ClientOnly } from 'zova';
 import { Render } from 'zova-module-a-bean';
+import { resolveImagePreviewUrl } from 'zova-module-start-image';
 
 @Render()
 export class RenderUser extends BeanRenderBase {
@@ -14,7 +15,12 @@ export class RenderUser extends BeanRenderBase {
             v-slots={{
               prepend: () => (
                 <VAvatar
-                  image={this.$passport.user?.avatar || this.$scopeBase.config.avatar.empty}
+                  image={
+                    resolveImagePreviewUrl(
+                      this.$passport.user?.avatar,
+                      this.sys.config.api.baseURL,
+                    ) || this.$scopeBase.config.avatar.empty
+                  }
                   size={24}
                 />
               ),
@@ -30,11 +36,17 @@ export class RenderUser extends BeanRenderBase {
         <ClientOnly>
           <VList>
             <VListItem
-              title={this.scope.locale.Logout()}
-              onClick={() => {
-                this.$passport.logout().mutate();
+              title={this.scope.locale.AccountSettings()}
+              nativeOnClick={() => {
+                window.location.assign(
+                  this.$router.getPagePath('/home/user/account', undefined, true),
+                );
               }}
-            ></VListItem>
+            />
+            <VListItem
+              title={this.scope.locale.Logout()}
+              nativeOnClick={() => this.$passport.logout().mutate()}
+            />
           </VList>
         </ClientOnly>
       </VMenu>

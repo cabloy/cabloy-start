@@ -7,4 +7,6 @@ export default {
   ThemeDefault: '默认',
   ThemeOrange: '橘色',
   ThemeBlue: '蓝色',
+  Login: '登录',
+  AccountSettings: '账户设置',
 };

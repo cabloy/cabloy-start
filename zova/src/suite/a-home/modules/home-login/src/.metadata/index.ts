@@ -1,40 +1,60 @@
 // eslint-disable
 /** controller: begin */
 export * from '../page/login/controller.jsx';
+export * from '../page/passwordResetRequest/controller.jsx';
+export * from '../page/register/controller.jsx';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-home-login' {
-  
+
         export interface ControllerPageLogin {
           /** @internal */
           get scope(): ScopeModuleHomeLogin;
-        } 
+        }
+
+        export interface ControllerPagePasswordResetRequest {
+          /** @internal */
+          get scope(): ScopeModuleHomeLogin;
+        }
+
+        export interface ControllerPageRegister {
+          /** @internal */
+          get scope(): ScopeModuleHomeLogin;
+        }
 }
 /** controller: end */
 /** controller: begin */
 import { ControllerPageLogin } from '../page/login/controller.jsx';
+import { ControllerPagePasswordResetRequest } from '../page/passwordResetRequest/controller.jsx';
+import { ControllerPageRegister } from '../page/register/controller.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
     'home-login.controller.pageLogin': ControllerPageLogin;
+'home-login.controller.pagePasswordResetRequest': ControllerPagePasswordResetRequest;
+'home-login.controller.pageRegister': ControllerPageRegister;
   }
 }
 /** controller: end */
 /** pages: begin */
 export * from './page/login.js';
+export * from './page/passwordResetRequest.js';
+export * from './page/register.js';
 export * from '../routes.js';
 import { TypePagePathSchema } from 'zova-module-a-router';
 import 'zova';
 declare module 'zova-module-a-router' {
 export interface IPagePathRecord {
   '/home/login': TypePagePathSchema<undefined,undefined>;
+'/home/login/password-reset': TypePagePathSchema<undefined,undefined>;
+'/home/login/register': TypePagePathSchema<undefined,undefined>;
 }
 export interface IPageNameRecord {
-  
+
 }
 }
 export const pagePathSchemas = {
@@ -44,7 +64,7 @@ export const pageNameSchemas = {
 
 };
 declare module 'zova-module-home-login' {
-  
+
 }
 /** pages: end */
 
@@ -53,15 +73,15 @@ export * from '../page/login/render.jsx';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-home-login' {
-  
+
         export interface RenderPageLogin {
           /** @internal */
           get scope(): ScopeModuleHomeLogin;
-        } 
+        }
 }
 /** render: end */
 /** render: begin */
@@ -93,14 +113,14 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'home-login': ScopeModuleHomeLogin;
   }
-  
-  
+
+
 
   export interface IBeanScopeLocale {
     'home-login': (typeof locales)[TypeLocaleBase];
   }
 
-  
+
 }
 
 export function locale<K extends keyof (typeof locales)[TypeLocaleBase]>(key: K): `home-login::${K}` {
