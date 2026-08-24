@@ -45,11 +45,11 @@ export class RenderUser extends BeanRenderBase {
         <VList>
           <VListItem
             title={this.scope.locale.AccountSettings()}
-            nativeOnClick={() => this.app.$gotoPage('/home/user/account')}
+            onClick={() => this.app.$gotoPage('/home/user/account')}
           />
           <VListItem
             title={this.scope.locale.Logout()}
-            nativeOnClick={() => this.$passport.logout().mutate()}
+            onClick={() => this.$passport.logout().mutate()}
           />
         </VList>
       </VMenu>
