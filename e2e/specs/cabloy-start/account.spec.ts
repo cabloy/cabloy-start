@@ -195,7 +195,6 @@ test(
     await page.getByPlaceholder('Your email').fill('unknown-reset@example.test');
     const captcha = page.getByLabel('Please input captcha');
     await expect(captcha).not.toHaveValue('');
-    await captcha.fill(await captcha.inputValue());
     const requestResponse = waitForApiResponse(
       page,
       'POST',

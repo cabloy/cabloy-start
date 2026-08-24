@@ -94,9 +94,10 @@ export class ControllerFormFieldCaptcha extends BeanControllerBase {
   }
 
   private setFieldCaptchaData() {
+    if (!this.captchaData) return;
     this.$$form.setFieldValue(this.$props.name!, {
-      id: this.captchaData?.id,
-      token: this.captchaData?.token,
+      id: this.captchaData.id,
+      token: this.captchaData.token,
     });
   }
 
@@ -104,6 +105,9 @@ export class ControllerFormFieldCaptcha extends BeanControllerBase {
     return (
       <ZFormField
         {...this.$props}
+        onFieldStateReady={() => {
+          this.setFieldCaptchaData();
+        }}
         slotDefault={({ propsBucket, props }, $$formField) => {
           const { field } = $$formField;
           const error = !field.state.meta.isValid;
