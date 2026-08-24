@@ -249,6 +249,7 @@ export class ControllerPageAccount extends BeanControllerPageBase {
           }}
         />
         <ZFormFieldPreset
+          class="mt-4"
           name="name"
           render="start-input:formFieldInput"
           options={{ type: 'text' }}

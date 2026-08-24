@@ -118,17 +118,19 @@ export class ControllerImageUploader extends BeanControllerBase {
     return (
       <VCard variant="outlined">
         <VCardText class="d-flex flex-wrap align-center ga-3">
-          {previewUrl && (
-            <ClientOnly>
-              <img
-                class={props.previewShape === 'round' ? 'rounded-circle' : 'rounded'}
-                style={{ width: '64px', height: '64px', display: 'block', objectFit: 'cover' }}
-                src={previewUrl}
-                alt={props.previewAlt ?? 'image'}
-                onError={event => this._handlePreviewError(event, props, previewUrl)}
-              />
-            </ClientOnly>
-          )}
+          <div style={{ width: '64px', height: '64px', flex: '0 0 64px' }}>
+            {previewUrl && (
+              <ClientOnly>
+                <img
+                  class={props.previewShape === 'round' ? 'rounded-circle' : 'rounded'}
+                  style={{ width: '64px', height: '64px', display: 'block', objectFit: 'cover' }}
+                  src={previewUrl}
+                  alt={props.previewAlt ?? 'image'}
+                  onError={event => this._handlePreviewError(event, props, previewUrl)}
+                />
+              </ClientOnly>
+            )}
+          </div>
           <div class="d-flex flex-wrap ga-2">
             <VBtn
               variant="outlined"
