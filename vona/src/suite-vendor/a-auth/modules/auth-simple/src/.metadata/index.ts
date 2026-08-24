@@ -7,15 +7,15 @@ export * from '../entity/authSimple.ts';
 import type { IEntityOptionsAuthSimple } from '../entity/authSimple.ts';
 import 'vona-module-a-orm';
 declare module 'vona-module-a-orm' {
-  
+
     export interface IEntityRecord {
       'auth-simple:authSimple': IEntityOptionsAuthSimple;
     }
 
-  
+
 }
 declare module 'vona-module-auth-simple' {
-   
+
 }
 /** entity: end */
 /** entity: begin */
@@ -33,7 +33,7 @@ declare module 'vona-module-a-orm' {
   }
 }
 declare module 'vona-module-auth-simple' {
-  
+
     export interface IEntityOptionsAuthSimple {
       fields?: TypeEntityOptionsFields<EntityAuthSimple, IEntityOptionsAuthSimple[TypeSymbolKeyFieldsMore]>;
     }
@@ -44,15 +44,15 @@ export * from '../model/authSimple.ts';
 import type { IModelOptionsAuthSimple } from '../model/authSimple.ts';
 import 'vona-module-a-orm';
 declare module 'vona-module-a-orm' {
-  
+
     export interface IModelRecord {
       'auth-simple:authSimple': IModelOptionsAuthSimple;
     }
 
-  
+
 }
 declare module 'vona-module-auth-simple' {
-  
+
         export interface ModelAuthSimple {
           /** @internal */
           get scope(): ScopeModuleAuthSimple;
@@ -62,7 +62,7 @@ declare module 'vona-module-auth-simple' {
             get $beanFullName(): 'auth-simple.model.authSimple';
             get $onionName(): 'auth-simple:authSimple';
             get $onionOptions(): IModelOptionsAuthSimple;
-          } 
+          }
 }
 /** model: end */
 /** model: begin */
@@ -84,13 +84,23 @@ declare module 'vona' {
 import type { IModelGetOptions, IModelMethodOptions, IModelSelectParams, TypeModelSelectAndCount, TypeModelRelationResult, TypeModelWhere, IModelInsertOptions, TypeModelMutateRelationData, IModelDeleteOptions, IModelUpdateOptions, IModelMutateOptions, IModelSelectCountParams, IModelIncrementParams, IModelSelectAggrParams, TypeModelAggrRelationResult, IModelSelectGroupParams, TypeModelGroupRelationResult } from 'vona-module-a-orm';
 import { SymbolKeyEntity, SymbolKeyEntityMeta, SymbolKeyModelOptions } from 'vona-module-a-orm';
 declare module 'vona-module-auth-simple' {
-  
+
   export interface ModelAuthSimple {
       [SymbolKeyEntity]: EntityAuthSimple;
       [SymbolKeyEntityMeta]: EntityAuthSimpleMeta;
       [SymbolKeyModelOptions]: IModelOptionsAuthSimple;
       get<T extends IModelGetOptions<EntityAuthSimple,ModelAuthSimple>>(where: TypeModelWhere<EntityAuthSimple>, options?: T): Promise<TypeModelRelationResult<EntityAuthSimple, ModelAuthSimple, T> | undefined>;
+      /**
+       * Retrieves one matching primary row with a pessimistic FOR UPDATE lock.
+       * Requires an active transaction. The lock is released when that transaction completes.
+       * Entity and query caches are bypassed.
+       */
       getForUpdate<T extends IModelGetOptions<EntityAuthSimple,ModelAuthSimple>>(where: TypeModelWhere<EntityAuthSimple>, options?: T): Promise<TypeModelRelationResult<EntityAuthSimple, ModelAuthSimple, T> | undefined>;
+      /**
+       * Retrieves a primary row by ID with the same pessimistic FOR UPDATE lock semantics.
+       * Requires an active transaction. The lock is released when that transaction completes.
+       * Entity and query caches are bypassed.
+       */
       getByIdForUpdate<T extends IModelGetOptions<EntityAuthSimple,ModelAuthSimple>>(id: TableIdentity, options?: T): Promise<TypeModelRelationResult<EntityAuthSimple, ModelAuthSimple, T> | undefined>;
       mget<T extends IModelGetOptions<EntityAuthSimple,ModelAuthSimple>>(ids: TableIdentity[], options?: T): Promise<TypeModelRelationResult<EntityAuthSimple, ModelAuthSimple, T>[]>;
       selectAndCount<T extends IModelSelectParams<EntityAuthSimple,ModelAuthSimple,ModelJoins>, ModelJoins extends TypeModelsClassLikeGeneral | undefined = undefined>(params?: T, options?: IModelMethodOptions, modelJoins?: ModelJoins): Promise<TypeModelSelectAndCount<EntityAuthSimple, ModelAuthSimple, T>>;
@@ -124,15 +134,15 @@ export * from '../bean/authProvider.simple.ts';
 import type { IAuthProviderOptionsSimple } from '../bean/authProvider.simple.ts';
 import 'vona-module-a-auth';
 declare module 'vona-module-a-auth' {
-  
+
     export interface IAuthProviderRecord {
       'auth-simple:simple': IAuthProviderOptionsSimple;
     }
 
-  
+
 }
 declare module 'vona-module-auth-simple' {
-  
+
         export interface AuthProviderSimple {
           /** @internal */
           get scope(): ScopeModuleAuthSimple;
@@ -142,7 +152,7 @@ declare module 'vona-module-auth-simple' {
             get $beanFullName(): 'auth-simple.authProvider.simple';
             get $onionName(): 'auth-simple:simple';
             get $onionOptions(): IAuthProviderOptionsSimple;
-          } 
+          }
 }
 /** authProvider: end */
 /** authProvider: begin */
@@ -156,15 +166,15 @@ export * from '../service/authSimple.ts';
 
 import 'vona-module-a-bean';
 declare module 'vona-module-a-bean' {
-  
+
     export interface IServiceRecord {
       'auth-simple:authSimple': never;
     }
 
-  
+
 }
 declare module 'vona-module-auth-simple' {
-  
+
         export interface ServiceAuthSimple {
           /** @internal */
           get scope(): ScopeModuleAuthSimple;
@@ -173,8 +183,7 @@ declare module 'vona-module-auth-simple' {
           export interface ServiceAuthSimple {
             get $beanFullName(): 'auth-simple.service.authSimple';
             get $onionName(): 'auth-simple:authSimple';
-            
-          } 
+          }
 }
 /** service: end */
 /** service: begin */
@@ -193,19 +202,31 @@ declare module 'vona' {
 }
 /** service: end */
 /** meta: begin */
+export * from '../bean/meta.redlock.ts';
 export * from '../bean/meta.version.ts';
 
 import 'vona-module-a-meta';
 declare module 'vona-module-a-meta' {
-  
+
     export interface IMetaRecord {
-      'auth-simple:version': never;
+      'auth-simple:redlock': never;
+'auth-simple:version': never;
     }
 
-  
+
 }
 declare module 'vona-module-auth-simple' {
-  
+
+        export interface MetaRedlock {
+          /** @internal */
+          get scope(): ScopeModuleAuthSimple;
+        }
+
+          export interface MetaRedlock {
+            get $beanFullName(): 'auth-simple.meta.redlock';
+            get $onionName(): 'auth-simple:redlock';
+          }
+
         export interface MetaVersion {
           /** @internal */
           get scope(): ScopeModuleAuthSimple;
@@ -214,10 +235,12 @@ declare module 'vona-module-auth-simple' {
           export interface MetaVersion {
             get $beanFullName(): 'auth-simple.meta.version';
             get $onionName(): 'auth-simple:version';
-            
-          } 
+          }
 }
 /** meta: end */
+/** meta redlock: begin */
+import type { MetaRedlock } from '../bean/meta.redlock.ts';
+/** meta redlock: end */
 /** config: begin */
 export * from '../config/config.ts';
 import type { config } from '../config/config.ts';
@@ -236,6 +259,7 @@ entity: IModuleEntity;
 model: IModuleModel;
 authProvider: IModuleAuthProvider;
 service: IModuleService;
+redlock: MetaRedlock;
 }
 
 import 'vona';
@@ -247,13 +271,13 @@ declare module 'vona' {
   export interface IBeanScopeContainer {
     authSimple: ScopeModuleAuthSimple;
   }
-  
+
   export interface IBeanScopeConfig {
     'auth-simple': ReturnType<typeof config>;
   }
 
-  
 
-  
+
+
 }
 /** scope: end */

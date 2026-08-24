@@ -29,6 +29,13 @@ export class BeanSecurity extends BeanBase {
     }
 
     if (parsedUrl.host === hostCurrent) return true;
+    if (
+      (this.app.meta.isDev || this.app.meta.isTest) &&
+      this._isLocalhostOrigin(parsedUrl.origin) &&
+      this._isLocalhostHost(hostCurrent)
+    ) {
+      return true;
+    }
 
     // whiteList
     // todo: combine app config
@@ -44,6 +51,77 @@ export class BeanSecurity extends BeanBase {
       return true;
     }
     return false;
+  }
+
+  checkOriginExact(origin: string | undefined | null, hostCurrent?: string): string {
+    const originNormalized = this._normalizeOrigin(origin);
+    if (!originNormalized) return '';
+
+    if (originNormalized === this._normalizeOriginFromHost(hostCurrent, this.ctx.protocol)) {
+      return originNormalized;
+    }
+
+    if (
+      (this.app.meta.isDev || this.app.meta.isTest) &&
+      this._isLocalhostOrigin(originNormalized) &&
+      this._isLocalhostHost(hostCurrent)
+    ) {
+      return originNormalized;
+    }
+
+    const onionCors = this.bean.onion.middlewareSystem.getOnionSlice('a-security:cors');
+    let whiteListCors = (<IMiddlewareSystemOptionsCors>onionCors.beanOptions.options).whiteList;
+    if (whiteListCors && whiteListCors !== '*') {
+      if (typeof whiteListCors === 'string') {
+        whiteListCors = whiteListCors.split(',');
+      }
+      for (const item of whiteListCors) {
+        if (this._normalizeOrigin(item.trim()) === originNormalized) return originNormalized;
+      }
+    }
+
+    return '';
+  }
+
+  private _isLocalhostOrigin(origin: string): boolean {
+    try {
+      const hostname = new URL(origin).hostname.replace(/^\[|\]$/g, '');
+      return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1';
+    } catch {
+      return false;
+    }
+  }
+
+  private _isLocalhostHost(hostCurrent: string | undefined): boolean {
+    const origin = this._normalizeOriginFromHost(hostCurrent, 'http');
+    return !!origin && this._isLocalhostOrigin(origin);
+  }
+
+  private _normalizeOriginFromHost(host: string | undefined, protocol: string): string | undefined {
+    if (!host || (protocol !== 'http' && protocol !== 'https')) return;
+    return this._normalizeOrigin(`${protocol}://${host}`);
+  }
+
+  private _normalizeOrigin(origin: string | undefined | null): string | undefined {
+    if (!origin || origin === 'null') return;
+    let url: URL;
+    try {
+      url = new URL(origin);
+    } catch {
+      return;
+    }
+    if (
+      (url.protocol !== 'http:' && url.protocol !== 'https:') ||
+      url.username ||
+      url.password ||
+      url.pathname !== '/' ||
+      url.search ||
+      url.hash ||
+      url.origin === 'null'
+    ) {
+      return;
+    }
+    return url.origin;
   }
 }
 

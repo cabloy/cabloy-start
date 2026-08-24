@@ -138,10 +138,7 @@ describe('rbacScopeCurrent.test.ts', { concurrency: false }, () => {
     const { scope, ctx } = createScope(action);
     await assertForbidden(() => scope.current());
 
-    setRbacDecision(
-      ctx,
-      { ...createDecision(action, [{ dataScope: 'all' }]), allowed: false },
-    );
+    setRbacDecision(ctx, { ...createDecision(action, [{ dataScope: 'all' }]), allowed: false });
     await assertForbidden(() => scope.current());
 
     const otherAction = createAction('view');

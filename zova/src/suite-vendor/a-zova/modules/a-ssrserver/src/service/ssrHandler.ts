@@ -64,14 +64,13 @@ export class ServiceSsrHandler extends BeanBase {
       ssrProfile,
       this.sys.config.ssr.profiles,
       route.meta.ssrProfileOptions,
+      route.meta.locale,
     );
     if (ssrProfile === 'session') {
       options.res.setHeader('cache-control', 'private, no-store');
     }
     const state = {
       ...options.state,
-      ssrProfile,
-      ssrProfileOptions,
     };
     // handler
     const { serverEntry, renderToString, renderTemplate } = this._handlerInstance;

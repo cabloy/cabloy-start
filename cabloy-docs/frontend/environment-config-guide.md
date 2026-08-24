@@ -110,6 +110,8 @@ A concrete example in the current Cabloy Basic frontend setup is the default SSR
 
 The effective profile is request-local: the active flavor's `SSR_PROFILE` supplies its default, and `route.meta.ssrProfile` can override it after route resolution. `public` keeps cookie-derived identity and theme state out of the server render; `session` permits normal cookie-backed Passport recovery and theme resolution, while forcing a private, non-storable response. Profiles define request-cookie capability, not a locale source: existing `route.meta.locale` controls URL-locale participation.
 
+The flavor fallback does not replace route authoring. Choose `ssrProfile` from the route's rendering contract: `session` is explicit when SSR needs cookie-backed state, protected admission, personalized first paint, or private data, while `public` remains valid for an explicit URL-locale or deliberately locale-neutral, cache-safe, hydration-equivalent public contract. The absence of `locale` params alone does not determine the profile. Choose anonymous admission separately with `requiresAuth: false`; a session route still does not gain authentication or authorization.
+
 That means flavor selection is not only a packaging choice. It establishes the default capability boundary, while individual routes remain able to select the profile their rendering contract requires.
 
 Before assuming how SSR theme state is handed off and finalized, combine:

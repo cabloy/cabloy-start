@@ -1,6 +1,6 @@
 {
   "name": "zova-module-a-openapi",
-  "version": "5.1.49",
+  "version": "5.1.50",
   "gitHead": "09d901d17140a80ee0764211b441cda72fd94663",
   "description": "",
   "keywords": [
@@ -59,7 +59,8 @@
       "monkey": true
     },
     "dependencies": {
-      "a-model": "5.0.0"
+      "a-model": "5.0.0",
+      "a-router": "5.0.0"
     },
     "globalDependencies": {
       "openapi3-ts": true,

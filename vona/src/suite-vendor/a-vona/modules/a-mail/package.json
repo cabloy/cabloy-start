@@ -1,6 +1,6 @@
 {
   "name": "vona-module-a-mail",
-  "version": "5.1.13",
+  "version": "5.1.14",
   "gitHead": "a79189b882c17af5911573896a781bbb0046d37d",
   "description": "",
   "keywords": [
@@ -32,8 +32,8 @@
     "postpack": "clean-package restore"
   },
   "dependencies": {
-    "@types/nodemailer": "^8.0.0",
-    "nodemailer": "^8.0.7"
+    "@types/nodemailer": "^8.0.1",
+    "nodemailer": "^9.0.5"
   },
   "devDependencies": {
     "clean-package": "^2.2.0",

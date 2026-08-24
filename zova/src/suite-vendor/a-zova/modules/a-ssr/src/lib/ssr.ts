@@ -1,6 +1,7 @@
 import type { ComponentInternalInstance, Ref, VNode } from 'vue';
-import type { Functionable, ZovaContext } from 'zova';
+import type { Functionable, ILocaleRecord, ZovaContext } from 'zova';
 
+import { RouteLocationNormalizedGeneric, RouteLocationResolvedGeneric } from '@cabloy/vue-router';
 import { includeBooleanAttr, isBooleanAttr, isString, stringifyStyle } from '@vue/shared';
 import { defu } from 'defu';
 import { normalizeClass, normalizeStyle, ref, useSSRContext } from 'vue';
@@ -85,9 +86,9 @@ export class CtxSSR extends BeanSimple {
     for (const serverContext of serverContexts) {
       if (serverContext.disposed) continue;
       if (serverContext.bean && serverContext.bean !== serverContext.app?.bean) {
-        serverContext.bean.dispose();
+        (<any>serverContext.bean).dispose();
       }
-      serverContext.dispose();
+      (<any>serverContext).dispose();
     }
     serverContexts.clear();
   }
@@ -145,15 +146,24 @@ export class CtxSSR extends BeanSimple {
   public _setProfile(
     routeProfile: TypeSsrProfile | undefined,
     routeProfileOptions?: Readonly<ISsrRouteProfileOptions>,
+    metaLocale?: boolean,
   ) {
     const ssrProfile = resolveSsrProfile(routeProfile, this.sys.env.SSR_PROFILE);
     const ssrProfileOptions = resolveSsrProfileOptions(
       ssrProfile,
       this.sys.config.ssr.profiles,
       routeProfileOptions,
+      metaLocale,
     );
     this.state.ssrProfile = ssrProfile;
     this.state.ssrProfileOptions = ssrProfileOptions;
+  }
+
+  /** @internal */
+  public _setLocale(route: RouteLocationResolvedGeneric | RouteLocationNormalizedGeneric) {
+    if (route.meta.locale) {
+      this.app.meta.locale.current = route.params?.locale as unknown as keyof ILocaleRecord;
+    }
   }
 
   get cookieDisabledOnServer(): boolean {
@@ -203,7 +213,8 @@ export class CtxSSR extends BeanSimple {
   }
 
   handleDirectOrOnHydrated(fn: Functionable) {
-    if (process.env.CLIENT && this.isRuntimeSsrPreHydration) {
+    if (!process.env.CLIENT) return;
+    if (this.isRuntimeSsrPreHydration) {
       this.onHydrated(fn);
     } else {
       return fn();

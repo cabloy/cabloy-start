@@ -8,6 +8,9 @@ After generating or extending a frontend thread, check which follow-up layers ap
 - component wrapper usage
 - route record implications
 - params/query schema alignment
+- [ ] resolve the route-default triad: effective `layout`, `requiresAuth`, and `ssrProfile`; confirm every omitted field intentionally inherits the active default
+- [ ] static routes omit `route.name` unless a documented named-route requirement exists; ordinary business routes without `locale` params omit app-config aliases unless an explicit exception applies
+- [ ] choose `ssrProfile` from the route's rendering contract (Web remains `public` by default; `session` is explicit for cookie-backed state, protected admission, personalized first paint, or private SSR data); a missing `locale` parameter alone does not determine it, and anonymous access is chosen independently with explicit `requiresAuth: false`
 
 ## Data and contract follow-up
 
@@ -35,6 +38,7 @@ After generating or extending a frontend thread, check which follow-up layers ap
 - `:tools:metadata`
 - route/component/icon regeneration-sensitive changes
 - edition-specific generated output review
+- for a `this.scope.locale` missing-key or type error: inspect `src/config/locale/`; if it is absent, run `npm run zova :init:locale <module>` (which refreshes metadata in its normal path), add the key to all required locale files, and run `npm run zova :tools:metadata <module>` if generated typing remains stale; do not cast around the error or add a local locale compatibility helper
 
 ## Verification follow-up
 

@@ -4,11 +4,13 @@ import { Aspect } from 'vona-module-a-aspect';
 
 import type { IGuardOptionsRoleName } from '../bean/guard.roleName.ts';
 
+export type TypePassportActivated = boolean | 'noCheck';
+
 function Public(_public: boolean = true): ClassDecorator & MethodDecorator {
   return Aspect.guardGlobal('a-user:passport', { public: _public });
 }
 
-function Activated(activated?: boolean): ClassDecorator & MethodDecorator {
+function Activated(activated: TypePassportActivated): ClassDecorator & MethodDecorator {
   return Aspect.guardGlobal('a-user:passport', { activated });
 }
 

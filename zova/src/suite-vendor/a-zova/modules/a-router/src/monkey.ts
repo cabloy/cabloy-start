@@ -64,17 +64,20 @@ export class Monkey
   }
 
   async appInitialize() {
-    const ssrState = this.ctx.meta.$ssr.state;
-    if (
-      process.env.SERVER &&
-      (ssrState.ssrProfile === undefined || ssrState.ssrProfileOptions === undefined)
-    ) {
+    if (process.env.SERVER) {
       const pagePathFull = this.app.$getCurrentPagePath();
       if (pagePathFull) {
         const sysRouter = await this._getSysRouter();
         const route = await sysRouter.resolveRoute(pagePathFull, true, false);
         if (route) {
-          this.ctx.meta.$ssr._setProfile(route.meta.ssrProfile, route.meta.ssrProfileOptions);
+          // ssr profile
+          this.ctx.meta.$ssr._setProfile(
+            route.meta.ssrProfile,
+            route.meta.ssrProfileOptions,
+            route.meta.locale,
+          );
+          // locale
+          this.ctx.meta.$ssr._setLocale(route);
         }
       }
     }

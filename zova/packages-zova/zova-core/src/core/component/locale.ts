@@ -26,14 +26,17 @@ export class AppLocale extends BeanSimple {
 
   get current(): keyof ILocaleRecord {
     let locale = this[SymbolLocaleCurrent].value;
-    if (!locale && this._cookieEnabled()) {
+    // always parse locale from cookie
+    // if (!locale && this._cookieEnabled()) {
+    if (!locale) {
       locale = this.metaCookie.getItem(this.sys.config.locale.storeKey);
     }
     if (!locale) locale = this.sys.config.locale.default;
     return locale as keyof ILocaleRecord;
   }
 
-  set current(value: keyof ILocaleRecord) {
+  set current(value: keyof ILocaleRecord | '' | undefined) {
+    if (!value) value = this.sys.config.locale.default;
     if (this[SymbolLocaleCurrent].value === value) return;
     this[SymbolLocaleCurrent].value = value;
     if (this._cookieEnabled()) {
@@ -47,7 +50,11 @@ export class AppLocale extends BeanSimple {
 
   get tz(): string {
     let tz = this[SymbolTzCurrent].value;
-    if (!tz && this._cookieEnabled()) tz = this.metaCookie.getItem(this.sys.config.tz.storeKey);
+    // always parse tz from cookie
+    // if (!tz && this._cookieEnabled()) {
+    if (!tz) {
+      tz = this.metaCookie.getItem(this.sys.config.tz.storeKey);
+    }
     if (!tz) tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
     return tz;
   }

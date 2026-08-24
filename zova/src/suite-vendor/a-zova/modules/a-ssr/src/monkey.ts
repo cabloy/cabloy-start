@@ -14,6 +14,7 @@ import { BeanSimple, cast } from 'zova';
 
 import type { SSRMetaOptions } from './types/ssr.js';
 
+import { createSsrNavigationSync } from './lib/ssrNavigation.js';
 import { useMeta } from './lib/useMeta.js';
 
 export class Monkey
@@ -30,14 +31,27 @@ export class Monkey
   async appInitialize() {
     this.app.meta.event.on('a-router:routerGuards', async (router, next) => {
       if (process.env.CLIENT) {
-        // Server profile state is prepared before appInitialize; this synchronizes client navigation.
-        router.beforeEach(to => {
-          this.ctx.meta.$ssr._setProfile(to.meta.ssrProfile, to.meta.ssrProfileOptions);
+        const navigationSync = createSsrNavigationSync({
+          getLocale: () => this.app.meta.locale.current,
+          setLocale: locale => {
+            this.app.meta.locale.current = locale;
+          },
+          setProfile: route => {
+            this.ctx.meta.$ssr._setProfile(
+              route.meta.ssrProfile,
+              route.meta.ssrProfileOptions,
+              route.meta.locale,
+            );
+          },
+          setRouteLocale: route => {
+            this.ctx.meta.$ssr._setLocale(route);
+          },
         });
-        router.afterEach((_to, from, failure) => {
-          if (failure) {
-            this.ctx.meta.$ssr._setProfile(from.meta.ssrProfile, from.meta.ssrProfileOptions);
-          }
+        router.beforeEach(to => {
+          navigationSync.beforeEach(to);
+        });
+        router.afterEach((to, from, failure) => {
+          navigationSync.afterEach(to, from, failure);
         });
       }
       return await next();

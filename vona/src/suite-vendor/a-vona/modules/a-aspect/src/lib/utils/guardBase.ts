@@ -1,4 +1,6 @@
-import { BeanBase, type Next } from 'vona';
+import type { Next } from 'vona';
+
+import { BeanBase } from 'vona';
 
 import type { IDecoratorGuardOptions, IGuardExecute } from '../../types/guard.ts';
 

@@ -122,16 +122,50 @@ Typical frontend thread pieces may include:
 
 Do not throw away the generated structure and rewrite it from scratch unless the generator clearly does not match the task.
 
+### Relative import suffix follow-up
+
+For Zova application modules under `zova/src/module/**`, `zova/src/module-vendor/**`,
+`zova/src/suite/**/modules/**`, and `zova/src/suite-vendor/**/modules/**`, relative
+imports and exports name the emitted ESM file:
+
+- a `.ts` target uses `.js`
+- a `.tsx` target uses `.jsx`
+
+Apply this to ordinary and type-only imports, relative re-exports, and module tests.
+Keep the generated `.js`/`.jsx` specifiers as the baseline after CLI generation or
+metadata refresh; manual follow-up imports must use the same emitted suffix.
+
+Do not apply this rule globally. Preserve deliberate `.ts`/`.tsx` imports in
+`zova/packages-utils/**` and `zova/packages-zova/**`; do not normalize Vona, CLI or
+template source, dependencies, generated output, or build artifacts. Never use a
+repository-wide suffix replacement: inspect only the affected module thread.
+
 ## Step 5: Apply frontend follow-up logic deliberately
 
 Frontend scaffolding is rarely complete after generation alone. Treat this follow-up review as mandatory.
 
 ### Route and metadata follow-up
 
+Before finalizing every new or changed route, resolve the effective route defaults rather than relying on an unexamined omission:
+
+- **layout** — omitted `meta.layout` inherits the logical default layout;
+- **authentication** — omitted `requiresAuth` remains protected by the current guard, and only `requiresAuth: false` opts out;
+- **SSR profile** — omitted `meta.ssrProfile` inherits the active flavor's `SSR_PROFILE`, while route metadata overrides it.
+
+For Zova page routes, also apply these authoring defaults:
+
+- routes with dynamic params require `route.name`; static routes should omit `route.name` unless a documented named-route requirement exists;
+- ordinary business routes without `locale` params should omit app-config aliases unless a documented system, compatibility, or user-facing URL exception requires one;
+- choose `ssrProfile` from the route's rendering contract: Web remains `public` by default, while `session` is explicit for cookie-backed state, protected admission, personalized first paint, or private SSR data; a missing `locale` parameter alone does not determine the profile; anonymous admission remains an explicit `requiresAuth: false` decision.
+
+Verify the active edition and flavor before applying concrete SSR defaults, and do not add all three fields redundantly when intentional inheritance is the desired behavior.
+
 Check whether the feature needs:
 
 - page route review
 - params/query schema alignment
+- effective layout, authentication, and SSR-profile default resolution
+- static-name and ordinary-alias exception review
 - alias or guard review
 - metadata regeneration
 
@@ -175,6 +209,7 @@ Check whether the feature needs:
 - typecheck
 - build
 - metadata regeneration verification
+- scoped relative-import verification: check the affected Zova module tree for accidental `.ts`/`.tsx` relative specifiers, while excluding intentional package source under `zova/packages-utils/**` and `zova/packages-zova/**`
 - SSR or route-path verification
 - hydration-time initial-render equivalence when SSR, private state, browser-only state, or async model state changes
 - edition-specific flavor, SSR site baseline, and project-asset verification
