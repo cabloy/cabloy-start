@@ -294,7 +294,7 @@ export class ServiceSsrHandler extends BeanBase {
       typeof responseCacheExpires === 'string'
         ? ms(responseCacheExpires) / 1000
         : responseCacheExpires;
-    if (expires === 0) {
+    if (expires === 0 || this.sys.env.META_MODE === 'development') {
       res.setHeader('cache-control', 'no-cache, no-store, must-revalidate');
     } else {
       res.setHeader('cache-control', `public, max-age=${expires}`);
