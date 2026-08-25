@@ -89,9 +89,11 @@ export class ControllerPagePasswordResetRequest extends BeanControllerPageBase {
                   />
                   <ZFormFieldBlank
                     slotDefault={$$form => (
-                      <VBtn disabled={$$form.formState.isSubmitting} type="submit" color="primary">
-                        {this.scope.locale.PasswordReset()}
-                      </VBtn>
+                      <div class="d-flex justify-center">
+                        <VBtn disabled={$$form.formState.isSubmitting} type="submit" color="primary">
+                          {this.scope.locale.PasswordReset()}
+                        </VBtn>
+                      </div>
                     )}
                   />
                 </ZForm>

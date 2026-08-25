@@ -103,9 +103,11 @@ export class ControllerPagePasswordSet extends BeanControllerPageBase {
             });
           }}
           slotFooter={$$form => (
-            <VBtn disabled={$$form.formState.isSubmitting} type="submit" color="primary">
-              {this.scope.locale.AccountSetPassword()}
-            </VBtn>
+            <div class="d-flex justify-center">
+              <VBtn disabled={$$form.formState.isSubmitting} type="submit" color="primary">
+                {this.scope.locale.AccountSetPassword()}
+              </VBtn>
+            </div>
           )}
         />
       </>
