@@ -127,7 +127,7 @@ importers:
         specifier: workspace:^
         version: link:packages-zova/zova
       zova-jsx:
-        specifier: ^1.1.86
+        specifier: ^1.1.87
         version: link:packages-utils/zova-jsx
       zova-module-a-api:
         specifier: workspace:^
@@ -258,6 +258,9 @@ importers:
       zova-module-home-theme:
         specifier: workspace:^
         version: link:src/suite/a-home/modules/home-theme
+      zova-module-home-user:
+        specifier: workspace:^
+        version: link:src/suite/a-home/modules/home-user
       zova-module-pay-mock:
         specifier: workspace:^
         version: link:src/suite-vendor/a-pay/modules/pay-mock
@@ -711,7 +714,7 @@ importers:
         specifier: ^3.5.38
         version: 3.5.38(typescript@5.9.3)
       zova-core:
-        specifier: ^5.1.86
+        specifier: ^5.1.87
         version: link:../../packages-zova/zova-core
     devDependencies:
       clean-package:
@@ -852,10 +855,10 @@ importers:
   packages-zova/zova:
     dependencies:
       zova-core:
-        specifier: ^5.1.86
+        specifier: ^5.1.87
         version: link:../zova-core
       zova-suite-a-zova:
-        specifier: ^5.1.150
+        specifier: ^5.1.151
         version: link:../../src/suite-vendor/a-zova
     devDependencies:
       clean-package:
@@ -962,7 +965,7 @@ importers:
         specifier: ^5.0.1
         version: link:modules/a-rbac
       zova-module-rest-resource:
-        specifier: ^5.1.45
+        specifier: ^5.1.46
         version: link:modules/rest-resource
 
   src/suite-vendor/a-cabloy/modules/a-rbac:
@@ -986,10 +989,10 @@ importers:
   src/suite-vendor/a-pay:
     dependencies:
       zova-module-a-pay:
-        specifier: ^5.0.6
+        specifier: ^5.0.7
         version: link:modules/a-pay
       zova-module-pay-mock:
-        specifier: ^5.0.4
+        specifier: ^5.0.5
         version: link:modules/pay-mock
       zova-module-pay-paypal:
         specifier: ^5.0.2
@@ -1061,7 +1064,7 @@ importers:
         specifier: ^5.1.25
         version: link:modules/a-fetch
       zova-module-a-form:
-        specifier: ^5.1.47
+        specifier: ^5.1.48
         version: link:modules/a-form
       zova-module-a-icon:
         specifier: ^5.1.27
@@ -1109,7 +1112,7 @@ importers:
         specifier: ^5.1.37
         version: link:modules/a-zod
       zova-module-a-zova:
-        specifier: ^5.1.101
+        specifier: ^5.1.102
         version: link:modules/a-zova
 
   src/suite-vendor/a-zova/modules/a-api:
@@ -1451,7 +1454,7 @@ importers:
         specifier: ^3.7.2
         version: 3.7.2
       zova-jsx:
-        specifier: ^1.1.86
+        specifier: ^1.1.87
         version: link:../../../../../packages-utils/zova-jsx
     devDependencies:
       '@cabloy/cli':
@@ -1523,6 +1526,9 @@ importers:
       zova-module-home-theme:
         specifier: ^5.0.0
         version: link:modules/home-theme
+      zova-module-home-user:
+        specifier: ^5.0.0
+        version: link:modules/home-user
 
   src/suite/a-home/modules/home-api:
     devDependencies:
@@ -1615,6 +1621,37 @@ importers:
         version: 6.1.3
 
   src/suite/a-home/modules/home-theme:
+    devDependencies:
+      clean-package:
+        specifier: ^2.2.0
+        version: 2.2.0
+      rimraf:
+        specifier: ^6.1.3
+        version: 6.1.3
+
+  src/suite/a-home/modules/home-user:
+    dependencies:
+      zova-module-a-bean:
+        specifier: ^5.0.0
+        version: link:../../../../suite-vendor/a-zova/modules/a-bean
+      zova-module-a-form:
+        specifier: ^5.0.0
+        version: link:../../../../suite-vendor/a-zova/modules/a-form
+      zova-module-a-model:
+        specifier: ^5.0.0
+        version: link:../../../../suite-vendor/a-zova/modules/a-model
+      zova-module-a-router:
+        specifier: ^5.0.0
+        version: link:../../../../suite-vendor/a-zova/modules/a-router
+      zova-module-home-api:
+        specifier: ^5.0.0
+        version: link:../home-api
+      zova-module-home-base:
+        specifier: ^5.0.0
+        version: link:../home-base
+      zova-module-start-image:
+        specifier: ^5.0.0
+        version: link:../../../cabloy-start/modules/start-image
     devDependencies:
       clean-package:
         specifier: ^2.2.0
