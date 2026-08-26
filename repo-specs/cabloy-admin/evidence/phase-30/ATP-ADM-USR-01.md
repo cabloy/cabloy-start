@@ -43,8 +43,8 @@ Expected rejected authorization and protected-workflow inputs were asserted test
 ## Retained evidence
 
 - [Redacted focused User and protected-workflow record](./artifacts/2026-08-18-26c11a7-phase30-user-focused.md)
-- [User module acceptance suite](../../../../../vona/src/suite/cabloy-admin/modules/admin-user/test/user.test.ts)
-- [Protected-workflow regression suite](../../../../../vona/src/suite/cabloy-admin/modules/admin-role/test/systemAdminProtection.test.ts)
+- [User module acceptance suite](../../../../vona/src/suite/cabloy-admin/modules/admin-user/test/user.test.ts)
+- [Protected-workflow regression suite](../../../../vona/src/suite/cabloy-admin/modules/admin-role/test/systemAdminProtection.test.ts)
 
 ## Remaining gates
 

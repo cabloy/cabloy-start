@@ -9,7 +9,7 @@
 | SRS                         | `SRS-ADM-MEM-01` through `SRS-ADM-MEM-05`; `SRS-ADM-UI-01`, `SRS-ADM-UI-02`        |
 | WBS                         | `WBS-ADM-60-03`                                                                    |
 | Tested backend revision     | `603cb4cfb9fd1c0fe08d14bb72804c0e82ba766a`                                         |
-| Current browser-test source | tracked [cabloy-admin.spec.ts](../../../../../repo-e2e/specs/cabloy-admin.spec.ts) |
+| Current browser-test source | tracked [cabloy-admin.spec.ts](../../../../repo-e2e/specs/cabloy-admin.spec.ts) |
 | Database client             | clean `better-sqlite3` E2E database                                                |
 | Zova flavor                 | Start Admin SSR                                                                    |
 | Executor date               | 2026-08-15                                                                         |

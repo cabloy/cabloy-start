@@ -39,7 +39,7 @@ Pass. The Start Admin SSR production build and REST production build both comple
 
 - [Current redacted Phase 20 suite and metadata record](./artifacts/2026-08-18-fb0cc21-phase20-suite-metadata.md)
 - [Historical paired build, dependency-sync, and typecheck record](./artifacts/2026-08-18-26c11a7-admin-contract-loop.md)
-- [Generated Vona dependency synchronization](../../../../../vona/pnpm-lock.yaml)
+- [Generated Vona dependency synchronization](../../../../vona/pnpm-lock.yaml)
 
 ## Waiver
 

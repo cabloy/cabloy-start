@@ -60,8 +60,8 @@ If documents disagree, update the authoritative document first, then update down
 
 ## Related Framework Records
 
-- [Suites and Modules](../../../repo-docs/fullstack/suites-and-modules.md)
-- [User Access Guide](../../../repo-docs/backend/user-access-guide.md)
-- [Admin Resource and Web Self-Service](../../../repo-docs/fullstack/admin-resource-and-web-self-service.md)
-- [Contract Loop Playbook](../../../repo-docs/fullstack/contract-loop-playbook.md)
+- [Suites and Modules](../../repo-docs/fullstack/suites-and-modules.md)
+- [User Access Guide](../../repo-docs/backend/user-access-guide.md)
+- [Admin Resource and Web Self-Service](../../repo-docs/fullstack/admin-resource-and-web-self-service.md)
+- [Contract Loop Playbook](../../repo-docs/fullstack/contract-loop-playbook.md)
 - [ADR 0002: Dynamic RBAC and Department Data Scope](./decisions/0002-dynamic-rbac-and-data-scope.md)

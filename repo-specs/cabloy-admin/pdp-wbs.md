@@ -27,12 +27,12 @@ Dependencies: none.
 
 Primary documents:
 
-- `.docs-internal/business/cabloy-admin/prd.md`
-- `.docs-internal/business/cabloy-admin/srs.md`
-- `.docs-internal/business/cabloy-admin/pdp-wbs.md`
-- `.docs-internal/business/cabloy-admin/test-plan.md`
-- `.docs-internal/business/cabloy-admin/progress.md`
-- `.docs-internal/business/cabloy-admin/decisions/0001-admin-mvp-boundaries.md`
+- `repo-specs/cabloy-admin/prd.md`
+- `repo-specs/cabloy-admin/srs.md`
+- `repo-specs/cabloy-admin/pdp-wbs.md`
+- `repo-specs/cabloy-admin/test-plan.md`
+- `repo-specs/cabloy-admin/progress.md`
+- `repo-specs/cabloy-admin/decisions/0001-admin-mvp-boundaries.md`
 
 Tasks:
 
@@ -470,5 +470,5 @@ npm run test
 - [Delivery Progress](./progress.md)
 - [ADR 0001: Establish Cabloy Admin MVP Boundaries](./decisions/0001-admin-mvp-boundaries.md)
 - [ADR 0002: Dynamic RBAC and Department Data Scope](./decisions/0002-dynamic-rbac-and-data-scope.md)
-- [Suites and Modules](../../../repo-docs/fullstack/suites-and-modules.md)
-- [Contract Loop Playbook](../../../repo-docs/fullstack/contract-loop-playbook.md)
+- [Suites and Modules](../../repo-docs/fullstack/suites-and-modules.md)
+- [Contract Loop Playbook](../../repo-docs/fullstack/contract-loop-playbook.md)

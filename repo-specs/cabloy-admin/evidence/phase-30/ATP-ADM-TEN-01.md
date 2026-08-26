@@ -48,9 +48,9 @@ Expected negative-command logs and the two PostgreSQL-only skips are asserted sc
 ## Retained evidence
 
 - [Redacted focused tenant-isolation record](./artifacts/2026-08-18-da25284-phase30-tenant-focused.md)
-- [User isolation coverage](../../../../../vona/src/suite/cabloy-admin/modules/admin-user/test/user.test.ts)
-- [Role and protected-audit isolation coverage](../../../../../vona/src/suite/cabloy-admin/modules/admin-role/test/role.test.ts) and [protected workflow coverage](../../../../../vona/src/suite/cabloy-admin/modules/admin-role/test/systemAdminProtection.test.ts)
-- [Department forest isolation coverage](../../../../../vona/src/suite/cabloy-admin/modules/admin-department/test/department.test.ts) and [membership/manager isolation coverage](../../../../../vona/src/suite/cabloy-admin/modules/admin-department/test/departmentMembership.test.ts)
+- [User isolation coverage](../../../../vona/src/suite/cabloy-admin/modules/admin-user/test/user.test.ts)
+- [Role and protected-audit isolation coverage](../../../../vona/src/suite/cabloy-admin/modules/admin-role/test/role.test.ts) and [protected workflow coverage](../../../../vona/src/suite/cabloy-admin/modules/admin-role/test/systemAdminProtection.test.ts)
+- [Department forest isolation coverage](../../../../vona/src/suite/cabloy-admin/modules/admin-department/test/department.test.ts) and [membership/manager isolation coverage](../../../../vona/src/suite/cabloy-admin/modules/admin-department/test/departmentMembership.test.ts)
 
 ## Remaining gates
 

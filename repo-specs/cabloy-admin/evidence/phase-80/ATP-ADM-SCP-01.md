@@ -63,7 +63,7 @@ No schema, `meta.version.ts`, generated frontend artifact, or environment config
 
 ## Retained evidence
 
-- [Start scope resolver regression](../../../../../vona/src/suite/cabloy-admin/modules/admin-rbac/test/rbacScope.test.ts)
-- [Reusable scope consumer regression](../../../../../vona/src/suite-vendor/a-cabloy/modules/a-rbac/test/rbacScopeCurrent.test.ts)
-- [Student scope consumer regression](../../../../../vona/src/suite/a-training/modules/training-student/test/dataScope.test.ts)
-- [Record scope consumer regression](../../../../../vona/src/suite/a-training/modules/training-record/test/dataScope.test.ts)
+- [Start scope resolver regression](../../../../vona/src/suite/cabloy-admin/modules/admin-rbac/test/rbacScope.test.ts)
+- [Reusable scope consumer regression](../../../../vona/src/suite-vendor/a-cabloy/modules/a-rbac/test/rbacScopeCurrent.test.ts)
+- [Student scope consumer regression](../../../../vona/src/suite/a-training/modules/training-student/test/dataScope.test.ts)
+- [Record scope consumer regression](../../../../vona/src/suite/a-training/modules/training-record/test/dataScope.test.ts)

@@ -71,7 +71,7 @@ No schema, `meta.version.ts`, environment configuration, or port configuration c
 
 ## Retained evidence
 
-- [Student data-scope regression](../../../../../vona/src/suite/a-training/modules/training-student/test/dataScope.test.ts)
-- [Student API regression](../../../../../vona/src/suite/a-training/modules/training-student/test/student.test.ts)
-- [Record data-scope regression](../../../../../vona/src/suite/a-training/modules/training-record/test/dataScope.test.ts)
-- [Record API regression](../../../../../vona/src/suite/a-training/modules/training-record/test/record.test.ts)
+- [Student data-scope regression](../../../../vona/src/suite/a-training/modules/training-student/test/dataScope.test.ts)
+- [Student API regression](../../../../vona/src/suite/a-training/modules/training-student/test/student.test.ts)
+- [Record data-scope regression](../../../../vona/src/suite/a-training/modules/training-record/test/dataScope.test.ts)
+- [Record API regression](../../../../vona/src/suite/a-training/modules/training-record/test/record.test.ts)

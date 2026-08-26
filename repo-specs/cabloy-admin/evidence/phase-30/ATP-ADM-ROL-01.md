@@ -45,8 +45,8 @@ Pass. The focused run reported 11 tests across 3 suites: 10 passed, 0 failed, an
 ## Supporting evidence
 
 - [Redacted focused ordinary-role record](./artifacts/2026-08-18-fde9b0a-phase30-role-focused.md)
-- [Ordinary Role API and transaction suite](../../../../../vona/src/suite/cabloy-admin/modules/admin-role/test/role.test.ts)
-- [Protected-workflow regression suite](../../../../../vona/src/suite/cabloy-admin/modules/admin-role/test/systemAdminProtection.test.ts)
+- [Ordinary Role API and transaction suite](../../../../vona/src/suite/cabloy-admin/modules/admin-role/test/role.test.ts)
+- [Protected-workflow regression suite](../../../../vona/src/suite/cabloy-admin/modules/admin-role/test/systemAdminProtection.test.ts)
 - [Direct external authorization matrix](../phase-60/ATP-ADM-AUT-01.md) — retained support for all Role controller caller states; its historical run is not represented as this revision's focused result.
 - [Rendered non-system-administrator replacement evidence](../phase-60/ATP-ADM-RES-03.md) — retained Phase 60 Resource/browser support, not rendered generic Role CRUD evidence.
 

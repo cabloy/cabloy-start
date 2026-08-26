@@ -84,10 +84,10 @@ No schema, `meta.version.ts`, environment configuration, or port configuration c
 
 ## Retained evidence
 
-- [Role-detail policy-editor E2E](../../../../../repo-e2e/specs/cabloy-admin.spec.ts)
-- [Student data-scope regression](../../../../../vona/src/suite/a-training/modules/training-student/test/dataScope.test.ts)
-- [Record data-scope regression](../../../../../vona/src/suite/a-training/modules/training-record/test/dataScope.test.ts)
-- [Opaque capability contract regression](../../../../../vona/src/suite-vendor/a-cabloy/modules/a-rbac/test/rbacCatalogGuard.test.ts)
+- [Role-detail policy-editor E2E](../../../../repo-e2e/specs/cabloy-admin.spec.ts)
+- [Student data-scope regression](../../../../vona/src/suite/a-training/modules/training-student/test/dataScope.test.ts)
+- [Record data-scope regression](../../../../vona/src/suite/a-training/modules/training-record/test/dataScope.test.ts)
+- [Opaque capability contract regression](../../../../vona/src/suite-vendor/a-cabloy/modules/a-rbac/test/rbacCatalogGuard.test.ts)
 
 ## Waiver
 

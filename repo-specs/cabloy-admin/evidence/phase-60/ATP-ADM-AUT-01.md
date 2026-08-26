@@ -52,9 +52,9 @@ The expected authorization failures are emitted by the executor during the run a
 
 - [Redacted focused authorization record](./artifacts/2026-08-18-26c11a7-admin-api-authorization.md)
 - Module suites:
-  - [User authorization suite](../../../../../vona/src/suite/cabloy-admin/modules/admin-user/test/authorization.test.ts)
-  - [Role authorization suite](../../../../../vona/src/suite/cabloy-admin/modules/admin-role/test/authorization.test.ts)
-  - [Department authorization suite](../../../../../vona/src/suite/cabloy-admin/modules/admin-department/test/authorization.test.ts)
+  - [User authorization suite](../../../../vona/src/suite/cabloy-admin/modules/admin-user/test/authorization.test.ts)
+  - [Role authorization suite](../../../../vona/src/suite/cabloy-admin/modules/admin-role/test/authorization.test.ts)
+  - [Department authorization suite](../../../../vona/src/suite/cabloy-admin/modules/admin-department/test/authorization.test.ts)
 
 ## Waiver
 

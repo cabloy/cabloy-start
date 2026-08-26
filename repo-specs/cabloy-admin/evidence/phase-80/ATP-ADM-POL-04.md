@@ -136,11 +136,11 @@ No schema or `meta.version.ts` changed. No environment identity or port configur
 
 ## Retained evidence
 
-- [Delegated Student Resource acceptance](../../../../../repo-e2e/specs/cabloy-admin.spec.ts)
-- [Fixture cleanup controller](../../../../../vona/src/suite/a-home/modules/home-user/src/controller/passportTest.ts)
-- [Fixture cleanup regression](../../../../../vona/src/suite/a-home/modules/home-user/test/passportTest.test.ts)
-- [Policy invalidation and PostgreSQL contention regression](../../../../../vona/src/suite/cabloy-admin/modules/admin-rbac/test/policyInvalidation.test.ts)
-- [Student scope regression](../../../../../vona/src/suite/a-training/modules/training-student/test/dataScope.test.ts)
+- [Delegated Student Resource acceptance](../../../../repo-e2e/specs/cabloy-admin.spec.ts)
+- [Fixture cleanup controller](../../../../vona/src/suite/a-home/modules/home-user/src/controller/passportTest.ts)
+- [Fixture cleanup regression](../../../../vona/src/suite/a-home/modules/home-user/test/passportTest.test.ts)
+- [Policy invalidation and PostgreSQL contention regression](../../../../vona/src/suite/cabloy-admin/modules/admin-rbac/test/policyInvalidation.test.ts)
+- [Student scope regression](../../../../vona/src/suite/a-training/modules/training-student/test/dataScope.test.ts)
 
 ## Waiver
 

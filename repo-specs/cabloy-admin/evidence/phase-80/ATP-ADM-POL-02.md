@@ -66,8 +66,8 @@ No schema, `meta.version.ts`, generated frontend artifact, or environment config
 
 ## Retained evidence
 
-- [RBAC catalog and guard regression](../../../../../vona/src/suite-vendor/a-cabloy/modules/a-rbac/test/rbacCatalogGuard.test.ts)
-- [Start grant regression](../../../../../vona/src/suite/cabloy-admin/modules/admin-rbac/test/rbacGrant.test.ts)
-- [Start grant Department regression](../../../../../vona/src/suite/cabloy-admin/modules/admin-rbac/test/rbacGrantDepartment.test.ts)
-- [Policy invalidation regression](../../../../../vona/src/suite/cabloy-admin/modules/admin-rbac/test/policyInvalidation.test.ts)
-- [Policy projection regression](../../../../../vona/src/suite/cabloy-admin/modules/admin-rbac/test/rbacPolicyProjection.test.ts)
+- [RBAC catalog and guard regression](../../../../vona/src/suite-vendor/a-cabloy/modules/a-rbac/test/rbacCatalogGuard.test.ts)
+- [Start grant regression](../../../../vona/src/suite/cabloy-admin/modules/admin-rbac/test/rbacGrant.test.ts)
+- [Start grant Department regression](../../../../vona/src/suite/cabloy-admin/modules/admin-rbac/test/rbacGrantDepartment.test.ts)
+- [Policy invalidation regression](../../../../vona/src/suite/cabloy-admin/modules/admin-rbac/test/policyInvalidation.test.ts)
+- [Policy projection regression](../../../../vona/src/suite/cabloy-admin/modules/admin-rbac/test/rbacPolicyProjection.test.ts)
