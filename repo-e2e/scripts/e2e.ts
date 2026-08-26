@@ -16,5 +16,5 @@ if (!Number.isInteger(e2ePort) || e2ePort <= 0 || e2ePort > 65535) {
 
 export const E2E_PORT = e2ePort;
 export const E2E_LOCAL_BASE_URL = `http://127.0.0.1:${E2E_PORT}`;
-export const E2E_CONFIG_FILE = resolve(E2E_ROOT_DIR, 'e2e', 'config', 'playwright.config.ts');
-export const E2E_SPECS_DIR = resolve(E2E_ROOT_DIR, 'e2e', 'specs');
+export const E2E_CONFIG_FILE = resolve(E2E_ROOT_DIR, 'repo-e2e', 'config', 'playwright.config.ts');
+export const E2E_SPECS_DIR = resolve(E2E_ROOT_DIR, 'repo-e2e', 'specs');
