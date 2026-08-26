@@ -1,0 +1,61 @@
+# Frontend Design Principles
+
+This guide explains the core design principles behind Zova in the Cabloy monorepo.
+
+## Intuitive reactivity
+
+Zova keeps Vue3’s reactive strengths, but aims for a code style that feels closer to native variable usage than traditional `ref/reactive`-heavy code.
+
+The practical design goal is not just shorter syntax. It is to keep business code understandable even as the system grows.
+
+## Unified model-based state
+
+A major Zova idea is that multiple state categories can be handled through one model-centered mental model instead of unrelated mechanisms.
+
+Four common categories help explain this model:
+
+- asynchronous server-side data
+- local storage data
+- cookie data
+- in-memory data
+
+In Zova, these are intentionally brought under a more unified `Model` abstraction so SSR support, usage patterns, and maintenance expectations stay more consistent.
+
+## IOC as the sharing model
+
+State and behavior sharing across several scopes can be expressed through IOC rather than a pile of unrelated patterns.
+
+Representative scopes include:
+
+- component-internal sharing
+- between-components sharing
+- app-global sharing
+- system-level sharing
+
+This is one of the clearest reasons Zova code can look different from conventional Vue code while staying structured for large systems.
+
+## IOC + AOP for extensibility
+
+Zova does not treat IOC as only a dependency injection mechanism. It also layers AOP-oriented extensibility on top of IOC so the system can grow without forcing every concern into the same class body.
+
+That is especially valuable for:
+
+- logging
+- cross-cutting behavior
+- internal and external extension points
+- large-scale maintainability
+
+## Practical implications for implementation
+
+These design principles should influence how code is extended in Zova. For the deeper structural model behind these principles, see [IoC and Beans](/frontend/ioc-and-beans), [Modules and Suites](/frontend/modules-and-suites), and [Module Scope](/frontend/module-scope).
+
+If you are approaching Zova from a Vue-first background, also read:
+
+- [Reading Zova for Vue Developers](/frontend/reading-zova-for-vue-developers)
+- [Zova Reactivity Under the Hood](/frontend/zova-reactivity-under-the-hood)
+- [Zova Source Reading Map](/frontend/zova-source-reading-map)
+
+- do not rewrite Zova code toward generic Vue habits automatically
+- do not assume `ref.value`-style patterns are the desired end state
+- prefer existing model, IOC, and AOP conventions when extending code
+- verify whether an existing Zova abstraction already solves the problem before introducing a framework-neutral pattern
