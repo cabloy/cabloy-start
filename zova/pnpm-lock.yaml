@@ -127,7 +127,7 @@ importers:
         specifier: workspace:^
         version: link:packages-zova/zova
       zova-jsx:
-        specifier: ^1.1.87
+        specifier: ^1.1.88
         version: link:packages-utils/zova-jsx
       zova-module-a-api:
         specifier: workspace:^
@@ -437,7 +437,7 @@ importers:
         specifier: ^7.6.2
         version: 7.8.0
       zova-cli-set-front:
-        specifier: ^1.2.101
+        specifier: ^1.2.102
         version: link:../cli-set-front
     devDependencies:
       clean-package:
@@ -714,7 +714,7 @@ importers:
         specifier: ^3.5.38
         version: 3.5.38(typescript@5.9.3)
       zova-core:
-        specifier: ^5.1.87
+        specifier: ^5.1.88
         version: link:../../packages-zova/zova-core
     devDependencies:
       clean-package:
@@ -855,10 +855,10 @@ importers:
   packages-zova/zova:
     dependencies:
       zova-core:
-        specifier: ^5.1.87
+        specifier: ^5.1.88
         version: link:../zova-core
       zova-suite-a-zova:
-        specifier: ^5.1.151
+        specifier: ^5.1.152
         version: link:../../src/suite-vendor/a-zova
     devDependencies:
       clean-package:
@@ -1094,7 +1094,7 @@ importers:
         specifier: ^5.1.34
         version: link:modules/a-routertabs
       zova-module-a-ssr:
-        specifier: ^5.1.37
+        specifier: ^5.1.38
         version: link:modules/a-ssr
       zova-module-a-ssrhmr:
         specifier: ^5.1.23
@@ -1112,7 +1112,7 @@ importers:
         specifier: ^5.1.37
         version: link:modules/a-zod
       zova-module-a-zova:
-        specifier: ^5.1.102
+        specifier: ^5.1.103
         version: link:modules/a-zova
 
   src/suite-vendor/a-zova/modules/a-api:
@@ -1454,7 +1454,7 @@ importers:
         specifier: ^3.7.2
         version: 3.7.2
       zova-jsx:
-        specifier: ^1.1.87
+        specifier: ^1.1.88
         version: link:../../../../../packages-utils/zova-jsx
     devDependencies:
       '@cabloy/cli':
