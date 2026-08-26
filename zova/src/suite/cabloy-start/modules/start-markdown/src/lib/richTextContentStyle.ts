@@ -95,8 +95,28 @@ export function richTextContentStyle(): NestedCSSProperties {
       '& pre code': {
         background: 'transparent',
         borderRadius: 0,
+        display: 'block',
         fontSize: '0.875rem',
         padding: 0,
+      },
+      '& pre code .hljs-comment, & pre code .hljs-quote': {
+        color: 'color-mix(in srgb, rgb(var(--v-theme-on-surface)) 55%, transparent)',
+        fontStyle: 'italic',
+      },
+      '& pre code .hljs-keyword, & pre code .hljs-selector-tag, & pre code .hljs-type': {
+        color: 'rgb(var(--v-theme-secondary))',
+      },
+      '& pre code .hljs-string, & pre code .hljs-attr, & pre code .hljs-template-variable': {
+        color: 'rgb(var(--v-theme-success))',
+      },
+      '& pre code .hljs-number, & pre code .hljs-literal, & pre code .hljs-built_in': {
+        color: 'rgb(var(--v-theme-info))',
+      },
+      '& pre code .hljs-title, & pre code .hljs-function, & pre code .hljs-variable': {
+        color: 'rgb(var(--v-theme-primary))',
+      },
+      '& pre code .hljs-meta, & pre code .hljs-symbol, & pre code .hljs-params': {
+        color: 'rgb(var(--v-theme-warning))',
       },
       '& mark': {
         background: 'color-mix(in srgb, rgb(var(--v-theme-primary)) 30%, transparent)',

@@ -5,11 +5,11 @@ export * from '../component/markdownHtml/controller.jsx';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-start-markdown' {
-  
+
         export interface ControllerFormFieldMarkdown {
           /** @internal */
           get scope(): ScopeModuleStartMarkdown;
@@ -18,7 +18,7 @@ declare module 'zova-module-start-markdown' {
         export interface ControllerMarkdownHtml {
           /** @internal */
           get scope(): ScopeModuleStartMarkdown;
-        } 
+        }
 }
 /** controller: end */
 /** controller: begin */
@@ -60,11 +60,11 @@ export * from '../component/markdownHtml/render.jsx';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-start-markdown' {
-  
+
         export interface RenderFormFieldMarkdown {
           /** @internal */
           get scope(): ScopeModuleStartMarkdown;
@@ -73,7 +73,7 @@ declare module 'zova-module-start-markdown' {
         export interface RenderMarkdownHtml {
           /** @internal */
           get scope(): ScopeModuleStartMarkdown;
-        } 
+        }
 }
 /** render: end */
 /** render: begin */
@@ -93,11 +93,11 @@ export * from '../component/markdownHtml/style.js';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-start-markdown' {
-  
+
         export interface StyleFormFieldMarkdown {
           /** @internal */
           get scope(): ScopeModuleStartMarkdown;
@@ -106,7 +106,7 @@ declare module 'zova-module-start-markdown' {
         export interface StyleMarkdownHtml {
           /** @internal */
           get scope(): ScopeModuleStartMarkdown;
-        } 
+        }
 }
 /** style: end */
 /** style: begin */
@@ -120,8 +120,11 @@ declare module 'zova' {
   }
 }
 /** style: end */
+/** locale: begin */
+import { locales } from './locales.js';
+/** locale: end */
 /** scope: begin */
-import { BeanScopeBase, type BeanScopeUtil } from 'zova';
+import { BeanScopeBase, type BeanScopeUtil, TypeModuleLocales, TypeLocaleBase } from 'zova';
 import { Scope } from 'zova-module-a-bean';
 
 @Scope()
@@ -129,6 +132,7 @@ export class ScopeModuleStartMarkdown extends BeanScopeBase {}
 
 export interface ScopeModuleStartMarkdown {
   util: BeanScopeUtil;
+locale: TypeModuleLocales<(typeof locales)[TypeLocaleBase]>;
 }
 
 import 'zova';
@@ -136,12 +140,17 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'start-markdown': ScopeModuleStartMarkdown;
   }
-  
-  
 
-  
 
-  
+
+  export interface IBeanScopeLocale {
+    'start-markdown': (typeof locales)[TypeLocaleBase];
+  }
+
+
 }
 
+export function locale<K extends keyof (typeof locales)[TypeLocaleBase]>(key: K): `start-markdown::${K}` {
+  return `start-markdown::${key}`;
+}
 /** scope: end */
