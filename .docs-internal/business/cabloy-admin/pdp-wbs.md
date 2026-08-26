@@ -284,7 +284,7 @@ Acceptance checks:
 
 ### Phase 70: Integration hardening and release acceptance
 
-Dependencies: `WBS-ADM-30-*`, `WBS-ADM-40-*`, `WBS-ADM-50-*`, `WBS-ADM-60-*`.
+Integration dependencies for `WBS-ADM-70-01` and `WBS-ADM-70-02`: `WBS-ADM-30-*`, `WBS-ADM-40-*`, `WBS-ADM-50-*`, `WBS-ADM-60-*`. `WBS-ADM-70-03` additionally depends on completed `WBS-ADM-70-01`, `WBS-ADM-70-02`, `WBS-ADM-80-05`, and every other applicable release gate. The integration lane may collect shared evidence before Phase 80 closes, but it cannot make a release decision.
 
 #### WBS-ADM-70-01: Complete migration and contract synchronization
 
@@ -330,7 +330,7 @@ Acceptance checks:
 
 ### Phase 80: Dynamic RBAC and Department data-scope acceptance
 
-Dependencies: `WBS-ADM-20-*`, `WBS-ADM-30-*`, `WBS-ADM-40-*`, `WBS-ADM-50-*`, `WBS-ADM-60-*`, `WBS-ADM-70-*`.
+Dependencies: `WBS-ADM-20-*`, `WBS-ADM-30-*`, `WBS-ADM-40-*`, `WBS-ADM-50-*`, `WBS-ADM-60-*`. Phase 80 may consume shared integration evidence from `WBS-ADM-70-01` or `WBS-ADM-70-02`, but those tasks are not prerequisites for Phase 80 acceptance. `WBS-ADM-70-03` remains downstream of `WBS-ADM-80-05`.
 
 #### WBS-ADM-80-01: Complete reusable RBAC catalog and guard contracts
 
@@ -446,20 +446,20 @@ npm run test
 
 ## Traceability Matrix
 
-| WBS group      | PRD source                       | SRS source                                        | Required ATP evidence                                     |
-| -------------- | -------------------------------- | ------------------------------------------------- | --------------------------------------------------------- |
-| `WBS-ADM-10-*` | All                              | All                                               | Traceability review                                       |
-| `WBS-ADM-20-*` | `PRD-ADM-SEC-*`, `PRD-ADM-UI-*`  | `SRS-ADM-API-*`, `SRS-ADM-UI-*`                   | `ATP-ADM-CTR-01`, `ATP-ADM-RES-01`, `ATP-ADM-SSR-01`      |
-| `WBS-ADM-30-*` | `PRD-ADM-USR-*`, `PRD-ADM-ROL-*` | `SRS-ADM-USR-*`, `SRS-ADM-ROL-*`                  | `ATP-ADM-USR-01`, `ATP-ADM-ROL-01`                        |
-| `WBS-ADM-40-*` | `PRD-ADM-SUP-*`                  | `SRS-ADM-SUP-*`, `SRS-ADM-TXN-*`, `SRS-ADM-AUD-*` | `ATP-ADM-SUP-01`, `ATP-ADM-SUP-02`, `ATP-ADM-SUP-RACE-01` |
-| `WBS-ADM-50-*` | `PRD-ADM-DEP-*`                  | `SRS-ADM-DEP-*`                                   | `ATP-ADM-DEP-01`, `ATP-ADM-DEP-02`                        |
-| `WBS-ADM-60-*` | `PRD-ADM-MEM-*`                  | `SRS-ADM-MEM-*`                                   | `ATP-ADM-MEM-01`, `ATP-ADM-MEM-02`, `ATP-ADM-MGR-01`      |
-| `WBS-ADM-80-01` | `PRD-ADM-POL-*`                 | `SRS-ADM-POL-01`–`SRS-ADM-POL-09`                 | `ATP-ADM-POL-01`                                         |
-| `WBS-ADM-80-02` | `PRD-ADM-POL-*`, `PRD-ADM-SCP-*` | `SRS-ADM-POL-*`, `SRS-ADM-SCP-01`–`SRS-ADM-SCP-05` | `ATP-ADM-POL-02`, `ATP-ADM-SCP-01`                       |
-| `WBS-ADM-80-03` | `PRD-ADM-SCP-*`                 | `SRS-ADM-SCP-06`–`SRS-ADM-SCP-13`                  | `ATP-ADM-SCP-02`                                         |
-| `WBS-ADM-80-04` | `PRD-ADM-POL-*`, `PRD-ADM-SCP-*` | `SRS-ADM-POL-09`, `SRS-ADM-SCP-09`                 | `ATP-ADM-POL-03`                                         |
-| `WBS-ADM-80-05` | All Phase 80                    | `SRS-ADM-API-*`, `SRS-ADM-NFR-*`                  | All applicable Phase 80 ATP evidence                   |
-| `WBS-ADM-70-*` | All applicable                   | `SRS-ADM-NFR-*`                                   | All applicable ATP evidence                               |
+| WBS group       | PRD source                       | SRS source                                         | Required ATP evidence                                                                                     |
+| --------------- | -------------------------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `WBS-ADM-10-*`  | All                              | All                                                | Traceability review                                                                                       |
+| `WBS-ADM-20-*`  | `PRD-ADM-SEC-*`, `PRD-ADM-UI-*`  | `SRS-ADM-API-*`, `SRS-ADM-UI-*`                    | `ATP-ADM-CTR-01`, `ATP-ADM-RES-01`, `ATP-ADM-SSR-01`                                                      |
+| `WBS-ADM-30-*`  | `PRD-ADM-USR-*`, `PRD-ADM-ROL-*` | `SRS-ADM-USR-*`, `SRS-ADM-ROL-*`                   | `ATP-ADM-USR-01`, `ATP-ADM-ROL-01`                                                                        |
+| `WBS-ADM-40-*`  | `PRD-ADM-SUP-*`                  | `SRS-ADM-SUP-*`, `SRS-ADM-TXN-*`, `SRS-ADM-AUD-*`  | `ATP-ADM-SUP-01`, `ATP-ADM-SUP-02`, `ATP-ADM-SUP-RACE-01`                                                 |
+| `WBS-ADM-50-*`  | `PRD-ADM-DEP-*`                  | `SRS-ADM-DEP-*`                                    | `ATP-ADM-DEP-01`, `ATP-ADM-DEP-02`                                                                        |
+| `WBS-ADM-60-*`  | `PRD-ADM-MEM-*`                  | `SRS-ADM-MEM-*`                                    | `ATP-ADM-MEM-01`, `ATP-ADM-MEM-02`, `ATP-ADM-MGR-01`, `ATP-ADM-RES-01`–`ATP-ADM-RES-03`, `ATP-ADM-SSR-01` |
+| `WBS-ADM-80-01` | `PRD-ADM-POL-*`                  | `SRS-ADM-POL-01`–`SRS-ADM-POL-09`                  | `ATP-ADM-POL-01`                                                                                          |
+| `WBS-ADM-80-02` | `PRD-ADM-POL-*`, `PRD-ADM-SCP-*` | `SRS-ADM-POL-*`, `SRS-ADM-SCP-01`–`SRS-ADM-SCP-05` | `ATP-ADM-POL-02`, `ATP-ADM-SCP-01`                                                                        |
+| `WBS-ADM-80-03` | `PRD-ADM-SCP-*`                  | `SRS-ADM-SCP-06`–`SRS-ADM-SCP-13`                  | `ATP-ADM-SCP-02`                                                                                          |
+| `WBS-ADM-80-04` | `PRD-ADM-POL-*`, `PRD-ADM-SCP-*` | `SRS-ADM-POL-09`, `SRS-ADM-SCP-09`                 | `ATP-ADM-POL-03`, `ATP-ADM-POL-04`                                                                        |
+| `WBS-ADM-80-05` | All Phase 80                     | `SRS-ADM-API-*`, `SRS-ADM-NFR-*`                   | `ATP-ADM-POL-01`–`ATP-ADM-POL-04`, `ATP-ADM-SCP-01`–`ATP-ADM-SCP-02`                                      |
+| `WBS-ADM-70-*`  | All applicable                   | `SRS-ADM-NFR-*`                                    | All applicable ATP evidence                                                                               |
 
 ## Related Records
 

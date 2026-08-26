@@ -28,15 +28,15 @@ Phase one creates no new Admin SSR site, public path, flavor, or independent app
 
 ## Capability and Persistence Ownership
 
-| Owner                  | Owns                                                                                                                                    | Does not own                                                        |
-| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| `admin-user`           | Account-management projections, permitted profile updates, activation commands, role/Department composition                             | Account identity, credentials, auth providers, Passport persistence |
-| `admin-role`           | Custom-role lifecycle façade, non-system-administrator memberships, protected `systemAdmin` workflow, sensitive-operation audit         | A replacement role or role-membership entity                        |
-| `admin-department`     | Department forest, Department memberships, position text, primary membership, manager lifecycle                                         | Tenant identity, Organization, dynamic data scope                   |
-| `a-rbac`               | Reusable RBAC decorator/guard, canonical action catalog, policy decision contracts, safe predicate/capability contracts                | Department semantics, Start grant persistence, `systemAdmin` policy, Admin UI |
-| `admin-rbac`           | Start role-action grants, custom Department associations, policy resolution, catalog projection, policy revision/invalidation, policy UI | Identity, role, Department, or Passport fact ownership              |
-| `home-user` / `a-user` | `homeUser`, `homeRole`, `homeRoleUser`, authentication, Passport, tokens, stable `bean.user`, `bean.role`, and `bean.passport` surfaces | Cabloy Admin operational use cases                                  |
-| `rest-resource`        | Conventional Admin Resource bootstrap, schemas, permissions, queries, mutations, query keys, and invalidation                           | Domain-specific custom-command semantics                            |
+| Owner                  | Owns                                                                                                                                     | Does not own                                                                  |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `admin-user`           | Account-management projections, permitted profile updates, activation commands, role/Department composition                              | Account identity, credentials, auth providers, Passport persistence           |
+| `admin-role`           | Custom-role lifecycle façade, non-system-administrator memberships, protected `systemAdmin` workflow, sensitive-operation audit          | A replacement role or role-membership entity                                  |
+| `admin-department`     | Department forest, Department memberships, position text, primary membership, manager lifecycle                                          | Tenant identity, Organization, dynamic data scope                             |
+| `a-rbac`               | Reusable RBAC decorator/guard, canonical action catalog, policy decision contracts, safe predicate/capability contracts                  | Department semantics, Start grant persistence, `systemAdmin` policy, Admin UI |
+| `admin-rbac`           | Start role-action grants, custom Department associations, policy resolution, catalog projection, policy revision/invalidation, policy UI | Identity, role, Department, or Passport fact ownership                        |
+| `home-user` / `a-user` | `homeUser`, `homeRole`, `homeRoleUser`, authentication, Passport, tokens, stable `bean.user`, `bean.role`, and `bean.passport` surfaces  | Cabloy Admin operational use cases                                            |
+| `rest-resource`        | Conventional Admin Resource bootstrap, schemas, permissions, queries, mutations, query keys, and invalidation                            | Domain-specific custom-command semantics                                      |
 
 `bean.user` and `bean.role` do not currently expose every operation required by Cabloy Admin. Cabloy Admin services must add managed façades around those facts rather than bypassing or duplicating their ownership.
 
@@ -166,16 +166,16 @@ Phase one creates no new Admin SSR site, public path, flavor, or independent app
 
 ## Acceptance Mapping
 
-| PRD family                      | SRS contracts                                                     | Delivery work                  | Acceptance scenarios                                                                     |
-| ------------------------------- | ----------------------------------------------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------- |
-| `PRD-ADM-USR-*`                 | `SRS-ADM-USR-*`                                                   | `WBS-ADM-30-*`                 | `ATP-ADM-USR-01`                                                                         |
-| `PRD-ADM-ROL-*`                 | `SRS-ADM-ROL-*`                                                   | `WBS-ADM-30-*`                 | `ATP-ADM-ROL-01`                                                                         |
-| `PRD-ADM-SUP-*`                 | `SRS-ADM-SUP-*`, `SRS-ADM-TXN-*`, `SRS-ADM-AUD-*`                 | `WBS-ADM-40-*`                 | `ATP-ADM-SUP-*`                                                                          |
-| `PRD-ADM-DEP-*`                 | `SRS-ADM-DEP-*`                                                   | `WBS-ADM-50-*`                 | `ATP-ADM-DEP-*`                                                                          |
-| `PRD-ADM-MEM-*`                 | `SRS-ADM-MEM-*`                                                   | `WBS-ADM-60-*`                 | `ATP-ADM-MEM-*`, `ATP-ADM-MGR-01`                                                        |
-| `PRD-ADM-POL-*`                 | `SRS-ADM-POL-*`                                                   | `WBS-ADM-80-01`, `WBS-ADM-80-02`, `WBS-ADM-80-04` | `ATP-ADM-POL-01`, `ATP-ADM-POL-02`, `ATP-ADM-POL-03`                                      |
-| `PRD-ADM-SCP-*`                 | `SRS-ADM-SCP-*`                                                   | `WBS-ADM-80-02`, `WBS-ADM-80-03` | `ATP-ADM-SCP-01`, `ATP-ADM-SCP-02`                                                        |
-| `PRD-ADM-SEC-*`, `PRD-ADM-UI-*` | `SRS-ADM-TEN-*`, `SRS-ADM-AUT-*`, `SRS-ADM-API-*`, `SRS-ADM-UI-*` | `WBS-ADM-20-*`, `WBS-ADM-70-*`, `WBS-ADM-80-*` | `ATP-ADM-TEN-01`, `ATP-ADM-AUT-01`, `ATP-ADM-CTR-01`, `ATP-ADM-RES-01`, `ATP-ADM-SSR-01`, `ATP-ADM-POL-03` |
+| PRD family                      | SRS contracts                                                     | Delivery work                                     | Acceptance scenarios                                                                                                                          |
+| ------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PRD-ADM-USR-*`                 | `SRS-ADM-USR-*`                                                   | `WBS-ADM-30-*`                                    | `ATP-ADM-USR-01`                                                                                                                              |
+| `PRD-ADM-ROL-*`                 | `SRS-ADM-ROL-*`                                                   | `WBS-ADM-30-*`                                    | `ATP-ADM-ROL-01`                                                                                                                              |
+| `PRD-ADM-SUP-*`                 | `SRS-ADM-SUP-*`, `SRS-ADM-TXN-*`, `SRS-ADM-AUD-*`                 | `WBS-ADM-40-*`                                    | `ATP-ADM-SUP-*`                                                                                                                               |
+| `PRD-ADM-DEP-*`                 | `SRS-ADM-DEP-*`                                                   | `WBS-ADM-50-*`                                    | `ATP-ADM-DEP-*`                                                                                                                               |
+| `PRD-ADM-MEM-*`                 | `SRS-ADM-MEM-*`                                                   | `WBS-ADM-60-*`                                    | `ATP-ADM-MEM-*`, `ATP-ADM-MGR-01`                                                                                                             |
+| `PRD-ADM-POL-*`                 | `SRS-ADM-POL-*`                                                   | `WBS-ADM-80-01`, `WBS-ADM-80-02`, `WBS-ADM-80-04` | `ATP-ADM-POL-01`–`ATP-ADM-POL-04`                                                                                                             |
+| `PRD-ADM-SCP-*`                 | `SRS-ADM-SCP-*`                                                   | `WBS-ADM-80-02`, `WBS-ADM-80-03`, `WBS-ADM-80-04` | `ATP-ADM-SCP-01`, `ATP-ADM-SCP-02`, `ATP-ADM-POL-04`                                                                                          |
+| `PRD-ADM-SEC-*`, `PRD-ADM-UI-*` | `SRS-ADM-TEN-*`, `SRS-ADM-AUT-*`, `SRS-ADM-API-*`, `SRS-ADM-UI-*` | `WBS-ADM-20-*`, `WBS-ADM-70-*`, `WBS-ADM-80-*`    | `ATP-ADM-TEN-01`, `ATP-ADM-AUT-01`, `ATP-ADM-CTR-01`, `ATP-ADM-RES-01`–`ATP-ADM-RES-03`, `ATP-ADM-SSR-01`, `ATP-ADM-POL-03`, `ATP-ADM-POL-04` |
 
 ## Related Records
 
