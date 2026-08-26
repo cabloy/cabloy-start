@@ -14,20 +14,20 @@ This directory records the agreed phase-one product and architecture baseline fo
 
 ## Confirmed Phase-One Baseline
 
-| Concern | Decision |
-| --- | --- |
-| Suite | `cabloy-admin` (`providerId = cabloy`, `suiteName = admin`) |
-| Planned modules | `admin-user`, `admin-role`, `admin-department`, and `admin-rbac`; reusable mechanics live in paired `a-rbac` modules |
-| Account scope | Manage all existing accounts through the established identity model rather than duplicate account persistence |
-| Role scope | Manage ordinary `homeRole` records and user-role assignments; a role gains dynamic action authority only through an explicit enabled grant for an opted-in action |
-| Dynamic policy | Only `@Passport.rbac(...)` actions enter the canonical action catalog; the opted-in Controller/action boundary resolves authoritative policy and constructs a typed internal scope context, `admin-rbac` owns Start grants and Department/owner resolution, and neutral services apply supplied context while protected `systemAdmin` control-plane authority remains separate |
-| Department scope | Model one Department forest inside each active Vona instance; the instance remains the tenant boundary; the five accepted scope terms are delivered only for explicitly opted-in actions |
-| Organization boundary | No Organization entity, module, `organizationId`, or Organization-scoped authorization/query rule exists in phase one |
-| Membership | A user may hold multiple Department memberships; one membership may later be marked primary |
-| Position | Store an optional textual `position` on the membership in phase one; defer `admin-position` and `positionId` |
-| Department root | Represent each top-level Department with `parentId = null`, not `0` |
-| Department manager | Include a Department manager concept; the manager is expected to be an active Department member |
-| Recovery authority | Treat `systemAdmin` as a protected break-glass role and preserve at least one activated `systemAdmin` in the active instance |
+| Concern               | Decision                                                                                                                                                                                                                                                                                                                                                                       |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Suite                 | `cabloy-admin` (`providerId = cabloy`, `suiteName = admin`)                                                                                                                                                                                                                                                                                                                    |
+| Planned modules       | `admin-user`, `admin-role`, `admin-department`, and `admin-rbac`; reusable mechanics live in paired `a-rbac` modules                                                                                                                                                                                                                                                           |
+| Account scope         | Manage all existing accounts through the established identity model rather than duplicate account persistence                                                                                                                                                                                                                                                                  |
+| Role scope            | Manage ordinary `homeRole` records and user-role assignments; a role gains dynamic action authority only through an explicit enabled grant for an opted-in action                                                                                                                                                                                                              |
+| Dynamic policy        | Only `@Passport.rbac(...)` actions enter the canonical action catalog; the opted-in Controller/action boundary resolves authoritative policy and constructs a typed internal scope context, `admin-rbac` owns Start grants and Department/owner resolution, and neutral services apply supplied context while protected `systemAdmin` control-plane authority remains separate |
+| Department scope      | Model one Department forest inside each active Vona instance; the instance remains the tenant boundary; the five accepted scope terms are delivered only for explicitly opted-in actions                                                                                                                                                                                       |
+| Organization boundary | No Organization entity, module, `organizationId`, or Organization-scoped authorization/query rule exists in phase one                                                                                                                                                                                                                                                          |
+| Membership            | A user may hold multiple Department memberships; one membership may later be marked primary                                                                                                                                                                                                                                                                                    |
+| Position              | Store an optional textual `position` on the membership in phase one; defer `admin-position` and `positionId`                                                                                                                                                                                                                                                                   |
+| Department root       | Represent each top-level Department with `parentId = null`, not `0`                                                                                                                                                                                                                                                                                                            |
+| Department manager    | Include a Department manager concept; the manager is expected to be an active Department member                                                                                                                                                                                                                                                                                |
+| Recovery authority    | Treat `systemAdmin` as a protected break-glass role and preserve at least one activated `systemAdmin` in the active instance                                                                                                                                                                                                                                                   |
 
 ## Current Topology
 
@@ -60,8 +60,8 @@ If documents disagree, update the authoritative document first, then update down
 
 ## Related Framework Records
 
-- [Suites and Modules](../../../cabloy-docs/fullstack/suites-and-modules.md)
-- [User Access Guide](../../../cabloy-docs/backend/user-access-guide.md)
-- [Admin Resource and Web Self-Service](../../../cabloy-docs/fullstack/admin-resource-and-web-self-service.md)
-- [Contract Loop Playbook](../../../cabloy-docs/fullstack/contract-loop-playbook.md)
+- [Suites and Modules](../../../repo-docs/fullstack/suites-and-modules.md)
+- [User Access Guide](../../../repo-docs/backend/user-access-guide.md)
+- [Admin Resource and Web Self-Service](../../../repo-docs/fullstack/admin-resource-and-web-self-service.md)
+- [Contract Loop Playbook](../../../repo-docs/fullstack/contract-loop-playbook.md)
 - [ADR 0002: Dynamic RBAC and Department Data Scope](./decisions/0002-dynamic-rbac-and-data-scope.md)

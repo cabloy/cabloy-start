@@ -470,5 +470,5 @@ npm run test
 - [Delivery Progress](./progress.md)
 - [ADR 0001: Establish Cabloy Admin MVP Boundaries](./decisions/0001-admin-mvp-boundaries.md)
 - [ADR 0002: Dynamic RBAC and Department Data Scope](./decisions/0002-dynamic-rbac-and-data-scope.md)
-- [Suites and Modules](../../../cabloy-docs/fullstack/suites-and-modules.md)
-- [Contract Loop Playbook](../../../cabloy-docs/fullstack/contract-loop-playbook.md)
+- [Suites and Modules](../../../repo-docs/fullstack/suites-and-modules.md)
+- [Contract Loop Playbook](../../../repo-docs/fullstack/contract-loop-playbook.md)
