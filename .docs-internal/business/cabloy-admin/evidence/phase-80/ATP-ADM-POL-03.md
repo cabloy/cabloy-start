@@ -2,16 +2,16 @@
 
 ## Traceability
 
-| Field | Value |
-| --- | --- |
-| ATP | `ATP-ADM-POL-03` |
-| PRD | `PRD-ADM-POL-01`, `PRD-ADM-SCP-04` |
-| SRS | `SRS-ADM-POL-09`, `SRS-ADM-SCP-09` |
-| WBS | `WBS-ADM-80-04` |
-| Tested source revision | working tree based on `2137752` with the Role-detail tabs and policy-editor changes |
-| Database client | managed clean `better-sqlite3` Vona test database for focused controller tests; Start Admin managed runtime for browser test |
-| Zova flavor | Start Admin |
-| Executor date | 2026-08-22 |
+| Field                  | Value                                                                                                                        |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| ATP                    | `ATP-ADM-POL-03`                                                                                                             |
+| PRD                    | `PRD-ADM-POL-01`, `PRD-ADM-SCP-04`                                                                                           |
+| SRS                    | `SRS-ADM-POL-09`, `SRS-ADM-SCP-09`                                                                                           |
+| WBS                    | `WBS-ADM-80-04`                                                                                                              |
+| Tested source revision | working tree based on `2137752` with the Role-detail tabs and policy-editor changes                                          |
+| Database client        | managed clean `better-sqlite3` Vona test database for focused controller tests; Start Admin managed runtime for browser test |
+| Zova flavor            | Start Admin                                                                                                                  |
+| Executor date          | 2026-08-22                                                                                                                   |
 
 ## Procedure
 
@@ -84,7 +84,7 @@ No schema, `meta.version.ts`, environment configuration, or port configuration c
 
 ## Retained evidence
 
-- [Role-detail policy-editor E2E](../../../../../e2e/specs/cabloy-admin.spec.ts)
+- [Role-detail policy-editor E2E](../../../../../repo-e2e/specs/cabloy-admin.spec.ts)
 - [Student data-scope regression](../../../../../vona/src/suite/a-training/modules/training-student/test/dataScope.test.ts)
 - [Record data-scope regression](../../../../../vona/src/suite/a-training/modules/training-record/test/dataScope.test.ts)
 - [Opaque capability contract regression](../../../../../vona/src/suite-vendor/a-cabloy/modules/a-rbac/test/rbacCatalogGuard.test.ts)

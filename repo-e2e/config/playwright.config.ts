@@ -6,7 +6,7 @@ const externalBaseURL = process.env.E2E_BASE_URL;
 const baseURL = externalBaseURL || E2E_LOCAL_BASE_URL;
 
 export default defineConfig({
-  testDir: `${E2E_ROOT_DIR}/e2e/specs`,
+  testDir: `${E2E_ROOT_DIR}/repo-e2e/specs`,
   fullyParallel: false,
   workers: 1,
   forbidOnly: !!process.env.CI,
@@ -19,7 +19,7 @@ export default defineConfig({
   webServer: externalBaseURL
     ? undefined
     : {
-        command: 'node e2e/scripts/startE2eVona.ts',
+        command: 'node repo-e2e/scripts/startE2eVona.ts',
         cwd: E2E_ROOT_DIR,
         url: `${baseURL}/`,
         timeout: 180_000,

@@ -2,17 +2,17 @@
 
 ## Traceability
 
-| Field                   | Value                                                                                                 |
-| ----------------------- | ----------------------------------------------------------------------------------------------------- |
-| ATP                     | `ATP-ADM-SSR-01`                                                                                      |
-| PRD                     | `PRD-ADM-UI-01`                                                                                       |
-| SRS                     | `SRS-ADM-UI-03`                                                                                       |
-| WBS                     | `WBS-ADM-60-03`                                                                                       |
-| Tested backend revision | `26c11a76f85969a071757a02089f03665a45ed9f` plus uncommitted authorization suites and evidence updates |
-| Current browser-test source | tracked [cabloy-admin.spec.ts](../../../../../e2e/specs/cabloy-admin.spec.ts)                     |
-| Database client         | clean managed `better-sqlite3` E2E database                                                           |
-| Zova flavor             | Start Admin SSR                                                                                       |
-| Executor date           | 2026-08-18                                                                                            |
+| Field                       | Value                                                                                                 |
+| --------------------------- | ----------------------------------------------------------------------------------------------------- |
+| ATP                         | `ATP-ADM-SSR-01`                                                                                      |
+| PRD                         | `PRD-ADM-UI-01`                                                                                       |
+| SRS                         | `SRS-ADM-UI-03`                                                                                       |
+| WBS                         | `WBS-ADM-60-03`                                                                                       |
+| Tested backend revision     | `26c11a76f85969a071757a02089f03665a45ed9f` plus uncommitted authorization suites and evidence updates |
+| Current browser-test source | tracked [cabloy-admin.spec.ts](../../../../../repo-e2e/specs/cabloy-admin.spec.ts)                    |
+| Database client             | clean managed `better-sqlite3` E2E database                                                           |
+| Zova flavor                 | Start Admin SSR                                                                                       |
+| Executor date               | 2026-08-18                                                                                            |
 
 ## Procedure
 

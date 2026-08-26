@@ -71,7 +71,7 @@ Before a release candidate, run required focused tests, affected module/reposito
 | Cross-database tests          | Protected-administrator, tree, and membership contention                                                    | PostgreSQL CI plus focused local gate                       |
 | Contract tests                | Emitted OpenAPI and generated consumers match Vona source truth                                             | Owning Vona/Zova module checks                              |
 | Admin Resource tests          | Resource permissions, menu metadata, semantic façade invalidation                                           | Module-local tests and Start Admin integration              |
-| SSR/browser acceptance        | Admin SSR, hydration, Resource navigation, and rendered Resource interactions                               | `e2e/specs/cabloy-admin.spec.ts`                            |
+| SSR/browser acceptance        | Admin SSR, hydration, Resource navigation, and rendered Resource interactions                               | `repo-e2e/specs/cabloy-admin.spec.ts`                       |
 
 Planned backend ownership:
 

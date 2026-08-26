@@ -74,12 +74,12 @@ Changed-file checks passed:
 
 ```bash
 npx oxfmt --check \
-  e2e/specs/cabloy-admin.spec.ts \
+  repo-e2e/specs/cabloy-admin.spec.ts \
   vona/src/suite/a-home/modules/home-user/src/controller/passportTest.ts \
   vona/src/suite/a-home/modules/home-user/test/passportTest.test.ts \
   vona/src/suite/cabloy-admin/modules/admin-rbac/test/policyInvalidation.test.ts
 npx oxlint --disable-nested-config \
-  e2e/specs/cabloy-admin.spec.ts \
+  repo-e2e/specs/cabloy-admin.spec.ts \
   vona/src/suite/a-home/modules/home-user/src/controller/passportTest.ts \
   vona/src/suite/a-home/modules/home-user/test/passportTest.test.ts \
   vona/src/suite/cabloy-admin/modules/admin-rbac/test/policyInvalidation.test.ts
@@ -136,7 +136,7 @@ No schema or `meta.version.ts` changed. No environment identity or port configur
 
 ## Retained evidence
 
-- [Delegated Student Resource acceptance](../../../../../e2e/specs/cabloy-admin.spec.ts)
+- [Delegated Student Resource acceptance](../../../../../repo-e2e/specs/cabloy-admin.spec.ts)
 - [Fixture cleanup controller](../../../../../vona/src/suite/a-home/modules/home-user/src/controller/passportTest.ts)
 - [Fixture cleanup regression](../../../../../vona/src/suite/a-home/modules/home-user/test/passportTest.test.ts)
 - [Policy invalidation and PostgreSQL contention regression](../../../../../vona/src/suite/cabloy-admin/modules/admin-rbac/test/policyInvalidation.test.ts)
