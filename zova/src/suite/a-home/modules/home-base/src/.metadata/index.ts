@@ -1,34 +1,21 @@
 // eslint-disable
 /** service: begin */
-export * from '../service/locale.js';
 export * from '../service/routerGuards.js';
 export * from '../service/ssr.js';
 export * from '../service/ssrLayout.js';
 
 import 'zova-module-a-bean';
 declare module 'zova-module-a-bean' {
-  
+
     export interface IServiceRecord {
-      'home-base:locale': never;
-'home-base:routerGuards': never;
+      'home-base:routerGuards': never;
 'home-base:ssr': never;
 'home-base:ssrLayout': never;
     }
 
-  
+
 }
 declare module 'zova-module-home-base' {
-  
-        export interface ServiceLocale {
-          /** @internal */
-          get scope(): ScopeModuleHomeBase;
-        }
-
-        export interface ServiceLocale {
-          get $beanFullName(): 'home-base.service.locale';
-          get $onionName(): 'home-base:locale';
-          
-        }
 
         export interface ServiceRouterGuards {
           /** @internal */
@@ -38,7 +25,7 @@ declare module 'zova-module-home-base' {
         export interface ServiceRouterGuards {
           get $beanFullName(): 'home-base.service.routerGuards';
           get $onionName(): 'home-base:routerGuards';
-          
+
         }
 
         export interface ServiceSsr {
@@ -49,7 +36,7 @@ declare module 'zova-module-home-base' {
         export interface ServiceSsr {
           get $beanFullName(): 'home-base.service.ssr';
           get $onionName(): 'home-base:ssr';
-          
+
         }
 
         export interface ServiceSsrLayout {
@@ -60,20 +47,18 @@ declare module 'zova-module-home-base' {
         export interface ServiceSsrLayout {
           get $beanFullName(): 'home-base.service.ssrLayout';
           get $onionName(): 'home-base:ssrLayout';
-          
-        } 
+
+        }
 }
 /** service: end */
 /** service: begin */
-import { ServiceLocale } from '../service/locale.js';
 import { ServiceRouterGuards } from '../service/routerGuards.js';
 import { ServiceSsr } from '../service/ssr.js';
 import { ServiceSsrLayout } from '../service/ssrLayout.js';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
-    'home-base.service.locale': ServiceLocale;
-'home-base.service.routerGuards': ServiceRouterGuards;
+    'home-base.service.routerGuards': ServiceRouterGuards;
 'home-base.service.ssr': ServiceSsr;
 'home-base.service.ssrLayout': ServiceSsrLayout;
   }
@@ -89,11 +74,11 @@ export * from '../page/errorNotFound/controller.jsx';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-home-base' {
-  
+
         export interface ControllerItemLink {
           /** @internal */
           get scope(): ScopeModuleHomeBase;
@@ -122,7 +107,7 @@ declare module 'zova-module-home-base' {
         export interface ControllerPageErrorNotFound {
           /** @internal */
           get scope(): ScopeModuleHomeBase;
-        } 
+        }
 }
 /** controller: end */
 /** controller: begin */
@@ -162,7 +147,7 @@ export interface IPagePathRecord {
 '/home/base//:catchAll(.*)*': TypePagePathSchema<undefined,undefined>;
 }
 export interface IPageNameRecord {
-  
+
 }
 }
 export const pagePathSchemas = {
@@ -241,7 +226,7 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'home-base': ScopeModuleHomeBase;
   }
-  
+
   export interface IBeanScopeConfig {
     'home-base': ReturnType<typeof config>;
   }
@@ -250,7 +235,7 @@ declare module 'zova' {
     'home-base': (typeof locales)[TypeLocaleBase];
   }
 
-  
+
 }
 
 export function locale<K extends keyof (typeof locales)[TypeLocaleBase]>(key: K): `home-base::${K}` {

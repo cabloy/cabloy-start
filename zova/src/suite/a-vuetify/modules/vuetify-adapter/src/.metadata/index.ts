@@ -7,11 +7,11 @@ export * from '../bean/sys.navigationDrawer.jsx';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-vuetify-adapter' {
-  
+
         export interface SysAppBar {
           /** @internal */
           get scope(): ScopeModuleVuetifyAdapter;
@@ -20,7 +20,7 @@ declare module 'zova-module-vuetify-adapter' {
         export interface SysAppBar {
           get $beanFullName(): 'vuetify-adapter.sys.appBar';
           get $onionName(): 'vuetify-adapter:appBar';
-          
+
         }
 
         export interface SysIcon {
@@ -31,7 +31,7 @@ declare module 'zova-module-vuetify-adapter' {
         export interface SysIcon {
           get $beanFullName(): 'vuetify-adapter.sys.icon';
           get $onionName(): 'vuetify-adapter:icon';
-          
+
         }
 
         export interface SysMain {
@@ -42,7 +42,7 @@ declare module 'zova-module-vuetify-adapter' {
         export interface SysMain {
           get $beanFullName(): 'vuetify-adapter.sys.main';
           get $onionName(): 'vuetify-adapter:main';
-          
+
         }
 
         export interface SysNavigationDrawer {
@@ -53,8 +53,8 @@ declare module 'zova-module-vuetify-adapter' {
         export interface SysNavigationDrawer {
           get $beanFullName(): 'vuetify-adapter.sys.navigationDrawer';
           get $onionName(): 'vuetify-adapter:navigationDrawer';
-          
-        } 
+
+        }
 }
 /** sys: end */
 /** sys: begin */
@@ -77,15 +77,15 @@ export * from '../service/locale.js';
 
 import 'zova-module-a-bean';
 declare module 'zova-module-a-bean' {
-  
+
     export interface IServiceRecord {
       'vuetify-adapter:locale': never;
     }
 
-  
+
 }
 declare module 'zova-module-vuetify-adapter' {
-  
+
         export interface ServiceLocale {
           /** @internal */
           get scope(): ScopeModuleVuetifyAdapter;
@@ -94,8 +94,8 @@ declare module 'zova-module-vuetify-adapter' {
         export interface ServiceLocale {
           get $beanFullName(): 'vuetify-adapter.service.locale';
           get $onionName(): 'vuetify-adapter:locale';
-          
-        } 
+
+        }
 }
 /** service: end */
 /** service: begin */
@@ -112,15 +112,15 @@ export * from '../bean/meta.themeHandler.js';
 
 import 'zova-module-a-meta';
 declare module 'zova-module-a-meta' {
-  
+
     export interface IMetaRecord {
       'vuetify-adapter:themeHandler': never;
     }
 
-  
+
 }
 declare module 'zova-module-vuetify-adapter' {
-  
+
         export interface MetaThemeHandler {
           /** @internal */
           get scope(): ScopeModuleVuetifyAdapter;
@@ -129,8 +129,8 @@ declare module 'zova-module-vuetify-adapter' {
         export interface MetaThemeHandler {
           get $beanFullName(): 'vuetify-adapter.meta.themeHandler';
           get $onionName(): 'vuetify-adapter:themeHandler';
-          
-        } 
+
+        }
 }
 /** meta: end */
 /** meta: begin */
@@ -142,6 +142,10 @@ declare module 'zova' {
   }
 }
 /** meta: end */
+/** config: begin */
+export * from '../config/config.js';
+import { config } from '../config/config.js';
+/** config: end */
 /** monkey: begin */
 export * from '../monkey.js';
 /** monkey: end */
@@ -149,7 +153,7 @@ export * from '../monkey.js';
 export * from '../monkeySys.js';
 /** monkeySys: end */
 /** scope: begin */
-import { BeanScopeBase, type BeanScopeUtil } from 'zova';
+import { BeanScopeBase, type BeanScopeUtil, TypeModuleConfig } from 'zova';
 import { Scope } from 'zova-module-a-bean';
 
 @Scope()
@@ -157,6 +161,7 @@ export class ScopeModuleVuetifyAdapter extends BeanScopeBase {}
 
 export interface ScopeModuleVuetifyAdapter {
   util: BeanScopeUtil;
+config: TypeModuleConfig<typeof config>;
 }
 
 import 'zova';
@@ -164,12 +169,14 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'vuetify-adapter': ScopeModuleVuetifyAdapter;
   }
-  
-  
 
-  
+  export interface IBeanScopeConfig {
+    'vuetify-adapter': ReturnType<typeof config>;
+  }
 
-  
+
+
+
 }
 
 /** scope: end */

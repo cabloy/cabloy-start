@@ -36,7 +36,7 @@ export class RenderLocale extends BeanRenderBase {
                         query: currentRoute.query,
                       });
                     } else {
-                      this.$$serviceLocale.setLocale(key as any);
+                      this.app.meta.locale.current = key as any;
                     }
                   }}
                 ></VListItem>

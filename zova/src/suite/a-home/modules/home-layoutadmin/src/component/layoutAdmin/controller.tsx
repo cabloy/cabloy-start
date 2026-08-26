@@ -4,7 +4,7 @@ import { provide, ref } from 'vue';
 import { BeanControllerBase, Use, usePrepareArg } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { $QueryEnsureLoaded } from 'zova-module-a-model';
-import { IServiceSsrLayoutOptions, ServiceLocale, ServiceSsrLayout } from 'zova-module-home-base';
+import { IServiceSsrLayoutOptions, ServiceSsrLayout } from 'zova-module-home-base';
 import { ILayoutConfig } from 'zova-module-vuetify-adapter';
 
 import { ModelLayout } from '../../model/layout.js';
@@ -35,9 +35,6 @@ export class ControllerLayoutAdmin extends BeanControllerBase {
     } satisfies IServiceSsrLayoutOptions);
   }
 
-  @Use()
-  $$serviceLocale: ServiceLocale;
-
   layoutConfig: ILayoutConfig;
   layoutConfigTimeout: number = 0;
 
@@ -62,6 +59,7 @@ export class ControllerLayoutAdmin extends BeanControllerBase {
     });
     // leftDrawerOpen
     this.leftDrawerOpen = this.$customRef(() => {
+      // eslint-disable-next-line
       const self = this;
       return {
         get() {
