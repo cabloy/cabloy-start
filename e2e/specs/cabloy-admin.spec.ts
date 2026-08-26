@@ -1,4 +1,4 @@
-import type { Page, Response } from '@playwright/test';
+import type { APIRequestContext, Page, Response, TestInfo } from '@playwright/test';
 
 import { expect, test } from '@playwright/test';
 
@@ -8,6 +8,20 @@ function collectPageErrors(page: Page) {
   const errors: Error[] = [];
   page.on('pageerror', error => {
     errors.push(error);
+  });
+  return errors;
+}
+
+function collectConsoleErrors(page: Page, ignored: RegExp[] = []) {
+  const errors: string[] = [];
+  page.on('console', message => {
+    const text = message.text();
+    if (
+      (message.type() === 'error' || /hydration mismatch/i.test(text)) &&
+      !ignored.some(pattern => pattern.test(text))
+    ) {
+      errors.push(text);
+    }
   });
   return errors;
 }
@@ -53,7 +67,7 @@ function waitForApiResponse(page: Page, method: string, pathname: RegExp, requir
   });
 }
 
-async function requestApi(
+async function requestApiResponse(
   page: Page,
   method: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE',
   pathname: string,
@@ -79,7 +93,16 @@ async function requestApi(
     },
     { method, pathname, body },
   );
-  const response = await responsePromise;
+  return await responsePromise;
+}
+
+async function requestApi(
+  page: Page,
+  method: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE',
+  pathname: string,
+  body?: Record<string, unknown>,
+) {
+  const response = await requestApiResponse(page, method, pathname, body);
   if (!response.ok()) {
     throw new Error(`API fixture request failed: ${response.status()}`);
   }
@@ -100,7 +123,10 @@ async function deleteDepartment(page: Page, id: number | string) {
 
 async function getDepartment(page: Page, id: number | string) {
   const response = await requestApi(page, 'GET', `/api/admin/department/${id}`);
-  const payload = (await response.json()) as { data?: { enabled: boolean }; enabled?: boolean };
+  const payload = (await response.json()) as {
+    data?: { enabled: boolean };
+    enabled?: boolean;
+  };
   return (payload.data ?? payload) as { enabled: boolean };
 }
 
@@ -164,11 +190,88 @@ async function replaceUserRoles(
   userId: number | string,
   roleIds: Array<number | string>,
 ) {
-  await requestApi(page, 'PUT', `/api/admin/role/user/${userId}/roles`, { roleIds });
+  await requestApi(page, 'PUT', `/api/admin/role/user/${userId}/roles`, {
+    roleIds,
+  });
 }
 
 async function deleteRole(page: Page, roleId: number | string) {
   await requestApi(page, 'DELETE', `/api/admin/role/${roleId}`);
+}
+
+interface RegisteredAccount {
+  id: number | string;
+  username: string;
+  password: string;
+  accessToken: string;
+}
+
+async function removeAccountFixture(
+  request: APIRequestContext,
+  account: RegisteredAccount,
+): Promise<void> {
+  const response = await request.delete('/api/home/user/passportTest/removeCurrentFixture', {
+    headers: { Authorization: `Bearer ${account.accessToken}` },
+  });
+  expect(response.ok()).toBeTruthy();
+}
+
+async function registerAccountUser(
+  request: APIRequestContext,
+  testInfo: TestInfo,
+): Promise<RegisteredAccount> {
+  const suffix = `${testInfo.workerIndex}-${testInfo.parallelIndex ?? testInfo.retry}-${crypto.randomUUID()}`;
+  const username = `e2e-fixture-admin-rbac-${suffix}`;
+  const password = 'rbac-e2e-pass';
+  const captchaResponse = await request.post('/api/captcha/create', {
+    data: { scene: 'captcha-simple:simple' },
+  });
+  expect(captchaResponse.ok()).toBeTruthy();
+  const captcha = (await captchaResponse.json()).data;
+  expect(captcha?.id).toEqual(expect.any(String));
+  expect(captcha?.token).toEqual(expect.any(String));
+
+  const baseURL = testInfo.project.use.baseURL;
+  if (!baseURL) throw new Error('account E2E base URL is unavailable');
+  const registerResponse = await request.post('/api/home/user/passport/register', {
+    data: {
+      username,
+      email: `${username}@example.test`,
+      password,
+      passwordConfirm: password,
+      consumerUrl: new URL('/home/user/activation', baseURL).toString(),
+      captcha: { id: captcha.id, token: captcha.token },
+    },
+  });
+  expect(registerResponse.ok()).toBeTruthy();
+  const registration = (await registerResponse.json()).data;
+  expect(registration?.passport?.user?.id).toEqual(expect.anything());
+  expect(registration?.jwt?.accessToken).toEqual(expect.any(String));
+  const activateResponse = await request.post('/api/home/user/passportTest/activateCurrent', {
+    headers: { Authorization: `Bearer ${registration.jwt.accessToken}` },
+  });
+  expect(activateResponse.ok()).toBeTruthy();
+  return {
+    id: registration.passport.user.id,
+    username,
+    password,
+    accessToken: registration.jwt.accessToken,
+  };
+}
+
+async function loginAsAccountUser(page: Page, username: string, password: string) {
+  const captchaCreated = waitForCaptchaCreate(page);
+  const response = await page.goto('/admin/login', { waitUntil: 'load' });
+  expect(response?.ok()).toBeTruthy();
+  await captchaCreated;
+  await page.getByLabel('Your Username').fill(username);
+  await page.getByLabel('Your Password').fill(password);
+  await expect(page.getByLabel('Please input captcha')).not.toHaveValue('');
+  const loginResponse = waitForApiResponse(page, 'POST', /^\/api\/home\/user\/passport\/login$/);
+  await page.getByRole('button', { name: 'Login', exact: true }).click();
+  expect((await loginResponse).ok()).toBeTruthy();
+  await expect(page).not.toHaveURL(/\/admin\/login(?:\?|$)/);
+  await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
 }
 
 async function getRolePolicyConfiguration(page: Page, roleId: number | string) {
@@ -279,10 +382,16 @@ test(
       const membershipRow = page.getByRole('row').filter({ hasText: initialPosition });
       await expect(membershipRow).toBeVisible();
       await expect(
-        membershipRow.getByRole('button', { name: 'Edit Membership', exact: true }),
+        membershipRow.getByRole('button', {
+          name: 'Edit Membership',
+          exact: true,
+        }),
       ).toBeVisible();
       await expect(
-        membershipRow.getByRole('button', { name: 'Set Primary Membership', exact: true }),
+        membershipRow.getByRole('button', {
+          name: 'Set Primary Membership',
+          exact: true,
+        }),
       ).toBeVisible();
       await expect(
         membershipRow.getByRole('button', { name: 'Set Manager', exact: true }),
@@ -315,7 +424,10 @@ test(
         .click();
       await primarySet;
       await expect(
-        updatedMembershipRow.getByRole('button', { name: 'Clear Primary Membership', exact: true }),
+        updatedMembershipRow.getByRole('button', {
+          name: 'Clear Primary Membership',
+          exact: true,
+        }),
       ).toBeVisible();
 
       const primaryCleared = waitForApiResponse(
@@ -328,7 +440,10 @@ test(
         .click();
       await primaryCleared;
       await expect(
-        updatedMembershipRow.getByRole('button', { name: 'Set Primary Membership', exact: true }),
+        updatedMembershipRow.getByRole('button', {
+          name: 'Set Primary Membership',
+          exact: true,
+        }),
       ).toBeVisible();
 
       let genericDepartmentPatchRequests = 0;
@@ -350,7 +465,10 @@ test(
       await managerUpdated;
       await expect(page.getByTestId('department-manager')).toHaveText('admin');
       await expect(
-        updatedMembershipRow.getByRole('button', { name: 'Clear Manager', exact: true }),
+        updatedMembershipRow.getByRole('button', {
+          name: 'Clear Manager',
+          exact: true,
+        }),
       ).toBeVisible();
       expect(genericDepartmentPatchRequests).toBe(0);
 
@@ -365,7 +483,10 @@ test(
       await managerCleared;
       await expect(page.getByTestId('department-manager')).toHaveText('No manager assigned');
       await expect(
-        updatedMembershipRow.getByRole('button', { name: 'Set Manager', exact: true }),
+        updatedMembershipRow.getByRole('button', {
+          name: 'Set Manager',
+          exact: true,
+        }),
       ).toBeVisible();
       expect(genericDepartmentPatchRequests).toBe(0);
 
@@ -402,7 +523,9 @@ test(
       );
       await confirmation.getByRole('button', { name: 'Yes', exact: true }).click();
       const deletedResponse = await deleted;
-      expect(deletedResponse.request().postDataJSON()).toEqual({ managerMembershipId: null });
+      expect(deletedResponse.request().postDataJSON()).toEqual({
+        managerMembershipId: null,
+      });
       await expect(page.getByTestId('department-manager')).toHaveText('No manager assigned');
       membershipId = undefined;
       await expect(page.getByText(updatedPosition, { exact: true })).toHaveCount(0);
@@ -436,7 +559,9 @@ test(
         }
         await route.continue();
       });
-      await page.goto(resourcePath('admin-department:department'), { waitUntil: 'load' });
+      await page.goto(resourcePath('admin-department:department'), {
+        waitUntil: 'load',
+      });
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
       const failedMembershipsRow = page
         .getByRole('row')
@@ -446,7 +571,9 @@ test(
         .click();
       await expect(page).toHaveURL(new RegExp(`/${failedMembershipsDepartmentId}/?$`));
       await expect(
-        page.getByText('Unable to load Department memberships.', { exact: true }),
+        page.getByText('Unable to load Department memberships.', {
+          exact: true,
+        }),
       ).toBeVisible();
       await expect(page.getByRole('button', { name: 'Retry', exact: true })).toBeVisible();
       await expect(page.getByText('No data available', { exact: true })).toHaveCount(0);
@@ -459,7 +586,9 @@ test(
       await expect(page.getByRole('button', { name: 'Add Membership', exact: true })).toBeVisible();
       await expect(page.getByText('No data available', { exact: true })).toBeVisible();
       await expect(
-        page.getByText('Unable to load Department memberships.', { exact: true }),
+        page.getByText('Unable to load Department memberships.', {
+          exact: true,
+        }),
       ).toHaveCount(0);
       expect(pageErrors).toEqual([]);
     } finally {
@@ -497,20 +626,28 @@ test(
       expect(systemAdminRoleId).toBeDefined();
       roleId = (await createRole(page, roleName)).id;
 
-      await page.goto(`${resourcePath('admin-user:user')}/${userId}`, { waitUntil: 'load' });
+      await page.goto(`${resourcePath('admin-user:user')}/${userId}`, {
+        waitUntil: 'load',
+      });
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
       await expect(page.getByText('Roles', { exact: true })).toBeVisible();
-      const systemAdminRow = page
-        .getByRole('row')
-        .filter({ has: page.getByRole('cell', { name: 'systemAdmin', exact: true }) });
+      const systemAdminRow = page.getByRole('row').filter({
+        has: page.getByRole('cell', { name: 'systemAdmin', exact: true }),
+      });
       await expect(systemAdminRow).toBeVisible();
       await expect(systemAdminRow.getByText('Protected', { exact: true })).toBeVisible();
       await expect(
-        page.getByRole('button', { name: 'Replace Non-System-Administrator Roles', exact: true }),
+        page.getByRole('button', {
+          name: 'Replace Non-System-Administrator Roles',
+          exact: true,
+        }),
       ).toBeVisible();
 
       await page
-        .getByRole('button', { name: 'Replace Non-System-Administrator Roles', exact: true })
+        .getByRole('button', {
+          name: 'Replace Non-System-Administrator Roles',
+          exact: true,
+        })
         .click();
       const dialog = page.getByRole('dialog');
       await expect(dialog).toBeVisible();
@@ -545,15 +682,20 @@ test(
       expect(replacementBody.roleIds).not.toContain(systemAdminRoleId);
       await expect(dialog).toBeHidden();
       await expect(
-        page
-          .getByRole('row')
-          .filter({ has: page.getByRole('cell', { name: roleName, exact: true }) }),
+        page.getByRole('row').filter({
+          has: page.getByRole('cell', { name: roleName, exact: true }),
+        }),
       ).toBeVisible();
       expect(genericUserPatchRequests).toBe(0);
 
-      await page.goto(`${resourcePath('admin-user:user')}/${userId}/edit`, { waitUntil: 'load' });
+      await page.goto(`${resourcePath('admin-user:user')}/${userId}/edit`, {
+        waitUntil: 'load',
+      });
       await expect(
-        page.getByRole('button', { name: 'Replace Non-System-Administrator Roles', exact: true }),
+        page.getByRole('button', {
+          name: 'Replace Non-System-Administrator Roles',
+          exact: true,
+        }),
       ).toHaveCount(0);
       expect(pageErrors).toEqual([]);
     } finally {
@@ -606,7 +748,10 @@ test(
       expect(firstRoleDetailHtml.toLowerCase()).not.toContain('data-zova-hydrated');
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
       const firstRoleDetail = page.locator('main');
-      const firstRoleTab = firstRoleDetail.getByRole('tab', { name: 'Role', exact: true });
+      const firstRoleTab = firstRoleDetail.getByRole('tab', {
+        name: 'Role',
+        exact: true,
+      });
       const firstPermissionsTab = firstRoleDetail.getByRole('tab', {
         name: 'Resource Permissions',
         exact: true,
@@ -617,13 +762,19 @@ test(
       await firstPermissionsTab.click();
       await expect(firstPermissionsTab).toHaveAttribute('aria-selected', 'true');
       await expect(
-        firstRoleDetail.getByText('Student Training Record Management', { exact: true }),
+        firstRoleDetail.getByText('Student Training Record Management', {
+          exact: true,
+        }),
       ).toBeVisible();
       await expect(
-        firstRoleDetail.getByText('training-record.controller.record', { exact: true }),
+        firstRoleDetail.getByText('training-record.controller.record', {
+          exact: true,
+        }),
       ).toBeVisible();
       await expect(
-        firstRoleDetail.getByText('Create Student Training Record', { exact: true }),
+        firstRoleDetail.getByText('Create Student Training Record', {
+          exact: true,
+        }),
       ).toBeVisible();
       await expect(firstRoleDetail.getByText('create', { exact: true }).first()).toBeVisible();
       const scopedPolicyTable = firstRoleDetail
@@ -735,7 +886,9 @@ test(
           url.pathname === '/api/admin/rbac/rbacGrantDepartment'
         ) {
           mappingBodies.push(
-            response.request().postDataJSON() as { departmentId: number | string },
+            response.request().postDataJSON() as {
+              departmentId: number | string;
+            },
           );
         }
       };
@@ -783,7 +936,9 @@ test(
       const reloadedDepartmentDialog = page.getByRole('dialog');
       await expect(reloadedDepartmentDialog).toBeVisible();
       await expect(
-        reloadedDepartmentDialog.getByText(firstDepartmentName, { exact: true }),
+        reloadedDepartmentDialog.getByText(firstDepartmentName, {
+          exact: true,
+        }),
       ).toBeVisible();
       const reloadedFirstDepartmentTreeItem = reloadedDepartmentDialog
         .getByText(firstDepartmentName, { exact: true })
@@ -798,7 +953,9 @@ test(
       await reloadedDepartmentDialog.getByRole('button', { name: 'Cancel', exact: true }).click();
       await expect(reloadedDepartmentDialog).toBeHidden();
 
-      await page.goto(`${resourcePath('admin-role:role')}/${secondRoleId}`, { waitUntil: 'load' });
+      await page.goto(`${resourcePath('admin-role:role')}/${secondRoleId}`, {
+        waitUntil: 'load',
+      });
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
       const secondRoleDetail = page.locator('main');
       const secondPermissionsTab = secondRoleDetail.getByRole('tab', {
@@ -858,6 +1015,288 @@ test(
 );
 
 test(
+  'ATP-ADM-POL-04: delegated Student Resource projects scoped actions without authorizing stale mutations',
+  { tag: ['@admin', '@cabloy-admin'] },
+  async ({ page, request }, testInfo) => {
+    const baseURL = testInfo.project.use.baseURL;
+    if (!baseURL) throw new Error('Admin E2E base URL is unavailable');
+    const browser = page.context().browser();
+    if (!browser) throw new Error('Admin E2E browser is unavailable');
+    const createIsolatedContext = () => browser.newContext({ baseURL });
+    const suffix = `${testInfo.workerIndex}-${Date.now()}`;
+    const allowedDepartmentName = `ATP RBAC Allowed Department ${suffix}`;
+    const foreignDepartmentName = `ATP RBAC Foreign Department ${suffix}`;
+    const allowedStudentName = `ATP RBAC Allowed Student ${suffix}`;
+    const foreignStudentName = `ATP RBAC Foreign Student ${suffix}`;
+    const roleName = `ATP RBAC Role ${suffix}`;
+    const studentResource = 'training-student:student';
+    const actionKeys = {
+      create: 'training-student.controller.student#create',
+      select: 'training-student.controller.student#select',
+      view: 'training-student.controller.student#view',
+      update: 'training-student.controller.student#update',
+      delete: 'training-student.controller.student#delete',
+    } as const;
+    const pageErrors = collectPageErrors(page);
+    const consoleErrors = collectConsoleErrors(page);
+    const delegated = await registerAccountUser(request, testInfo);
+    const allowedCreator = await registerAccountUser(request, testInfo);
+    const foreignCreator = await registerAccountUser(request, testInfo);
+    const grantIds: Array<number | string> = [];
+    const grantDepartmentIds: Array<number | string> = [];
+    const studentIds: Array<number | string> = [];
+    const roleIds: Array<number | string> = [];
+    const memberships: Array<{
+      departmentId: number | string;
+      membershipId: number | string;
+    }> = [];
+    let delegatedRoleId: number | string | undefined;
+    let allowedCreatorRoleId: number | string | undefined;
+    let foreignCreatorRoleId: number | string | undefined;
+    let allowedDepartmentId: number | string | undefined;
+    let foreignDepartmentId: number | string | undefined;
+    let allowedStudentId: number | string | undefined;
+    let foreignStudentId: number | string | undefined;
+    let updateGrantId: number | string | undefined;
+    let updateGrantDepartmentId: number | string | undefined;
+    let delegatedContext: Awaited<ReturnType<typeof page.context>> | undefined;
+
+    await loginAsAdmin(page);
+    try {
+      delegatedRoleId = (await createRole(page, roleName)).id;
+      roleIds.push(delegatedRoleId);
+      allowedCreatorRoleId = (await createRole(page, `${roleName} Allowed Creator`)).id;
+      roleIds.push(allowedCreatorRoleId);
+      foreignCreatorRoleId = (await createRole(page, `${roleName} Foreign Creator`)).id;
+      roleIds.push(foreignCreatorRoleId);
+      allowedDepartmentId = await createDepartment(page, allowedDepartmentName);
+      foreignDepartmentId = await createDepartment(page, foreignDepartmentName);
+      memberships.push(
+        {
+          departmentId: allowedDepartmentId,
+          membershipId: await createMembership(page, allowedDepartmentId, allowedCreator.id),
+        },
+        {
+          departmentId: foreignDepartmentId,
+          membershipId: await createMembership(page, foreignDepartmentId, foreignCreator.id),
+        },
+      );
+      await replaceUserRoles(page, delegated.id, [delegatedRoleId]);
+      await replaceUserRoles(page, allowedCreator.id, [allowedCreatorRoleId]);
+      await replaceUserRoles(page, foreignCreator.id, [foreignCreatorRoleId]);
+
+      for (const [roleId, actionKey, dataScope] of [
+        [delegatedRoleId, actionKeys.select, 'all'],
+        [delegatedRoleId, actionKeys.view, 'all'],
+        [delegatedRoleId, actionKeys.update, 'customDepartments'],
+        [delegatedRoleId, actionKeys.delete, 'customDepartments'],
+        [allowedCreatorRoleId, actionKeys.create, 'ownDepartment'],
+        [foreignCreatorRoleId, actionKeys.create, 'ownDepartment'],
+      ] as const) {
+        const response = await requestApi(page, 'POST', '/api/admin/rbac/rbacGrant', {
+          roleId,
+          actionKey,
+          dataScope,
+          enabled: true,
+        });
+        const grantId = (await response.json()).data as number | string;
+        grantIds.push(grantId);
+        if (roleId === delegatedRoleId && actionKey === actionKeys.update) updateGrantId = grantId;
+        if (dataScope === 'customDepartments') {
+          const grantDepartmentResponse = await requestApi(
+            page,
+            'POST',
+            '/api/admin/rbac/rbacGrantDepartment',
+            { rbacGrantId: grantId, departmentId: allowedDepartmentId },
+          );
+          const grantDepartmentId = (await grantDepartmentResponse.json()).data as number | string;
+          grantDepartmentIds.push(grantDepartmentId);
+          if (roleId === delegatedRoleId && actionKey === actionKeys.update) {
+            updateGrantDepartmentId = grantDepartmentId;
+          }
+        }
+      }
+      expect(updateGrantId).toBeDefined();
+
+      const createStudentInNewSession = async (
+        creator: RegisteredAccount,
+        name: string,
+        mobile: string,
+        level: 1 | 2 | 3,
+      ) => {
+        const context = await createIsolatedContext();
+        const creatorPage = await context.newPage();
+        try {
+          await loginAsAccountUser(creatorPage, creator.username, creator.password);
+          const response = await requestApi(creatorPage, 'POST', '/api/training/student', {
+            name,
+            mobile,
+            level,
+          });
+          return (await response.json()).data as number | string;
+        } finally {
+          await context.close();
+        }
+      };
+      allowedStudentId = await createStudentInNewSession(
+        allowedCreator,
+        allowedStudentName,
+        `138${String(Date.now()).slice(-8)}`,
+        1,
+      );
+      studentIds.push(allowedStudentId);
+      foreignStudentId = await createStudentInNewSession(
+        foreignCreator,
+        foreignStudentName,
+        `139${String(Date.now() + 1).slice(-8)}`,
+        2,
+      );
+      studentIds.push(foreignStudentId);
+
+      delegatedContext = await createIsolatedContext();
+      const delegatedPage = await delegatedContext.newPage();
+      try {
+        const delegatedPageErrors = collectPageErrors(delegatedPage);
+        const delegatedConsoleErrors = collectConsoleErrors(delegatedPage, [
+          /Failed to load resource: the server responded with a status of 403 \(Forbidden\)/,
+        ]);
+        await loginAsAccountUser(delegatedPage, delegated.username, delegated.password);
+
+        const listPath = resourcePath(studentResource);
+        const listResponse = await delegatedPage.goto(listPath, {
+          waitUntil: 'load',
+        });
+        expect(listResponse?.ok()).toBeTruthy();
+        const listHtml = await listResponse!.text();
+        expect(listHtml).toContain('data-server-rendered');
+        expect(listHtml.toLowerCase()).not.toContain('data-zova-hydrated');
+        await expect(delegatedPage.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+        const allowedRow = delegatedPage.getByRole('row').filter({ hasText: allowedStudentName });
+        const foreignRow = delegatedPage.getByRole('row').filter({ hasText: foreignStudentName });
+        await expect(allowedRow).toBeVisible();
+        await expect(foreignRow).toBeVisible();
+        await expect(
+          allowedRow.getByRole('button', { name: 'Summary', exact: true }),
+        ).toBeVisible();
+        await expect(
+          foreignRow.getByRole('button', { name: 'Summary', exact: true }),
+        ).toBeVisible();
+        await expect(
+          allowedRow.getByRole('button', { name: 'Force Delete', exact: true }),
+        ).toBeVisible();
+        await expect(
+          foreignRow.getByRole('button', { name: 'Force Delete', exact: true }),
+        ).toHaveCount(0);
+
+        const allowedEditPath = `${listPath}/${allowedStudentId}/edit`;
+        const allowedEditResponse = await delegatedPage.goto(allowedEditPath, {
+          waitUntil: 'load',
+        });
+        expect(allowedEditResponse?.ok()).toBeTruthy();
+        const allowedEditHtml = await allowedEditResponse!.text();
+        expect(allowedEditHtml).toContain('data-server-rendered');
+        expect(allowedEditHtml.toLowerCase()).not.toContain('data-zova-hydrated');
+        await expect(delegatedPage.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+        await expect(
+          delegatedPage.getByRole('button', { name: 'Submit', exact: true }),
+        ).toBeVisible();
+        await expect(
+          delegatedPage.getByRole('button', { name: 'Back', exact: true }),
+        ).toBeVisible();
+
+        const foreignEditPath = `${listPath}/${foreignStudentId}/edit`;
+        const foreignEditResponse = await delegatedPage.goto(foreignEditPath, {
+          waitUntil: 'load',
+        });
+        expect(foreignEditResponse?.ok()).toBeTruthy();
+        const foreignEditHtml = await foreignEditResponse!.text();
+        expect(foreignEditHtml).toContain('data-server-rendered');
+        expect(foreignEditHtml.toLowerCase()).not.toContain('data-zova-hydrated');
+        await expect(delegatedPage.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+        await expect(
+          delegatedPage.getByRole('button', { name: 'Submit', exact: true }),
+        ).toHaveCount(0);
+        await expect(
+          delegatedPage.getByRole('button', { name: 'Back', exact: true }),
+        ).toBeVisible();
+
+        await delegatedPage.goto(allowedEditPath, { waitUntil: 'load' });
+        await expect(
+          delegatedPage.getByRole('button', { name: 'Submit', exact: true }),
+        ).toBeVisible();
+        await requestApi(page, 'DELETE', `/api/admin/rbac/rbacGrant/${updateGrantId}`);
+        grantIds.splice(
+          grantIds.findIndex(id => String(id) === String(updateGrantId)),
+          1,
+        );
+        updateGrantId = undefined;
+        if (updateGrantDepartmentId !== undefined) {
+          grantDepartmentIds.splice(
+            grantDepartmentIds.findIndex(id => String(id) === String(updateGrantDepartmentId)),
+            1,
+          );
+          updateGrantDepartmentId = undefined;
+        }
+
+        const staleMutationResponse = await requestApiResponse(
+          delegatedPage,
+          'PATCH',
+          `/api/training/student/${allowedStudentId}`,
+          {
+            name: `${allowedStudentName} blocked`,
+            mobile: `137${String(Date.now()).slice(-8)}`,
+            level: 3,
+            description: 'must not persist',
+          },
+        );
+        expect(staleMutationResponse.status()).toBe(403);
+        const verified = await requestApi(page, 'GET', `/api/training/student/${allowedStudentId}`);
+        const verifiedPayload = (await verified.json()) as {
+          data?: { name: string };
+          name?: string;
+        };
+        expect(verifiedPayload.data ?? verifiedPayload).toMatchObject({
+          name: allowedStudentName,
+        });
+        expect(delegatedPageErrors).toEqual([]);
+        expect(delegatedConsoleErrors).toEqual([]);
+      } finally {
+        await delegatedContext.close();
+        delegatedContext = undefined;
+      }
+      expect(pageErrors).toEqual([]);
+      expect(consoleErrors).toEqual([]);
+    } finally {
+      for (const studentId of studentIds.toReversed()) {
+        await requestApi(page, 'DELETE', `/api/training/student/deleteForce/${studentId}`);
+      }
+      for (const grantDepartmentId of grantDepartmentIds.toReversed()) {
+        await requestApi(
+          page,
+          'DELETE',
+          `/api/admin/rbac/rbacGrantDepartment/${grantDepartmentId}`,
+        );
+      }
+      for (const grantId of grantIds.toReversed()) {
+        await requestApi(page, 'DELETE', `/api/admin/rbac/rbacGrant/${grantId}`);
+      }
+      if (delegatedContext) await delegatedContext.close();
+      for (const membership of memberships.toReversed()) {
+        await deleteMembership(page, membership.departmentId, membership.membershipId);
+      }
+      if (foreignDepartmentId !== undefined) await deleteDepartment(page, foreignDepartmentId);
+      if (allowedDepartmentId !== undefined) await deleteDepartment(page, allowedDepartmentId);
+      for (const roleId of roleIds.toReversed()) {
+        await deleteRole(page, roleId);
+      }
+      for (const user of [delegated, allowedCreator, foreignCreator]) {
+        await removeAccountFixture(request, user);
+      }
+    }
+  },
+);
+
+test(
   'ATP-ADM-RES-01: Start Admin Resources render account projections and refresh Department state after Move',
   { tag: ['@admin', '@cabloy-admin'] },
   async ({ page }) => {
@@ -869,7 +1308,9 @@ test(
     const protectedDepartment = `ATP Protected ${suffix}`;
     await loginAsAdmin(page);
 
-    await page.goto('/admin/rest/resource/admin-user%3Auser/1', { waitUntil: 'load' });
+    await page.goto('/admin/rest/resource/admin-user%3Auser/1', {
+      waitUntil: 'load',
+    });
     await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
     await expect(page.getByText('Roles', { exact: true })).toBeVisible();
     await expect(page.getByText('Department Memberships', { exact: true })).toBeVisible();
@@ -889,7 +1330,9 @@ test(
         membershipId: protectedMembershipId,
       });
 
-      await page.goto(resourcePath('admin-department:department'), { waitUntil: 'load' });
+      await page.goto(resourcePath('admin-department:department'), {
+        waitUntil: 'load',
+      });
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
       const childRow = page.getByRole('row').filter({ hasText: child });
       await expect(childRow).toBeVisible();
@@ -947,23 +1390,31 @@ test(
       );
       await confirmation.getByRole('button', { name: 'Yes', exact: true }).click();
       const disabledResponse = await disabled;
-      expect(disabledResponse.request().postDataJSON()).toEqual({ enabled: false });
+      expect(disabledResponse.request().postDataJSON()).toEqual({
+        enabled: false,
+      });
       await expect.poll(async () => (await getDepartment(page, childId!)).enabled).toBeFalsy();
-      await page.goto(resourcePath('admin-department:department'), { waitUntil: 'load' });
+      await page.goto(resourcePath('admin-department:department'), {
+        waitUntil: 'load',
+      });
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
       const disabledChildRow = page.getByRole('row').filter({ hasText: child });
       await expect(
         disabledChildRow.getByRole('button', { name: 'Enable', exact: true }),
       ).toBeVisible();
 
-      await page.goto(resourcePath('admin-department:department'), { waitUntil: 'load' });
+      await page.goto(resourcePath('admin-department:department'), {
+        waitUntil: 'load',
+      });
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
       let protectedRow = page.getByRole('row').filter({ hasText: protectedDepartment });
       await expect(protectedRow).toBeVisible();
       await protectedRow.getByRole('button', { name: 'Disable', exact: true }).click();
       let protectedConfirmation = page.getByRole('dialog');
       await expect(
-        protectedConfirmation.getByText('Disable this Department?', { exact: true }),
+        protectedConfirmation.getByText('Disable this Department?', {
+          exact: true,
+        }),
       ).toBeVisible();
       const rejectedDisable = waitForApiResponse(
         page,
@@ -973,9 +1424,9 @@ test(
       );
       await protectedConfirmation.getByRole('button', { name: 'Yes', exact: true }).click();
       expect((await rejectedDisable).status()).toBe(409);
-      const lifecycleAlert = page
-        .getByRole('dialog')
-        .filter({ hasText: 'The Department has dependent records that must be handled first' });
+      const lifecycleAlert = page.getByRole('dialog').filter({
+        hasText: 'The Department has dependent records that must be handled first',
+      });
       await expect(lifecycleAlert).toBeVisible();
       await lifecycleAlert.getByRole('button', { name: 'Close', exact: true }).click();
       await expect(lifecycleAlert).not.toBeVisible();
@@ -987,14 +1438,18 @@ test(
       });
       await deleteMembership(page, protectedDepartmentId, protectedMembershipId);
       protectedMembershipId = undefined;
-      await page.goto(resourcePath('admin-department:department'), { waitUntil: 'load' });
+      await page.goto(resourcePath('admin-department:department'), {
+        waitUntil: 'load',
+      });
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
       protectedRow = page.getByRole('row').filter({ hasText: protectedDepartment });
       await expect(protectedRow).toBeVisible();
       await protectedRow.getByRole('button', { name: 'Disable', exact: true }).click();
       protectedConfirmation = page.getByRole('dialog');
       await expect(
-        protectedConfirmation.getByText('Disable this Department?', { exact: true }),
+        protectedConfirmation.getByText('Disable this Department?', {
+          exact: true,
+        }),
       ).toBeVisible();
       const disabledProtectedDepartment = waitForApiResponse(
         page,
@@ -1003,7 +1458,9 @@ test(
       );
       await protectedConfirmation.getByRole('button', { name: 'Yes', exact: true }).click();
       await disabledProtectedDepartment;
-      await page.goto(resourcePath('admin-department:department'), { waitUntil: 'load' });
+      await page.goto(resourcePath('admin-department:department'), {
+        waitUntil: 'load',
+      });
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
       protectedRow = page.getByRole('row').filter({ hasText: protectedDepartment });
       await expect(protectedRow.getByRole('button', { name: 'Enable', exact: true })).toBeVisible();
