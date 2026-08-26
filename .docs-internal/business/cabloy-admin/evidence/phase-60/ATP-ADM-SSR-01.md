@@ -9,7 +9,7 @@
 | SRS                     | `SRS-ADM-UI-03`                                                                                       |
 | WBS                     | `WBS-ADM-60-03`                                                                                       |
 | Tested backend revision | `26c11a76f85969a071757a02089f03665a45ed9f` plus uncommitted authorization suites and evidence updates |
-| Browser-test source     | uncommitted [cabloy-admin.spec.ts](../../../../../e2e/specs/cabloy-start/cabloy-admin.spec.ts)        |
+| Current browser-test source | tracked [cabloy-admin.spec.ts](../../../../../e2e/specs/cabloy-admin.spec.ts)                     |
 | Database client         | clean managed `better-sqlite3` E2E database                                                           |
 | Zova flavor             | Start Admin SSR                                                                                       |
 | Executor date           | 2026-08-18                                                                                            |
@@ -17,8 +17,10 @@
 ## Procedure
 
 ```bash
-npm run test:e2e:start:clean -- --grep @cabloy-admin
+npm run test:e2e cabloy-admin -- --tag @cabloy-admin
 ```
+
+The historical four-test result below was captured before the unified runner and flat spec layout. The command above is the current rerun equivalent.
 
 The browser spec uses an anonymous request to load `/admin/` without following redirects, then confirms the private no-store redirect to `/admin/login`. It reads the login response body before hydration, signs in through the rendered captcha form, requires `data-zova-hydrated="admin"`, and navigates the rendered `User`, `Role`, and `Department` menu links. Each resource navigation is followed by an Admin root load, and the test collects browser page errors for the whole scenario.
 

@@ -8,8 +8,8 @@ npm run build:zova:admin
 npm run deps:vona
 npm run tsc
 pnpm --dir vona run vona :bin:test -- --flavor=normal admin-department/test/departmentMembership.test.ts
-npm run test:e2e:start:clean -- --grep 'ATP-ADM-RES-02'
-npm run test:e2e:start:clean -- --grep @cabloy-admin
+npm run test:e2e cabloy-admin -- --grep 'ATP-ADM-RES-02'
+npm run test:e2e cabloy-admin -- --tag @cabloy-admin
 ```
 
 Environment/result:

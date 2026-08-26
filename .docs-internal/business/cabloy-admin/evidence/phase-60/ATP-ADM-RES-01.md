@@ -9,7 +9,7 @@
 | SRS                     | `SRS-ADM-MEM-01` through `SRS-ADM-MEM-05`; `SRS-ADM-UI-01`, `SRS-ADM-UI-02`                    |
 | WBS                     | `WBS-ADM-60-03`                                                                                |
 | Tested backend revision | `603cb4cfb9fd1c0fe08d14bb72804c0e82ba766a`                                                     |
-| Browser-test source     | uncommitted [cabloy-admin.spec.ts](../../../../../e2e/specs/cabloy-start/cabloy-admin.spec.ts) |
+| Current browser-test source | tracked [cabloy-admin.spec.ts](../../../../../e2e/specs/cabloy-admin.spec.ts)              |
 | Database client         | clean `better-sqlite3` E2E database                                                            |
 | Zova flavor             | Start Admin SSR                                                                                |
 | Executor date           | 2026-08-15                                                                                     |
@@ -17,8 +17,10 @@
 ## Procedure
 
 ```bash
-npm run test:e2e:start:clean -- --grep @cabloy-admin
+npm run test:e2e cabloy-admin -- --tag @cabloy-admin
 ```
+
+The historical two-test result below was captured before the unified runner and flat spec layout. The command above is the current rerun equivalent.
 
 The clean harness resets managed E2E state and starts the Start Admin SSR runtime. The browser signs in through the rendered captcha login flow and opens the seeded account detail route to verify its `Roles` and `Department Memberships` projections. It then creates isolated test-owned Department roots and a child through authenticated same-origin browser fixture requests, opens the Department `presetResource`, and invokes the visible `Move Department` row action for that child. In the rendered dialog it chooses the second root and submits the rendered command, while observing the successful Department Move response. Without a full-page reload, it selects each root in the rendered Department tree and verifies that the child has left the original root's table and appears in the destination root's table. Test-owned records are removed in reverse dependency order in `finally`; browser page errors are collected and must be absent.
 

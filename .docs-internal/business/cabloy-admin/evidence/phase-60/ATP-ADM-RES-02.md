@@ -18,8 +18,10 @@
 ```bash
 npm run build:zova:admin
 npm run deps:vona
-npm run test:e2e:start:clean -- --grep @cabloy-admin
+npm run test:e2e cabloy-admin -- --tag @cabloy-admin
 ```
+
+The four-test result below is a historical run captured before the unified runner and flat spec layout. The command above is the current rerun equivalent.
 
 The clean harness resets managed E2E state and starts the Start Admin SSR runtime. The browser signs in through the rendered captcha login flow. Authenticated same-origin fixture requests create and remove isolated Departments; they do not perform the actions asserted below. The tagged clean suite was re-run on 2026-08-18 for the current authorization-test revision.
 

@@ -10,8 +10,8 @@ pnpm --dir vona run vona :bin:test -- --flavor=normal \
   src/suite/cabloy-admin/modules/admin-role/test/role.test.ts \
   src/suite/cabloy-admin/modules/admin-role/test/systemAdminProtection.test.ts \
   src/suite/cabloy-admin/modules/admin-user/test/user.test.ts
-npm run test:e2e:start:clean -- --grep 'ATP-ADM-RES-03'
-npm run test:e2e:start:clean -- --grep @cabloy-admin
+npm run test:e2e cabloy-admin -- --grep 'ATP-ADM-RES-03'
+npm run test:e2e cabloy-admin -- --tag @cabloy-admin
 ```
 
 ## Observed result

@@ -36,8 +36,10 @@ skipped 0
 Focused Start Admin browser check:
 
 ```bash
-npm run test:e2e:start:admin -- --grep 'ATP-ADM-POL-03'
+npm run test:e2e cabloy-admin -- --grep 'ATP-ADM-POL-03'
 ```
+
+The one-test result below was captured before the unified runner and flat spec layout. The command above is the current rerun equivalent.
 
 Observed result:
 
@@ -82,7 +84,7 @@ No schema, `meta.version.ts`, environment configuration, or port configuration c
 
 ## Retained evidence
 
-- [Role-detail policy-editor E2E](../../../../../e2e/specs/cabloy-start/cabloy-admin.spec.ts)
+- [Role-detail policy-editor E2E](../../../../../e2e/specs/cabloy-admin.spec.ts)
 - [Student data-scope regression](../../../../../vona/src/suite/a-training/modules/training-student/test/dataScope.test.ts)
 - [Record data-scope regression](../../../../../vona/src/suite/a-training/modules/training-record/test/dataScope.test.ts)
 - [Opaque capability contract regression](../../../../../vona/src/suite-vendor/a-cabloy/modules/a-rbac/test/rbacCatalogGuard.test.ts)

@@ -23,9 +23,11 @@ pnpm --dir vona run vona :bin:test -- --flavor=normal \
   src/suite/cabloy-admin/modules/admin-role/test/role.test.ts \
   src/suite/cabloy-admin/modules/admin-role/test/systemAdminProtection.test.ts \
   src/suite/cabloy-admin/modules/admin-user/test/user.test.ts
-npm run test:e2e:start:clean -- --grep 'ATP-ADM-RES-03'
-npm run test:e2e:start:clean -- --grep @cabloy-admin
+npm run test:e2e cabloy-admin -- --grep 'ATP-ADM-RES-03'
+npm run test:e2e cabloy-admin -- --tag @cabloy-admin
 ```
+
+The focused one-test and tagged four-test results below are historical runs captured before the unified runner and flat spec layout. The commands above are the current rerun equivalents.
 
 The clean harness resets managed E2E state and starts the Start Admin SSR runtime. The browser signs in through the rendered captcha login flow. Authenticated same-origin fixture requests read the target account's initial non-system-administrator role IDs, create and remove one isolated custom Role, and restore those non-system-administrator IDs in `finally`; they do not perform the command asserted below. The tagged clean suite was re-run on 2026-08-18 for the current authorization-test revision.
 

@@ -5,7 +5,7 @@ Command:
 ```bash
 npm run build:zova:admin
 npm run deps:vona
-npm run test:e2e:start:clean -- --grep @cabloy-admin
+npm run test:e2e cabloy-admin -- --tag @cabloy-admin
 ```
 
 Environment/result:

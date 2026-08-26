@@ -3,7 +3,7 @@
 Command:
 
 ```bash
-npm run test:e2e:start:clean -- --grep @cabloy-admin
+npm run test:e2e cabloy-admin -- --tag @cabloy-admin
 ```
 
 Environment/result:

@@ -31,8 +31,8 @@ npm run zova :tools:metadata admin-department
 npm run build:zova:admin
 npm run deps:vona
 npm run tsc
-npm run test:e2e:start:clean -- --grep 'ATP-ADM-RES-01'
-npm run test:e2e:start:clean -- --grep @cabloy-admin
+npm run test:e2e cabloy-admin -- --grep 'ATP-ADM-RES-01'
+npm run test:e2e cabloy-admin -- --tag @cabloy-admin
 ```
 
 ## Expected result

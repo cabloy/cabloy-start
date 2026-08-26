@@ -258,7 +258,7 @@ test(
   async ({ page, request }) => {
     const response = await request.get('/');
     expect(response.ok()).toBeTruthy();
-    expect(response.headers()['cache-control']).toBe('public, max-age=600');
+    expect(response.headers()['cache-control']).toBe('no-cache, no-store, must-revalidate');
     const html = await response.text();
     expect(html).toContain('data-server-rendered');
     expect(html.toLowerCase()).not.toContain('data-zova-hydrated');
@@ -267,7 +267,7 @@ test(
 
     const routeOverrideResponse = await request.get('/demo/basic/component');
     expect(routeOverrideResponse.ok()).toBeTruthy();
-    expect(routeOverrideResponse.headers()['cache-control']).toBe('public, max-age=300');
+    expect(routeOverrideResponse.headers()['cache-control']).toBe('no-cache, no-store, must-revalidate');
 
     const pageErrors = collectPageErrors(page);
     const documentResponse = await page.goto('/', { waitUntil: 'load' });
