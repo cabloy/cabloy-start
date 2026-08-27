@@ -26,6 +26,8 @@ export class RenderFormFieldMarkdown extends BeanRenderBase {
         color={options.active ? 'primary' : undefined}
         size="small"
         density="compact"
+        minHeight="1.75rem"
+        minWidth="1.75rem"
         aria-label={label}
         aria-pressed={options.active}
         disabled={options.disabled}
@@ -122,6 +124,8 @@ export class RenderFormFieldMarkdown extends BeanRenderBase {
           variant="text"
           size="small"
           density="compact"
+          minHeight="1.75rem"
+          minWidth="1.75rem"
           aria-label={this.scope.locale.InsertTable()}
           aria-haspopup="grid"
           aria-expanded={this.tablePickerOpen}
