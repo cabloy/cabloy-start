@@ -1,5 +1,10 @@
 import type { NestedCSSProperties } from 'typestyle/lib/types.js';
 
+const richTextMutedSurface =
+  'color-mix(in srgb, rgb(var(--v-theme-on-surface)) 8%, rgb(var(--v-theme-surface)))';
+const richTextTableBorder =
+  'color-mix(in srgb, rgb(var(--v-theme-on-surface)) 36%, rgb(var(--v-theme-surface)))';
+
 export function richTextContentStyle(): NestedCSSProperties {
   return {
     color: 'rgb(var(--v-theme-on-surface))',
@@ -78,14 +83,14 @@ export function richTextContentStyle(): NestedCSSProperties {
         paddingInlineStart: '1rem',
       },
       '& code': {
-        background: 'rgb(var(--v-theme-surface-variant))',
+        background: richTextMutedSurface,
         borderRadius: 'var(--v-border-radius-sm)',
         fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
         fontSize: '0.875em',
         padding: '0.125rem 0.25rem',
       },
       '& pre': {
-        background: 'rgb(var(--v-theme-surface-variant))',
+        background: richTextMutedSurface,
         borderRadius: 'var(--v-border-radius-sm)',
         lineHeight: 1.5,
         margin: '1rem 0',
@@ -138,23 +143,24 @@ export function richTextContentStyle(): NestedCSSProperties {
       },
       '& hr': {
         border: 0,
-        borderTop: '1px solid rgb(var(--v-theme-outline))',
+        borderTop: `1px solid ${richTextTableBorder}`,
         margin: '1.5rem 0',
       },
       '& table': {
+        border: `1px solid ${richTextTableBorder}`,
         borderCollapse: 'collapse',
         margin: '1rem 0',
         width: '100%',
       },
       '& th, & td': {
-        border: '1px solid rgb(var(--v-theme-outline))',
+        border: `1px solid ${richTextTableBorder}`,
         minWidth: '8rem',
         padding: '0.5rem 0.75rem',
         textAlign: 'start',
         verticalAlign: 'top',
       },
       '& th': {
-        background: 'rgb(var(--v-theme-surface-variant))',
+        background: richTextMutedSurface,
         fontWeight: 600,
       },
     },

@@ -783,11 +783,6 @@ export class ControllerFormFieldMarkdown extends BeanControllerBase {
         content: this.value,
         contentType: 'markdown',
         editable: !this.readonly,
-        editorProps: {
-          attributes: {
-            class: 'min-h-96 p-4 outline-none',
-          },
-        },
         onUpdate: ({ editor }) => {
           if (!this._syncing) {
             this._setValue?.(editor.getMarkdown());

@@ -25,16 +25,29 @@ describe('student.test.ts', { concurrency: false }, () => {
         const formLayout =
           blocks?.[0]?.options?.blocks?.[0]?.options?.blocks?.[0]?.options?.formLayout;
         const tabs = formLayout?.children[0];
-        const profileSection = tabs?.children[0]?.children[0]?.children[0];
+        const profileGroup = tabs?.children[0]?.children[0];
+        const profileSection = profileGroup?.children[0];
+        const descriptionGroup = tabs?.children[0]?.children[1];
+        const descriptionSection = descriptionGroup?.children[0];
         const trainingRecordsSection = tabs?.children[1]?.children[1];
         assert.equal(tabs?.type, 'tabs');
         assert.equal(tabs?.id, undefined);
         assert.equal(tabs?.children[1]?.type, 'tab');
         assert.equal(tabs?.children[1]?.id, undefined);
         assert.deepEqual(profileSection?.columns, { default: 1, md: 2 });
+        assert.equal(profileGroup?.type, 'group');
         assert.deepEqual(
           profileSection?.children.map(item => item.name),
           ['name', 'mobile', 'imageId'],
+        );
+        assert.equal(descriptionGroup?.type, 'group');
+        assert.deepEqual(
+          descriptionSection?.children.map(item => item.name),
+          ['description'],
+        );
+        assert.equal(
+          (component as any)?.properties?.description?.rest?.form?.render,
+          'start-markdown:formFieldMarkdown',
         );
         assert.equal(tabs?.children[1]?.children[0]?.name, 'level');
         assert.deepEqual(
@@ -118,9 +131,33 @@ describe('student.test.ts', { concurrency: false }, () => {
       const maskedMobileUpdate = '139****4321';
       const trainingTime = new Date('2026-03-10T08:00:00.000Z');
       const trainingTimeUpdate = new Date('2026-04-18T13:20:00.000Z');
+      const description = `# Student profile
+
+This Markdown description verifies that a Student can retain content beyond the former 255-character storage limit. It includes **bold text**, _emphasis_, a [reference link](https://cabloy.com), and a practical training overview.
+
+- Build foundational knowledge
+- Complete guided exercises
+- Record outcomes for each session
+
+> Keep this long-form source intact when saving and viewing Student details.`;
+      const descriptionUpdate = `## Updated student profile
+
+This replacement Markdown source is intentionally longer than 255 characters and confirms the update path does not truncate rich content. It has a numbered plan, a code sample, and enough prose to exercise the text database column.
+
+1. Review feedback
+2. Practice the topic
+3. Share the final result
+
+\`\`\`ts
+const trainingComplete = true;
+\`\`\`
+
+The stored value must round-trip exactly through the API, model, and summary response.`;
+      assert.ok(description.length > 255);
+      assert.ok(descriptionUpdate.length > 255);
       const data = {
         name: '__Tom__',
-        description: 'This is a test',
+        description,
         mobile,
         level: 1,
         trainingRecords: [
@@ -194,10 +231,11 @@ describe('student.test.ts', { concurrency: false }, () => {
       assert.equal(record?.trainingRecordSubjects?.length, 1);
       assert.equal(recordSubject?.name, '__Math__');
       assert.equal(recordSubject?.score, 95);
+      assert.equal(student.description, description);
       // update
       const dataUpdate = {
         name: '__TomNew__',
-        description: 'This is a test',
+        description: descriptionUpdate,
         mobile: mobileUpdate,
         level: 2,
         trainingRecords: [
@@ -240,6 +278,7 @@ describe('student.test.ts', { concurrency: false }, () => {
       const [updatedMathSubject, updatedEnglishSubject] =
         updatedRecord?.trainingRecordSubjects ?? [];
       assert.equal(student.name, dataUpdate.name);
+      assert.equal(student.description, descriptionUpdate);
       assert.equal(student.level, dataUpdate.level);
       assert.equal(student.mobile, maskedMobileUpdate);
       assert.equal(student.trainingRecords?.length, 1);
@@ -260,6 +299,7 @@ describe('student.test.ts', { concurrency: false }, () => {
         disableDeleted: true,
       });
       assert.equal(studentRaw!.mobile, mobileUpdate);
+      assert.equal(studentRaw!.description, descriptionUpdate);
       // summary
       const summary: DtoStudentSummary = await app.bean.executor.performAction(
         'get',
@@ -269,7 +309,8 @@ describe('student.test.ts', { concurrency: false }, () => {
       assert.equal(summary.name, dataUpdate.name);
       assert.equal(summary.mobile, maskedMobileUpdate);
       assert.equal(summary.level, dataUpdate.level);
-      assert.equal(summary.descriptionLength, dataUpdate.description?.length);
+      assert.equal(summary.description, descriptionUpdate);
+      assert.equal(summary.descriptionLength, descriptionUpdate.length);
       assert.equal(typeof summary.levelTitle, 'string');
       assert.equal(typeof summary.summaryText, 'string');
       // delete

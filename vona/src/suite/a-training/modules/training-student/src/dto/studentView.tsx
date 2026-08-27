@@ -44,6 +44,16 @@ export interface IDtoOptionsStudentView extends IDecoratorDtoOptions {}
                               },
                             ],
                           },
+                          {
+                            type: 'group',
+                            title: $locale('Description'),
+                            children: [
+                              {
+                                type: 'section',
+                                children: [{ type: 'field', name: 'description' }],
+                              },
+                            ],
+                          },
                         ],
                       },
                       {

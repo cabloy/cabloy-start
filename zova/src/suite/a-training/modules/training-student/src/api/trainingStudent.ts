@@ -71,8 +71,18 @@ export type ApiApiTrainingStudentdeleteForceRequestParams =
 export type ApiApiTrainingStudentdeleteForceResponseBody =
   paths[ApiApiTrainingStudentdeleteForcePath][ApiApiTrainingStudentdeleteForceMethod]['responses']['200']['content']['application/json']['data'];
 
+/** TrainingStudent_deleteBulk */
+export const ApiApiTrainingStudentdeleteBulkPath = '/api/training/student/bulk';
+export type ApiApiTrainingStudentdeleteBulkPath = '/api/training/student/bulk';
+export type ApiApiTrainingStudentdeleteBulkMethod = 'delete';
+export type ApiApiTrainingStudentdeleteBulkRequestBody =
+  components['schemas']['training-student.dto.studentBulkDelete'];
+export type ApiApiTrainingStudentdeleteBulkResponseBody =
+  paths[ApiApiTrainingStudentdeleteBulkPath][ApiApiTrainingStudentdeleteBulkMethod]['responses']['200']['content']['application/json']['data'];
+
 @Api()
 export class ApiTrainingStudent extends BeanApiBase {
+  /** List Students */
   select(
     options?: {
       query?: ApiApiTrainingStudentselectRequestQuery;
@@ -84,6 +94,7 @@ export class ApiTrainingStudent extends BeanApiBase {
     );
   }
 
+  /** Create Student */
   create(body: ApiApiTrainingStudentcreateRequestBody, options?: IApiActionOptions) {
     return this.$fetch.post<any, ApiApiTrainingStudentcreateResponseBody>(
       ApiApiTrainingStudentcreatePath,
@@ -92,6 +103,7 @@ export class ApiTrainingStudent extends BeanApiBase {
     );
   }
 
+  /** View Student */
   view(
     options: {
       params: ApiApiTrainingStudentviewRequestParams;
@@ -103,6 +115,7 @@ export class ApiTrainingStudent extends BeanApiBase {
     );
   }
 
+  /** Delete Student */
   delete(
     options: {
       params: ApiApiTrainingStudentdeleteRequestParams;
@@ -114,6 +127,7 @@ export class ApiTrainingStudent extends BeanApiBase {
     );
   }
 
+  /** Update Student */
   update(
     body: ApiApiTrainingStudentupdateRequestBody,
     options: {
@@ -127,6 +141,7 @@ export class ApiTrainingStudent extends BeanApiBase {
     );
   }
 
+  /** View Student Summary */
   summary(
     options: {
       params: ApiApiTrainingStudentsummaryRequestParams;
@@ -138,6 +153,7 @@ export class ApiTrainingStudent extends BeanApiBase {
     );
   }
 
+  /** Permanently Delete Student */
   deleteForce(
     options: {
       params: ApiApiTrainingStudentdeleteForceRequestParams;
@@ -146,6 +162,17 @@ export class ApiTrainingStudent extends BeanApiBase {
     return this.$fetch.delete<any, ApiApiTrainingStudentdeleteForceResponseBody>(
       this.$pathTranslate(ApiApiTrainingStudentdeleteForcePath, options.params),
       this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
+    );
+  }
+
+  /** Bulk Delete Students */
+  deleteBulk(body: ApiApiTrainingStudentdeleteBulkRequestBody, options?: IApiActionOptions) {
+    return this.$fetch.delete<any, ApiApiTrainingStudentdeleteBulkResponseBody>(
+      ApiApiTrainingStudentdeleteBulkPath,
+      {
+        ...this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
+        data: body,
+      },
     );
   }
 }

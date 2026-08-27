@@ -25,7 +25,18 @@ export class StyleFormFieldMarkdown extends BeanStyleBase {
   cPlaceholder: string;
 
   protected async __init__() {
-    this.cMarkdown = this.$style(richTextContentStyle());
+    const markdownStyle = richTextContentStyle();
+    this.cMarkdown = this.$style({
+      ...markdownStyle,
+      $nest: {
+        ...markdownStyle.$nest,
+        '& > .ProseMirror': {
+          minHeight: '32rem',
+          outline: 'none',
+          padding: '1rem',
+        },
+      },
+    });
     this.cContainer = this.$style({
       backgroundColor: 'rgb(var(--v-theme-surface))',
       border: '1px solid rgb(var(--v-theme-outline))',
@@ -122,7 +133,7 @@ export class StyleFormFieldMarkdown extends BeanStyleBase {
       margin: '0.75rem 1rem 0',
     });
     this.cPlaceholder = this.$style({
-      minHeight: '24rem',
+      minHeight: '32rem',
       padding: '1rem',
     });
   }
