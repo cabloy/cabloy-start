@@ -1,8 +1,12 @@
 import type { NestedCSSProperties } from 'typestyle/lib/types.js';
 
-const richTextMutedSurface =
-  'color-mix(in srgb, rgb(var(--v-theme-on-surface)) 8%, rgb(var(--v-theme-surface)))';
+const richTextCodeSurface =
+  'color-mix(in srgb, rgb(var(--v-theme-on-surface)) 6%, rgb(var(--v-theme-surface)))';
+const richTextTableHeaderSurface =
+  'color-mix(in srgb, rgb(var(--v-theme-on-surface)) 4%, rgb(var(--v-theme-surface)))';
 const richTextTableBorder =
+  'color-mix(in srgb, rgb(var(--v-theme-on-surface)) 26%, rgb(var(--v-theme-surface)))';
+const richTextStrongDivider =
   'color-mix(in srgb, rgb(var(--v-theme-on-surface)) 36%, rgb(var(--v-theme-surface)))';
 
 export function richTextContentStyle(): NestedCSSProperties {
@@ -83,14 +87,14 @@ export function richTextContentStyle(): NestedCSSProperties {
         paddingInlineStart: '1rem',
       },
       '& code': {
-        background: richTextMutedSurface,
+        background: richTextCodeSurface,
         borderRadius: 'var(--v-border-radius-sm)',
         fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
         fontSize: '0.875em',
         padding: '0.125rem 0.25rem',
       },
       '& pre': {
-        background: richTextMutedSurface,
+        background: richTextCodeSurface,
         borderRadius: 'var(--v-border-radius-sm)',
         lineHeight: 1.5,
         margin: '1rem 0',
@@ -143,11 +147,11 @@ export function richTextContentStyle(): NestedCSSProperties {
       },
       '& hr': {
         border: 0,
-        borderTop: `1px solid ${richTextTableBorder}`,
+        borderTop: `1px solid ${richTextStrongDivider}`,
         margin: '1.5rem 0',
       },
       '& table': {
-        border: `1px solid ${richTextTableBorder}`,
+        border: `1px solid ${richTextStrongDivider}`,
         borderCollapse: 'collapse',
         margin: '1rem 0',
         width: '100%',
@@ -160,7 +164,8 @@ export function richTextContentStyle(): NestedCSSProperties {
         verticalAlign: 'top',
       },
       '& th': {
-        background: richTextMutedSurface,
+        background: richTextTableHeaderSurface,
+        borderBottomColor: richTextStrongDivider,
         fontWeight: 600,
       },
     },
