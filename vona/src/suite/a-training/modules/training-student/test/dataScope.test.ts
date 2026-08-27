@@ -80,22 +80,28 @@ describe('dataScope.test.ts', { concurrency: false }, () => {
           }
 
           const studentModel = app.scope('training-student').model.student;
-          const scopedStudent = await studentModel.insert({
-            name: `Scoped Student ${suffix}`,
-            description: 'scope-visible',
-            mobile: `138${String(Date.now()).slice(-8)}`,
-            level: 1,
-            departmentId: allowedDepartment.id,
-            userIdOwner: delegatedUser.id,
-          });
-          const foreignStudent = await studentModel.insert({
-            name: `Foreign Student ${suffix}`,
-            description: 'scope-hidden',
-            mobile: `139${String(Date.now() + 1).slice(-8)}`,
-            level: 2,
-            departmentId: foreignDepartment.id,
-            userIdOwner: delegatedUser.id,
-          });
+          const scopedStudent = await studentModel.insert(
+            {
+              name: `Scoped Student ${suffix}`,
+              content: { descriptionMarkdown: 'scope-visible' },
+              mobile: `138${String(Date.now()).slice(-8)}`,
+              level: 1,
+              departmentId: allowedDepartment.id,
+              userIdOwner: delegatedUser.id,
+            },
+            { include: { content: true } },
+          );
+          const foreignStudent = await studentModel.insert(
+            {
+              name: `Foreign Student ${suffix}`,
+              content: { descriptionMarkdown: 'scope-hidden' },
+              mobile: `139${String(Date.now() + 1).slice(-8)}`,
+              level: 2,
+              departmentId: foreignDepartment.id,
+              userIdOwner: delegatedUser.id,
+            },
+            { include: { content: true } },
+          );
           scopedStudentId = String(scopedStudent.id);
           foreignStudentId = String(foreignStudent.id);
           studentIds.push(scopedStudentId, foreignStudentId);
@@ -189,7 +195,7 @@ describe('dataScope.test.ts', { concurrency: false }, () => {
                 name: `Blocked update ${suffix}`,
                 mobile: `136${String(Date.now()).slice(-8)}`,
                 level: 1,
-                description: 'must not update',
+                content: { descriptionMarkdown: 'must not update' },
                 departmentId: allowedDepartmentId,
                 userIdOwner: delegatedUserId,
               },
@@ -270,12 +276,18 @@ describe('dataScope.test.ts', { concurrency: false }, () => {
       await app.bean.executor.mockCtx(async () => {
         const scoped = await app
           .scope('training-student')
-          .model.student.getById(scopedStudentId!, { disableDeleted: true });
+          .model.student.getById(scopedStudentId!, {
+            disableDeleted: true,
+            include: { content: true },
+          });
         const foreign = await app
           .scope('training-student')
-          .model.student.getById(foreignStudentId!, { disableDeleted: true });
-        assert.equal(scoped?.description, 'scope-visible');
-        assert.equal(foreign?.description, 'scope-hidden');
+          .model.student.getById(foreignStudentId!, {
+            disableDeleted: true,
+            include: { content: true },
+          });
+        assert.equal(scoped?.content?.descriptionMarkdown, 'scope-visible');
+        assert.equal(foreign?.content?.descriptionMarkdown, 'scope-hidden');
       });
     } finally {
       await app.bean.executor.mockCtx(async () => {

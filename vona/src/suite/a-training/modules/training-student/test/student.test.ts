@@ -43,10 +43,10 @@ describe('student.test.ts', { concurrency: false }, () => {
         assert.equal(descriptionGroup?.type, 'group');
         assert.deepEqual(
           descriptionSection?.children.map(item => item.name),
-          ['description'],
+          ['content'],
         );
         assert.equal(
-          (component as any)?.properties?.description?.rest?.form?.render,
+          (component as any)?.properties?.content?.properties?.descriptionMarkdown?.rest?.form?.render,
           'start-markdown:formFieldMarkdown',
         );
         assert.equal(tabs?.children[1]?.children[0]?.name, 'level');
@@ -105,7 +105,7 @@ describe('student.test.ts', { concurrency: false }, () => {
           'name',
           'mobile',
           'level',
-          'description',
+          'descriptionMarkdown',
           'levelTitle',
           'descriptionLength',
           'summaryText',
@@ -157,7 +157,7 @@ The stored value must round-trip exactly through the API, model, and summary res
       assert.ok(descriptionUpdate.length > 255);
       const data = {
         name: '__Tom__',
-        description,
+        content: { descriptionMarkdown: description },
         mobile,
         level: 1,
         trainingRecords: [
@@ -196,6 +196,7 @@ The stored value must round-trip exactly through the API, model, and summary res
       assert.equal(!!studentItem, true);
       assert.equal(studentItem!.level, data.level);
       assert.equal(studentItem!.mobile, maskedMobile);
+      assert.equal((studentItem as any).content, undefined);
       // findMany: level filter
       const selectResByLevel: DtoStudentSelectRes = await app.bean.executor.performAction(
         'get',
@@ -231,11 +232,15 @@ The stored value must round-trip exactly through the API, model, and summary res
       assert.equal(record?.trainingRecordSubjects?.length, 1);
       assert.equal(recordSubject?.name, '__Math__');
       assert.equal(recordSubject?.score, 95);
-      assert.equal(student.description, description);
+      assert.equal(student.content?.descriptionMarkdown, description);
+      assert.equal(student.content?.descriptionHtml, undefined);
       // update
       const dataUpdate = {
         name: '__TomNew__',
-        description: descriptionUpdate,
+        content: {
+          descriptionMarkdown: descriptionUpdate,
+          descriptionHtml: '<script>forged</script>',
+        },
         mobile: mobileUpdate,
         level: 2,
         trainingRecords: [
@@ -278,7 +283,8 @@ The stored value must round-trip exactly through the API, model, and summary res
       const [updatedMathSubject, updatedEnglishSubject] =
         updatedRecord?.trainingRecordSubjects ?? [];
       assert.equal(student.name, dataUpdate.name);
-      assert.equal(student.description, descriptionUpdate);
+      assert.equal(student.content?.descriptionMarkdown, descriptionUpdate);
+      assert.equal(student.content?.descriptionHtml, undefined);
       assert.equal(student.level, dataUpdate.level);
       assert.equal(student.mobile, maskedMobileUpdate);
       assert.equal(student.trainingRecords?.length, 1);
@@ -299,7 +305,12 @@ The stored value must round-trip exactly through the API, model, and summary res
         disableDeleted: true,
       });
       assert.equal(studentRaw!.mobile, mobileUpdate);
-      assert.equal(studentRaw!.description, descriptionUpdate);
+      const studentContentRaw = await app
+        .bean.scope('training-student')
+        .model.studentContent.get({ studentId }, { disableDeleted: true });
+      assert.equal(studentContentRaw!.descriptionMarkdown, descriptionUpdate);
+      assert.equal(studentContentRaw!.descriptionHtml?.includes('<script>'), false);
+      assert.equal(studentContentRaw!.descriptionHtml?.includes('<h2>Updated student profile</h2>'), true);
       // summary
       const summary: DtoStudentSummary = await app.bean.executor.performAction(
         'get',
@@ -309,7 +320,7 @@ The stored value must round-trip exactly through the API, model, and summary res
       assert.equal(summary.name, dataUpdate.name);
       assert.equal(summary.mobile, maskedMobileUpdate);
       assert.equal(summary.level, dataUpdate.level);
-      assert.equal(summary.description, descriptionUpdate);
+      assert.equal(summary.descriptionMarkdown, descriptionUpdate);
       assert.equal(summary.descriptionLength, descriptionUpdate.length);
       assert.equal(typeof summary.levelTitle, 'string');
       assert.equal(typeof summary.summaryText, 'string');
@@ -319,6 +330,14 @@ The stored value must round-trip exactly through the API, model, and summary res
         params: { id: student.id },
       });
       assert.equal(deleteRes, null);
+      const studentContentDeleted = await app
+        .bean.scope('training-student')
+        .model.studentContent.get({ studentId }, { disableDeleted: true });
+      assert.equal(studentContentDeleted?.deleted, true);
+      assert.equal(
+        await app.bean.scope('training-student').model.studentContent.get({ studentId }),
+        undefined,
+      );
       // findOne
       student = await app.bean.executor.performAction('get', '/training/student/:id', {
         innerAccess: false,
@@ -345,8 +364,93 @@ The stored value must round-trip exactly through the API, model, and summary res
           disableDeleted: true,
         });
       assert.equal(studentForce, undefined);
+      const studentContentForceDeleted = await app
+        .bean.scope('training-student')
+        .model.studentContent.get({ studentId: studentIdForce }, { disableDeleted: true });
+      assert.equal(studentContentForceDeleted, undefined);
       // logout
       await app.bean.passport.signout();
+    });
+  });
+
+  it('action:student:emptyContentAndBulkDelete', async () => {
+    await app.bean.executor.mockCtx(async () => {
+      await app.bean.passport.signinMock();
+      try {
+        const emptyStudentId = await app.bean.executor.performAction('post', '/training/student', {
+          innerAccess: false,
+          body: {
+            name: '__Empty Content__',
+            mobile: '13612345678',
+            level: 1,
+          },
+        });
+        const bulkStudentId = await app.bean.executor.performAction('post', '/training/student', {
+          innerAccess: false,
+          body: {
+            name: '__Bulk Content__',
+            content: { descriptionMarkdown: 'Bulk content' },
+            mobile: '13712345678',
+            level: 1,
+          },
+        });
+        const studentContentModel = app.bean.scope('training-student').model.studentContent;
+        const emptyContent = await studentContentModel.get(
+          { studentId: emptyStudentId },
+          { disableDeleted: true },
+        );
+        assert.equal(emptyContent?.descriptionMarkdown, '');
+        assert.equal(emptyContent?.descriptionHtml, '');
+
+        await app.bean.executor.performAction('patch', '/training/student/:id', {
+          innerAccess: false,
+          params: { id: emptyStudentId },
+          body: {
+            name: '__Empty Content Updated__',
+            mobile: '13612345678',
+            level: 1,
+          },
+        });
+        const preservedContent = await studentContentModel.get(
+          { studentId: emptyStudentId },
+          { disableDeleted: true },
+        );
+        assert.equal(preservedContent?.descriptionMarkdown, '');
+        assert.equal(preservedContent?.descriptionHtml, '');
+        assert.ok(
+          await app
+            .bean.scope('training-student')
+            .model.student.getById(emptyStudentId),
+        );
+        assert.ok(
+          await app
+            .bean.scope('training-student')
+            .model.student.getById(bulkStudentId),
+        );
+
+        const bulkDeleteRes = await app.bean.executor.performAction(
+          'delete',
+          '/training/student/bulk',
+          { innerAccess: false, body: { ids: [emptyStudentId, bulkStudentId] } },
+        );
+        assert.equal(bulkDeleteRes, null);
+        assert.equal(
+          (await studentContentModel.get(
+            { studentId: emptyStudentId },
+            { disableDeleted: true },
+          ))?.deleted,
+          true,
+        );
+        assert.equal(
+          (await studentContentModel.get(
+            { studentId: bulkStudentId },
+            { disableDeleted: true },
+          ))?.deleted,
+          true,
+        );
+      } finally {
+        await app.bean.passport.signout();
+      }
     });
   });
 
@@ -356,16 +460,12 @@ The stored value must round-trip exactly through the API, model, and summary res
       try {
         app.bean.passport.current!.roles = [];
         const actions = ['create', 'select', 'view', 'update', 'summary', 'delete', 'deleteForce'];
-        const permissions = [];
         for (const action of actions) {
-          permissions.push(
+          assert.equal(
             await app.bean.permission.checkPermissionAction('training-student:student', action),
+            false,
           );
         }
-        assert.deepEqual(
-          permissions,
-          actions.map(() => false),
-        );
       } finally {
         await app.bean.passport.signout();
       }
@@ -380,7 +480,7 @@ The stored value must round-trip exactly through the API, model, and summary res
           innerAccess: false,
           body: {
             name: '__Tom__',
-            description: 'This is a test',
+            content: { descriptionMarkdown: 'This is a test' },
             mobile: '13812345678',
             level: 4,
           },
@@ -398,7 +498,7 @@ The stored value must round-trip exactly through the API, model, and summary res
           innerAccess: false,
           body: {
             name: '__Tom__',
-            description: 'This is a test',
+            content: { descriptionMarkdown: 'This is a test' },
             level: 1,
           },
         });
@@ -415,7 +515,7 @@ The stored value must round-trip exactly through the API, model, and summary res
           innerAccess: false,
           body: {
             name: '__Tom__',
-            description: 'This is a test',
+            content: { descriptionMarkdown: 'This is a test' },
             mobile: '1381234567',
             level: 1,
           },

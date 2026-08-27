@@ -9,6 +9,9 @@ export interface IModelOptionsStudent extends IDecoratorModelOptions<EntityStude
 @Model<IModelOptionsStudent>({
   entity: EntityStudent,
   relations: {
+    content: $relation.hasOne('training-student:studentContent', 'studentId', {
+      columns: ['id', 'descriptionMarkdown'],
+    }),
     trainingRecords: $relation.hasMany('training-record:record', 'studentId', {
       columns: [
         'id',

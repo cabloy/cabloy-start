@@ -28,7 +28,7 @@ export interface IControllerOptionsStudent extends IDecoratorControllerOptions {
 })
 @Resource()
 export class ControllerStudent extends BeanBase {
-  @Web.post({ summary: $locale('StudentCreate') })
+  @Web.post('', { summary: $locale('StudentCreate') })
   @Api.body(v.tableIdentity())
   @Passport.rbac({ dataScope: true })
   async create(
@@ -42,7 +42,7 @@ export class ControllerStudent extends BeanBase {
     ).id;
   }
 
-  @Web.get({ summary: $locale('StudentSelect') })
+  @Web.get('', { summary: $locale('StudentSelect') })
   @Api.body(DtoStudentSelectRes)
   @Core.serializer()
   @Passport.rbac({ dataScope: true })

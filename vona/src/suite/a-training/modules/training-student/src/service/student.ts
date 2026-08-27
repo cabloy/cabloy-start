@@ -12,18 +12,30 @@ import type { DtoStudentView } from '../dto/studentView.tsx';
 import type { EntityStudent } from '../entity/student.tsx';
 import type { ModelStudent } from '../model/student.ts';
 
-function getStudentRecordSubjectsInclude(): {
+type StudentContentInput = {
+  descriptionMarkdown?: string;
+};
+
+function getStudentRelationsInclude(): {
+  content: true;
   trainingRecords: { include: { trainingRecordSubjects: true } };
 } {
-  return { trainingRecords: { include: { trainingRecordSubjects: true } } };
+  return {
+    content: true,
+    trainingRecords: { include: { trainingRecordSubjects: true } },
+  };
 }
 
 @Service()
 export class ServiceStudent extends BeanBase {
   async create(student: DtoStudentCreate): Promise<EntityStudent> {
-    return await this.scope.model.student.insert(student, {
-      include: getStudentRecordSubjectsInclude(),
-    });
+    return await this.scope.model.student.insert(
+      {
+        ...student,
+        content: this._prepareContent(student.content),
+      },
+      { include: getStudentRelationsInclude() },
+    );
   }
 
   async select(params?: IQueryParams<ModelStudent>): Promise<DtoStudentSelectRes> {
@@ -32,20 +44,28 @@ export class ServiceStudent extends BeanBase {
 
   async view(id: TableIdentity): Promise<DtoStudentView | undefined> {
     return await this.scope.model.student.getById(id, {
-      include: getStudentRecordSubjectsInclude(),
+      include: getStudentRelationsInclude(),
     });
   }
 
   async update(id: TableIdentity, student: DtoStudentUpdate) {
-    return await this.scope.model.student.updateById(id, student, {
-      include: getStudentRecordSubjectsInclude(),
-    });
+    const content = Object.hasOwn(student, 'content')
+      ? this._prepareContent(student.content)
+      : undefined;
+    return await this.scope.model.student.updateById(
+      id,
+      content === undefined ? student : { ...student, content },
+      { include: getStudentRelationsInclude() },
+    );
   }
 
   async summary(id: TableIdentity): Promise<DtoStudentSummary | undefined> {
-    const student = await this.scope.model.student.getById(id);
+    const student = await this.scope.model.student.getById(id, {
+      include: { content: true },
+    });
     if (!student) return undefined;
-    const descriptionLength = student.description?.length ?? 0;
+    const descriptionMarkdown = student.content?.descriptionMarkdown;
+    const descriptionLength = descriptionMarkdown?.length ?? 0;
     const levelTitle = String(student.level);
     return {
       id: student.id,
@@ -53,7 +73,7 @@ export class ServiceStudent extends BeanBase {
       mobile: student.mobile,
       level: student.level,
       levelTitle,
-      description: student.description,
+      descriptionMarkdown,
       descriptionLength,
       summaryText: `${student.name} is in level ${student.level}. Description length: ${descriptionLength}.`,
     };
@@ -61,20 +81,28 @@ export class ServiceStudent extends BeanBase {
 
   async delete(id: TableIdentity) {
     return await this.scope.model.student.deleteById(id, {
-      include: getStudentRecordSubjectsInclude(),
+      include: getStudentRelationsInclude(),
     });
   }
 
   async deleteForce(id: TableIdentity) {
     return await this.scope.model.student.deleteById(id, {
       disableDeleted: true,
-      include: getStudentRecordSubjectsInclude(),
+      include: getStudentRelationsInclude(),
     });
   }
 
   async deleteBulk(ids: TableIdentity[]): Promise<void> {
     await this.scope.model.student.deleteBulk(ids, {
-      include: getStudentRecordSubjectsInclude(),
+      include: getStudentRelationsInclude(),
     });
+  }
+
+  private _prepareContent(content: StudentContentInput | undefined) {
+    const descriptionMarkdown = content?.descriptionMarkdown ?? '';
+    return {
+      descriptionMarkdown,
+      descriptionHtml: this.bean.markdown.renderHtml(descriptionMarkdown),
+    };
   }
 }

@@ -1,18 +1,24 @@
 import type { IDecoratorDtoOptions } from 'vona-module-a-web';
 
+import { $Class } from 'vona';
 import { Api, v } from 'vona-module-a-openapiutils';
-import { $Dto } from 'vona-module-a-orm';
 import { Dto } from 'vona-module-a-web';
 
 import { $locale } from '../.metadata/locales.ts';
-import { ModelStudent } from '../model/student.ts';
+import { EntityStudent } from '../entity/student.tsx';
 
 export interface IDtoOptionsStudentSummary extends IDecoratorDtoOptions {}
 
 @Dto<IDtoOptionsStudentSummary>()
-export class DtoStudentSummary extends $Dto.get(() => ModelStudent, {
-  columns: ['id', 'name', 'mobile', 'level', 'description'],
-}) {
+export class DtoStudentSummary extends $Class.pick(EntityStudent, [
+  'id',
+  'name',
+  'mobile',
+  'level',
+]) {
+  @Api.field(v.title($locale('Description')))
+  descriptionMarkdown?: string;
+
   @Api.field(v.title($locale('LevelTitle')))
   levelTitle: string;
 
