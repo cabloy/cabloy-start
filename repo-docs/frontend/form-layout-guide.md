@@ -225,6 +225,8 @@ Before rendering, `resolveFormLayout(...)` reconciles `formLayout` with the curr
 
 Only schema properties with `rest.visible !== false` are eligible. When an eligible visible field is absent from `formLayout`, the resolver appends it as a root-level field after the declared nodes, in schema-property order.
 
+A virtual relation field that uses `fieldSource` is represented at runtime by its nested source key. A declared relation name can therefore resolve to exactly one eligible source key with that name as its prefix; for example, `studentContentForm` resolves to `studentContentForm.descriptionMarkdown`. This preserves the DTO's business-level layout tree while rendering the actual nested form value. If more than one source key has that prefix, declare the exact source key instead.
+
 If a field must not render, make it invisible in schema metadata. Leaving it out of `formLayout.children` is not enough.
 
 ### Invalid declarations and diagnostics
@@ -260,7 +262,7 @@ Current behavior boundaries:
 
 ## Complete entry-form example
 
-The Student create DTO is the canonical complete example. It uses optional structural IDs, two tabs, a titled group, a responsive profile section, and a nested-details field:
+The Student create DTO is the canonical complete example. It uses optional structural IDs, two tabs, separate semantic groups for profile and companion content, a responsive profile section, and a nested-details field:
 
 ```tsx
 ZovaRender.block('basic-pageentry:blockForm', {
@@ -290,6 +292,16 @@ ZovaRender.block('basic-pageentry:blockForm', {
                       },
                     ],
                   },
+                  {
+                    type: 'group',
+                    title: $locale('StudentContent'),
+                    children: [
+                      {
+                        type: 'section',
+                        children: [{ type: 'field', name: 'studentContentForm' }],
+                      },
+                    ],
+                  },
                 ],
               },
               {
@@ -311,6 +323,8 @@ ZovaRender.block('basic-pageentry:blockForm', {
   ],
 });
 ```
+
+`studentContentForm` is one virtual nested-relation field in the structural tree. Its Markdown renderer owns the nested source-field UI, while the separate `StudentContent` group expresses that it is a distinct content area rather than part of the responsive profile Grid.
 
 `trainingRecords` is one field in the structural tree. Its `basic-details:formFieldDetails` renderer owns the nested details UI; Form Layout does not recursively arrange the properties inside each detail record.
 

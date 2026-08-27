@@ -53,10 +53,10 @@ The parent/companion architecture is shared by Basic and Start. Edition differen
 
 Before copying an example, detect the active edition using the repository marker:
 
-| Edition | Marker | UI baseline |
-| --- | --- | --- |
+| Edition      | Marker             | UI baseline            |
+| ------------ | ------------------ | ---------------------- |
 | Cabloy Basic | `__CABLOY_BASIC__` | DaisyUI + Tailwind CSS |
-| Cabloy Start | `__CABLOY_START__` | Vuetify |
+| Cabloy Start | `__CABLOY_START__` | Vuetify                |
 
 Explain the shared model once, then substitute edition-specific renderer IDs, package names, flavors, and generated paths. Do not silently apply Basic UI assumptions to Start.
 
@@ -142,11 +142,7 @@ The companion model declares the inverse relation:
 @Model({
   entity: EntityParentContent,
   relations: {
-    parent: $relation.belongsTo(
-      'example:parentContent',
-      'example:parent',
-      'parentId',
-    ),
+    parent: $relation.belongsTo('example:parentContent', 'example:parent', 'parentId'),
   },
 })
 class ModelParentContent {}
@@ -305,13 +301,13 @@ Keep the cache graph acyclic and avoid duplicate or reverse edges. Cache invalid
 
 The persistence shape does not dictate one universal API shape. Define projections by consumer authority:
 
-| Consumer | Typical contract |
-| --- | --- |
+| Consumer            | Typical contract                                                   |
+| ------------------- | ------------------------------------------------------------------ |
 | Admin create/update | Nested editable source, such as `parentContentForm.sourceMarkdown` |
-| Admin view | Nested source projection suitable for editing or review |
-| Public detail | Derived HTML only, when publication is authorized |
-| List/select | Usually no large companion content |
-| Internal service | The smallest projection needed for the operation |
+| Admin view          | Nested source projection suitable for editing or review            |
+| Public detail       | Derived HTML only, when publication is authorized                  |
+| List/select         | Usually no large companion content                                 |
+| Internal service    | The smallest projection needed for the operation                   |
 
 For schema-driven forms, the parent DTO can expose a nested relation and map the field to its source value:
 
@@ -346,15 +342,15 @@ Do not infer the final browser theme or other browser-only state from an unauthe
 
 The architecture and backend Markdown bean are shared concepts. Verify concrete names in the active repository before copying commands or imports.
 
-| Concern | Cabloy Basic | Cabloy Start |
-| --- | --- | --- |
-| Edition marker | `__CABLOY_BASIC__` | `__CABLOY_START__` |
-| Form renderer | `basic-markdown:formFieldMarkdown` | `start-markdown:formFieldMarkdown` |
-| HTML display renderer | `basic-markdown:markdownHtml` | `start-markdown:markdownHtml` |
-| Frontend Markdown package | `zova-module-basic-markdown` | `zova-module-start-markdown` |
-| UI baseline | DaisyUI + Tailwind CSS | Vuetify |
-| Admin flavor family | `cabloyBasicAdmin` | `cabloyStartAdmin` |
-| Web flavor family | `cabloyBasicWeb` | `cabloyStartWeb` |
+| Concern                   | Cabloy Basic                       | Cabloy Start                       |
+| ------------------------- | ---------------------------------- | ---------------------------------- |
+| Edition marker            | `__CABLOY_BASIC__`                 | `__CABLOY_START__`                 |
+| Form renderer             | `basic-markdown:formFieldMarkdown` | `start-markdown:formFieldMarkdown` |
+| HTML display renderer     | `basic-markdown:markdownHtml`      | `start-markdown:markdownHtml`      |
+| Frontend Markdown package | `zova-module-basic-markdown`       | `zova-module-start-markdown`       |
+| UI baseline               | DaisyUI + Tailwind CSS             | Vuetify                            |
+| Admin flavor family       | `cabloyBasicAdmin`                 | `cabloyStartAdmin`                 |
+| Web flavor family         | `cabloyBasicWeb`                   | `cabloyStartWeb`                   |
 
 The root command family may look similar, but the resolved flavor, module availability, generated output directory, and SSR baseline can differ. Detect the edition and inspect its `package.json`, CLI entrypoint, and build configuration before giving an operational command.
 
