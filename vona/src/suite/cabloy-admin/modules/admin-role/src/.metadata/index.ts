@@ -11,17 +11,17 @@ import type { IEntityOptionsSystemAdminFreshProof } from '../entity/systemAdminF
 import type { IEntityOptionsSystemAdminSessionEviction } from '../entity/systemAdminSessionEviction.tsx';
 import 'vona-module-a-orm';
 declare module 'vona-module-a-orm' {
-  
+
     export interface IEntityRecord {
       'admin-role:systemAdminAudit': IEntityOptionsSystemAdminAudit;
 'admin-role:systemAdminFreshProof': IEntityOptionsSystemAdminFreshProof;
 'admin-role:systemAdminSessionEviction': IEntityOptionsSystemAdminSessionEviction;
     }
 
-  
+
 }
 declare module 'vona-module-admin-role' {
-   
+
 }
 /** entity: end */
 /** entity: begin */
@@ -49,7 +49,7 @@ declare module 'vona-module-a-orm' {
   }
 }
 declare module 'vona-module-admin-role' {
-  
+
     export interface IEntityOptionsSystemAdminAudit {
       fields?: TypeEntityOptionsFields<EntitySystemAdminAudit, IEntityOptionsSystemAdminAudit[TypeSymbolKeyFieldsMore]>;
     }
@@ -72,17 +72,17 @@ import type { IModelOptionsSystemAdminFreshProof } from '../model/systemAdminFre
 import type { IModelOptionsSystemAdminSessionEviction } from '../model/systemAdminSessionEviction.ts';
 import 'vona-module-a-orm';
 declare module 'vona-module-a-orm' {
-  
+
     export interface IModelRecord {
       'admin-role:systemAdminAudit': IModelOptionsSystemAdminAudit;
 'admin-role:systemAdminFreshProof': IModelOptionsSystemAdminFreshProof;
 'admin-role:systemAdminSessionEviction': IModelOptionsSystemAdminSessionEviction;
     }
 
-  
+
 }
 declare module 'vona-module-admin-role' {
-  
+
         export interface ModelSystemAdminAudit {
           /** @internal */
           get scope(): ScopeModuleAdminRole;
@@ -114,7 +114,7 @@ declare module 'vona-module-admin-role' {
             get $beanFullName(): 'admin-role.model.systemAdminSessionEviction';
             get $onionName(): 'admin-role:systemAdminSessionEviction';
             get $onionOptions(): IModelOptionsSystemAdminSessionEviction;
-          } 
+          }
 }
 /** model: end */
 /** model: begin */
@@ -142,7 +142,7 @@ declare module 'vona' {
 import type { IModelGetOptions, IModelMethodOptions, IModelSelectParams, TypeModelSelectAndCount, TypeModelRelationResult, TypeModelWhere, IModelInsertOptions, TypeModelMutateRelationData, IModelDeleteOptions, IModelUpdateOptions, IModelMutateOptions, IModelSelectCountParams, IModelIncrementParams, IModelSelectAggrParams, TypeModelAggrRelationResult, IModelSelectGroupParams, TypeModelGroupRelationResult } from 'vona-module-a-orm';
 import { SymbolKeyEntity, SymbolKeyEntityMeta, SymbolKeyModelOptions } from 'vona-module-a-orm';
 declare module 'vona-module-admin-role' {
-  
+
   export interface ModelSystemAdminAudit {
       [SymbolKeyEntity]: EntitySystemAdminAudit;
       [SymbolKeyEntityMeta]: EntitySystemAdminAuditMeta;
@@ -270,17 +270,17 @@ export * from '../service/systemAdminSessionEviction.ts';
 
 import 'vona-module-a-bean';
 declare module 'vona-module-a-bean' {
-  
+
     export interface IServiceRecord {
       'admin-role:role': never;
 'admin-role:systemAdmin': never;
 'admin-role:systemAdminSessionEviction': never;
     }
 
-  
+
 }
 declare module 'vona-module-admin-role' {
-  
+
         export interface ServiceRole {
           /** @internal */
           get scope(): ScopeModuleAdminRole;
@@ -289,7 +289,6 @@ declare module 'vona-module-admin-role' {
           export interface ServiceRole {
             get $beanFullName(): 'admin-role.service.role';
             get $onionName(): 'admin-role:role';
-            
           }
 
         export interface ServiceSystemAdmin {
@@ -300,7 +299,6 @@ declare module 'vona-module-admin-role' {
           export interface ServiceSystemAdmin {
             get $beanFullName(): 'admin-role.service.systemAdmin';
             get $onionName(): 'admin-role:systemAdmin';
-            
           }
 
         export interface ServiceSystemAdminSessionEviction {
@@ -311,8 +309,7 @@ declare module 'vona-module-admin-role' {
           export interface ServiceSystemAdminSessionEviction {
             get $beanFullName(): 'admin-role.service.systemAdminSessionEviction';
             get $onionName(): 'admin-role:systemAdminSessionEviction';
-            
-          } 
+          }
 }
 /** service: end */
 /** service: begin */
@@ -343,17 +340,17 @@ export * from '../bean/meta.version.ts';
 import type { IMetaOptionsIndex } from 'vona-module-a-index';
 import 'vona-module-a-meta';
 declare module 'vona-module-a-meta' {
-  
+
     export interface IMetaRecord {
       'admin-role:index': IMetaOptionsIndex;
 'admin-role:redlock': never;
 'admin-role:version': never;
     }
 
-  
+
 }
 declare module 'vona-module-admin-role' {
-  
+
         export interface MetaIndex {
           /** @internal */
           get scope(): ScopeModuleAdminRole;
@@ -373,7 +370,6 @@ declare module 'vona-module-admin-role' {
           export interface MetaRedlock {
             get $beanFullName(): 'admin-role.meta.redlock';
             get $onionName(): 'admin-role:redlock';
-            
           }
 
         export interface MetaVersion {
@@ -384,8 +380,7 @@ declare module 'vona-module-admin-role' {
           export interface MetaVersion {
             get $beanFullName(): 'admin-role.meta.version';
             get $onionName(): 'admin-role:version';
-            
-          } 
+          }
 }
 /** meta: end */
 /** meta redlock: begin */
@@ -396,15 +391,15 @@ export * from '../bean/queue.systemAdminSessionEviction.ts';
 
 import { type IDecoratorQueueOptions } from 'vona-module-a-queue';
 declare module 'vona-module-a-queue' {
-  
+
     export interface IQueueRecord {
       'admin-role:systemAdminSessionEviction': IDecoratorQueueOptions;
     }
 
-  
+
 }
 declare module 'vona-module-admin-role' {
-  
+
         export interface QueueSystemAdminSessionEviction {
           /** @internal */
           get scope(): ScopeModuleAdminRole;
@@ -414,7 +409,7 @@ declare module 'vona-module-admin-role' {
             get $beanFullName(): 'admin-role.queue.systemAdminSessionEviction';
             get $onionName(): 'admin-role:systemAdminSessionEviction';
             get $onionOptions(): IDecoratorQueueOptions;
-          } 
+          }
 }
 /** queue: end */
 /** queue: begin */
@@ -428,15 +423,15 @@ export * from '../bean/schedule.systemAdminSessionEviction.ts';
 
 import { type IDecoratorScheduleOptions } from 'vona-module-a-schedule';
 declare module 'vona-module-a-schedule' {
-  
+
     export interface IScheduleRecord {
       'admin-role:systemAdminSessionEviction': IDecoratorScheduleOptions;
     }
 
-  
+
 }
 declare module 'vona-module-admin-role' {
-  
+
         export interface ScheduleSystemAdminSessionEviction {
           /** @internal */
           get scope(): ScopeModuleAdminRole;
@@ -446,7 +441,7 @@ declare module 'vona-module-admin-role' {
             get $beanFullName(): 'admin-role.schedule.systemAdminSessionEviction';
             get $onionName(): 'admin-role:systemAdminSessionEviction';
             get $onionOptions(): IDecoratorScheduleOptions;
-          } 
+          }
 }
 /** schedule: end */
 /** dto: begin */
@@ -480,7 +475,7 @@ import type { IDtoOptionsSystemAdminRevoke } from '../dto/systemAdminRevoke.ts';
 import type { IDtoOptionsUserRoleReplace } from '../dto/userRoleReplace.ts';
 import 'vona-module-a-web';
 declare module 'vona-module-a-web' {
-  
+
     export interface IDtoRecord {
       'admin-role:roleBase': IDtoOptionsRoleBase;
 'admin-role:roleCreate': IDtoOptionsRoleCreate;
@@ -498,10 +493,10 @@ declare module 'vona-module-a-web' {
 'admin-role:userRoleReplace': IDtoOptionsUserRoleReplace;
     }
 
-  
+
 }
 declare module 'vona-module-admin-role' {
-   
+
 }
 /** dto: end */
 /** dto: begin */
@@ -520,7 +515,7 @@ import type { DtoSystemAdminGrant } from '../dto/systemAdminGrant.ts';
 import type { DtoSystemAdminRevoke } from '../dto/systemAdminRevoke.ts';
 import type { DtoUserRoleReplace } from '../dto/userRoleReplace.ts';
 declare module 'vona-module-admin-role' {
-  
+
     export interface IDtoOptionsRoleBase {
       fields?: TypeEntityOptionsFields<DtoRoleBase, IDtoOptionsRoleBase[TypeSymbolKeyFieldsMore]>;
     }
@@ -583,15 +578,15 @@ export * from '../controller/role.ts';
 import type { IControllerOptionsRole } from '../controller/role.ts';
 import 'vona-module-a-web';
 declare module 'vona-module-a-web' {
-  
+
     export interface IControllerRecord {
       'admin-role:role': IControllerOptionsRole;
     }
 
-  
+
 }
 declare module 'vona-module-admin-role' {
-  
+
         export interface ControllerRole {
           /** @internal */
           get scope(): ScopeModuleAdminRole;
@@ -601,14 +596,14 @@ declare module 'vona-module-admin-role' {
             get $beanFullName(): 'admin-role.controller.role';
             get $onionName(): 'admin-role:role';
             get $onionOptions(): IControllerOptionsRole;
-          } 
+          }
 }
 /** controller: end */
 /** controller: begin */
 // @ts-ignore ignore
 import type { ControllerRole } from '../controller/role.ts';
 declare module 'vona-module-admin-role' {
-  
+
     export interface IControllerOptionsRole {
       actions?: TypeControllerOptionsActions<ControllerRole>;
     }
@@ -644,22 +639,22 @@ import 'vona-module-a-openapi';
       'admin-role:role': never;
     }
   }
-  
+
 /** controller: end */
 /** zodRefine: begin */
 export * from '../bean/zodRefine.siteIdsAvailable.ts';
 import type { IZodRefineOptionsSiteIdsAvailable } from '../bean/zodRefine.siteIdsAvailable.ts';
 import 'vona-module-a-zod';
 declare module 'vona-module-a-zod' {
-  
+
     export interface IZodRefineRecord {
       'admin-role:siteIdsAvailable': IZodRefineOptionsSiteIdsAvailable;
     }
 
-  
+
 }
 declare module 'vona-module-admin-role' {
-  
+
         export interface ZodRefineSiteIdsAvailable {
           /** @internal */
           get scope(): ScopeModuleAdminRole;
@@ -669,7 +664,7 @@ declare module 'vona-module-admin-role' {
             get $beanFullName(): 'admin-role.zodRefine.siteIdsAvailable';
             get $onionName(): 'admin-role:siteIdsAvailable';
             get $onionOptions(): IZodRefineOptionsSiteIdsAvailable;
-          } 
+          }
 }
 /** zodRefine: end */
 /** ssrMenu: begin */
@@ -677,15 +672,15 @@ export * from '../bean/ssrMenu.role.ts';
 import type { ISsrMenuOptionsRole } from '../bean/ssrMenu.role.ts';
 import 'vona-module-a-ssr';
 declare module 'vona-module-a-ssr' {
-  
+
     export interface ISsrMenuRecord {
       'admin-role:role': ISsrMenuOptionsRole;
     }
 
-  
+
 }
 declare module 'vona-module-admin-role' {
-  
+
         export interface SsrMenuRole {
           /** @internal */
           get scope(): ScopeModuleAdminRole;
@@ -695,7 +690,7 @@ declare module 'vona-module-admin-role' {
             get $beanFullName(): 'admin-role.ssrMenu.role';
             get $onionName(): 'admin-role:role';
             get $onionOptions(): ISsrMenuOptionsRole;
-          } 
+          }
 }
 /** ssrMenu: end */
 /** locale: begin */
@@ -732,8 +727,8 @@ declare module 'vona' {
   export interface IBeanScopeContainer {
     adminRole: ScopeModuleAdminRole;
   }
-  
-  
+
+
 
   export interface IBeanScopeLocale {
     'admin-role': (typeof locales)[TypeLocaleBase];

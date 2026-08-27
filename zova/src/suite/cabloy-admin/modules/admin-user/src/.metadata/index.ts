@@ -4,15 +4,15 @@ export * from '../model/user.js';
 import { IModelOptionsUser } from '../model/user.js';
 import 'zova-module-a-model';
 declare module 'zova-module-a-model' {
-  
+
     export interface IModelRecord {
       'admin-user:user': IModelOptionsUser;
     }
 
-  
+
 }
 declare module 'zova-module-admin-user' {
-  
+
         export interface ModelUser {
           /** @internal */
           get scope(): ScopeModuleAdminUser;
@@ -22,7 +22,7 @@ declare module 'zova-module-admin-user' {
           get $beanFullName(): 'admin-user.model.user';
           get $onionName(): 'admin-user:user';
           get $onionOptions(): IModelOptionsUser;
-        } 
+        }
 }
 /** model: end */
 /** model: begin */
@@ -39,11 +39,11 @@ export * from '../api/adminUser.js';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-admin-user' {
-  
+
         export interface ApiAdminUser {
           /** @internal */
           get scope(): ScopeModuleAdminUser;
@@ -52,8 +52,8 @@ declare module 'zova-module-admin-user' {
         export interface ApiAdminUser {
           get $beanFullName(): 'admin-user.api.adminUser';
           get $onionName(): 'admin-user:adminUser';
-          
-        } 
+
+        }
 }
 /** api: end */
 /** api: begin */
@@ -79,11 +79,11 @@ export * from '../apiSchema/adminUser.js';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-admin-user' {
-  
+
         export interface ApiSchemaAdminUser {
           /** @internal */
           get scope(): ScopeModuleAdminUser;
@@ -92,8 +92,8 @@ declare module 'zova-module-admin-user' {
         export interface ApiSchemaAdminUser {
           get $beanFullName(): 'admin-user.apiSchema.adminUser';
           get $onionName(): 'admin-user:adminUser';
-          
-        } 
+
+        }
 }
 /** apiSchema: end */
 /** apiSchema: begin */
@@ -116,15 +116,15 @@ export * from '../component/formFieldAvatar/controller.jsx';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-admin-user' {
-  
+
         export interface ControllerFormFieldAvatar {
           /** @internal */
           get scope(): ScopeModuleAdminUser;
-        } 
+        }
 }
 /** controller: end */
 /** controller: begin */
@@ -162,17 +162,17 @@ import { ITableCellOptionsRoleTitle } from '../bean/tableCell.roleTitle.jsx';
 import { ITableCellOptionsUserName } from '../bean/tableCell.userName.jsx';
 import 'zova-module-a-table';
 declare module 'zova-module-a-table' {
-  
+
     export interface ITableCellRecord {
       'admin-user:actionDisable': ITableCellOptionsActionDisable;
 'admin-user:roleTitle': ITableCellOptionsRoleTitle;
 'admin-user:userName': ITableCellOptionsUserName;
     }
 
-  
+
 }
 declare module 'zova-module-admin-user' {
-  
+
         export interface TableCellActionDisable {
           /** @internal */
           get scope(): ScopeModuleAdminUser;
@@ -204,7 +204,7 @@ declare module 'zova-module-admin-user' {
           get $beanFullName(): 'admin-user.tableCell.userName';
           get $onionName(): 'admin-user:userName';
           get $onionOptions(): ITableCellOptionsUserName;
-        } 
+        }
 }
 /** tableCell: end */
 /** tableCell: begin */
@@ -242,14 +242,14 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'admin-user': ScopeModuleAdminUser;
   }
-  
-  
+
+
 
   export interface IBeanScopeLocale {
     'admin-user': (typeof locales)[TypeLocaleBase];
   }
 
-  
+
 }
 
 export function locale<K extends keyof (typeof locales)[TypeLocaleBase]>(key: K): `admin-user::${K}` {

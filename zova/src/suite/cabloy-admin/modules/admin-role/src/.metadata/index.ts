@@ -4,15 +4,15 @@ export * from '../model/role.js';
 import { IModelOptionsRole } from '../model/role.js';
 import 'zova-module-a-model';
 declare module 'zova-module-a-model' {
-  
+
     export interface IModelRecord {
       'admin-role:role': IModelOptionsRole;
     }
 
-  
+
 }
 declare module 'zova-module-admin-role' {
-  
+
         export interface ModelRole {
           /** @internal */
           get scope(): ScopeModuleAdminRole;
@@ -22,7 +22,7 @@ declare module 'zova-module-admin-role' {
           get $beanFullName(): 'admin-role.model.role';
           get $onionName(): 'admin-role:role';
           get $onionOptions(): IModelOptionsRole;
-        } 
+        }
 }
 /** model: end */
 /** model: begin */
@@ -39,11 +39,11 @@ export * from '../api/adminRole.js';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-admin-role' {
-  
+
         export interface ApiAdminRole {
           /** @internal */
           get scope(): ScopeModuleAdminRole;
@@ -52,8 +52,8 @@ declare module 'zova-module-admin-role' {
         export interface ApiAdminRole {
           get $beanFullName(): 'admin-role.api.adminRole';
           get $onionName(): 'admin-role:adminRole';
-          
-        } 
+
+        }
 }
 /** api: end */
 /** api: begin */
@@ -79,11 +79,11 @@ export * from '../apiSchema/adminRole.js';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-admin-role' {
-  
+
         export interface ApiSchemaAdminRole {
           /** @internal */
           get scope(): ScopeModuleAdminRole;
@@ -92,8 +92,8 @@ declare module 'zova-module-admin-role' {
         export interface ApiSchemaAdminRole {
           get $beanFullName(): 'admin-role.apiSchema.adminRole';
           get $onionName(): 'admin-role:adminRole';
-          
-        } 
+
+        }
 }
 /** apiSchema: end */
 /** apiSchema: begin */
@@ -116,15 +116,15 @@ export * from '../component/actionReplaceUserRoles/controller.jsx';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-admin-role' {
-  
+
         export interface ControllerActionReplaceUserRoles {
           /** @internal */
           get scope(): ScopeModuleAdminRole;
-        } 
+        }
 }
 /** controller: end */
 /** controller: begin */
@@ -175,14 +175,14 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'admin-role': ScopeModuleAdminRole;
   }
-  
-  
+
+
 
   export interface IBeanScopeLocale {
     'admin-role': (typeof locales)[TypeLocaleBase];
   }
 
-  
+
 }
 
 export function locale<K extends keyof (typeof locales)[TypeLocaleBase]>(key: K): `admin-role::${K}` {

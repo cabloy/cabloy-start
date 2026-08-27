@@ -9,16 +9,16 @@ import type { IEntityOptionsDepartment } from '../entity/department.tsx';
 import type { IEntityOptionsDepartmentMembership } from '../entity/departmentMembership.tsx';
 import 'vona-module-a-orm';
 declare module 'vona-module-a-orm' {
-  
+
     export interface IEntityRecord {
       'admin-department:department': IEntityOptionsDepartment;
 'admin-department:departmentMembership': IEntityOptionsDepartmentMembership;
     }
 
-  
+
 }
 declare module 'vona-module-admin-department' {
-   
+
 }
 /** entity: end */
 /** entity: begin */
@@ -41,7 +41,7 @@ declare module 'vona-module-a-orm' {
   }
 }
 declare module 'vona-module-admin-department' {
-  
+
     export interface IEntityOptionsDepartment {
       fields?: TypeEntityOptionsFields<EntityDepartment, IEntityOptionsDepartment[TypeSymbolKeyFieldsMore]>;
     }
@@ -58,16 +58,16 @@ import type { IModelOptionsDepartment } from '../model/department.ts';
 import type { IModelOptionsDepartmentMembership } from '../model/departmentMembership.ts';
 import 'vona-module-a-orm';
 declare module 'vona-module-a-orm' {
-  
+
     export interface IModelRecord {
       'admin-department:department': IModelOptionsDepartment;
 'admin-department:departmentMembership': IModelOptionsDepartmentMembership;
     }
 
-  
+
 }
 declare module 'vona-module-admin-department' {
-  
+
         export interface ModelDepartment {
           /** @internal */
           get scope(): ScopeModuleAdminDepartment;
@@ -88,7 +88,7 @@ declare module 'vona-module-admin-department' {
             get $beanFullName(): 'admin-department.model.departmentMembership';
             get $onionName(): 'admin-department:departmentMembership';
             get $onionOptions(): IModelOptionsDepartmentMembership;
-          } 
+          }
 }
 /** model: end */
 /** model: begin */
@@ -213,15 +213,15 @@ export * from '../service/department.ts';
 
 import 'vona-module-a-bean';
 declare module 'vona-module-a-bean' {
-  
+
     export interface IServiceRecord {
       'admin-department:department': never;
     }
 
-  
+
 }
 declare module 'vona-module-admin-department' {
-  
+
         export interface ServiceDepartment {
           /** @internal */
           get scope(): ScopeModuleAdminDepartment;
@@ -230,8 +230,7 @@ declare module 'vona-module-admin-department' {
           export interface ServiceDepartment {
             get $beanFullName(): 'admin-department.service.department';
             get $onionName(): 'admin-department:department';
-            
-          } 
+          }
 }
 /** service: end */
 /** service: begin */
@@ -256,17 +255,17 @@ export * from '../bean/meta.version.ts';
 import type { IMetaOptionsIndex } from 'vona-module-a-index';
 import 'vona-module-a-meta';
 declare module 'vona-module-a-meta' {
-  
+
     export interface IMetaRecord {
       'admin-department:index': IMetaOptionsIndex;
 'admin-department:redlock': never;
 'admin-department:version': never;
     }
 
-  
+
 }
 declare module 'vona-module-admin-department' {
-  
+
         export interface MetaIndex {
           /** @internal */
           get scope(): ScopeModuleAdminDepartment;
@@ -286,7 +285,6 @@ declare module 'vona-module-admin-department' {
           export interface MetaRedlock {
             get $beanFullName(): 'admin-department.meta.redlock';
             get $onionName(): 'admin-department:redlock';
-            
           }
 
         export interface MetaVersion {
@@ -297,8 +295,7 @@ declare module 'vona-module-admin-department' {
           export interface MetaVersion {
             get $beanFullName(): 'admin-department.meta.version';
             get $onionName(): 'admin-department:version';
-            
-          } 
+          }
 }
 /** meta: end */
 /** meta redlock: begin */
@@ -353,7 +350,7 @@ import type { IDtoOptionsDepartmentUserSummary } from '../dto/departmentUserSumm
 import type { IDtoOptionsDepartmentView } from '../dto/departmentView.tsx';
 import 'vona-module-a-web';
 declare module 'vona-module-a-web' {
-  
+
     export interface IDtoRecord {
       'admin-department:departmentActivation': IDtoOptionsDepartmentActivation;
 'admin-department:departmentBase': IDtoOptionsDepartmentBase;
@@ -380,10 +377,10 @@ declare module 'vona-module-a-web' {
 'admin-department:departmentView': IDtoOptionsDepartmentView;
     }
 
-  
+
 }
 declare module 'vona-module-admin-department' {
-   
+
 }
 /** dto: end */
 /** dto: begin */
@@ -411,7 +408,7 @@ import type { DtoDepartmentUpdateBase } from '../dto/departmentUpdateBase.ts';
 import type { DtoDepartmentUserSummary } from '../dto/departmentUserSummary.ts';
 import type { DtoDepartmentView } from '../dto/departmentView.tsx';
 declare module 'vona-module-admin-department' {
-  
+
     export interface IDtoOptionsDepartmentActivation {
       fields?: TypeEntityOptionsFields<DtoDepartmentActivation, IDtoOptionsDepartmentActivation[TypeSymbolKeyFieldsMore]>;
     }
@@ -510,15 +507,15 @@ export * from '../controller/department.ts';
 import type { IControllerOptionsDepartment } from '../controller/department.ts';
 import 'vona-module-a-web';
 declare module 'vona-module-a-web' {
-  
+
     export interface IControllerRecord {
       'admin-department:department': IControllerOptionsDepartment;
     }
 
-  
+
 }
 declare module 'vona-module-admin-department' {
-  
+
         export interface ControllerDepartment {
           /** @internal */
           get scope(): ScopeModuleAdminDepartment;
@@ -528,14 +525,14 @@ declare module 'vona-module-admin-department' {
             get $beanFullName(): 'admin-department.controller.department';
             get $onionName(): 'admin-department:department';
             get $onionOptions(): IControllerOptionsDepartment;
-          } 
+          }
 }
 /** controller: end */
 /** controller: begin */
 // @ts-ignore ignore
 import type { ControllerDepartment } from '../controller/department.ts';
 declare module 'vona-module-admin-department' {
-  
+
     export interface IControllerOptionsDepartment {
       actions?: TypeControllerOptionsActions<ControllerDepartment>;
     }
@@ -574,22 +571,22 @@ import 'vona-module-a-openapi';
       'admin-department:department': never;
     }
   }
-  
+
 /** controller: end */
 /** ssrMenu: begin */
 export * from '../bean/ssrMenu.department.ts';
 import type { ISsrMenuOptionsDepartment } from '../bean/ssrMenu.department.ts';
 import 'vona-module-a-ssr';
 declare module 'vona-module-a-ssr' {
-  
+
     export interface ISsrMenuRecord {
       'admin-department:department': ISsrMenuOptionsDepartment;
     }
 
-  
+
 }
 declare module 'vona-module-admin-department' {
-  
+
         export interface SsrMenuDepartment {
           /** @internal */
           get scope(): ScopeModuleAdminDepartment;
@@ -599,7 +596,7 @@ declare module 'vona-module-admin-department' {
             get $beanFullName(): 'admin-department.ssrMenu.department';
             get $onionName(): 'admin-department:department';
             get $onionOptions(): ISsrMenuOptionsDepartment;
-          } 
+          }
 }
 /** ssrMenu: end */
 /** locale: begin */
@@ -635,8 +632,8 @@ declare module 'vona' {
   export interface IBeanScopeContainer {
     adminDepartment: ScopeModuleAdminDepartment;
   }
-  
-  
+
+
 
   export interface IBeanScopeLocale {
     'admin-department': (typeof locales)[TypeLocaleBase];
