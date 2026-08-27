@@ -6,7 +6,6 @@ import type {
   ITableCellRender,
   NextTableCellRender,
 } from 'zova-module-a-table';
-import type { AppModalItem } from 'zova-module-start-app';
 
 import { BeanBase } from 'zova';
 import { formMetaFromFormScene, ZForm, ZFormFieldPreset } from 'zova-module-a-form';
@@ -66,9 +65,8 @@ export class TableCellActionMove extends BeanBase implements ITableCellRender {
   ) {
     const apiSchemas = modelDepartment.scope.apiSchema.adminDepartment.move();
     await apiSchemas.sdk.suspense();
-    let dialog: AppModalItem | undefined;
     let formRef: BeanControllerFormBase<DepartmentMoveData> | undefined;
-    dialog = this.$appModal.dialog({
+    const dialog = this.$appModal.dialog({
       title: this.scope.locale.MoveDepartment(),
       slotDefault: () => (
         <ZForm<DepartmentMoveData>

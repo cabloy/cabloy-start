@@ -6,7 +6,6 @@ import type {
   ITableCellRender,
   NextTableCellRender,
 } from 'zova-module-a-table';
-import type { AppModalItem } from 'zova-module-start-app';
 
 import { BeanBase } from 'zova';
 import { formMetaFromFormScene, ZForm, ZFormFieldPreset } from 'zova-module-a-form';
@@ -68,9 +67,8 @@ export class TableCellActionReorder extends BeanBase implements ITableCellRender
     const locale = this.scope.locale;
     const apiSchemas = modelDepartment.scope.apiSchema.adminDepartment.reorder();
     await apiSchemas.sdk.suspense();
-    let dialog: AppModalItem | undefined;
     let formRef: BeanControllerFormBase<DepartmentReorderData> | undefined;
-    dialog = this.$appModal.dialog({
+    const dialog = this.$appModal.dialog({
       title: locale.ReorderDepartment(),
       slotDefault: () => (
         <ZForm<DepartmentReorderData>

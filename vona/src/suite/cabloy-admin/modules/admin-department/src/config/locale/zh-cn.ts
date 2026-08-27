@@ -25,5 +25,6 @@ export default {
   DepartmentMembershipPrimaryRequiresEnabled: '只有已启用的成员关系才能设为主要成员关系',
   DepartmentManagerMembershipInvalid: '部门负责人必须是本部门已启用的成员关系',
   DepartmentMembershipManagerReplacementRequired: '变更该成员关系前必须清除或替换部门负责人',
-  DepartmentMembershipManagerTransitionInvalid: '只有变更当前部门负责人成员关系时才能处理负责人变更',
+  DepartmentMembershipManagerTransitionInvalid:
+    '只有变更当前部门负责人成员关系时才能处理负责人变更',
 };

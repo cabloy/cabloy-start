@@ -454,8 +454,9 @@ export class ControllerBlockPolicyEditor extends BeanControllerBase {
               if (
                 removeMutation.isPending ||
                 this._isMutationPending(grant.actionKey, 'customDepartments')
-              )
+              ) {
                 return;
+              }
               try {
                 await removeMutation.mutateAsync(mapping.id);
               } catch (error) {

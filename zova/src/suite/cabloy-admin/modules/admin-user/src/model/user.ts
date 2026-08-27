@@ -31,12 +31,10 @@ export class ModelUser extends BeanModelBase {
       id,
       action: 'updateAccountStatus',
       mutationFn: async () => {
-        await (
-          this.scope.api.adminUser.updateAccountStatus(
-            { accountStatus },
-            { params: { id } },
-          ) as Promise<void>
-        );
+        await (this.scope.api.adminUser.updateAccountStatus(
+          { accountStatus },
+          { params: { id } },
+        ) as Promise<void>);
       },
     });
   }

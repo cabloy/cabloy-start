@@ -1,10 +1,6 @@
 export type LocalizedTextMap = Record<string, string>;
 
-export function resolveLocalizedText(
-  value: unknown,
-  locales: unknown,
-  locale: string,
-): unknown {
+export function resolveLocalizedText(value: unknown, locales: unknown, locale: string): unknown {
   const baseValue = typeof value === 'string' ? value : value;
   if (!isLocalizedTextMap(locales)) return baseValue;
   const localizedValue = locales[locale];

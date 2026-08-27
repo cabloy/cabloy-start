@@ -9,16 +9,11 @@ import { BeanBase } from 'zova';
 import { TableCell } from 'zova-module-a-table';
 import { ZButton } from 'zova-module-start-button';
 
-import {
-  departmentId,
-  getLocale,
-  getModelDepartment,
-  type DepartmentMembershipRow,
-  type MembershipLocale,
-} from './membershipAction.tsx';
+import type { DepartmentMembershipRow, MembershipLocale } from './membershipAction.tsx';
 
-export interface ITableCellOptionsActionUpdateMembershipManager
-  extends IResourceDetailsActionRowOptionsBase {}
+import { departmentId, getLocale, getModelDepartment } from './membershipAction.tsx';
+
+export interface ITableCellOptionsActionUpdateMembershipManager extends IResourceDetailsActionRowOptionsBase {}
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceDetailsActionRowRecord {

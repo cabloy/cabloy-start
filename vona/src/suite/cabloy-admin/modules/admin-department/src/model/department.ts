@@ -9,9 +9,14 @@ export interface IModelOptionsDepartment extends IDecoratorModelOptions<EntityDe
 @Model<IModelOptionsDepartment>({
   entity: EntityDepartment,
   relations: {
-    parent: $relation.belongsTo('admin-department:department', 'admin-department:department', 'parentId', {
-      columns: ['id', 'name'],
-    }),
+    parent: $relation.belongsTo(
+      'admin-department:department',
+      'admin-department:department',
+      'parentId',
+      {
+        columns: ['id', 'name'],
+      },
+    ),
   },
 })
 export class ModelDepartment extends BeanModelBase<EntityDepartment> {}

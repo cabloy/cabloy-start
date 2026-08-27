@@ -2,16 +2,16 @@
 
 ## Traceability
 
-| Field | Value |
-| --- | --- |
-| ATP | `ATP-ADM-POL-02` |
-| PRD | `PRD-ADM-POL-02`, `PRD-ADM-POL-04`, `PRD-ADM-SCP-01` |
-| SRS | `SRS-ADM-POL-04`–`SRS-ADM-POL-08` |
-| WBS | `WBS-ADM-80-02` |
-| Tested source revision | historical `e8abda0d8cda44605a3500e530f123663450b99e`; direct matrix working tree based on `b28df501233b4cf540c898ae138122c7b240ee44` |
-| Database client | managed clean `better-sqlite3` Vona test databases; external matrix used the worktree-managed SQLite/`better-sqlite3` Vona development runtime |
-| Zova flavor | `normal` Vona test flavor; direct matrix targeted the external Start Vona HTTP API and changed no frontend artifact |
-| Executor date | 2026-08-21; direct matrix 2026-08-27 |
+| Field                  | Value                                                                                                                                          |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| ATP                    | `ATP-ADM-POL-02`                                                                                                                               |
+| PRD                    | `PRD-ADM-POL-02`, `PRD-ADM-POL-04`, `PRD-ADM-SCP-01`                                                                                           |
+| SRS                    | `SRS-ADM-POL-04`–`SRS-ADM-POL-08`                                                                                                              |
+| WBS                    | `WBS-ADM-80-02`                                                                                                                                |
+| Tested source revision | historical `e8abda0d8cda44605a3500e530f123663450b99e`; direct matrix working tree based on `b28df501233b4cf540c898ae138122c7b240ee44`          |
+| Database client        | managed clean `better-sqlite3` Vona test databases; external matrix used the worktree-managed SQLite/`better-sqlite3` Vona development runtime |
+| Zova flavor            | `normal` Vona test flavor; direct matrix targeted the external Start Vona HTTP API and changed no frontend artifact                            |
+| Executor date          | 2026-08-21; direct matrix 2026-08-27                                                                                                           |
 
 ## Procedure
 

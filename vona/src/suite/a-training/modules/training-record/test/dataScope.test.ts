@@ -248,7 +248,6 @@ describe('dataScope.test.ts', { concurrency: false }, () => {
           await app.bean.passport.signout();
         }
       });
-
     } finally {
       await app.bean.executor.mockCtx(async () => {
         const subjectModel = app.scope('training-recordsubject').model.subject;

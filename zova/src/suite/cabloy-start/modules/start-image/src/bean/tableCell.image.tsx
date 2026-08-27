@@ -9,6 +9,8 @@ import { VBtn, VChip } from 'vuetify/components';
 import { BeanBase, ClientOnly } from 'zova';
 import { TableCell } from 'zova-module-a-table';
 
+import type { IImagePreviewItem } from '../lib/index.js';
+
 import {
   buildImagePreviewTitle,
   collectImageRelationPreviewItems,
@@ -17,8 +19,6 @@ import {
   openImagePreviewDialog,
   resolveImagePreviewUrl,
 } from '../lib/index.js';
-
-import type { IImagePreviewItem } from '../lib/index.js';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceTableCellRecord {
@@ -71,9 +71,19 @@ export class TableCellImage extends BeanBase implements ITableCellRender {
         }}
       >
         <div class="d-flex align-center ga-2">
-          <div class="overflow-hidden rounded bg-surface-variant" style={{ width: `${size}px`, height: `${size}px` }}>
+          <div
+            class="overflow-hidden rounded bg-surface-variant"
+            style={{ width: `${size}px`, height: `${size}px` }}
+          >
             <ClientOnly>
-              {src && <img class="w-100 h-100" style={{ display: 'block', objectFit: options.fit ?? 'cover' }} src={src} alt={item.filename ?? 'image'} />}
+              {src && (
+                <img
+                  class="w-100 h-100"
+                  style={{ display: 'block', objectFit: options.fit ?? 'cover' }}
+                  src={src}
+                  alt={item.filename ?? 'image'}
+                />
+              )}
             </ClientOnly>
           </div>
           {preview.count > 1 && <VChip size="x-small">+{preview.count - 1}</VChip>}
@@ -88,7 +98,9 @@ export class TableCellImage extends BeanBase implements ITableCellRender {
     value: unknown,
   ): IImagePreviewSummary {
     const relationName = inferImageRelationName(renderContext.$celScope.name, options.relationName);
-    const relationValue = relationName ? renderContext.cellContext.row.original[relationName] : undefined;
+    const relationValue = relationName
+      ? renderContext.cellContext.row.original[relationName]
+      : undefined;
     const relation = collectImageRelationPreviewItems(relationValue);
     if (relation.length) return { count: relation.length, item: relation[0], items: relation };
     const urls = collectImageUrlPreviewItems(value);

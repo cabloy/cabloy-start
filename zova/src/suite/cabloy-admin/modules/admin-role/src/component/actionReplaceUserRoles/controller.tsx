@@ -53,11 +53,7 @@ export class ControllerActionReplaceUserRoles extends BeanControllerBase {
   }
 
   private _getLocale() {
-    return (
-      this as unknown as {
-        scope: { locale: { ReplaceUserRoles(): string; Cancel(): string; Save(): string } };
-      }
-    ).scope.locale;
+    return this.scope.locale;
   }
 
   private async _openDialog() {

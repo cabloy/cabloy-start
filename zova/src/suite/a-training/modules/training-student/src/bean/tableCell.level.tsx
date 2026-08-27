@@ -29,7 +29,9 @@ export class TableCellLevel extends BeanBase implements ITableCellRender {
     next: NextTableCellRender,
   ) {
     const value = next();
-    const item = options.items?.find(item => String(item[String(options.itemValue)]) === String(value));
+    const item = options.items?.find(
+      item => String(item[String(options.itemValue)]) === String(value),
+    );
     return <VChip color={this._color(value)}>{item?.[String(options.itemTitle)] ?? value}</VChip>;
   }
 

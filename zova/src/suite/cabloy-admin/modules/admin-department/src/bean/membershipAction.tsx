@@ -2,7 +2,6 @@ import type { SchemaObject } from 'openapi3-ts/oas31';
 import type { TableIdentity } from 'table-identity';
 import type { BeanControllerFormBase } from 'zova-module-a-form';
 import type { IJsxRenderContextTableCell } from 'zova-module-a-table';
-import type { AppModalItem } from 'zova-module-start-app';
 
 import { BeanBase } from 'zova';
 import { formMetaFromFormScene, ZForm } from 'zova-module-a-form';
@@ -69,9 +68,8 @@ export async function openMembershipUpdateDialog(
   const apiSchemas = modelDepartment.scope.apiSchema.adminDepartment.updateMembership();
   await apiSchemas.sdk.suspense();
   type Data = ApiSchemaAdminDepartmentDtoDepartmentMembershipUpdate;
-  let dialog: AppModalItem | undefined;
   let formRef: BeanControllerFormBase<Data> | undefined;
-  dialog = owner.$appModal.dialog({
+  const dialog = owner.$appModal.dialog({
     title: locale.EditMembership(),
     slotDefault: () => (
       <ZForm<Data>

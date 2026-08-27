@@ -44,10 +44,7 @@ export class TableCellActionDisable extends BeanBase implements ITableCellRender
           });
           if (!confirmed) return;
           const id = row.id;
-          const modelUser = (await ctx.bean._getBean(
-            'admin-user.model.user',
-            true,
-          )) as ModelUser;
+          const modelUser = (await ctx.bean._getBean('admin-user.model.user', true)) as ModelUser;
           await modelUser.updateAccountStatus(id, targetStatus).mutateAsync();
         }}
       >

@@ -2,16 +2,16 @@
 
 ## Traceability
 
-| Field | Value |
-| --- | --- |
-| ATP | `ATP-ADM-SCP-02` |
-| PRD | `PRD-ADM-SCP-01`, `PRD-ADM-SCP-02` |
-| SRS | `SRS-ADM-SCP-01`–`SRS-ADM-SCP-08` |
-| WBS | `WBS-ADM-80-03` |
+| Field                  | Value                                                                                                                                                                 |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ATP                    | `ATP-ADM-SCP-02`                                                                                                                                                      |
+| PRD                    | `PRD-ADM-SCP-01`, `PRD-ADM-SCP-02`                                                                                                                                    |
+| SRS                    | `SRS-ADM-SCP-01`–`SRS-ADM-SCP-08`                                                                                                                                     |
+| WBS                    | `WBS-ADM-80-03`                                                                                                                                                       |
 | Tested source revision | historical working tree based on `2137752` with the ATP traceability-label correction; direct matrix working tree based on `b28df501233b4cf540c898ae138122c7b240ee44` |
-| Database client | managed clean `better-sqlite3` Vona test databases; external matrix used the worktree-managed SQLite/`better-sqlite3` Vona development runtime |
-| Zova flavor | `normal` Vona test flavor; direct matrix targeted the external Start Vona HTTP API |
-| Executor date | 2026-08-21; direct matrix 2026-08-27 |
+| Database client        | managed clean `better-sqlite3` Vona test databases; external matrix used the worktree-managed SQLite/`better-sqlite3` Vona development runtime                        |
+| Zova flavor            | `normal` Vona test flavor; direct matrix targeted the external Start Vona HTTP API                                                                                    |
+| Executor date          | 2026-08-21; direct matrix 2026-08-27                                                                                                                                  |
 
 ## Procedure
 

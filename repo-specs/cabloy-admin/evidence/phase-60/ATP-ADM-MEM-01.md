@@ -2,16 +2,16 @@
 
 ## Traceability
 
-| Field | Value |
-| --- | --- |
-| ATP | `ATP-ADM-MEM-01` |
-| PRD | `PRD-ADM-MEM-01` through `PRD-ADM-MEM-03`; `PRD-ADM-UI-01` |
-| SRS | `SRS-ADM-MEM-01`, `SRS-ADM-MEM-02`; `SRS-ADM-UI-01`, `SRS-ADM-UI-02` |
-| WBS | `WBS-ADM-60-01`, `WBS-ADM-60-03` |
-| Tested revision | `534056c7cf59b4bde6b96abefe01cf462ec91203` |
-| Database client | `better-sqlite3` |
-| Zova flavor | N/A — backend integration scenario |
-| Executor date | 2026-08-15 |
+| Field           | Value                                                                |
+| --------------- | -------------------------------------------------------------------- |
+| ATP             | `ATP-ADM-MEM-01`                                                     |
+| PRD             | `PRD-ADM-MEM-01` through `PRD-ADM-MEM-03`; `PRD-ADM-UI-01`           |
+| SRS             | `SRS-ADM-MEM-01`, `SRS-ADM-MEM-02`; `SRS-ADM-UI-01`, `SRS-ADM-UI-02` |
+| WBS             | `WBS-ADM-60-01`, `WBS-ADM-60-03`                                     |
+| Tested revision | `534056c7cf59b4bde6b96abefe01cf462ec91203`                           |
+| Database client | `better-sqlite3`                                                     |
+| Zova flavor     | N/A — backend integration scenario                                   |
+| Executor date   | 2026-08-15                                                           |
 
 ## Procedure
 

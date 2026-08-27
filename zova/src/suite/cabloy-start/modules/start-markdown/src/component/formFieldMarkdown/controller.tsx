@@ -5,6 +5,7 @@ import type {
   IFormFieldRenderContextPropsBucket,
 } from 'zova-module-a-form';
 import type { IResourceFormFieldOptionsBase, IImageSceneRecord } from 'zova-module-a-openapi';
+import type { IImageUploaderResult } from 'zova-module-start-image';
 
 import { findParentNodeClosestToPos } from '@tiptap/core';
 import { CodeBlockLowlight } from '@tiptap/extension-code-block-lowlight';
@@ -18,7 +19,7 @@ import { Editor } from '@tiptap/vue-3';
 import { common, createLowlight } from 'lowlight';
 import { BeanControllerBase } from 'zova';
 import { Controller } from 'zova-module-a-bean';
-import { resolveImagePreviewUrl, type IImageUploaderResult } from 'zova-module-start-image';
+import { resolveImagePreviewUrl } from 'zova-module-start-image';
 
 import { getCodeBlockLanguage, isCodeBlockLanguage } from '../../lib/codeBlockLanguages.js';
 

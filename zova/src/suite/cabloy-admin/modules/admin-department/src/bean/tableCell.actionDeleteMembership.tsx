@@ -9,13 +9,13 @@ import { BeanBase } from 'zova';
 import { TableCell } from 'zova-module-a-table';
 import { ZButton } from 'zova-module-start-button';
 
+import type { DepartmentMembershipRow, MembershipLocale } from './membershipAction.tsx';
+
 import {
   deleteMembershipData,
   departmentId,
   getLocale,
   getModelDepartment,
-  type DepartmentMembershipRow,
-  type MembershipLocale,
 } from './membershipAction.tsx';
 
 export interface ITableCellOptionsActionDeleteMembership extends IResourceDetailsActionRowOptionsBase {}
