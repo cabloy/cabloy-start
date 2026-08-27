@@ -8,10 +8,10 @@
 | PRD | `PRD-ADM-POL-02`, `PRD-ADM-POL-04`, `PRD-ADM-SCP-01` |
 | SRS | `SRS-ADM-POL-04`–`SRS-ADM-POL-08` |
 | WBS | `WBS-ADM-80-02` |
-| Tested source revision | `e8abda0d8cda44605a3500e530f123663450b99e` |
-| Database client | managed clean `better-sqlite3` Vona test databases |
-| Zova flavor | `normal` Vona test flavor; no frontend artifact was changed |
-| Executor date | 2026-08-21 |
+| Tested source revision | historical `e8abda0d8cda44605a3500e530f123663450b99e`; direct matrix working tree based on `b28df501233b4cf540c898ae138122c7b240ee44` |
+| Database client | managed clean `better-sqlite3` Vona test databases; external matrix used the worktree-managed SQLite/`better-sqlite3` Vona development runtime |
+| Zova flavor | `normal` Vona test flavor; direct matrix targeted the external Start Vona HTTP API and changed no frontend artifact |
+| Executor date | 2026-08-21; direct matrix 2026-08-27 |
 
 ## Procedure
 
@@ -58,14 +58,27 @@ The grant and Department-association services use transactional ORM mutation pat
 
 The expected `401`, `403`, `422`, and duplicate/conflict errors emitted during negative tests were asserted outcomes, not test failures.
 
+## Direct external HTTP/API matrix
+
+On 2026-08-27, the real bearer-token API matrix ran against the worktree-managed external Vona runtime at `http://127.0.0.1:7103`:
+
+```bash
+E2E_BASE_URL=http://127.0.0.1:7103 npm run test:e2e:fast cabloy-admin-rbac-api -- --tag @admin-rbac-api
+```
+
+The combined API-only run reported `3 passed (6.3s)`. This ATP's direct matrix verifies unrestricted system-administrator admission, ordinary default denial, policy-control-plane protection, disabled/enabled/deleted/recreated grant behavior with an unchanged delegated bearer token, and action specificity. It uses test-owned accounts whose usernames begin with `e2e-fixture-admin-rbac-` and deterministic reverse-order cleanup.
+
 ## Verification boundary
 
-This record is retained evidence for the local implementation slice, not a final `verified` claim for `WBS-ADM-80-02`. The run used managed SQLite (`better-sqlite3`). It does not include PostgreSQL contention/transaction evidence or direct external API acceptance for every policy mutation path. The later `ATP-ADM-POL-03` record provides a bounded policy-editor slice, while post-projection Resource rendering, direct external API, and full SSR/browser closure remain open under `WBS-ADM-80-02`, `WBS-ADM-80-04`, and `WBS-ADM-80-05`.
+The historical local implementation slice and the direct HTTP/API matrix now provide traceable API acceptance for this ATP, but they do not make `WBS-ADM-80-02` or Phase 80 `verified`. The current runtime-Swagger regeneration output drift remains unclassified, and repository-wide lint and format gates remain non-clean and unwaived. The separate PostgreSQL invalidation contention proof is retained in the current validation record. `WBS-ADM-80-05` and Phase 70 remain open.
 
-No schema, `meta.version.ts`, generated frontend artifact, or environment configuration was changed.
+No schema, `meta.version.ts`, generated frontend artifact, or environment configuration was changed by this direct matrix.
 
 ## Retained evidence
 
+- [Direct external HTTP/API matrix validation](./artifacts/2026-08-27-b28df50-direct-http-api-matrices.md)
+- [API-only matrix specification](../../../../repo-e2e/specs/cabloy-admin-rbac-api.spec.ts)
+- [External HTTP fixture helpers](../../../../repo-e2e/specs/helpers/cabloy-admin-api.ts)
 - [RBAC catalog and guard regression](../../../../vona/src/suite-vendor/a-cabloy/modules/a-rbac/test/rbacCatalogGuard.test.ts)
 - [Start grant regression](../../../../vona/src/suite/cabloy-admin/modules/admin-rbac/test/rbacGrant.test.ts)
 - [Start grant Department regression](../../../../vona/src/suite/cabloy-admin/modules/admin-rbac/test/rbacGrantDepartment.test.ts)

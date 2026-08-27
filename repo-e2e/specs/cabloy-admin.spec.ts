@@ -1,6 +1,10 @@
-import type { APIRequestContext, Page, Response, TestInfo } from '@playwright/test';
+import type { Page, Response } from '@playwright/test';
 
 import { expect, test } from '@playwright/test';
+
+import type { RegisteredAccount } from './helpers/cabloy-admin-api.ts';
+
+import { registerAccountUser, removeAccountFixture } from './helpers/cabloy-admin-api.ts';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -197,66 +201,6 @@ async function replaceUserRoles(
 
 async function deleteRole(page: Page, roleId: number | string) {
   await requestApi(page, 'DELETE', `/api/admin/role/${roleId}`);
-}
-
-interface RegisteredAccount {
-  id: number | string;
-  username: string;
-  password: string;
-  accessToken: string;
-}
-
-async function removeAccountFixture(
-  request: APIRequestContext,
-  account: RegisteredAccount,
-): Promise<void> {
-  const response = await request.delete('/api/home/user/passportTest/removeCurrentFixture', {
-    headers: { Authorization: `Bearer ${account.accessToken}` },
-  });
-  expect(response.ok()).toBeTruthy();
-}
-
-async function registerAccountUser(
-  request: APIRequestContext,
-  testInfo: TestInfo,
-): Promise<RegisteredAccount> {
-  const suffix = `${testInfo.workerIndex}-${testInfo.parallelIndex ?? testInfo.retry}-${crypto.randomUUID()}`;
-  const username = `e2e-fixture-admin-rbac-${suffix}`;
-  const password = 'rbac-e2e-pass';
-  const captchaResponse = await request.post('/api/captcha/create', {
-    data: { scene: 'captcha-simple:simple' },
-  });
-  expect(captchaResponse.ok()).toBeTruthy();
-  const captcha = (await captchaResponse.json()).data;
-  expect(captcha?.id).toEqual(expect.any(String));
-  expect(captcha?.token).toEqual(expect.any(String));
-
-  const baseURL = testInfo.project.use.baseURL;
-  if (!baseURL) throw new Error('account E2E base URL is unavailable');
-  const registerResponse = await request.post('/api/home/user/passport/register', {
-    data: {
-      username,
-      email: `${username}@example.test`,
-      password,
-      passwordConfirm: password,
-      consumerUrl: new URL('/home/user/activation', baseURL).toString(),
-      captcha: { id: captcha.id, token: captcha.token },
-    },
-  });
-  expect(registerResponse.ok()).toBeTruthy();
-  const registration = (await registerResponse.json()).data;
-  expect(registration?.passport?.user?.id).toEqual(expect.anything());
-  expect(registration?.jwt?.accessToken).toEqual(expect.any(String));
-  const activateResponse = await request.post('/api/home/user/passportTest/activateCurrent', {
-    headers: { Authorization: `Bearer ${registration.jwt.accessToken}` },
-  });
-  expect(activateResponse.ok()).toBeTruthy();
-  return {
-    id: registration.passport.user.id,
-    username,
-    password,
-    accessToken: registration.jwt.accessToken,
-  };
 }
 
 async function loginAsAccountUser(page: Page, username: string, password: string) {
