@@ -40,23 +40,24 @@ export class TableCellActionSummary extends BeanBase implements ITableCellRender
             'training-student.model.student',
             true,
           )) as ModelStudent;
-          const { data: summary } = await modelStudent.summary(id).refetch();
+          const querySummary = modelStudent.summary(id);
+          await querySummary.refetch();
           this.$appModal.dialog({
             title: this.scope.locale.Summary(),
             slotDefault: () => (
               <div class="d-flex flex-column ga-4">
                 <div class="d-flex flex-column ga-1">
                   <div>
-                    {this.scope.locale.Id()}: {summary?.id ?? '-'}
+                    {this.scope.locale.Id()}: {querySummary.data?.id ?? '-'}
                   </div>
                   <div>
-                    {this.scope.locale.Name()}: {summary?.name ?? '-'}
+                    {this.scope.locale.Name()}: {querySummary.data?.name ?? '-'}
                   </div>
                   <div>
-                    {this.scope.locale.Level()}: {summary?.levelTitle ?? '-'}
+                    {this.scope.locale.Level()}: {querySummary.data?.levelTitle ?? '-'}
                   </div>
                 </div>
-                <ZMarkdownHtml html={summary?.descriptionHtml ?? ''} />
+                <ZMarkdownHtml html={querySummary.data?.descriptionHtml ?? ''} />
               </div>
             ),
           });
