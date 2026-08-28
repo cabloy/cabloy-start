@@ -274,12 +274,10 @@ describe('dataScope.test.ts', { concurrency: false }, () => {
       });
 
       await app.bean.executor.mockCtx(async () => {
-        const scoped = await app
-          .scope('training-student')
-          .model.student.getById(scopedStudentId!, {
-            disableDeleted: true,
-            include: { content: true },
-          });
+        const scoped = await app.scope('training-student').model.student.getById(scopedStudentId!, {
+          disableDeleted: true,
+          include: { content: true },
+        });
         const foreign = await app
           .scope('training-student')
           .model.student.getById(foreignStudentId!, {

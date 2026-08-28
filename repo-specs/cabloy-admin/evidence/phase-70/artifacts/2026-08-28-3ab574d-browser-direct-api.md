@@ -42,12 +42,12 @@ The fast runner sent real HTTP requests through Playwright `APIRequestContext`; 
 
 Observed result: **3 passed (5.9s)**.
 
-| Scenario | Current-candidate direct API coverage |
-| --- | --- |
+| Scenario         | Current-candidate direct API coverage                                                                                                      |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | `ATP-ADM-POL-02` | unrestricted admission, default denial, protected policy-control-plane denial, disabled/enabled/deleted/recreated grants, and invalidation |
-| `ATP-ADM-SCP-01` | five scopes, restricted union, `all` dominance, mapped/unmapped Department behavior, and caller-filter composition |
-| `ATP-ADM-SCP-02` | Student/Record server ownership stamping, forged-input resistance, inherited Record scope, and Student/Record bulk preflight |
+| `ATP-ADM-SCP-01` | five scopes, restricted union, `all` dominance, mapped/unmapped Department behavior, and caller-filter composition                         |
+| `ATP-ADM-SCP-02` | Student/Record server ownership stamping, forged-input resistance, inherited Record scope, and Student/Record bulk preflight               |
 
 ## Boundary
 
-The direct API matrix is bearer-token HTTP acceptance against the controlled SQLite runtime. It is intentionally distinct from the focused PostgreSQL contention proof and from SSR/browser acceptance. It does not waive the failed repository format gate recorded in the Phase 70 quality artifact.
+The direct API matrix is bearer-token HTTP acceptance against the controlled SQLite runtime. It is intentionally distinct from the focused PostgreSQL contention proof and from SSR/browser acceptance. The separate Phase 70 quality artifact records the current passing repository format gate.

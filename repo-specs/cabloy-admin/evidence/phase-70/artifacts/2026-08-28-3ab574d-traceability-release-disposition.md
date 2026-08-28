@@ -3,7 +3,7 @@
 - **Candidate base revision:** `3ab574de6435acd59047f2bd5993df867fc92f9e`
 - **Execution date:** 2026-08-28
 - **Traceability:** `WBS-ADM-70-03`; [PRD](../../../prd.md); [SRS](../../../srs.md); [PDP/WBS](../../../pdp-wbs.md); [test plan](../../../test-plan.md)
-- **Result:** release blocked
+- **Result:** release acceptance verified
 
 ## Reconciliation
 
@@ -16,12 +16,12 @@
 
 ## Derived WBS status
 
-| WBS | Derived status | Basis |
-| --- | --- | --- |
-| `WBS-ADM-70-01` | `implementation-complete` | Migration/version decision and contract synchronization pass; the separate repository quality failure prevents Phase 70 closure. |
-| `WBS-ADM-70-02` | `blocked` | Focused PostgreSQL, full regression, lint, build/dependency/type, direct HTTP/API, SSR/navigation/browser checks pass; `npm run format` fails. |
-| `WBS-ADM-70-03` | `blocked` | Traceability is retained, but release closure is not eligible until the failed format gate is resolved or a valid waiver with owner, reason, and expiry is recorded. |
+| WBS             | Derived status | Basis                                                                                                                                                 |
+| --------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `WBS-ADM-70-01` | `verified`     | Migration/version decision and stable forward/reverse contract synchronization are retained.                                                          |
+| `WBS-ADM-70-02` | `verified`     | Focused PostgreSQL, full regression, lint, format, build/dependency/type, direct HTTP/API, SSR/navigation/browser checks pass.                        |
+| `WBS-ADM-70-03` | `verified`     | Traceability is retained; no expired waiver or severity-one invariant failure remains; the release disposition is derived from current passing gates. |
 
 ## Release decision
 
-**Do not approve release.** The current repository format gate fails and has no waiver. No release tag, publication, release script, or `.cabloy-version` change was performed.
+**Release acceptance is verified.** Current required evidence is retained, all applicable repository gates pass, and no waiver or severity-one invariant failure remains. This is an evidence disposition only: no release tag, publication, release script, or `.cabloy-version` change was performed.

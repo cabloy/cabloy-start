@@ -46,9 +46,7 @@ describe('student.test.ts', { concurrency: false }, () => {
           [DtoClass === DtoStudentView ? '_descriptionMarkdown' : 'content'],
         );
         if (DtoClass === DtoStudentView) {
-          assert.ok(
-            (component as any)?.properties?._descriptionMarkdown?.type?.includes('string'),
-          );
+          assert.ok((component as any)?.properties?._descriptionMarkdown?.type?.includes('string'));
           assert.equal(
             (component as any)?.properties?._descriptionMarkdown?.rest?.fieldSource,
             'content.descriptionMarkdown',
@@ -57,10 +55,7 @@ describe('student.test.ts', { concurrency: false }, () => {
             (component as any)?.properties?._descriptionMarkdown?.rest?.form?.render,
             'start-markdown:formFieldMarkdown',
           );
-          assert.equal(
-            (component as any)?.required?.includes('_descriptionMarkdown'),
-            false,
-          );
+          assert.equal((component as any)?.required?.includes('_descriptionMarkdown'), false);
         } else {
           assert.equal(
             (component as any)?.properties?.content?.properties?.descriptionMarkdown?.rest?.form
@@ -325,12 +320,15 @@ The stored value must round-trip exactly through the API, model, and summary res
         disableDeleted: true,
       });
       assert.equal(studentRaw!.mobile, mobileUpdate);
-      const studentContentRaw = await app
-        .bean.scope('training-student')
+      const studentContentRaw = await app.bean
+        .scope('training-student')
         .model.studentContent.get({ studentId }, { disableDeleted: true });
       assert.equal(studentContentRaw!.descriptionMarkdown, descriptionUpdate);
       assert.equal(studentContentRaw!.descriptionHtml?.includes('<script>'), false);
-      assert.equal(studentContentRaw!.descriptionHtml?.includes('<h2>Updated student profile</h2>'), true);
+      assert.equal(
+        studentContentRaw!.descriptionHtml?.includes('<h2>Updated student profile</h2>'),
+        true,
+      );
       // summary
       const summary: DtoStudentSummary = await app.bean.executor.performAction(
         'get',
@@ -351,8 +349,8 @@ The stored value must round-trip exactly through the API, model, and summary res
         params: { id: student.id },
       });
       assert.equal(deleteRes, null);
-      const studentContentDeleted = await app
-        .bean.scope('training-student')
+      const studentContentDeleted = await app.bean
+        .scope('training-student')
         .model.studentContent.get({ studentId }, { disableDeleted: true });
       assert.equal(studentContentDeleted?.deleted, true);
       assert.equal(
@@ -385,8 +383,8 @@ The stored value must round-trip exactly through the API, model, and summary res
           disableDeleted: true,
         });
       assert.equal(studentForce, undefined);
-      const studentContentForceDeleted = await app
-        .bean.scope('training-student')
+      const studentContentForceDeleted = await app.bean
+        .scope('training-student')
         .model.studentContent.get({ studentId: studentIdForce }, { disableDeleted: true });
       assert.equal(studentContentForceDeleted, undefined);
       // logout
@@ -444,16 +442,8 @@ The stored value must round-trip exactly through the API, model, and summary res
         );
         assert.equal(preservedContent?.descriptionMarkdown, '');
         assert.equal(preservedContent?.descriptionHtml, '');
-        assert.ok(
-          await app
-            .bean.scope('training-student')
-            .model.student.getById(emptyStudentId),
-        );
-        assert.ok(
-          await app
-            .bean.scope('training-student')
-            .model.student.getById(bulkStudentId),
-        );
+        assert.ok(await app.bean.scope('training-student').model.student.getById(emptyStudentId));
+        assert.ok(await app.bean.scope('training-student').model.student.getById(bulkStudentId));
 
         const bulkDeleteRes = await app.bean.executor.performAction(
           'delete',
@@ -462,17 +452,13 @@ The stored value must round-trip exactly through the API, model, and summary res
         );
         assert.equal(bulkDeleteRes, null);
         assert.equal(
-          (await studentContentModel.get(
-            { studentId: emptyStudentId },
-            { disableDeleted: true },
-          ))?.deleted,
+          (await studentContentModel.get({ studentId: emptyStudentId }, { disableDeleted: true }))
+            ?.deleted,
           true,
         );
         assert.equal(
-          (await studentContentModel.get(
-            { studentId: bulkStudentId },
-            { disableDeleted: true },
-          ))?.deleted,
+          (await studentContentModel.get({ studentId: bulkStudentId }, { disableDeleted: true }))
+            ?.deleted,
           true,
         );
       } finally {
