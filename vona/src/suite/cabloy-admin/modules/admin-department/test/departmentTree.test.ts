@@ -75,11 +75,15 @@ describe('departmentTree.test.ts', { concurrency: false }, () => {
       const results = await Promise.all([
         app.bean.executor.mockCtx(async () => {
           await start();
-          return await catchError(() => departmentService().move(childId!, { parentId: destinationAId! }));
+          return await catchError(() =>
+            departmentService().move(childId!, { parentId: destinationAId! }),
+          );
         }),
         app.bean.executor.mockCtx(async () => {
           await start();
-          return await catchError(() => departmentService().move(childId!, { parentId: destinationBId! }));
+          return await catchError(() =>
+            departmentService().move(childId!, { parentId: destinationBId! }),
+          );
         }),
       ]);
       assert.equal(
@@ -155,7 +159,9 @@ describe('departmentTree.test.ts', { concurrency: false }, () => {
           [String(third.id), String(first.id), String(second.id)],
         );
         assert.ok(
-          testRoots.every((item, index) => index === 0 || item.sortOrder > testRoots[index - 1].sortOrder),
+          testRoots.every(
+            (item, index) => index === 0 || item.sortOrder > testRoots[index - 1].sortOrder,
+          ),
         );
 
         const [selfResult, selfError] = await catchError(() => {

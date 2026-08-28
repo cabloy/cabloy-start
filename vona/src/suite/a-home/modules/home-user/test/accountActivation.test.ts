@@ -329,9 +329,7 @@ async function issueActivationLink(fixture: IFixture, consumerUrl = activationCo
   };
   try {
     await app.bean.executor.mockCtx(async () => {
-      await app
-        .scope('home-user')
-        .service.account.issueActivationLink(fixture.userId, consumerUrl);
+      await app.scope('home-user').service.account.issueActivationLink(fixture.userId, consumerUrl);
     });
   } finally {
     mail.send = send;

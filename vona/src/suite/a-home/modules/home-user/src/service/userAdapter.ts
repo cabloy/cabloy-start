@@ -1,10 +1,5 @@
 import type { TableIdentity } from 'table-identity';
-import type {
-  IAuthUserProfile,
-  IUser,
-  IUserAdapter,
-  TypeAccountStatus,
-} from 'vona-module-a-user';
+import type { IAuthUserProfile, IUser, IUserAdapter, TypeAccountStatus } from 'vona-module-a-user';
 
 import { BeanBase } from 'vona';
 import { Service } from 'vona-module-a-bean';

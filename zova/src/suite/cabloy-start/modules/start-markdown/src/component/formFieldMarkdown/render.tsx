@@ -20,30 +20,34 @@ export class RenderFormFieldMarkdown extends BeanRenderBase {
     options: { active?: boolean; disabled?: boolean } = {},
   ) {
     return (
-      <VTooltip text={label} location="bottom" v-slots={{
-        activator: ({ props }) => (
-          <VBtn
-            {...props}
-            icon={$iconName(name)}
-            variant={options.active ? 'tonal' : 'text'}
-            color={options.active ? 'primary' : undefined}
-            size="small"
-            density="compact"
-            minHeight="1.75rem"
-            minWidth="1.75rem"
-            aria-label={label}
-            aria-pressed={options.active}
-            disabled={options.disabled}
-            nativeOnMousedown={(event: MouseEvent) => {
-              event.preventDefault();
-            }}
-            nativeOnClick={(event: MouseEvent) => {
-              event.stopPropagation();
-              action();
-            }}
-          ></VBtn>
-        ),
-      }}></VTooltip>
+      <VTooltip
+        text={label}
+        location="bottom"
+        v-slots={{
+          activator: ({ props }) => (
+            <VBtn
+              {...props}
+              icon={$iconName(name)}
+              variant={options.active ? 'tonal' : 'text'}
+              color={options.active ? 'primary' : undefined}
+              size="small"
+              density="compact"
+              minHeight="1.75rem"
+              minWidth="1.75rem"
+              aria-label={label}
+              aria-pressed={options.active}
+              disabled={options.disabled}
+              nativeOnMousedown={(event: MouseEvent) => {
+                event.preventDefault();
+              }}
+              nativeOnClick={(event: MouseEvent) => {
+                event.stopPropagation();
+                action();
+              }}
+            ></VBtn>
+          ),
+        }}
+      ></VTooltip>
     );
   }
 
@@ -125,36 +129,40 @@ export class RenderFormFieldMarkdown extends BeanRenderBase {
     const label = this.scope.locale.InsertTable();
     return (
       <div class={this.cTablePickerTrigger}>
-        <VTooltip text={label} location="bottom" v-slots={{
-          activator: ({ props }) => (
-            <VBtn
-              {...props}
-              icon={$iconName(':editor:grid-on')}
-              variant="text"
-              size="small"
-              density="compact"
-              minHeight="1.75rem"
-              minWidth="1.75rem"
-              aria-label={label}
-              aria-haspopup="grid"
-              aria-expanded={this.tablePickerOpen}
-              aria-controls="markdown-table-size-picker"
-              disabled={!this.toolbarState.canTable}
-              nativeOnMousedown={(event: MouseEvent) => {
-                event.preventDefault();
-              }}
-              nativeOnClick={(event: MouseEvent) => {
-                event.stopPropagation();
-                this.toggleTablePicker();
-              }}
-              ref={ref => {
-                if (this.ctx.disposed) return;
-                const element = (ref as any)?.$el ?? ref;
-                this.setTablePickerTrigger?.(element as HTMLButtonElement | null);
-              }}
-            ></VBtn>
-          ),
-        }}></VTooltip>
+        <VTooltip
+          text={label}
+          location="bottom"
+          v-slots={{
+            activator: ({ props }) => (
+              <VBtn
+                {...props}
+                icon={$iconName(':editor:grid-on')}
+                variant="text"
+                size="small"
+                density="compact"
+                minHeight="1.75rem"
+                minWidth="1.75rem"
+                aria-label={label}
+                aria-haspopup="grid"
+                aria-expanded={this.tablePickerOpen}
+                aria-controls="markdown-table-size-picker"
+                disabled={!this.toolbarState.canTable}
+                nativeOnMousedown={(event: MouseEvent) => {
+                  event.preventDefault();
+                }}
+                nativeOnClick={(event: MouseEvent) => {
+                  event.stopPropagation();
+                  this.toggleTablePicker();
+                }}
+                ref={ref => {
+                  if (this.ctx.disposed) return;
+                  const element = (ref as any)?.$el ?? ref;
+                  this.setTablePickerTrigger?.(element as HTMLButtonElement | null);
+                }}
+              ></VBtn>
+            ),
+          }}
+        ></VTooltip>
         {this._renderTablePicker()}
       </div>
     );

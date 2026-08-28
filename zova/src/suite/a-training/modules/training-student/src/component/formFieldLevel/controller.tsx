@@ -74,7 +74,11 @@ export class ControllerFormFieldLevel extends BeanControllerBase {
                     }}
                   >
                     {items.map(item => (
-                      <VChip key={String(item[itemValue])} value={item[itemValue]} color={this._color(item[itemValue])}>
+                      <VChip
+                        key={String(item[itemValue])}
+                        value={item[itemValue]}
+                        color={this._color(item[itemValue])}
+                      >
                         {item[itemTitle]}
                       </VChip>
                     ))}

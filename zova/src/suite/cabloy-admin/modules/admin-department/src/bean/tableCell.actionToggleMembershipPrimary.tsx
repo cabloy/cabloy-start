@@ -9,13 +9,9 @@ import { BeanBase } from 'zova';
 import { TableCell } from 'zova-module-a-table';
 import { ZButton } from 'zova-module-start-button';
 
-import {
-  departmentId,
-  getLocale,
-  getModelDepartment,
-  type DepartmentMembershipRow,
-  type MembershipLocale,
-} from './membershipAction.tsx';
+import type { DepartmentMembershipRow, MembershipLocale } from './membershipAction.tsx';
+
+import { departmentId, getLocale, getModelDepartment } from './membershipAction.tsx';
 
 export interface ITableCellOptionsActionToggleMembershipPrimary extends IResourceDetailsActionRowOptionsBase {}
 

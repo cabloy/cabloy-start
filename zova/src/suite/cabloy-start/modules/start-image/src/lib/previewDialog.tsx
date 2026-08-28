@@ -4,6 +4,7 @@ import { reactive } from 'vue';
 import { VBtn } from 'vuetify/components';
 
 import type { IImagePreviewItem } from './preview.js';
+
 import { resolveImagePreviewUrl } from './preview.js';
 
 interface IImagePreviewDialogState {
@@ -71,19 +72,31 @@ function renderBody(
       }}
       onKeydown={event => {
         if (items.length < 2) return;
-        if (event.key === 'ArrowLeft') state.activeIndex = (state.activeIndex + items.length - 1) % items.length;
+        if (event.key === 'ArrowLeft')
+          state.activeIndex = (state.activeIndex + items.length - 1) % items.length;
         if (event.key === 'ArrowRight') state.activeIndex = (state.activeIndex + 1) % items.length;
       }}
     >
       {url && (
-        <div class="d-flex align-center justify-center bg-surface-variant" style={{ minHeight: '320px' }}>
-          <img style={{ display: 'block', maxWidth: '100%', maxHeight: '70vh', objectFit: 'contain' }} src={url} alt={item?.filename ?? 'image'} />
+        <div
+          class="d-flex align-center justify-center bg-surface-variant"
+          style={{ minHeight: '320px' }}
+        >
+          <img
+            style={{ display: 'block', maxWidth: '100%', maxHeight: '70vh', objectFit: 'contain' }}
+            src={url}
+            alt={item?.filename ?? 'image'}
+          />
         </div>
       )}
       {(item?.filename || items.length > 1) && (
         <div class="d-flex align-center justify-space-between ga-3">
           <span class="text-truncate">{item?.filename}</span>
-          {items.length > 1 && <span class="text-medium-emphasis">{state.activeIndex + 1} / {items.length}</span>}
+          {items.length > 1 && (
+            <span class="text-medium-emphasis">
+              {state.activeIndex + 1} / {items.length}
+            </span>
+          )}
         </div>
       )}
       {items.length > 1 && (

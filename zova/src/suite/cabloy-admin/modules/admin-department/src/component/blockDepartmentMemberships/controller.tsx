@@ -1,5 +1,5 @@
-import type { IComponentOptions } from 'zova';
 import type { TableIdentity } from 'table-identity';
+import type { IComponentOptions } from 'zova';
 import type {
   IJsxRenderContextPageEntry,
   IResourceBlockOptionsBase,

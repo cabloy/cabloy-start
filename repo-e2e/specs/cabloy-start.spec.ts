@@ -267,7 +267,9 @@ test(
 
     const routeOverrideResponse = await request.get('/demo/basic/component');
     expect(routeOverrideResponse.ok()).toBeTruthy();
-    expect(routeOverrideResponse.headers()['cache-control']).toBe('no-cache, no-store, must-revalidate');
+    expect(routeOverrideResponse.headers()['cache-control']).toBe(
+      'no-cache, no-store, must-revalidate',
+    );
 
     const pageErrors = collectPageErrors(page);
     const documentResponse = await page.goto('/', { waitUntil: 'load' });

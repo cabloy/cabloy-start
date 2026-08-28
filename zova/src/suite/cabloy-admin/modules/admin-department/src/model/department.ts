@@ -180,12 +180,9 @@ export class ModelDepartment extends BeanModelBase {
       id,
       action: 'reorder',
       mutationFn: async beforeId => {
-        await (
-          this.scope.api.adminDepartment.reorder(
-            { beforeId } as never,
-            { params: { id } },
-          ) as Promise<void>
-        );
+        await (this.scope.api.adminDepartment.reorder({ beforeId } as never, {
+          params: { id },
+        }) as Promise<void>);
       },
       onSuccess: async () => {
         await this.$$modelResource.$invalidateQueries({

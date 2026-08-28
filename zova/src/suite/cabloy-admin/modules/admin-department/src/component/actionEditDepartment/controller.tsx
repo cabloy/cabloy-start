@@ -1,5 +1,8 @@
 import type { IComponentOptions } from 'zova';
-import type { IJsxRenderContextPageEntry, IResourceFormActionRowOptionsBase } from 'zova-module-a-openapi';
+import type {
+  IJsxRenderContextPageEntry,
+  IResourceFormActionRowOptionsBase,
+} from 'zova-module-a-openapi';
 
 import { VBtn } from 'vuetify/components';
 import { BeanControllerBase, Use } from 'zova';
@@ -34,9 +37,7 @@ export class ControllerActionEditDepartment extends BeanControllerBase {
   }
 
   protected render() {
-    const locale = (this as unknown as {
-      scope: { locale: { EditDepartment(): string } };
-    }).scope.locale;
+    const locale = this.scope.locale;
     const props = this.$props as { class?: string };
     return (
       <VBtn class={props.class} color="primary" to={this.editUrl}>

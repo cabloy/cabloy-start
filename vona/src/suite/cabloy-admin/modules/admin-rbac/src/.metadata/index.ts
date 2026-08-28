@@ -11,17 +11,17 @@ import type { IEntityOptionsRbacGrant } from '../entity/rbacGrant.tsx';
 import type { IEntityOptionsRbacGrantDepartment } from '../entity/rbacGrantDepartment.tsx';
 import 'vona-module-a-orm';
 declare module 'vona-module-a-orm' {
-  
+
     export interface IEntityRecord {
       'admin-rbac:policyRevision': IEntityOptionsPolicyRevision;
 'admin-rbac:rbacGrant': IEntityOptionsRbacGrant;
 'admin-rbac:rbacGrantDepartment': IEntityOptionsRbacGrantDepartment;
     }
 
-  
+
 }
 declare module 'vona-module-admin-rbac' {
-   
+
 }
 /** entity: end */
 /** entity: begin */
@@ -49,7 +49,7 @@ declare module 'vona-module-a-orm' {
   }
 }
 declare module 'vona-module-admin-rbac' {
-  
+
     export interface IEntityOptionsPolicyRevision {
       fields?: TypeEntityOptionsFields<EntityPolicyRevision, IEntityOptionsPolicyRevision[TypeSymbolKeyFieldsMore]>;
     }
@@ -72,17 +72,17 @@ import type { IModelOptionsRbacGrant } from '../model/rbacGrant.ts';
 import type { IModelOptionsRbacGrantDepartment } from '../model/rbacGrantDepartment.ts';
 import 'vona-module-a-orm';
 declare module 'vona-module-a-orm' {
-  
+
     export interface IModelRecord {
       'admin-rbac:policyRevision': IModelOptionsPolicyRevision;
 'admin-rbac:rbacGrant': IModelOptionsRbacGrant;
 'admin-rbac:rbacGrantDepartment': IModelOptionsRbacGrantDepartment;
     }
 
-  
+
 }
 declare module 'vona-module-admin-rbac' {
-  
+
         export interface ModelPolicyRevision {
           /** @internal */
           get scope(): ScopeModuleAdminRbac;
@@ -114,7 +114,7 @@ declare module 'vona-module-admin-rbac' {
             get $beanFullName(): 'admin-rbac.model.rbacGrantDepartment';
             get $onionName(): 'admin-rbac:rbacGrantDepartment';
             get $onionOptions(): IModelOptionsRbacGrantDepartment;
-          } 
+          }
 }
 /** model: end */
 /** model: begin */
@@ -142,7 +142,7 @@ declare module 'vona' {
 import type { IModelGetOptions, IModelMethodOptions, IModelSelectParams, TypeModelSelectAndCount, TypeModelRelationResult, TypeModelWhere, IModelInsertOptions, TypeModelMutateRelationData, IModelDeleteOptions, IModelUpdateOptions, IModelMutateOptions, IModelSelectCountParams, IModelIncrementParams, IModelSelectAggrParams, TypeModelAggrRelationResult, IModelSelectGroupParams, TypeModelGroupRelationResult } from 'vona-module-a-orm';
 import { SymbolKeyEntity, SymbolKeyEntityMeta, SymbolKeyModelOptions } from 'vona-module-a-orm';
 declare module 'vona-module-admin-rbac' {
-  
+
   export interface ModelPolicyRevision {
       [SymbolKeyEntity]: EntityPolicyRevision;
       [SymbolKeyEntityMeta]: EntityPolicyRevisionMeta;
@@ -275,7 +275,7 @@ export * from '../service/rbacScopeAdapter.ts';
 
 import 'vona-module-a-bean';
 declare module 'vona-module-a-bean' {
-  
+
     export interface IServiceRecord {
       'admin-rbac:rbacGrant': never;
 'admin-rbac:rbacGrantDepartment': never;
@@ -285,10 +285,10 @@ declare module 'vona-module-a-bean' {
 'admin-rbac:rbacScopeAdapter': never;
     }
 
-  
+
 }
 declare module 'vona-module-admin-rbac' {
-  
+
         export interface ServiceRbacGrant {
           /** @internal */
           get scope(): ScopeModuleAdminRbac;
@@ -347,7 +347,7 @@ declare module 'vona-module-admin-rbac' {
           export interface ServiceRbacScopeAdapter {
             get $beanFullName(): 'admin-rbac.service.rbacScopeAdapter';
             get $onionName(): 'admin-rbac:rbacScopeAdapter';
-          } 
+          }
 }
 /** service: end */
 /** service: begin */
@@ -386,16 +386,16 @@ export * from '../bean/eventListener.policyResolver.ts';
 
 import { type IDecoratorEventListenerOptions } from 'vona-module-a-event';
 declare module 'vona-module-a-event' {
-  
+
     export interface IEventListenerRecord {
       'admin-rbac:policyInvalidated': IDecoratorEventListenerOptions;
 'admin-rbac:policyResolver': IDecoratorEventListenerOptions;
     }
 
-  
+
 }
 declare module 'vona-module-admin-rbac' {
-  
+
         export interface EventListenerPolicyInvalidated {
           /** @internal */
           get scope(): ScopeModuleAdminRbac;
@@ -416,7 +416,7 @@ declare module 'vona-module-admin-rbac' {
             get $beanFullName(): 'admin-rbac.eventListener.policyResolver';
             get $onionName(): 'admin-rbac:policyResolver';
             get $onionOptions(): IDecoratorEventListenerOptions;
-          } 
+          }
 }
 /** eventListener: end */
 /** meta: begin */
@@ -425,16 +425,16 @@ export * from '../bean/meta.version.ts';
 import type { IMetaOptionsIndex } from 'vona-module-a-index';
 import 'vona-module-a-meta';
 declare module 'vona-module-a-meta' {
-  
+
     export interface IMetaRecord {
       'admin-rbac:index': IMetaOptionsIndex;
 'admin-rbac:version': never;
     }
 
-  
+
 }
 declare module 'vona-module-admin-rbac' {
-  
+
         export interface MetaIndex {
           /** @internal */
           get scope(): ScopeModuleAdminRbac;
@@ -454,7 +454,7 @@ declare module 'vona-module-admin-rbac' {
           export interface MetaVersion {
             get $beanFullName(): 'admin-rbac.meta.version';
             get $onionName(): 'admin-rbac:version';
-          } 
+          }
 }
 /** meta: end */
 /** dto: begin */
@@ -494,7 +494,7 @@ import type { IDtoOptionsRbacPolicyRoleConfigurationRes } from '../dto/rbacPolic
 import type { IDtoOptionsRbacPolicyRoleConfigurationScope } from '../dto/rbacPolicyRoleConfigurationScope.ts';
 import 'vona-module-a-web';
 declare module 'vona-module-a-web' {
-  
+
     export interface IDtoRecord {
       'admin-rbac:rbacGrantCreate': IDtoOptionsRbacGrantCreate;
 'admin-rbac:rbacGrantDepartmentCreate': IDtoOptionsRbacGrantDepartmentCreate;
@@ -515,10 +515,10 @@ declare module 'vona-module-a-web' {
 'admin-rbac:rbacPolicyRoleConfigurationScope': IDtoOptionsRbacPolicyRoleConfigurationScope;
     }
 
-  
+
 }
 declare module 'vona-module-admin-rbac' {
-   
+
 }
 /** dto: end */
 /** dto: begin */
@@ -540,7 +540,7 @@ import type { DtoRbacPolicyRoleConfigurationAction } from '../dto/rbacPolicyRole
 import type { DtoRbacPolicyRoleConfigurationRes } from '../dto/rbacPolicyRoleConfigurationRes.ts';
 import type { DtoRbacPolicyRoleConfigurationScope } from '../dto/rbacPolicyRoleConfigurationScope.ts';
 declare module 'vona-module-admin-rbac' {
-  
+
     export interface IDtoOptionsRbacGrantCreate {
       fields?: TypeEntityOptionsFields<DtoRbacGrantCreate, IDtoOptionsRbacGrantCreate[TypeSymbolKeyFieldsMore]>;
     }
@@ -619,17 +619,17 @@ import type { IControllerOptionsRbacGrantDepartment } from '../controller/rbacGr
 import type { IControllerOptionsRbacPolicy } from '../controller/rbacPolicy.ts';
 import 'vona-module-a-web';
 declare module 'vona-module-a-web' {
-  
+
     export interface IControllerRecord {
       'admin-rbac:rbacGrant': IControllerOptionsRbacGrant;
 'admin-rbac:rbacGrantDepartment': IControllerOptionsRbacGrantDepartment;
 'admin-rbac:rbacPolicy': IControllerOptionsRbacPolicy;
     }
 
-  
+
 }
 declare module 'vona-module-admin-rbac' {
-  
+
         export interface ControllerRbacGrant {
           /** @internal */
           get scope(): ScopeModuleAdminRbac;
@@ -661,7 +661,7 @@ declare module 'vona-module-admin-rbac' {
             get $beanFullName(): 'admin-rbac.controller.rbacPolicy';
             get $onionName(): 'admin-rbac:rbacPolicy';
             get $onionOptions(): IControllerOptionsRbacPolicy;
-          } 
+          }
 }
 /** controller: end */
 /** controller: begin */
@@ -672,7 +672,7 @@ import type { ControllerRbacGrantDepartment } from '../controller/rbacGrantDepar
 // @ts-ignore ignore
 import type { ControllerRbacPolicy } from '../controller/rbacPolicy.ts';
 declare module 'vona-module-admin-rbac' {
-  
+
     export interface IControllerOptionsRbacGrant {
       actions?: TypeControllerOptionsActions<ControllerRbacGrant>;
     }
@@ -714,7 +714,7 @@ import 'vona-module-a-openapi';
 'admin-rbac:rbacGrantDepartment': never;
     }
   }
-  
+
 /** controller: end */
 /** locale: begin */
 import { locales } from './locales.ts';
@@ -743,13 +743,13 @@ declare module 'vona' {
   export interface IBeanScopeContainer {
     adminRbac: ScopeModuleAdminRbac;
   }
-  
-  
+
+
 
   export interface IBeanScopeLocale {
     'admin-rbac': (typeof locales)[TypeLocaleBase];
   }
 
-  
+
 }
 /** scope: end */

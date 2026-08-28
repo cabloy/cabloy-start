@@ -590,8 +590,8 @@ describe('systemAdminProtection.test.ts', { concurrency: false }, () => {
 
       const start = createBarrier(2);
       const results = await Promise.all(
-        Array.from({ length: 2 }, () => {
-          return app.bean.executor.mockCtx(async () => {
+        Array.from({ length: 2 }).fill(
+          app.bean.executor.mockCtx(async () => {
             await app.bean.passport.signinMock();
             try {
               const proof = await issueFreshProof();
@@ -607,8 +607,8 @@ describe('systemAdminProtection.test.ts', { concurrency: false }, () => {
             } finally {
               await app.bean.passport.signout();
             }
-          });
-        }),
+          }),
+        ),
       );
       assert.equal(results.filter(([result]) => result === null).length, 1);
       assert.equal(

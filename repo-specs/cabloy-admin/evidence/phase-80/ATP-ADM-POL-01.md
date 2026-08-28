@@ -2,16 +2,16 @@
 
 ## Traceability
 
-| Field | Value |
-| --- | --- |
-| ATP | `ATP-ADM-POL-01` |
-| PRD | `PRD-ADM-POL-01`–`PRD-ADM-POL-03` |
-| SRS | `SRS-ADM-POL-01`–`SRS-ADM-POL-04`; `SRS-ADM-SCP-09` |
-| WBS | `WBS-ADM-80-01` |
+| Field                  | Value                                                                                   |
+| ---------------------- | --------------------------------------------------------------------------------------- |
+| ATP                    | `ATP-ADM-POL-01`                                                                        |
+| PRD                    | `PRD-ADM-POL-01`–`PRD-ADM-POL-03`                                                       |
+| SRS                    | `SRS-ADM-POL-01`–`SRS-ADM-POL-04`; `SRS-ADM-SCP-09`                                     |
+| WBS                    | `WBS-ADM-80-01`                                                                         |
 | Tested source revision | `533c66edc03ab0d5337eaab3087806f0acb3fad1` plus the uncommitted changes described below |
-| Database client | managed clean `better-sqlite3` Vona test database |
-| Zova flavor | not applicable — reusable Vona contract tests |
-| Executor date | 2026-08-21 |
+| Database client        | managed clean `better-sqlite3` Vona test database                                       |
+| Zova flavor            | not applicable — reusable Vona contract tests                                           |
+| Executor date          | 2026-08-21                                                                              |
 
 ## Procedure
 

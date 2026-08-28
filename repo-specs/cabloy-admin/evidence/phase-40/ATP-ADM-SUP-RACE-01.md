@@ -2,16 +2,16 @@
 
 ## Traceability
 
-| Field | Value |
-| --- | --- |
-| ATP | `ATP-ADM-SUP-RACE-01` |
-| PRD | `PRD-ADM-SUP-03`, `PRD-ADM-SUP-04` |
-| SRS | `SRS-ADM-TXN-01` through `SRS-ADM-TXN-04`; `SRS-ADM-NFR-02`, `SRS-ADM-NFR-03` |
-| WBS | `WBS-ADM-40-03` |
-| Tested revision | `3faf3d02864c678416eb6f703a52ce508acfa303` |
-| Database client | `pg` (PostgreSQL) |
-| Zova flavor | N/A — backend PostgreSQL transaction scenario |
-| Executor date | 2026-08-13 |
+| Field           | Value                                                                         |
+| --------------- | ----------------------------------------------------------------------------- |
+| ATP             | `ATP-ADM-SUP-RACE-01`                                                         |
+| PRD             | `PRD-ADM-SUP-03`, `PRD-ADM-SUP-04`                                            |
+| SRS             | `SRS-ADM-TXN-01` through `SRS-ADM-TXN-04`; `SRS-ADM-NFR-02`, `SRS-ADM-NFR-03` |
+| WBS             | `WBS-ADM-40-03`                                                               |
+| Tested revision | `3faf3d02864c678416eb6f703a52ce508acfa303`                                    |
+| Database client | `pg` (PostgreSQL)                                                             |
+| Zova flavor     | N/A — backend PostgreSQL transaction scenario                                 |
+| Executor date   | 2026-08-13                                                                    |
 
 ## Procedure and interleaving
 

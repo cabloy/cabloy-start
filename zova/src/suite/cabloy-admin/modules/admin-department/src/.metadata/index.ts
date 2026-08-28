@@ -4,15 +4,15 @@ export * from '../model/department.js';
 import { IModelOptionsDepartment } from '../model/department.js';
 import 'zova-module-a-model';
 declare module 'zova-module-a-model' {
-  
+
     export interface IModelRecord {
       'admin-department:department': IModelOptionsDepartment;
     }
 
-  
+
 }
 declare module 'zova-module-admin-department' {
-  
+
         export interface ModelDepartment {
           /** @internal */
           get scope(): ScopeModuleAdminDepartment;
@@ -22,7 +22,7 @@ declare module 'zova-module-admin-department' {
           get $beanFullName(): 'admin-department.model.department';
           get $onionName(): 'admin-department:department';
           get $onionOptions(): IModelOptionsDepartment;
-        } 
+        }
 }
 /** model: end */
 /** model: begin */
@@ -39,11 +39,11 @@ export * from '../api/adminDepartment.js';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-admin-department' {
-  
+
         export interface ApiAdminDepartment {
           /** @internal */
           get scope(): ScopeModuleAdminDepartment;
@@ -52,8 +52,8 @@ declare module 'zova-module-admin-department' {
         export interface ApiAdminDepartment {
           get $beanFullName(): 'admin-department.api.adminDepartment';
           get $onionName(): 'admin-department:adminDepartment';
-          
-        } 
+
+        }
 }
 /** api: end */
 /** api: begin */
@@ -79,11 +79,11 @@ export * from '../apiSchema/adminDepartment.js';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-admin-department' {
-  
+
         export interface ApiSchemaAdminDepartment {
           /** @internal */
           get scope(): ScopeModuleAdminDepartment;
@@ -92,8 +92,8 @@ declare module 'zova-module-admin-department' {
         export interface ApiSchemaAdminDepartment {
           get $beanFullName(): 'admin-department.apiSchema.adminDepartment';
           get $onionName(): 'admin-department:adminDepartment';
-          
-        } 
+
+        }
 }
 /** apiSchema: end */
 /** apiSchema: begin */
@@ -120,11 +120,11 @@ export * from '../component/formFieldDepartmentTree/controller.jsx';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-admin-department' {
-  
+
         export interface ControllerActionCreateMembership {
           /** @internal */
           get scope(): ScopeModuleAdminDepartment;
@@ -148,7 +148,7 @@ declare module 'zova-module-admin-department' {
         export interface ControllerFormFieldDepartmentTree {
           /** @internal */
           get scope(): ScopeModuleAdminDepartment;
-        } 
+        }
 }
 /** controller: end */
 /** controller: begin */
@@ -222,7 +222,7 @@ import { ITableCellOptionsActionUpdateMembership } from '../bean/tableCell.actio
 import { ITableCellOptionsActionUpdateMembershipManager } from '../bean/tableCell.actionUpdateMembershipManager.jsx';
 import 'zova-module-a-table';
 declare module 'zova-module-a-table' {
-  
+
     export interface ITableCellRecord {
       'admin-department:actionActivation': ITableCellOptionsActionActivation;
 'admin-department:actionDeleteMembership': ITableCellOptionsActionDeleteMembership;
@@ -233,10 +233,10 @@ declare module 'zova-module-a-table' {
 'admin-department:actionUpdateMembershipManager': ITableCellOptionsActionUpdateMembershipManager;
     }
 
-  
+
 }
 declare module 'zova-module-admin-department' {
-  
+
         export interface TableCellActionActivation {
           /** @internal */
           get scope(): ScopeModuleAdminDepartment;
@@ -312,7 +312,7 @@ declare module 'zova-module-admin-department' {
           get $beanFullName(): 'admin-department.tableCell.actionUpdateMembershipManager';
           get $onionName(): 'admin-department:actionUpdateMembershipManager';
           get $onionOptions(): ITableCellOptionsActionUpdateMembershipManager;
-        } 
+        }
 }
 /** tableCell: end */
 /** tableCell: begin */
@@ -358,14 +358,14 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'admin-department': ScopeModuleAdminDepartment;
   }
-  
-  
+
+
 
   export interface IBeanScopeLocale {
     'admin-department': (typeof locales)[TypeLocaleBase];
   }
 
-  
+
 }
 
 export function locale<K extends keyof (typeof locales)[TypeLocaleBase]>(key: K): `admin-department::${K}` {

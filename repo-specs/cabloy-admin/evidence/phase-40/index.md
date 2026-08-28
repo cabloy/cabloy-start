@@ -4,18 +4,18 @@ This is the retained, traceable evidence index for Phase 40 — Protected system
 
 ## Evidence set
 
-| ATP | WBS | Result | Tested revision | Primary retained artifact |
-| --- | --- | --- | --- | --- |
-| [ATP-ADM-SUP-01](./ATP-ADM-SUP-01.md) | `WBS-ADM-40-01`, `WBS-ADM-40-02` | pass | `3faf3d02864c678416eb6f703a52ce508acfa303` | [SQLite focused test log](./artifacts/2026-08-13-3faf3d0-system-admin-sqlite3.log) |
-| [ATP-ADM-SUP-02](./ATP-ADM-SUP-02.md) | `WBS-ADM-40-02` | pass | `3faf3d02864c678416eb6f703a52ce508acfa303` | [SQLite focused test log](./artifacts/2026-08-13-3faf3d0-system-admin-sqlite3.log) |
-| [ATP-ADM-SUP-RACE-01](./ATP-ADM-SUP-RACE-01.md) | `WBS-ADM-40-03` | pass | `3faf3d02864c678416eb6f703a52ce508acfa303` | [PostgreSQL focused test log](./artifacts/2026-08-13-3faf3d0-system-admin-pg.log) |
+| ATP                                             | WBS                              | Result | Tested revision                            | Primary retained artifact                                                          |
+| ----------------------------------------------- | -------------------------------- | ------ | ------------------------------------------ | ---------------------------------------------------------------------------------- |
+| [ATP-ADM-SUP-01](./ATP-ADM-SUP-01.md)           | `WBS-ADM-40-01`, `WBS-ADM-40-02` | pass   | `3faf3d02864c678416eb6f703a52ce508acfa303` | [SQLite focused test log](./artifacts/2026-08-13-3faf3d0-system-admin-sqlite3.log) |
+| [ATP-ADM-SUP-02](./ATP-ADM-SUP-02.md)           | `WBS-ADM-40-02`                  | pass   | `3faf3d02864c678416eb6f703a52ce508acfa303` | [SQLite focused test log](./artifacts/2026-08-13-3faf3d0-system-admin-sqlite3.log) |
+| [ATP-ADM-SUP-RACE-01](./ATP-ADM-SUP-RACE-01.md) | `WBS-ADM-40-03`                  | pass   | `3faf3d02864c678416eb6f703a52ce508acfa303` | [PostgreSQL focused test log](./artifacts/2026-08-13-3faf3d0-system-admin-pg.log)  |
 
 ## Supporting checks
 
-| Check | Result | Retained artifact |
-| --- | --- | --- |
-| `admin-role` Vona TypeScript check | pass | [Typecheck log](./artifacts/2026-08-13-3faf3d0-admin-role-tsc.log) |
-| Root test suite (`npm run test`) | pass — 36 passed, 1 PostgreSQL-only test skipped under SQLite | [Root test log](./artifacts/2026-08-13-3faf3d0-root-test.log) |
+| Check                              | Result                                                        | Retained artifact                                                  |
+| ---------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `admin-role` Vona TypeScript check | pass                                                          | [Typecheck log](./artifacts/2026-08-13-3faf3d0-admin-role-tsc.log) |
+| Root test suite (`npm run test`)   | pass — 36 passed, 1 PostgreSQL-only test skipped under SQLite | [Root test log](./artifacts/2026-08-13-3faf3d0-root-test.log)      |
 
 ## Retention and redaction
 

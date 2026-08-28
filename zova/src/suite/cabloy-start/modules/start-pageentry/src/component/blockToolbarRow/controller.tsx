@@ -62,7 +62,10 @@ export class ControllerBlockToolbarRow extends BeanControllerBase {
       // check formScene
       if (!this._checkFormScene(permissionHint)) return;
       // check permission
-      if (!this.$passport.checkPermission(this.permissions, actionName, permissionHint, currentData)) return;
+      if (
+        !this.$passport.checkPermission(this.permissions, actionName, permissionHint, currentData)
+      )
+        return;
       const options = Object.assign({ key: index }, action.options);
       const domAction = $jsx.render(action.render!, options, $celScope, this.$$renderContext);
       if (!domAction) return;

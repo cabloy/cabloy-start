@@ -63,11 +63,7 @@ export class ControllerBlockPageDepartments extends BeanControllerBase {
 
   onActivated(value: unknown) {
     const activated =
-      value instanceof Set
-        ? value.values().next().value
-        : Array.isArray(value)
-          ? value[0]
-          : value;
+      value instanceof Set ? value.values().next().value : Array.isArray(value) ? value[0] : value;
     if (typeof activated !== 'number' && typeof activated !== 'string') return;
     this.selectDepartment(activated);
   }

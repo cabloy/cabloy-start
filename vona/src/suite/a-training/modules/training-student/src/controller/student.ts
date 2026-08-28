@@ -139,7 +139,7 @@ export class ControllerStudent extends BeanBase {
       this.app.throw(422, 'Duplicate student identity');
     }
 
-    const datas = await this.scope.model.student.mget(command.ids);
+    const datas = await this.scope.model.student.select({ where: { id: command.ids } });
     if (datas.length !== uniqueIds.size) this.app.throw(404, 'Student not found');
     rbacScopeCurrent.checkEntries(datas);
     await this.scope.service.student.deleteBulk(command.ids);

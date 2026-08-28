@@ -20,7 +20,8 @@ export default {
   SetPrimary: 'Set Primary Membership',
   ClearPrimary: 'Clear Primary Membership',
   DeleteMembershipConfirm: 'Delete this Department membership?',
-  DeleteManagerMembershipConfirm: 'Delete this manager membership and clear the Department manager?',
+  DeleteManagerMembershipConfirm:
+    'Delete this manager membership and clear the Department manager?',
   SetManager: 'Set Manager',
   ClearManager: 'Clear Manager',
   Manager: 'Manager',

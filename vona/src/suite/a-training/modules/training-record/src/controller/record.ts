@@ -113,7 +113,7 @@ export class ControllerRecord extends BeanBase {
       this.app.throw(422, 'Duplicate record identity');
     }
 
-    const datas = await this.scope.model.record.mget(command.ids);
+    const datas = await this.scope.model.record.select({ where: { id: command.ids } });
     if (datas.length !== uniqueIds.size) this.app.throw(404, 'Record not found');
     rbacScopeCurrent.checkEntries(datas);
     await this.scope.service.record.deleteBulk(command.ids);

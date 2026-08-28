@@ -1,16 +1,16 @@
-import type { IComponentOptions } from 'zova';
 import type { SchemaObject } from 'openapi3-ts/oas31';
 import type { TableIdentity } from 'table-identity';
+import type { IComponentOptions } from 'zova';
+import type { BeanControllerFormBase } from 'zova-module-a-form';
 import type {
   IJsxRenderContextDetails,
   IResourceDetailsActionBulkOptionsBase,
 } from 'zova-module-a-openapi';
-import type { AppModalItem } from 'zova-module-start-app';
 
 import { VBtn } from 'vuetify/components';
 import { BeanControllerBase, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
-import { formMetaFromFormScene, ZForm, type BeanControllerFormBase } from 'zova-module-a-form';
+import { formMetaFromFormScene, ZForm } from 'zova-module-a-form';
 
 import type { ApiSchemaAdminDepartmentDtoDepartmentMembershipCreate } from '../../api/openapi/schemas.ts';
 import type { ModelDepartment } from '../../model/department.ts';
@@ -48,9 +48,7 @@ export class ControllerActionCreateMembership extends BeanControllerBase {
   }
 
   private _getLocale() {
-    return (this as unknown as {
-      scope: { locale: { AddMembership(): string; Cancel(): string; Save(): string } };
-    }).scope.locale;
+    return this.scope.locale;
   }
 
   private async _openDialog() {
@@ -66,9 +64,8 @@ export class ControllerActionCreateMembership extends BeanControllerBase {
     const apiSchemas = modelDepartment.scope.apiSchema.adminDepartment.createMembership();
     await apiSchemas.sdk.suspense();
     type Data = ApiSchemaAdminDepartmentDtoDepartmentMembershipCreate;
-    let dialog: AppModalItem | undefined;
     let formRef: BeanControllerFormBase<Data> | undefined;
-    dialog = this.$appModal.dialog({
+    const dialog = this.$appModal.dialog({
       title: locale.AddMembership(),
       slotDefault: () => (
         <ZForm<Data>

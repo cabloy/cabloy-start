@@ -2,16 +2,16 @@
 
 ## Traceability
 
-| Field | Value |
-| --- | --- |
-| ATP | `ATP-ADM-SUP-01` |
-| PRD | `PRD-ADM-SUP-01` through `PRD-ADM-SUP-04` |
-| SRS | `SRS-ADM-SUP-01` through `SRS-ADM-SUP-04`; `SRS-ADM-AUD-01` through `SRS-ADM-AUD-03` |
-| WBS | `WBS-ADM-40-01`, `WBS-ADM-40-02` |
-| Tested revision | `3faf3d02864c678416eb6f703a52ce508acfa303` |
-| Database client | `sqlite3` (`better-sqlite3`) |
-| Zova flavor | N/A — backend API/integration scenario |
-| Executor date | 2026-08-13 |
+| Field           | Value                                                                                |
+| --------------- | ------------------------------------------------------------------------------------ |
+| ATP             | `ATP-ADM-SUP-01`                                                                     |
+| PRD             | `PRD-ADM-SUP-01` through `PRD-ADM-SUP-04`                                            |
+| SRS             | `SRS-ADM-SUP-01` through `SRS-ADM-SUP-04`; `SRS-ADM-AUD-01` through `SRS-ADM-AUD-03` |
+| WBS             | `WBS-ADM-40-01`, `WBS-ADM-40-02`                                                     |
+| Tested revision | `3faf3d02864c678416eb6f703a52ce508acfa303`                                           |
+| Database client | `sqlite3` (`better-sqlite3`)                                                         |
+| Zova flavor     | N/A — backend API/integration scenario                                               |
+| Executor date   | 2026-08-13                                                                           |
 
 ## Procedure and fixtures
 

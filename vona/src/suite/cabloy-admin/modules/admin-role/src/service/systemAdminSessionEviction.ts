@@ -34,9 +34,7 @@ export class ServiceSystemAdminSessionEviction extends BeanBase {
     const eligible =
       (eviction.state === 'pending' &&
         (!eviction.nextAttemptAt || eviction.nextAttemptAt <= now)) ||
-      (eviction.state === 'claimed' &&
-        !!eviction.claimExpiresAt &&
-        eviction.claimExpiresAt <= now);
+      (eviction.state === 'claimed' && !!eviction.claimExpiresAt && eviction.claimExpiresAt <= now);
     if (!eligible) return;
     if (eviction.attemptCount >= MaxAttempts) {
       await this.scope.model.systemAdminSessionEviction.updateById(eviction.id, {

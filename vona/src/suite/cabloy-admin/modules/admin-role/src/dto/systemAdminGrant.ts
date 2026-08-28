@@ -1,8 +1,8 @@
 import type { IDecoratorDtoOptions } from 'vona-module-a-web';
 
 import { Api, $makeSchema, v } from 'vona-module-a-openapiutils';
-import { z } from 'zod';
 import { Dto } from 'vona-module-a-web';
+import { z } from 'zod';
 
 export interface IDtoOptionsSystemAdminGrant extends IDecoratorDtoOptions {}
 

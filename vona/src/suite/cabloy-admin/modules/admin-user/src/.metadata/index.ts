@@ -6,15 +6,15 @@ export * from '../service/user.ts';
 
 import 'vona-module-a-bean';
 declare module 'vona-module-a-bean' {
-  
+
     export interface IServiceRecord {
       'admin-user:user': never;
     }
 
-  
+
 }
 declare module 'vona-module-admin-user' {
-  
+
         export interface ServiceUser {
           /** @internal */
           get scope(): ScopeModuleAdminUser;
@@ -23,8 +23,7 @@ declare module 'vona-module-admin-user' {
           export interface ServiceUser {
             get $beanFullName(): 'admin-user.service.user';
             get $onionName(): 'admin-user:user';
-            
-          } 
+          }
 }
 /** service: end */
 /** service: begin */
@@ -63,7 +62,7 @@ import type { IDtoOptionsUserUpdate } from '../dto/userUpdate.tsx';
 import type { IDtoOptionsUserView } from '../dto/userView.tsx';
 import 'vona-module-a-web';
 declare module 'vona-module-a-web' {
-  
+
     export interface IDtoRecord {
       'admin-user:userAccountStatusUpdate': IDtoOptionsUserAccountStatusUpdate;
 'admin-user:userBase': IDtoOptionsUserBase;
@@ -76,10 +75,10 @@ declare module 'vona-module-a-web' {
 'admin-user:userView': IDtoOptionsUserView;
     }
 
-  
+
 }
 declare module 'vona-module-admin-user' {
-   
+
 }
 /** dto: end */
 /** dto: begin */
@@ -93,7 +92,7 @@ import type { DtoUserSelectResItem } from '../dto/userSelectResItem.tsx';
 import type { DtoUserUpdate } from '../dto/userUpdate.tsx';
 import type { DtoUserView } from '../dto/userView.tsx';
 declare module 'vona-module-admin-user' {
-  
+
     export interface IDtoOptionsUserAccountStatusUpdate {
       fields?: TypeEntityOptionsFields<DtoUserAccountStatusUpdate, IDtoOptionsUserAccountStatusUpdate[TypeSymbolKeyFieldsMore]>;
     }
@@ -136,15 +135,15 @@ export * from '../controller/user.ts';
 import type { IControllerOptionsUser } from '../controller/user.ts';
 import 'vona-module-a-web';
 declare module 'vona-module-a-web' {
-  
+
     export interface IControllerRecord {
       'admin-user:user': IControllerOptionsUser;
     }
 
-  
+
 }
 declare module 'vona-module-admin-user' {
-  
+
         export interface ControllerUser {
           /** @internal */
           get scope(): ScopeModuleAdminUser;
@@ -154,14 +153,14 @@ declare module 'vona-module-admin-user' {
             get $beanFullName(): 'admin-user.controller.user';
             get $onionName(): 'admin-user:user';
             get $onionOptions(): IControllerOptionsUser;
-          } 
+          }
 }
 /** controller: end */
 /** controller: begin */
 // @ts-ignore ignore
 import type { ControllerUser } from '../controller/user.ts';
 declare module 'vona-module-admin-user' {
-  
+
     export interface IControllerOptionsUser {
       actions?: TypeControllerOptionsActions<ControllerUser>;
     }
@@ -188,22 +187,22 @@ import 'vona-module-a-openapi';
       'admin-user:user': never;
     }
   }
-  
+
 /** controller: end */
 /** ssrMenu: begin */
 export * from '../bean/ssrMenu.user.ts';
 import type { ISsrMenuOptionsUser } from '../bean/ssrMenu.user.ts';
 import 'vona-module-a-ssr';
 declare module 'vona-module-a-ssr' {
-  
+
     export interface ISsrMenuRecord {
       'admin-user:user': ISsrMenuOptionsUser;
     }
 
-  
+
 }
 declare module 'vona-module-admin-user' {
-  
+
         export interface SsrMenuUser {
           /** @internal */
           get scope(): ScopeModuleAdminUser;
@@ -213,7 +212,7 @@ declare module 'vona-module-admin-user' {
             get $beanFullName(): 'admin-user.ssrMenu.user';
             get $onionName(): 'admin-user:user';
             get $onionOptions(): ISsrMenuOptionsUser;
-          } 
+          }
 }
 /** ssrMenu: end */
 /** locale: begin */
@@ -246,8 +245,8 @@ declare module 'vona' {
   export interface IBeanScopeContainer {
     adminUser: ScopeModuleAdminUser;
   }
-  
-  
+
+
 
   export interface IBeanScopeLocale {
     'admin-user': (typeof locales)[TypeLocaleBase];

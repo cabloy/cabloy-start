@@ -2,16 +2,16 @@
 
 ## Traceability
 
-| Field | Value |
-| --- | --- |
-| ATP | `ATP-ADM-SCP-01` |
-| PRD | `PRD-ADM-SCP-01`–`PRD-ADM-SCP-04` |
-| SRS | `SRS-ADM-SCP-01`–`SRS-ADM-SCP-05` |
-| WBS | `WBS-ADM-80-02` |
-| Tested source revision | `e8abda0d8cda44605a3500e530f123663450b99e` |
-| Database client | managed clean `better-sqlite3` Vona test databases |
-| Zova flavor | `normal` Vona test flavor; no frontend artifact was changed |
-| Executor date | 2026-08-21 |
+| Field                  | Value                                                                                                                                          |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| ATP                    | `ATP-ADM-SCP-01`                                                                                                                               |
+| PRD                    | `PRD-ADM-SCP-01`–`PRD-ADM-SCP-04`                                                                                                              |
+| SRS                    | `SRS-ADM-SCP-01`–`SRS-ADM-SCP-05`                                                                                                              |
+| WBS                    | `WBS-ADM-80-02`                                                                                                                                |
+| Tested source revision | historical `e8abda0d8cda44605a3500e530f123663450b99e`; direct matrix working tree based on `b28df501233b4cf540c898ae138122c7b240ee44`          |
+| Database client        | managed clean `better-sqlite3` Vona test databases; external matrix used the worktree-managed SQLite/`better-sqlite3` Vona development runtime |
+| Zova flavor            | `normal` Vona test flavor; direct matrix targeted the external Start Vona HTTP API and changed no frontend artifact                            |
+| Executor date          | 2026-08-21; direct matrix 2026-08-27                                                                                                           |
 
 ## Procedure
 
@@ -55,14 +55,27 @@ The test also verifies cleanup in reverse dependency order for grant-Department 
 
 **Implementation-complete; local acceptance pass.** The focused run reported 37 tests passed, 0 failed, 0 cancelled, and 0 skipped. `npm run tsc` passed for Zova and all Vona projects/suites.
 
+## Direct external HTTP/API matrix
+
+On 2026-08-27, the real bearer-token API matrix ran against the worktree-managed external Vona runtime at `http://127.0.0.1:7103`:
+
+```bash
+E2E_BASE_URL=http://127.0.0.1:7103 npm run test:e2e:fast cabloy-admin-rbac-api -- --tag @admin-rbac-api
+```
+
+The combined API-only run reported `3 passed (6.3s)`. This ATP's direct matrix verifies all five scopes, restricted-term union, `all` dominance, custom Department mappings, descendant and ownership terms, disabled/unmapped behavior, and caller-filter structural AND composition. It uses test-owned accounts whose usernames begin with `e2e-fixture-admin-rbac-` and deterministic reverse-order cleanup.
+
 ## Verification boundary
 
-This record is retained evidence for the local implementation slice, not a final `verified` claim for `WBS-ADM-80-02`. The run used managed SQLite (`better-sqlite3`). It does not include PostgreSQL contention/transaction evidence or a dedicated two-database PostgreSQL scope run. The separate local Student/Record `ATP-ADM-SCP-02` record now exists, while structural AND composition and full direct external API coverage remain part of the broader Phase 80 closure work where applicable.
+The historical local implementation slice and the direct HTTP/API matrix now provide traceable API acceptance for this ATP, but they do not make `WBS-ADM-80-02` or Phase 80 `verified`. The current runtime-Swagger regeneration output drift remains unclassified, and repository-wide lint and format gates remain non-clean and unwaived. This SQLite external matrix does not replace a future PostgreSQL-specific scope/contention proof if the relevant contract requires one. `WBS-ADM-80-05` and Phase 70 remain open.
 
-No schema, `meta.version.ts`, generated frontend artifact, or environment configuration was changed.
+No schema, `meta.version.ts`, generated frontend artifact, or environment configuration was changed by this direct matrix.
 
 ## Retained evidence
 
+- [Direct external HTTP/API matrix validation](./artifacts/2026-08-27-b28df50-direct-http-api-matrices.md)
+- [API-only matrix specification](../../../../repo-e2e/specs/cabloy-admin-rbac-api.spec.ts)
+- [External HTTP fixture helpers](../../../../repo-e2e/specs/helpers/cabloy-admin-api.ts)
 - [Start scope resolver regression](../../../../vona/src/suite/cabloy-admin/modules/admin-rbac/test/rbacScope.test.ts)
 - [Reusable scope consumer regression](../../../../vona/src/suite-vendor/a-cabloy/modules/a-rbac/test/rbacScopeCurrent.test.ts)
 - [Student scope consumer regression](../../../../vona/src/suite/a-training/modules/training-student/test/dataScope.test.ts)
