@@ -19,6 +19,9 @@ export class DtoStudentSummary extends $Class.pick(EntityStudent, [
   @Api.field(v.title($locale('Description')))
   descriptionMarkdown?: string;
 
+  @Api.field(v.title($locale('Description')))
+  descriptionHtml?: string;
+
   @Api.field(v.title($locale('LevelTitle')))
   levelTitle: string;
 

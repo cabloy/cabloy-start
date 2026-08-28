@@ -9,6 +9,7 @@ import type {
 import { BeanBase } from 'zova';
 import { TableCell } from 'zova-module-a-table';
 import { ZButton } from 'zova-module-start-button';
+import { ZMarkdownHtml } from 'zova-module-start-markdown';
 
 import type { ModelStudent } from '../model/student.ts';
 
@@ -27,7 +28,7 @@ export class TableCellActionSummary extends BeanBase implements ITableCellRender
     renderContext: IJsxRenderContextTableCell,
     _next: NextTableCellRender,
   ) {
-    const { $host, cellContext, ctx } = renderContext;
+    const { cellContext, ctx } = renderContext;
     return (
       <ZButton
         class={options.class}
@@ -40,13 +41,25 @@ export class TableCellActionSummary extends BeanBase implements ITableCellRender
             true,
           )) as ModelStudent;
           const { data: summary } = await modelStudent.summary(id).refetch();
-          const text = [
-            `${this.scope.locale.Id()}: ${summary?.id ?? '-'}`,
-            `${this.scope.locale.Name()}: ${summary?.name ?? '-'}`,
-            `${this.scope.locale.Level()}: ${summary?.level ?? '-'}`,
-            `${this.scope.locale.Description()}: ${summary?.description ?? '-'}`,
-          ].join('\n');
-          await $host.$performCommand('start-commands:alert', { text }, renderContext);
+          this.$appModal.dialog({
+            title: this.scope.locale.Summary(),
+            slotDefault: () => (
+              <div class="d-flex flex-column ga-4">
+                <div class="d-flex flex-column ga-1">
+                  <div>
+                    {this.scope.locale.Id()}: {summary?.id ?? '-'}
+                  </div>
+                  <div>
+                    {this.scope.locale.Name()}: {summary?.name ?? '-'}
+                  </div>
+                  <div>
+                    {this.scope.locale.Level()}: {summary?.levelTitle ?? '-'}
+                  </div>
+                </div>
+                <ZMarkdownHtml html={summary?.descriptionHtml ?? ''} />
+              </div>
+            ),
+          });
         }}
       >
         {this.scope.locale.Summary()}

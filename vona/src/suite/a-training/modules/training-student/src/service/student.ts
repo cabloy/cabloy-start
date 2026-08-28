@@ -65,6 +65,7 @@ export class ServiceStudent extends BeanBase {
     });
     if (!student) return undefined;
     const descriptionMarkdown = student.content?.descriptionMarkdown;
+    const descriptionHtml = await this.scope.model.studentContent.get({ studentId: id });
     const descriptionLength = descriptionMarkdown?.length ?? 0;
     const levelTitle = String(student.level);
     return {
@@ -74,6 +75,7 @@ export class ServiceStudent extends BeanBase {
       level: student.level,
       levelTitle,
       descriptionMarkdown,
+      descriptionHtml: descriptionHtml?.descriptionHtml,
       descriptionLength,
       summaryText: `${student.name} is in level ${student.level}. Description length: ${descriptionLength}.`,
     };

@@ -125,6 +125,7 @@ describe('student.test.ts', { concurrency: false }, () => {
           'mobile',
           'level',
           'descriptionMarkdown',
+          'descriptionHtml',
           'levelTitle',
           'descriptionLength',
           'summaryText',
@@ -340,6 +341,7 @@ The stored value must round-trip exactly through the API, model, and summary res
       assert.equal(summary.mobile, maskedMobileUpdate);
       assert.equal(summary.level, dataUpdate.level);
       assert.equal(summary.descriptionMarkdown, descriptionUpdate);
+      assert.equal(summary.descriptionHtml, studentContentRaw!.descriptionHtml);
       assert.equal(summary.descriptionLength, descriptionUpdate.length);
       assert.equal(typeof summary.levelTitle, 'string');
       assert.equal(typeof summary.summaryText, 'string');
@@ -420,6 +422,12 @@ The stored value must round-trip exactly through the API, model, and summary res
         );
         assert.equal(emptyContent?.descriptionMarkdown, '');
         assert.equal(emptyContent?.descriptionHtml, '');
+        const emptySummary: DtoStudentSummary = await app.bean.executor.performAction(
+          'get',
+          '/training/student/summary/:id',
+          { innerAccess: false, params: { id: emptyStudentId } },
+        );
+        assert.equal(emptySummary.descriptionHtml, '');
 
         await app.bean.executor.performAction('patch', '/training/student/:id', {
           innerAccess: false,

@@ -1948,14 +1948,16 @@ export interface components {
     'training-student.dto.studentCreate': {
       /** @description Student Name */
       name: string;
-      /** @description Description */
-      description?: string | undefined;
       /** @description Mobile */
       mobile: string;
       /** @description Student Image */
       imageId?: number | string | undefined;
       /** @description Training Stage */
       level: 1 | 2 | 3;
+      content?: {
+        /** @description Description */
+        descriptionMarkdown?: string | undefined;
+      };
       /** @description Student Training Records */
       trainingRecords?:
         | {
@@ -2125,8 +2127,6 @@ export interface components {
       id: number | string;
       /** @description Student Name */
       name: string;
-      /** @description Description */
-      description?: string | undefined;
       /** @description Mobile */
       mobile: string;
       /** @description Student Image */
@@ -2151,7 +2151,7 @@ export interface components {
           signed?: boolean;
         }
       | undefined;
-    'training-student.dto.studentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_5c32d4a6c28179b93cfdd3e27e1195be1a297b01':
+    'training-student.dto.studentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_8752bd7d3491e7061a679318d3adb0c202acec11':
       | {
           /**
            * Format: date-time
@@ -2177,8 +2177,6 @@ export interface components {
           id: number | string;
           /** @description Student Name */
           name: string;
-          /** @description Description */
-          description?: string | undefined;
           /** @description Mobile */
           mobile: string;
           /** @description Student Image */
@@ -2187,6 +2185,10 @@ export interface components {
           userIdOwner: number | string;
           /** @description Training Stage */
           level: 1 | 2 | 3;
+          content?: {
+            /** @description Description */
+            descriptionMarkdown?: string | undefined;
+          };
           /** @description Student Training Records */
           trainingRecords: {
             /**
@@ -2266,19 +2268,29 @@ export interface components {
           _trainingRecords?:
             | components['schemas']['training-student.dto.detailRecordResItem'][]
             | undefined;
+          _descriptionMarkdown?: string | undefined;
         }
       | undefined;
     'training-student.dto.studentUpdate': {
       /** @description Student Name */
       name: string;
-      /** @description Description */
-      description?: string | undefined;
       /** @description Mobile */
       mobile: string;
       /** @description Student Image */
       imageId?: number | string | undefined;
       /** @description Training Stage */
       level: 1 | 2 | 3;
+      content?: {
+        /**
+         * @description Deleted
+         * @default false
+         */
+        deleted?: boolean | undefined;
+        /** @description ID */
+        id?: number | string | undefined;
+        /** @description Description */
+        descriptionMarkdown?: string | undefined;
+      };
       /** @description Student Training Records */
       trainingRecords?:
         | {
@@ -2368,12 +2380,14 @@ export interface components {
           id: number | string;
           /** @description Student Name */
           name: string;
-          /** @description Description */
-          description?: string | undefined;
           /** @description Mobile */
           mobile: string;
           /** @description Training Stage */
           level: 1 | 2 | 3;
+          /** @description Description */
+          descriptionMarkdown: string;
+          /** @description Description */
+          descriptionHtml: string;
           /** @description Level Title */
           levelTitle: string;
           /** @description Description Length */
@@ -4360,7 +4374,7 @@ export interface operations {
           'application/json': {
             code: string;
             message: string;
-            data?: components['schemas']['training-student.dto.studentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_5c32d4a6c28179b93cfdd3e27e1195be1a297b01'];
+            data?: components['schemas']['training-student.dto.studentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_8752bd7d3491e7061a679318d3adb0c202acec11'];
           };
         };
       };
