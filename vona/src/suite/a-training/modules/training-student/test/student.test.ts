@@ -43,12 +43,31 @@ describe('student.test.ts', { concurrency: false }, () => {
         assert.equal(descriptionGroup?.type, 'group');
         assert.deepEqual(
           descriptionSection?.children.map(item => item.name),
-          ['content'],
+          [DtoClass === DtoStudentView ? '_descriptionMarkdown' : 'content'],
         );
-        assert.equal(
-          (component as any)?.properties?.content?.properties?.descriptionMarkdown?.rest?.form?.render,
-          'start-markdown:formFieldMarkdown',
-        );
+        if (DtoClass === DtoStudentView) {
+          assert.ok(
+            (component as any)?.properties?._descriptionMarkdown?.type?.includes('string'),
+          );
+          assert.equal(
+            (component as any)?.properties?._descriptionMarkdown?.rest?.fieldSource,
+            'content.descriptionMarkdown',
+          );
+          assert.equal(
+            (component as any)?.properties?._descriptionMarkdown?.rest?.form?.render,
+            'start-markdown:formFieldMarkdown',
+          );
+          assert.equal(
+            (component as any)?.required?.includes('_descriptionMarkdown'),
+            false,
+          );
+        } else {
+          assert.equal(
+            (component as any)?.properties?.content?.properties?.descriptionMarkdown?.rest?.form
+              ?.render,
+            'start-markdown:formFieldMarkdown',
+          );
+        }
         assert.equal(tabs?.children[1]?.children[0]?.name, 'level');
         assert.deepEqual(
           trainingRecordsSection?.children.map(item => item.name),
