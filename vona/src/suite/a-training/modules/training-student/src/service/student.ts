@@ -61,11 +61,10 @@ export class ServiceStudent extends BeanBase {
 
   async summary(id: TableIdentity): Promise<DtoStudentSummary | undefined> {
     const student = await this.scope.model.student.getById(id, {
-      include: { content: true },
+      include: { content: true, contentHtml: true },
     });
     if (!student) return undefined;
     const descriptionMarkdown = student.content?.descriptionMarkdown;
-    const descriptionHtml = await this.scope.model.studentContent.get({ studentId: id });
     const descriptionLength = descriptionMarkdown?.length ?? 0;
     const levelTitle = String(student.level);
     return {
@@ -75,7 +74,7 @@ export class ServiceStudent extends BeanBase {
       level: student.level,
       levelTitle,
       descriptionMarkdown,
-      descriptionHtml: descriptionHtml?.descriptionHtml,
+      descriptionHtml: student.contentHtml?.descriptionHtml,
       descriptionLength,
       summaryText: `${student.name} is in level ${student.level}. Description length: ${descriptionLength}.`,
     };

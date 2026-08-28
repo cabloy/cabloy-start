@@ -12,6 +12,9 @@ export interface IModelOptionsStudent extends IDecoratorModelOptions<EntityStude
     content: $relation.hasOne('training-student:studentContent', 'studentId', {
       columns: ['id', 'descriptionMarkdown'],
     }),
+    contentHtml: $relation.hasOne('training-student:studentContent', 'studentId', {
+      columns: ['id', 'descriptionHtml'],
+    }),
     trainingRecords: $relation.hasMany('training-record:record', 'studentId', {
       columns: [
         'id',
