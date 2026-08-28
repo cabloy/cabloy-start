@@ -16,7 +16,7 @@ const RecordActions = [
 ] as const;
 describe('dataScope.test.ts', { concurrency: false }, () => {
   it('ATP-ADM-SCP-02 scopes Records, inherits Student scope, and protects Subjects', async () => {
-    const suffix = crypto.randomUUID();
+    const suffix = crypto.randomUUID().slice(0, 16);
     const studentIds: string[] = [];
     const recordIds: string[] = [];
     const subjectIds: string[] = [];
@@ -208,7 +208,7 @@ describe('dataScope.test.ts', { concurrency: false }, () => {
           for (const [ids, code] of [
             [[], 422],
             [[scopedRecordId, scopedRecordId], 422],
-            [['missing-record-id'], 404],
+            [[-1], 404],
           ] as const) {
             const [invalidResult, invalidError] = await catchError(() =>
               app.bean.executor.performAction('delete', '/training/record/bulk', {
@@ -304,7 +304,7 @@ describe('dataScope.test.ts', { concurrency: false }, () => {
   });
 
   it('admits the unrestricted system administrator across Department rows', async () => {
-    const suffix = crypto.randomUUID();
+    const suffix = crypto.randomUUID().slice(0, 16);
     const departmentIds: string[] = [];
     const studentIds: string[] = [];
     const recordIds: string[] = [];

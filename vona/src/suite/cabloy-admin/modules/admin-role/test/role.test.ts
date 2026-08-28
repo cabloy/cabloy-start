@@ -321,7 +321,7 @@ describe('role.test.ts', { concurrency: false }, () => {
           const [missingRoleResult, missingRoleError] = await catchError(() => {
             return app.bean.executor.performAction('put', '/admin/role/user/:userId/roles', {
               params: { userId: admin.id },
-              body: { roleIds: [roleId, crypto.randomUUID()] },
+              body: { roleIds: [roleId, -1] },
             });
           });
           assert.equal(missingRoleResult, undefined);
@@ -344,7 +344,7 @@ describe('role.test.ts', { concurrency: false }, () => {
 
           const [missingUserResult, missingUserError] = await catchError(() => {
             return app.bean.executor.performAction('put', '/admin/role/user/:userId/roles', {
-              params: { userId: crypto.randomUUID() },
+              params: { userId: -1 },
               body: { roleIds: [roleId] },
             });
           });

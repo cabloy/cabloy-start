@@ -7,15 +7,15 @@ export * from '../entity/record.tsx';
 import type { IEntityOptionsRecord } from '../entity/record.tsx';
 import 'vona-module-a-orm';
 declare module 'vona-module-a-orm' {
-  
+
     export interface IEntityRecord {
       'training-record:record': IEntityOptionsRecord;
     }
 
-  
+
 }
 declare module 'vona-module-training-record' {
-   
+
 }
 /** entity: end */
 /** entity: begin */
@@ -33,7 +33,7 @@ declare module 'vona-module-a-orm' {
   }
 }
 declare module 'vona-module-training-record' {
-  
+
     export interface IEntityOptionsRecord {
       fields?: TypeEntityOptionsFields<EntityRecord, IEntityOptionsRecord[TypeSymbolKeyFieldsMore]>;
     }
@@ -44,15 +44,15 @@ export * from '../model/record.ts';
 import type { IModelOptionsRecord } from '../model/record.ts';
 import 'vona-module-a-orm';
 declare module 'vona-module-a-orm' {
-  
+
     export interface IModelRecord {
       'training-record:record': IModelOptionsRecord;
     }
 
-  
+
 }
 declare module 'vona-module-training-record' {
-  
+
         export interface ModelRecord {
           /** @internal */
           get scope(): ScopeModuleTrainingRecord;
@@ -62,7 +62,7 @@ declare module 'vona-module-training-record' {
             get $beanFullName(): 'training-record.model.record';
             get $onionName(): 'training-record:record';
             get $onionOptions(): IModelOptionsRecord;
-          } 
+          }
 }
 /** model: end */
 /** model: begin */
@@ -143,15 +143,15 @@ export * from '../service/record.ts';
 
 import 'vona-module-a-bean';
 declare module 'vona-module-a-bean' {
-  
+
     export interface IServiceRecord {
       'training-record:record': never;
     }
 
-  
+
 }
 declare module 'vona-module-training-record' {
-  
+
         export interface ServiceRecord {
           /** @internal */
           get scope(): ScopeModuleTrainingRecord;
@@ -160,7 +160,7 @@ declare module 'vona-module-training-record' {
           export interface ServiceRecord {
             get $beanFullName(): 'training-record.service.record';
             get $onionName(): 'training-record:record';
-          } 
+          }
 }
 /** service: end */
 /** service: begin */
@@ -184,16 +184,16 @@ export * from '../bean/meta.version.ts';
 import type { IMetaOptionsIndex } from 'vona-module-a-index';
 import 'vona-module-a-meta';
 declare module 'vona-module-a-meta' {
-  
+
     export interface IMetaRecord {
       'training-record:index': IMetaOptionsIndex;
 'training-record:version': never;
     }
 
-  
+
 }
 declare module 'vona-module-training-record' {
-  
+
         export interface MetaIndex {
           /** @internal */
           get scope(): ScopeModuleTrainingRecord;
@@ -213,7 +213,7 @@ declare module 'vona-module-training-record' {
           export interface MetaVersion {
             get $beanFullName(): 'training-record.meta.version';
             get $onionName(): 'training-record:version';
-          } 
+          }
 }
 /** meta: end */
 /** dto: begin */
@@ -241,7 +241,7 @@ import type { IDtoOptionsRecordUpdate } from '../dto/recordUpdate.tsx';
 import type { IDtoOptionsRecordView } from '../dto/recordView.tsx';
 import 'vona-module-a-web';
 declare module 'vona-module-a-web' {
-  
+
     export interface IDtoRecord {
       'training-record:detailRecordSubjectBase': IDtoOptionsDetailRecordSubjectBase;
 'training-record:detailRecordSubjectMutate': IDtoOptionsDetailRecordSubjectMutate;
@@ -256,10 +256,10 @@ declare module 'vona-module-a-web' {
 'training-record:recordView': IDtoOptionsRecordView;
     }
 
-  
+
 }
 declare module 'vona-module-training-record' {
-   
+
 }
 /** dto: end */
 /** dto: begin */
@@ -275,7 +275,7 @@ import type { DtoRecordSelectResItem } from '../dto/recordSelectResItem.tsx';
 import type { DtoRecordUpdate } from '../dto/recordUpdate.tsx';
 import type { DtoRecordView } from '../dto/recordView.tsx';
 declare module 'vona-module-training-record' {
-  
+
     export interface IDtoOptionsDetailRecordSubjectBase {
       fields?: TypeEntityOptionsFields<DtoDetailRecordSubjectBase, IDtoOptionsDetailRecordSubjectBase[TypeSymbolKeyFieldsMore]>;
     }
@@ -326,15 +326,15 @@ export * from '../controller/record.ts';
 import type { IControllerOptionsRecord } from '../controller/record.ts';
 import 'vona-module-a-web';
 declare module 'vona-module-a-web' {
-  
+
     export interface IControllerRecord {
       'training-record:record': IControllerOptionsRecord;
     }
 
-  
+
 }
 declare module 'vona-module-training-record' {
-  
+
         export interface ControllerRecord {
           /** @internal */
           get scope(): ScopeModuleTrainingRecord;
@@ -344,32 +344,28 @@ declare module 'vona-module-training-record' {
             get $beanFullName(): 'training-record.controller.record';
             get $onionName(): 'training-record:record';
             get $onionOptions(): IControllerOptionsRecord;
-          } 
+          }
 }
 /** controller: end */
 /** controller: begin */
 // @ts-ignore ignore
 import type { ControllerRecord } from '../controller/record.ts';
 declare module 'vona-module-training-record' {
-  
+
     export interface IControllerOptionsRecord {
       actions?: TypeControllerOptionsActions<ControllerRecord>;
     }
 }
 declare module 'vona-module-a-web' {
-  export interface IApiPathPostRecord{
-        '/training/record': undefined;
-    }
-export interface IApiPathGetRecord{
-        '/training/record': undefined;
-'/training/record/:id': undefined;
+  export interface IApiPathGetRecord{
+        '/training/record/:id': undefined;
     }
 export interface IApiPathPatchRecord{
         '/training/record/:id': undefined;
     }
 export interface IApiPathDeleteRecord{
-        '/training/record/bulk': undefined;
-'/training/record/:id': undefined;
+        '/training/record/:id': undefined;
+'/training/record/bulk': undefined;
     }
 
 }
@@ -379,22 +375,22 @@ import 'vona-module-a-openapi';
       'training-record:record': never;
     }
   }
-  
+
 /** controller: end */
 /** ssrMenu: begin */
 export * from '../bean/ssrMenu.record.ts';
 import type { ISsrMenuOptionsRecord } from '../bean/ssrMenu.record.ts';
 import 'vona-module-a-ssr';
 declare module 'vona-module-a-ssr' {
-  
+
     export interface ISsrMenuRecord {
       'training-record:record': ISsrMenuOptionsRecord;
     }
 
-  
+
 }
 declare module 'vona-module-training-record' {
-  
+
         export interface SsrMenuRecord {
           /** @internal */
           get scope(): ScopeModuleTrainingRecord;
@@ -404,49 +400,23 @@ declare module 'vona-module-training-record' {
             get $beanFullName(): 'training-record.ssrMenu.record';
             get $onionName(): 'training-record:record';
             get $onionOptions(): ISsrMenuOptionsRecord;
-          } 
+          }
 }
 /** ssrMenu: end */
-/** fileScene: begin */
-export * from '../bean/fileScene.dossierFile.ts';
-
-import { type IDecoratorFileSceneOptions } from 'vona-module-a-file';
-declare module 'vona-module-a-file' {
-  
-    export interface IFileSceneRecord {
-      'training-record:dossierFile': IDecoratorFileSceneOptions;
-    }
-
-  
-}
-declare module 'vona-module-training-record' {
-  
-        export interface FileSceneDossierFile {
-          /** @internal */
-          get scope(): ScopeModuleTrainingRecord;
-        }
-
-          export interface FileSceneDossierFile {
-            get $beanFullName(): 'training-record.fileScene.dossierFile';
-            get $onionName(): 'training-record:dossierFile';
-            get $onionOptions(): IDecoratorFileSceneOptions;
-          } 
-}
-/** fileScene: end */
 /** imageScene: begin */
 export * from '../bean/imageScene.sceneImage.ts';
 
 import { type IDecoratorImageSceneOptions } from 'vona-module-a-image';
 declare module 'vona-module-a-image' {
-  
+
     export interface IImageSceneRecord {
       'training-record:sceneImage': IDecoratorImageSceneOptions;
     }
 
-  
+
 }
 declare module 'vona-module-training-record' {
-  
+
         export interface ImageSceneSceneImage {
           /** @internal */
           get scope(): ScopeModuleTrainingRecord;
@@ -456,9 +426,35 @@ declare module 'vona-module-training-record' {
             get $beanFullName(): 'training-record.imageScene.sceneImage';
             get $onionName(): 'training-record:sceneImage';
             get $onionOptions(): IDecoratorImageSceneOptions;
-          } 
+          }
 }
 /** imageScene: end */
+/** fileScene: begin */
+export * from '../bean/fileScene.dossierFile.ts';
+
+import { type IDecoratorFileSceneOptions } from 'vona-module-a-file';
+declare module 'vona-module-a-file' {
+
+    export interface IFileSceneRecord {
+      'training-record:dossierFile': IDecoratorFileSceneOptions;
+    }
+
+
+}
+declare module 'vona-module-training-record' {
+
+        export interface FileSceneDossierFile {
+          /** @internal */
+          get scope(): ScopeModuleTrainingRecord;
+        }
+
+          export interface FileSceneDossierFile {
+            get $beanFullName(): 'training-record.fileScene.dossierFile';
+            get $onionName(): 'training-record:dossierFile';
+            get $onionOptions(): IDecoratorFileSceneOptions;
+          }
+}
+/** fileScene: end */
 /** locale: begin */
 import { locales } from './locales.ts';
 /** locale: end */
@@ -486,13 +482,13 @@ declare module 'vona' {
   export interface IBeanScopeContainer {
     trainingRecord: ScopeModuleTrainingRecord;
   }
-  
-  
+
+
 
   export interface IBeanScopeLocale {
     'training-record': (typeof locales)[TypeLocaleBase];
   }
 
-  
+
 }
 /** scope: end */

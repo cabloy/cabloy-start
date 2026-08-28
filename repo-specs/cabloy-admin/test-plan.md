@@ -10,7 +10,7 @@ PRD requirement -> SRS contract -> PDP/WBS task -> ATP scenario -> observed evid
 
 The [PRD](./prd.md) owns product outcomes and business acceptance. The [SRS](./srs.md) owns technical contracts and invariants. The [PDP/WBS](./pdp-wbs.md) owns delivery sequence. This document defines how those decisions are proved and must not redefine them.
 
-The initial Phase 10–60 implementation and acceptance records are retained in their phase-specific evidence directories. The dynamic RBAC/data-scope increment is not yet verified. Phase 80 retains implementation-complete local evidence records, but they do not close the applicable ATP and release gates.
+The initial Phase 10–60 implementation and acceptance records are retained in their phase-specific evidence directories. The dynamic RBAC/data-scope increment is verified by its retained Phase 80 evidence. Phase 70 remains a separate current-candidate integration and release-acceptance lane; historical Phase 80 records do not themselves close its applicable ATP or release gates.
 
 ## Scope and Quality Priorities
 
@@ -28,10 +28,10 @@ The phase-one risks requiring repeatable proof are:
 10. `presetResource` integration with one selector-scoped generic Resource cache owner;
 11. explicit RBAC action opt-in, canonical action identity, default deny, independent guard composition, and same-Controller inheritance;
 12. five data scopes, union semantics, disabled/cyclic Department handling, and active-instance isolation;
-13. direct server-side Student/Record enforcement, forged scope resistance, nested transactional behavior, and unchanged training module file versions; and
+13. direct server-side Student/Record enforcement, forged scope resistance, Record nested/multi-row behavior without an application-level transaction or row-lock guarantee, and unchanged training module file versions; and
 14. safe policy projections, generated contract synchronization, and SSR/API separation.
 
-The Phase 80 increment covers dynamic RBAC only for explicitly decorated actions and the five accepted data-scope terms. A Position catalog, Organization, employment workflows, manager-derived authorization, external identity synchronization, and a new Admin SSR application remain out of scope. Nested Start Details rows and bulk renderers are generally embedded in the primary form and intentionally do not consume the matcher in this increment. The existing Cabloy Admin User/Role/Department system-management controllers remain protected by `systemAdmin` and are not dynamic-RBAC migration targets. Phase 80-specific retained evidence exists for implementation slices, but the complete dynamic RBAC/data-scope increment remains unverified.
+The Phase 80 increment covers dynamic RBAC only for explicitly decorated actions and the five accepted data-scope terms. A Position catalog, Organization, employment workflows, manager-derived authorization, external identity synchronization, and a new Admin SSR application remain out of scope. Nested Start Details rows and bulk renderers are generally embedded in the primary form and intentionally do not consume the matcher in this increment. The existing Cabloy Admin User/Role/Department system-management controllers remain protected by `systemAdmin` and are not dynamic-RBAC migration targets. Phase 80-specific retained evidence verifies the dynamic RBAC/data-scope increment; Phase 70 separately revalidates the applicable current-candidate integration and release gates.
 
 ## Verification Model
 

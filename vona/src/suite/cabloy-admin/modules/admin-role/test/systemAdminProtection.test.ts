@@ -589,27 +589,26 @@ describe('systemAdminProtection.test.ts', { concurrency: false }, () => {
       });
 
       const start = createBarrier(2);
-      const results = await Promise.all(
-        Array.from({ length: 2 }).fill(
-          app.bean.executor.mockCtx(async () => {
-            await app.bean.passport.signinMock();
-            try {
-              const proof = await issueFreshProof();
-              await start();
-              return await catchError(() => {
-                return protectedCommand(
-                  '/admin/role/system-admin/revoke/:userId',
-                  userIds[0],
-                  proof.proof,
-                  'Competing PostgreSQL authority reduction',
-                );
-              });
-            } finally {
-              await app.bean.passport.signout();
-            }
-          }),
-        ),
-      );
+      const runCompetingRevoke = () => {
+        return app.bean.executor.mockCtx(async () => {
+          await app.bean.passport.signinMock();
+          try {
+            const proof = await issueFreshProof();
+            await start();
+            return await catchError(() => {
+              return protectedCommand(
+                '/admin/role/system-admin/revoke/:userId',
+                userIds[0],
+                proof.proof,
+                'Competing PostgreSQL authority reduction',
+              );
+            });
+          } finally {
+            await app.bean.passport.signout();
+          }
+        });
+      };
+      const results = await Promise.all([runCompetingRevoke(), runCompetingRevoke()]);
       assert.equal(results.filter(([result]) => result === null).length, 1);
       assert.equal(
         results.filter(([_, error]) => error?.code === 'admin-role:1005' && error.status === 409)

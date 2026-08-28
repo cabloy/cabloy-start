@@ -12,7 +12,7 @@ const ActionKeys = [
 ] as const;
 describe('dataScope.test.ts', { concurrency: false }, () => {
   it('ATP-ADM-SCP-02 scopes delegated Student actions and bulk mutations', async () => {
-    const suffix = crypto.randomUUID();
+    const suffix = crypto.randomUUID().slice(0, 16);
     const studentIds: string[] = [];
     const grantIds: string[] = [];
     const grantDepartmentIds: string[] = [];
@@ -333,7 +333,7 @@ describe('dataScope.test.ts', { concurrency: false }, () => {
   });
 
   it('admits the unrestricted system administrator across Department rows', async () => {
-    const suffix = crypto.randomUUID();
+    const suffix = crypto.randomUUID().slice(0, 16);
     const departmentIds: string[] = [];
     const studentIds: string[] = [];
     let firstStudentId: string | undefined;
