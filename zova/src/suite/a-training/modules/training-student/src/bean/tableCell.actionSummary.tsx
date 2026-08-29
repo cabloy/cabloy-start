@@ -55,6 +55,11 @@ export class TableCellActionSummary extends BeanBase implements ITableCellRender
                       {this.scope.locale.SummaryRefreshFailed()}
                     </VAlert>
                   )}
+                  {error && (
+                    <VAlert class="mb-3" type="error" variant="tonal">
+                      {error.message}
+                    </VAlert>
+                  )}
                   {hasData ? (
                     <div class="d-flex flex-column ga-4">
                       <div class="d-flex flex-column ga-1">
@@ -74,10 +79,6 @@ export class TableCellActionSummary extends BeanBase implements ITableCellRender
                     <div class="d-flex justify-center">
                       <VProgressCircular color="primary" indeterminate></VProgressCircular>
                     </div>
-                  ) : error ? (
-                    <VAlert type="error" variant="tonal">
-                      {error.message}
-                    </VAlert>
                   ) : undefined}
                 </>
               );
