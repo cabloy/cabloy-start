@@ -23,7 +23,7 @@ export class ModelStudent extends BeanModelBase {
       queryFn: async () => {
         return (await this.scope.api.trainingStudent.summary({ params: { id } })) ?? null;
       },
-      meta: { disableSuspenseOnInit: true },
+      meta: { disableErrorEffect: true }
     });
   }
 

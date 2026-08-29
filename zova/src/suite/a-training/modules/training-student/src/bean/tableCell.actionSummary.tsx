@@ -6,6 +6,7 @@ import type {
   NextTableCellRender,
 } from 'zova-module-a-table';
 
+import { VAlert, VProgressCircular } from 'vuetify/components';
 import { BeanBase } from 'zova';
 import { TableCell } from 'zova-module-a-table';
 import { ZButton } from 'zova-module-start-button';
@@ -41,25 +42,46 @@ export class TableCellActionSummary extends BeanBase implements ITableCellRender
             true,
           )) as ModelStudent;
           const querySummary = modelStudent.summary(id);
-          await querySummary.refetch({ bypassPersister: true });
           this.$appModal.dialog({
             title: this.scope.locale.Summary(),
-            slotDefault: () => (
-              <div class="d-flex flex-column ga-4">
-                <div class="d-flex flex-column ga-1">
-                  <div>
-                    {this.scope.locale.Id()}: {querySummary.data?.id ?? '-'}
-                  </div>
-                  <div>
-                    {this.scope.locale.Name()}: {querySummary.data?.name ?? '-'}
-                  </div>
-                  <div>
-                    {this.scope.locale.Level()}: {querySummary.data?.levelTitle ?? '-'}
-                  </div>
-                </div>
-                <ZMarkdownHtml html={querySummary.data?.descriptionHtml ?? ''} />
-              </div>
-            ),
+            slotDefault: () => {
+              const hasData = querySummary.data !== undefined;
+              const isLoading = !hasData && (querySummary.isPending || querySummary.isFetching);
+              const error = querySummary.error;
+              return (
+                <>
+                  {hasData && error && (
+                    <VAlert type="warning" variant="tonal">
+                      {this.scope.locale.SummaryRefreshFailed()}
+                    </VAlert>
+                  )}
+                  {hasData ? (
+                    <div class="d-flex flex-column ga-4">
+                      <div class="d-flex flex-column ga-1">
+                        <div>
+                          {this.scope.locale.Id()}: {querySummary.data?.id ?? '-'}
+                        </div>
+                        <div>
+                          {this.scope.locale.Name()}: {querySummary.data?.name ?? '-'}
+                        </div>
+                        <div>
+                          {this.scope.locale.Level()}: {querySummary.data?.levelTitle ?? '-'}
+                        </div>
+                      </div>
+                      <ZMarkdownHtml html={querySummary.data?.descriptionHtml ?? ''} />
+                    </div>
+                  ) : isLoading ? (
+                    <div class="d-flex justify-center">
+                      <VProgressCircular color="primary" indeterminate></VProgressCircular>
+                    </div>
+                  ) : error ? (
+                    <VAlert type="error" variant="tonal">
+                      {error.message}
+                    </VAlert>
+                  ) : undefined}
+                </>
+              );
+            },
           });
         }}
       >
