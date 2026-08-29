@@ -1,6 +1,6 @@
 ---
 name: cabloy-spec-generation
-description: Use this skill whenever the user asks to create, bootstrap, or maintain a repository-native spec set for a new Cabloy business suite or substantial capability, including requests for a PRD, SRS, PDP/WBS, test plan, progress register, suite ADR, or a complete `repo-specs/<suite>/` document set. It turns a confirmed domain boundary into linked product, technical, delivery, acceptance, and decision records. Trigger even when the user says “write the specs” or “plan the suite” without naming every document. Do not use it to replace `cabloy-domain-planning` for unresolved suite naming, scaffold skills for implementation, or `cabloy-contract-loop` for concrete synchronization work.
+description: This skill should be used for requests to create or maintain a Cabloy `repo-specs/<suite>/` set, including a PRD, SRS, PDP/WBS, test plan, progress register, suite ADR, or “write the specs”/“plan the suite.” It links product, technical, delivery, acceptance, and decision records after the domain boundary is confirmed. Route unresolved naming to `cabloy-domain-planning`, implementation to scaffold skills, and concrete synchronization to `cabloy-contract-loop`.
 ---
 
 # Cabloy Repository Specs
@@ -60,7 +60,24 @@ A disposable demo, isolated tutorial, or small utility may not warrant the compl
 
 If the provider, suite, or module identity is unresolved, route to `cabloy-domain-planning` first. If the user wants code generation, route after planning to `cabloy-backend-scaffold` and/or `cabloy-frontend-scaffold`. If the user asks to synchronize a concrete Vona/Zova contract, route that implementation task to `cabloy-contract-loop`. This skill may record those handoff points but does not perform them automatically.
 
-## Step 3: Confirm the planning inputs
+## Step 3: Resolve site strategy when applicable
+
+When the scope includes a Web, Admin, or another user-facing site audience, resolve the high-level site strategy before collecting detailed topology or runtime facts. First use active-repository discovery to identify observed shared-site composition and independent-site conventions for the detected edition. Do not infer that a capability module, Web/Admin audience, or example suite requires a matching independent site.
+
+Evaluate Web and Admin independently. Give a contextual recommendation based on the product audience, authority/experience differences, and source facts actually observed, then present these normal combinations as one single-select decision:
+
+1. shared Web + shared Admin;
+2. independent Web + shared Admin;
+3. shared Web + independent Admin;
+4. independent Web + independent Admin.
+
+Keep the ordinary Other response path available for a custom combination, an audience with no site, or a deferred decision. State that choosing one combination accepts only this site-strategy input; it neither accepts an unrelated durable ADR nor confirms implementation facts.
+
+At this stage, record each audience as a shared existing site, an intended independent suite-owned site, no site, or `TODO(confirm)`. A shared target is valid only when its owning site/composition boundary is observed and cited. An independent strategy is not permission to invent a site ID, public path, bundle, flavor, environment/configuration file, `SsrSite` registration, generated-output location, or development/build/REST command. Keep every unobserved identifier as `TODO(confirm from active source)` for a later frontend WBS/discovery scope.
+
+If the user defers the strategy or needed identifiers, record the unresolved gate in ADR/SRS and mark only frontend/site implementation WBS work that depends on it as `blocked`. Keep runnable source-discovery, backend, known shared-site, and unrelated-audience work accurately `not-started` or at its current status.
+
+## Step 4: Confirm the remaining planning inputs
 
 Ask only for missing information, grouped into a compact clarification pass. Do not treat “make it comprehensive” as permission to invent business or security decisions.
 
@@ -69,15 +86,15 @@ Collect or confirm:
 - **Identity:** business domain, `providerId`, `suiteName`, suite short name, stable planning slug, and whether the directory already exists;
 - **Product:** problem, measurable outcomes, personas, primary journeys, and release goal;
 - **Scope:** capabilities in scope, explicit exclusions/deferred work, business rules, and acceptance conditions;
-- **Topology:** likely capability modules, existing module/persistence owners to reuse, audiences, Admin/Web/other sites, and any separate application boundary;
+- **Topology:** likely capability modules, existing module/persistence owners to reuse, audiences, selected shared/independent/deferred site strategy per audience, and any separate application boundary;
 - **Technical constraints:** instance/tenant model, server-authoritative identity, authorization, data ownership, lifecycle/state, transactions, concurrency, idempotency, audit, privacy, integrations, and migration/version concerns where relevant;
 - **Delivery:** dependency order, decision gates, implementation phases, release constraints, and contract-loop checkpoints;
 - **Verification:** required test levels, database/flavor constraints, browser/SSR needs, evidence retention and redaction rules, and release gates;
-- **Durable decisions:** accepted boundaries, unresolved trade-offs, ADR candidates, and external-provider operations that may need runbooks.
+- **Durable decisions:** selected site strategy and rationale, accepted boundaries, unresolved trade-offs, ADR candidates, and external-provider operations that may need runbooks.
 
-Repository inspection may fill a fact only when the fact was actually observed. Label it as a confirmed current-source fact and cite its path. Keep observed facts separate from proposed target contracts.
+Repository inspection may fill a fact only when the fact was actually observed. Label it as a confirmed current-source fact and cite its path. Keep observed facts separate from confirmed user inputs, proposed target contracts, and `TODO(confirm from active source)` identifiers.
 
-## Step 4: Validate identity and protect existing records
+## Step 5: Validate identity and protect existing records
 
 For a suite-first domain, validate the existing naming convention before writing:
 
@@ -90,7 +107,7 @@ Use the business suite short name as the planning directory when it is the natur
 
 If `repo-specs/<slug>/` exists, stop before writing and present the conflict. Offer to update the existing authority set, choose a new explicitly justified slug, or stop. Do not overwrite it merely because the user asked for a “fresh” version.
 
-## Step 5: Present the confirmation gate
+## Step 6: Present the confirmation gate
 
 Before creating or replacing records, summarize and request explicit confirmation of:
 
@@ -98,14 +115,17 @@ Before creating or replacing records, summarize and request explicit confirmatio
 - `providerId`, `suiteName`, short name, and output path;
 - intended suite-first Vona/Zova topology and module ownership;
 - product outcome, personas, in-scope capabilities, and deferred scope;
+- the Web/Admin/other-audience site strategy, recommendation/rationale, and every observed shared-site target;
 - tenant, authorization, persistence, site/flavor, and privacy boundaries that are actually confirmed;
+- exact independent-site identifiers that are observed and cited, plus identifiers retained as `TODO(confirm from active source)`;
 - mandatory documents and any optional extensions, with a reason for each;
-- unresolved decisions and explicit `TODO(confirm)` gates;
-- the initial status policy: delivery is `not-started` unless implementation evidence already exists.
+- unresolved decisions and explicit `TODO(confirm)` gates, including only the WBS branches blocked by a deferred site decision;
+- the initial status policy: delivery is `not-started` unless implementation evidence already exists;
+- the derived implementation charts: `implementation-gantt.svg` and `implementation-burndown.svg`, whose labels default to the language detected from `README.md`.
 
-Do not treat silence as approval. Once confirmed, generate the records in authority order. If the user asks only for a draft, mark it `Proposed` and retain unresolved decisions rather than implying acceptance.
+Do not treat silence as approval. Once confirmed, generate the records in authority order. Confirmation to generate records does not accept a durable ADR decision: retain its ADR as `Proposed` unless the user explicitly accepts that decision. A site-strategy selection confirms that one planning input only; it does not accept another durable boundary or convert a proposed site ADR into `Accepted`. If the user asks only for a draft, or has not explicitly accepted a durable boundary, retain unresolved decisions and do not imply acceptance.
 
-## Step 6: Generate the mandatory document set
+## Step 7: Generate the mandatory document set
 
 Create this baseline for a new long-lived suite:
 
@@ -117,6 +137,8 @@ repo-specs/<suite-short-name>/
 ├── pdp-wbs.md
 ├── test-plan.md
 ├── progress.md
+├── implementation-gantt.svg
+├── implementation-burndown.svg
 └── decisions/
     └── 0001-<suite-boundary-slug>.md
 ```
@@ -129,11 +151,13 @@ Use the templates and authority rules in `references/repo-specs-document-set.md`
 - `pdp-wbs.md` owns dependency-ordered phases, WBS tasks, completion checks, contract-loop checkpoints, and delivery traceability;
 - `test-plan.md` owns risk priorities, test levels, `ATP-*` scenarios, fixtures, evidence format/redaction, procedures, and release gates;
 - `progress.md` owns derived status, WBS execution rows, blockers, open decisions, evidence pointers, and next proof only;
+- `implementation-gantt.svg` and `implementation-burndown.svg` are deterministic derived views, not authority. They consume `pdp-wbs.md`, `test-plan.md`, and `progress.md`; they must not introduce scope, dependencies, dates, estimates, evidence, or status. Generate them with `npm run spec:charts -- <suite>` and validate them with `npm run spec:charts:check -- <suite>`;
+- chart language defaults to the language detected from `README.md` and applies consistently to visible labels, accessibility text, and metadata;
 - `decisions/0001-*.md` owns the durable initial boundary decision, alternatives, consequences, and decision gates.
 
-Create records in a way that makes every sibling link resolvable from the final directory. Use stable prefixes consistently, such as `PRD-<DOMAIN>-*`, `SRS-<DOMAIN>-*`, `WBS-<DOMAIN>-<PHASE>-*`, and `ATP-<DOMAIN>-*`. Choose a concise domain prefix and use it consistently across all matrices.
+Create records in a way that makes every sibling link resolvable from the final directory. Use stable prefixes consistently, such as `PRD-<DOMAIN>-*`, `SRS-<DOMAIN>-*`, `WBS-<DOMAIN>-<PHASE>-*`, and `ATP-<DOMAIN>-*`. Choose a concise domain prefix and use it consistently across all matrices. Define every exact SRS ID used in generated planning records as one formal contract in `srs.md`, and every exact ATP ID as one scenario with a procedure in `test-plan.md`, before any downstream record references it. Wildcards and ranges are compact summaries of already-defined IDs; they never substitute for a formal definition.
 
-## Step 7: Add optional records only when justified
+## Step 8: Add optional records only when justified
 
 Do not generate optional files because a reference suite contains them. Select them from explicit requirements:
 
@@ -145,7 +169,7 @@ Do not generate optional files because a reference suite contains them. Select t
 
 Optional records remain subordinate to the PRD/SRS/WBS/test-plan authority appropriate to their content. A presentation matrix cannot authorize an API or redefine persistence; a runbook cannot redefine a payment state machine; a rollout record cannot replace the WBS or test plan.
 
-## Step 8: Apply Cabloy-specific contract guardrails
+## Step 9: Apply Cabloy-specific contract guardrails
 
 While drafting, preserve these principles and tailor them to confirmed scope:
 
@@ -156,27 +180,39 @@ While drafting, preserve these principles and tailor them to confirmed scope:
 - specify transactions, concurrency, idempotency, audit, recovery, and historical snapshots when the business flow needs them;
 - for fullstack work, record the Vona-to-Zova forward chain and Zova-to-Vona reverse-chain checkpoint, but hand actual generation/synchronization to `cabloy-contract-loop`;
 - when Admin Resource and Web self-service consume one resource with different authority or audience, separate API/DTO contracts, server scope, state owners, and pages while retaining one domain/persistence boundary;
+- independent site composition does not create an independent persistence, tenant, identity, authorization, or domain-rule authority; shared composition does not make generic CRUD, client-side admission, or identical audience contracts sufficient;
+- an Admin-facing module alone does not authorize an independent Admin site, `SsrSite` registration, flavor, environment/configuration file, bundle, or root command;
 - ask before choosing whether a persisted-field change increments `vonaModule.fileVersion`; do not silently invent migration history;
-- use `TODO(confirm)` and neutral placeholders for missing facts; never copy example-suite entities, routes, tests, CI links, or evidence into a new domain.
+- use `TODO(confirm from active source)` and neutral placeholders for unobserved runtime facts; never copy site/flavor details, example-suite entities, routes, tests, CI links, or evidence into a new domain.
 
-## Step 9: Quality-check the document set
+## Step 10: Quality-check the document set
 
 Before reporting completion, verify:
 
-1. every in-scope `PRD-*` requirement maps to an `SRS-*` contract, a `WBS-*` task, and an `ATP-*` scenario;
-2. every SRS contract maps backward to a product requirement and forward to planned delivery/proof;
-3. every WBS item has dependencies, a bounded task, completion checks, and expected ATP coverage;
-4. every ATP has traceability, procedure/scope, minimum proof, and evidence-retention rules;
-5. `progress.md` contains only derived status and never introduces requirements or contracts;
-6. no downstream file silently changes an upstream product, technical, or ADR decision;
-7. every `verified` claim has observed revision, environment, exact command/procedure, result, and redacted evidence location;
-8. initial rows remain `not-started`, `deferred`, or explicitly `blocked` unless existing observed evidence was intentionally carried forward;
-9. local Markdown links and referenced paths resolve;
-10. prospective commands are real commands discovered in the active repository, or clearly marked as commands to confirm later.
+1. each applicable Web, Admin, or other site audience has a stated shared, independent, no-site, or `TODO(confirm)` strategy; every shared target is cited, and every unknown independent-site runtime identifier remains `TODO(confirm from active source)`;
+2. deferred site strategy or identifiers block only the dependent frontend/site WBS branch, while unrelated backend and actionable audience work remains accurately statused;
+3. every in-scope `PRD-*` requirement maps to an `SRS-*` contract, a `WBS-*` task, and an `ATP-*` scenario;
+4. every SRS contract maps backward to a product requirement and forward to planned delivery/proof;
+5. every WBS item has dependencies, a bounded task, completion checks, and expected ATP coverage;
+6. every ATP has traceability, procedure/scope, minimum proof, and evidence-retention rules;
+7. `progress.md` contains only derived status and never introduces requirements or contracts;
+8. no downstream file silently changes an upstream product, technical, or ADR decision;
+9. every `verified` claim has observed revision, environment, exact command/procedure, result, and redacted evidence location;
+10. initial rows remain `not-started`, `deferred`, or explicitly `blocked` unless existing observed evidence was intentionally carried forward;
+11. every exact `PRD-*`, `SRS-*`, `WBS-*`, and `ATP-*` reference in the planning authority set resolves to exactly one formal definition in its owning document; ranges and wildcards are aggregation notation only and cannot satisfy this check;
+12. README language distinguishes observed facts, confirmed inputs, proposed targets, and `TODO(confirm)` decisions, and does not upgrade a `Proposed` ADR into a confirmed or accepted durable boundary;
+13. `npm run spec:charts:check -- <suite>` passes, proving every WBS task has one progress row, statuses and dependencies reconcile, ATP references resolve, and both generated SVGs are current;
+14. chart language and accessibility/metadata text follow the README language policy;
+15. local Markdown links and referenced paths resolve;
+16. prospective commands are real commands discovered in the active repository, or clearly marked as commands to confirm later.
+
+If the exact-ID, status-consistency, or chart check fails, correct the authoritative planning records or regenerate the derived artifacts and rerun it before reporting generation complete. This is a static planning check, not ATP execution: do not create evidence or claim `verified` for it.
+
+After creating or changing `pdp-wbs.md`, `test-plan.md`, or `progress.md`, regenerate both derived views with `npm run spec:charts -- <suite>` and then run `npm run spec:charts:check -- <suite>`. A chart change never authorizes a planning or status change. If a later edit occurs outside this workflow, the check command is the source of truth for detecting stale views.
 
 Do not run `npm run init`, reset a database, scaffold code, or execute deployment/provider operations as an automatic consequence of writing planning records. Do not report those activities as evidence.
 
-## Step 10: Handoff and response
+## Step 11: Handoff and response
 
 Report:
 
@@ -185,6 +221,7 @@ Report:
 - optional files intentionally omitted and why;
 - unresolved decisions and the next confirmation needed;
 - initial status and evidence limitations;
-- recommended next workflow (`cabloy-domain-planning`, backend/frontend scaffold, or `cabloy-contract-loop`).
+- recommended next workflow (`cabloy-domain-planning`, backend/frontend scaffold, or `cabloy-contract-loop`);
+- generated or refreshed `implementation-gantt.svg` and `implementation-burndown.svg`, selected README language, and the result of `npm run spec:charts:check -- <suite>`.
 
 Keep the result practical. A good spec set gives the next implementer a shared authority map, not a fictional completion report.
