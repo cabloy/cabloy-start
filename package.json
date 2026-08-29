@@ -50,6 +50,9 @@
     "format:fix": "oxfmt --write",
     "lint": "oxlint --disable-nested-config",
     "lint:fix": "oxlint --disable-nested-config --fix",
+    "test:spec-charts": "node --test .claude/skills/cabloy-spec-generation/scripts/generate-implementation-charts.test.mjs",
+    "spec:charts": "node ./.claude/skills/cabloy-spec-generation/scripts/generate-implementation-charts.mjs",
+    "spec:charts:check": "node ./.claude/skills/cabloy-spec-generation/scripts/generate-implementation-charts.mjs --check",
     "prepare": "husky"
   },
   "devDependencies": {
