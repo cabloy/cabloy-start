@@ -87,7 +87,8 @@ export class ModelStudent extends BeanModelBase {
         return res ?? null;
       },
       meta: {
-        disableSuspenseOnInit: true,
+        // The Summary dialog renders query errors itself.
+        disableErrorEffect: true,
       },
     });
   }
@@ -121,14 +122,40 @@ const modelStudent = (await ctx.bean._getBean(
   true,
 )) as ModelStudent;
 const querySummary = modelStudent.summary(id);
+await querySummary.suspense();
 
-await querySummary.refetch({ bypassPersister: true });
 $host.$appModal.dialog({
-  slotDefault: () => <ZMarkdownHtml html={querySummary.data?.descriptionHtml ?? ''} />,
+  slotDefault: () => {
+    const hasData = querySummary.data !== undefined;
+    const isLoading = !hasData && (querySummary.isPending || querySummary.isFetching);
+    const error = querySummary.error;
+
+    return (
+      <>
+        {hasData && error && (
+          <div class="alert alert-warning" role="alert">
+            <span>{this.scope.locale.SummaryRefreshFailed()}</span>
+          </div>
+        )}
+        {error && (
+          <div class="alert alert-error" role="alert">
+            <span>{error.message}</span>
+          </div>
+        )}
+        {hasData ? (
+          <ZMarkdownHtml html={querySummary.data?.descriptionHtml ?? ''} />
+        ) : isLoading ? (
+          <div role="status">Loading...</div>
+        ) : undefined}
+      </>
+    );
+  },
 });
 ```
 
-`refetch({ bypassPersister: true })` is useful when this interaction needs an API-fresh result without restoring or scheduling a persistence save through the persister for that fetch. The successful result still updates the model-owned in-memory query, and the dialog remains bound to `querySummary.data`, so the query remains the source of its ongoing render state rather than transferring ownership to an awaited-result snapshot. The option affects only this fetch; normal query cancellation and in-flight deduplication rules still apply. It is not a force-new-request option: when an existing fetch is reused by TanStack Query, that fetch's semantics remain in effect. The bypassed fetch itself does not intentionally replace an existing persisted value; an already queued ordinary persistence callback is a separate operation and is not automatically cancelled. Use static `meta.persister: false` only when persistence should be disabled for the query generally.
+Opening this Summary dialog is an interaction readiness boundary, so the handler awaits the existing model-owned query with `await querySummary.suspense()` before creating the dialog. That wait follows normal query cache, staleness, error, persistence, and deduplication semantics; it is not an unconditional API-fresh request. After opening, the dialog remains bound to reactive query state rather than an awaited one-shot result, so later query updates remain visible.
+
+Use `data !== undefined` as the availability boundary. Retained data plus `error` renders two distinct messages while preserving the content: a non-blocking localized refresh-failure warning explains that the content may be outdated, and `error.message` explains the concrete failed fetch. No data plus `error` renders only the concrete fetch error. This is persisted-cache-first stale-while-revalidate UI, not an API-fresh orchestration decision. Whether restore and follow-up revalidation occur depends on data availability, persister configuration, and staleness.
 
 ### Avoid
 
@@ -161,7 +188,8 @@ summary(id: TableIdentity) {
       return res ?? null;
     },
     meta: {
-      disableSuspenseOnInit: true,
+      // The Summary dialog renders query errors itself.
+      disableErrorEffect: true,
     },
   });
 }
@@ -242,6 +270,8 @@ deleteForce(id: TableIdentity) {
 - item/list invalidation remains centralized
 - the business-facing model exposes semantic actions without competing for cache ownership
 
+`mutationItem(...)` awaits its standard consistency work before mutation completion: it invalidates matching active `select` queries unless `invalidateSelect: false`, then invalidates matching active queries under the row's item root, and only then invokes and awaits the optional custom `onSuccess`. This keeps `mutateAsync()` aligned with active resource refreshes. `invalidateSelect: false` skips only the default select invalidation; item-root invalidation remains automatic.
+
 ## Recipe 5: customize invalidation for a special mutation
 
 ### Use this when
@@ -261,7 +291,6 @@ publish(id: TableIdentity) {
     },
     onSuccess: async () => {
       await this.$$modelResource.$invalidateQueries({ queryKey: ['select'] });
-      await this.$$modelResource.$invalidateQueries({ queryKey: ['item', id] });
       await this.$$modelResource.$invalidateQueries({ queryKey: ['select', 'dashboard'] });
     },
   });
@@ -271,7 +300,7 @@ publish(id: TableIdentity) {
 ### Why this works well
 
 - the existing resource-owner remains the source of truth for consistency rules
-- special cache dependencies stay explicit
+- the automatic item-root invalidation completes before this callback adds the special list dependencies
 - pages do not need to remember hidden follow-up refetch rules
 
 ### Avoid
@@ -411,6 +440,8 @@ batchArchive(ids: TableIdentity[]) {
 - batch behavior stays modeled explicitly
 - list invalidation policy remains visible
 - cache ownership still stays with the existing resource-owner even when row-level helpers are not the right fit
+
+This uses raw `$useMutationData(...)` because a batch action affects multiple rows rather than the one `id` accepted by `mutationItem(...)`. It does not inherit `mutationItem(...)`'s automatic item-root invalidation or sequencing, so define and await the necessary list and per-item invalidations explicitly.
 
 ## Recipe 10: keep generic blocks working while adding resource semantics
 

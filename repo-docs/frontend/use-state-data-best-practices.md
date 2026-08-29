@@ -284,6 +284,8 @@ A query established during render remains the owner of its ongoing state. Render
 
 An interaction or orchestration boundary may still await `query.refetch()` when it needs one result to decide whether to continue a command, navigate, show a notification, or open a dialog. That result is local to the current sequence; it does not transfer query ownership to the controller or render path.
 
+When a query-backed dialog needs readiness before it opens, await the existing query's `suspense()` instead. This follows normal query cache, staleness, error, and deduplication semantics; it does not necessarily force an API-fresh request. After the dialog opens, continue to render from the query wrapper rather than the awaited result.
+
 Do not copy an awaited `refetch()` result into a second long-lived controller/render state that drives an open dialog or persistent component. If the UI remains mounted and displays query-backed data, bind it to `query.data` or a model-derived reactive surface so later refetches and model updates remain visible.
 
 ### Per-fetch persistence bypass
@@ -305,22 +307,53 @@ await query.refetch({ bypassPersister: true });
 
 This option is not a force-new-request flag. Cancellation, `cancelRefetch`, and in-flight deduplication continue to follow TanStack Query semantics. If an existing fetch is reused, its already-established fetch semantics remain in effect. The bypassed fetch itself does not intentionally replace an existing persisted value; an already queued ordinary persistence callback is a separate operation and is not automatically cancelled.
 
+When the current interaction or polling iteration must make an immediate decision from its API-oriented fetch, consume the awaited result rather than rereading `query.data`:
+
+```ts
+const result = await queryPaymentSession.refetch({
+  bypassPersister: true,
+});
+const session = result.data;
+
+if (session?.state === 'succeeded') {
+  // Decide this iteration from this fetch result.
+}
+```
+
+`query.data` remains the reactive, long-lived surface for rendering and subsequent updates. `result.data` is the result for this one awaited sequence. Keeping those roles separate prevents a controller from treating ongoing render state as the local result variable for a command. The result represents this fetch's response; it does not guarantee that no later server-side state transition occurs, and normal TanStack Query reuse semantics still apply.
+
 This is different from static `meta.persister: false`: the static option disables persistence for the query generally, while `bypassPersister: true` opts out only for one fetch.
 
-For example, an interaction can request a fresh summary and then open a dialog while the dialog remains bound to the query-owned state:
+By contrast, a summary dialog can deliberately use persisted-cache-first behavior while remaining bound to query-owned state:
 
 ```ts
 const querySummary = modelStudent.summary(id);
-await querySummary.refetch({ bypassPersister: true });
+await querySummary.suspense();
 
 $host.$appModal.dialog({
-  slotDefault: () => (
-    <ZMarkdownHtml html={querySummary.data?.descriptionHtml ?? ''} />
-  ),
+  slotDefault: () => {
+    const hasData = querySummary.data !== undefined;
+    const isLoading = !hasData && (querySummary.isPending || querySummary.isFetching);
+    const error = querySummary.error;
+
+    return (
+      <>
+        {hasData && error && <SummaryRefreshWarning />}
+        {error && <SummaryFetchError error={error} />}
+        {hasData ? (
+          <ZMarkdownHtml html={querySummary.data?.descriptionHtml ?? ''} />
+        ) : isLoading ? (
+          <SummaryLoading />
+        ) : undefined}
+      </>
+    );
+  },
 });
 ```
 
-The awaited result may coordinate the current interaction, but ongoing rendering should continue to read `querySummary.data`.
+This Summary interaction deliberately awaits `querySummary.suspense()` before opening the dialog. It therefore has a query-readiness boundary, but does not force an API-fresh request: the wait still follows normal query cache, staleness, error, persistence, and deduplication semantics. The open dialog reads every later transition through `querySummary.data` and its query status rather than taking ownership of an awaited one-shot result.
+
+Treat `data !== undefined` as the availability boundary. Retained data plus `error` has two separate user-facing meanings: render a non-blocking refresh-failure warning to explain that the retained content may be outdated, render the concrete `error.message` through `SummaryFetchError`, and keep the content visible. With no data plus `error`, render only the concrete fetch error. This is persisted-cache-first stale-while-revalidate UI, not an API-fresh orchestration request. Restore and follow-up revalidation depend on data availability, persister configuration, and staleness.
 
 ## Practical rule 7: derive render-time state once per render when possible
 
