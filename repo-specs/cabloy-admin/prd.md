@@ -14,6 +14,7 @@ This PRD owns product outcomes, business scope, business rules, and business acc
 - Allow one account to hold multiple Department memberships and record an optional per-membership position description.
 - Make Department responsibility visible through a manager assignment while preserving membership boundaries.
 - Prevent ordinary administration from leaving an instance without an activated `systemAdmin`.
+- Let System Administrators configure additional navigation disclosure for restricted leaves in each registered SSR-site menu tree without treating a menu as API, route, Resource, action, or data-scope authority.
 
 ## Personas
 
@@ -23,7 +24,7 @@ A `systemAdmin` is the phase-one operational authority for Cabloy Admin. They ma
 
 ### Future Management Operator
 
-An ordinary management role may perform explicitly granted administrative tasks after the dynamic policy model is configured. Creating a role or assigning a role does not grant authority by itself. Legacy actions remain protected by their existing guards, while only deliberately opted-in actions participate in dynamic RBAC.
+An ordinary management role may perform explicitly granted administrative tasks after the dynamic policy model is configured. Creating a role or assigning a role does not grant authority by itself. Legacy actions remain protected by their existing guards, while only deliberately opted-in actions participate in dynamic RBAC. For a restricted SSR menu leaf, an ordinary role sees the leaf when its nonempty static `roles` declaration matches or when a matching role-menu association exists; an explicit empty `roles` array is dynamic-only/default-deny. Disclosure still does not grant authority to operate the destination.
 
 ### Managed Account
 
@@ -44,6 +45,7 @@ An authorized administrator who maintains the Department forest, assigns members
 - Exclude `systemAdmin` membership from generic role edit, delete, candidate-selection, and bulk-replacement operations.
 - Grant or revoke `systemAdmin` only through a dedicated protected workflow.
 - Configure explicit role-to-action policy grants for opted-in actions without changing undecorated legacy actions.
+- Configure additional role-to-menu visibility for restricted leaves in registered SSR-site menu trees through the paired `admin-menu` domain without changing independent API authorization.
 - Resolve Department and owner data scope on the server for deliberately opted-in operational actions.
 - Create, view, maintain, enable, disable, and rearrange the Department forest in the active instance.
 - Treat `parentId = null` as a top-level Department.
@@ -60,6 +62,7 @@ An authorized administrator who maintains the Department forest, assigns members
 - Organization merge, split, archival migration, or cross-Organization tree migration workflows.
 - SSO synchronization, SCIM, external identity synchronization, and credential-provider redesign.
 - A new Admin SSR site, public path, flavor, or independent Admin application.
+- Independently persisted group grants, real-time cross-browser role-menu policy push, and deriving menu authority from action/RBAC grants.
 - Detailed audit, notification, import/export, and bulk-governance product capabilities beyond the phase-one requirement to retain sensitive-operation evidence.
 
 ## Primary User Journeys
@@ -114,6 +117,14 @@ An authorized administrator who maintains the Department forest, assigns members
 3. Matching grants combine as a union of `all`, custom Departments, own Department, own Department plus descendants, and `mine` terms.
 4. Neutral domain services apply the supplied scope context to reads and mutations while preserving owner, Department, parent, relationship, and transaction invariants; stale or missing browser capabilities never widen authority.
 
+### Configure SSR menu visibility
+
+1. A System Administrator opens an ordinary Role in the existing Start Admin Resource detail surface.
+2. They view server-derived SSR-site menu trees. A public leaf (`roles === undefined`) is labeled public without a checkbox; every leaf with defined `roles` has a checkbox for the target role.
+3. The system validates the active instance, target role, SSR-site onion name, and final SSR menu leaf name; it never exposes another role's associations or policy internals through the public menu response.
+4. A role holder sees a `roles: []` leaf only when any current role has a matching association. For a nonempty `roles` leaf, a static role match or a matching association discloses it. A surviving association row is the only enabled state, and unchecking deletes it. `systemAdmin` has no separate menu-visibility bypass.
+5. A committed policy or ordinary-role membership change affecting the current browser subject appears after the application reloads and reconstructs authenticated and navigation state. A change affecting another subject does not reload the current browser. A visible or guessed destination remains independently protected by its existing server authority.
+
 ## Product Requirements
 
 ### Account Management
@@ -140,6 +151,15 @@ An authorized administrator who maintains the Department forest, assigns members
 - **PRD-ADM-SCP-03**: Department scope recognizes only enabled Department facts in the active instance. Custom Departments do not imply descendants; own-plus-descendants resolves enabled descendants recursively.
 - **PRD-ADM-SCP-04**: A browser menu, route, filter, permission hint, or browser-safe row/detail action projection does not authorize an API or data mutation; the server remains authoritative.
 - **PRD-ADM-SCP-05**: Selected Student and Record actions provide the first acceptance slice for scoped reads and writes; this does not require migration of unrelated existing Controllers.
+
+### Role-Menu Visibility
+
+- **PRD-ADM-MNU-01**: A System Administrator can configure additional navigation disclosure for defined-role leaves in server-derived trees for registered SSR sites through a separate menu domain, without creating a second Role, menu, site, or authorization domain.
+- **PRD-ADM-MNU-02**: `roles === undefined` is public and cannot receive a dynamic association; `roles: []` is default-deny and requires a surviving association for at least one current role in the active instance; a nonempty `roles` array is disclosed by static any-role matching or a surviving association. An unchecked association is deleted rather than retained as a disabled row.
+- **PRD-ADM-MNU-03**: Dynamic associations are identified by target role, SSR-site onion name, and final SSR menu leaf name. `systemAdmin` has no implicit menu-visibility override; protected configuration APIs remain independently guarded.
+- **PRD-ADM-MNU-04**: A menu declaration with omitted `site` binds to every registered SSR site. Groups are derived from visible children and never receive an independently persisted association.
+- **PRD-ADM-MNU-05**: A menu, route, page, browser projection, or guessed destination never grants Resource, controller, API, action, or data-scope authority.
+- **PRD-ADM-MNU-06**: A committed menu-policy or ordinary-role membership change affecting the current browser subject appears after the application reloads and reconstructs authenticated and navigation state. A change affecting another subject does not reload the current browser; other subjects and browsers observe the committed change on a later authenticated load or reload. No real-time cross-browser push is introduced.
 
 ### Protected System Administrator Authority
 
@@ -174,14 +194,17 @@ An authorized administrator who maintains the Department forest, assigns members
 
 - A Vona instance is the tenant and contains the phase-one Department forest.
 - Ordinary account, role, Department, and membership operations are visible only within the active instance.
-- `registeredUser` and `systemAdmin` are fixed framework-role definitions, not normal editable Role Resource records; `registeredUser` membership remains manageable.
-- `systemAdmin` is a stable protected membership name, not a business display label or a generic role-management mutation target. Its grant and revoke remain exclusive to the sensitive workflow.
+- `registeredUser` and `systemAdmin` are fixed framework-role definitions. Role Management can list and view them and can change only their `siteIds` site-admission configuration; their names, titles, locales, and deletion remain protected. `registeredUser` membership remains manageable.
+- `systemAdmin` is a stable protected membership name, not a business display label or a generic membership-management mutation target. Its grant and revoke remain exclusive to the sensitive workflow.
 - A sensitive management operation must not leave the active instance without at least one activated `systemAdmin`.
 - A top-level Department uses `parentId = null`; `0` is not a Department identifier.
 - When a Department has a parent, that parent must be an existing Department in the same active instance; a Department cannot become its own ancestor.
 - An account can hold multiple Department memberships. The optional `position` describes that specific membership rather than the account globally.
 - A Department manager should be an active member of the Department they manage.
 - Authorization and data scope are enforced by server-side contracts. A menu, route, page, or browser filter is not the authority boundary.
+- Role-menu visibility applies to actual registered SSR-site leaves with defined `roles`. `roles === undefined` is public; `roles: []` is dynamic-only/default-deny; a nonempty static declaration combines with matching dynamic associations as an OR.
+- A dynamic association uses the target role, SSR-site onion name, and final prepared leaf name. Omitted declaration `site` binds the menu to every registered SSR site; groups are not association targets. `systemAdmin` has no implicit visibility override.
+- Public menu DTOs never disclose static role declarations, association state, protected catalog metadata, revisions, or role topology, although ordinary rendered menu names remain available for navigation.
 
 ## Launch Criteria
 
@@ -195,6 +218,7 @@ The phase-one Cabloy Admin baseline is ready for acceptance when:
 - Admin menu visibility, backend authorization, and data scope remain independently enforced;
 - explicitly opted-in actions use the canonical catalog identity and default-deny policy behavior;
 - selected Student and Record flows preserve server-derived Department and owner scope;
+- defined-role SSR menu leaves follow the approved public/dynamic-only/static-or-dynamic visibility matrix, preserve group derivation, and never broaden independent API authority;
 - the Vona-to-Zova contract path and the Start Admin paired build path are proven for the implemented resource slices; and
 - each delivered requirement has repeatable test or acceptance evidence in the applicable acceptance plan.
 
@@ -208,6 +232,7 @@ The phase-one Cabloy Admin baseline is ready for acceptance when:
 | Departments                       | `PRD-ADM-DEP-*`                 | `SRS-ADM-DEP-*`                                                   | `WBS-ADM-50-*`                                    | `ATP-ADM-DEP-*`                                                                                                                               |
 | Membership                        | `PRD-ADM-MEM-*`                 | `SRS-ADM-MEM-*`                                                   | `WBS-ADM-60-*`                                    | `ATP-ADM-MEM-*`, `ATP-ADM-MGR-01`                                                                                                             |
 | Dynamic policy                    | `PRD-ADM-POL-*`                 | `SRS-ADM-POL-*`                                                   | `WBS-ADM-80-01`, `WBS-ADM-80-02`, `WBS-ADM-80-04` | `ATP-ADM-POL-01`–`ATP-ADM-POL-04`                                                                                                             |
+| Role-menu visibility              | `PRD-ADM-MNU-*`                 | `SRS-ADM-MNU-*`                                                   | `WBS-ADM-90-01`–`WBS-ADM-90-08`                   | `ATP-ADM-MNU-01`–`ATP-ADM-MNU-09`                                                                                                             |
 | Department and owner data scope   | `PRD-ADM-SCP-*`                 | `SRS-ADM-SCP-*`                                                   | `WBS-ADM-80-02`, `WBS-ADM-80-03`, `WBS-ADM-80-04` | `ATP-ADM-SCP-01`, `ATP-ADM-SCP-02`, `ATP-ADM-POL-04`                                                                                          |
 | Security and operational UI       | `PRD-ADM-SEC-*`, `PRD-ADM-UI-*` | `SRS-ADM-TEN-*`, `SRS-ADM-AUT-*`, `SRS-ADM-API-*`, `SRS-ADM-UI-*` | `WBS-ADM-20-*`, `WBS-ADM-70-*`, `WBS-ADM-80-*`    | `ATP-ADM-TEN-01`, `ATP-ADM-AUT-01`, `ATP-ADM-CTR-01`, `ATP-ADM-RES-01`–`ATP-ADM-RES-03`, `ATP-ADM-SSR-01`, `ATP-ADM-POL-03`, `ATP-ADM-POL-04` |
 
@@ -221,3 +246,4 @@ The complete traceability chain is PRD requirement → SRS contract → delivery
 - [Test Strategy and Acceptance Plan](./test-plan.md)
 - [ADR 0001: Establish Cabloy Admin MVP Boundaries](./decisions/0001-admin-mvp-boundaries.md)
 - [ADR 0002: Dynamic RBAC and Department Data Scope](./decisions/0002-dynamic-rbac-and-data-scope.md)
+- [ADR 0003: Role Menu Visibility](./decisions/0003-role-menu-visibility.md)

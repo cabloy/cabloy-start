@@ -814,6 +814,54 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/admin/menu/roleMenu/catalog': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['AdminMenuRoleMenu_catalog'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/menu/roleMenu/roles/{roleId}/configuration': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['AdminMenuRoleMenu_roleConfiguration'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/menu/roleMenu': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['AdminMenuRoleMenu_create'];
+    delete: operations['AdminMenuRoleMenu_delete'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/admin/rbac/rbacGrant': {
     parameters: {
       query?: never;
@@ -2577,6 +2625,65 @@ export interface components {
     'admin-department.dto.departmentActivation': {
       enabled: boolean;
     };
+    'admin-menu.dto.roleMenuCatalogRes': {
+      revision: string;
+      list: components['schemas']['admin-menu.dto.roleMenuCatalogSite'][];
+    };
+    'admin-menu.dto.roleMenuCatalogSite': {
+      ssrSiteName: string;
+      menus: components['schemas']['admin-menu.dto.roleMenuCatalogMenu'][];
+      groups: components['schemas']['admin-menu.dto.roleMenuCatalogGroup'][];
+    };
+    'admin-menu.dto.roleMenuCatalogMenu': {
+      ssrMenuName: string;
+      configurable: boolean;
+      title?: string | undefined;
+      description?: string | undefined;
+      icon?: string | undefined;
+      order?: number | undefined;
+      group?: string | string[] | undefined;
+      separator?: boolean | undefined;
+    };
+    'admin-menu.dto.roleMenuCatalogGroup': {
+      ssrMenuGroupName: string;
+      title?: string | undefined;
+      description?: string | undefined;
+      icon?: string | undefined;
+      order?: number | undefined;
+      group?: string | string[] | undefined;
+      collapsed?: boolean | undefined;
+    };
+    'admin-menu.dto.roleMenuRoleConfigurationRes': {
+      revision: string;
+      roleId: number | string;
+      list: components['schemas']['admin-menu.dto.roleMenuRoleConfigurationSite'][];
+    };
+    'admin-menu.dto.roleMenuRoleConfigurationSite': {
+      ssrSiteName: string;
+      menus: components['schemas']['admin-menu.dto.roleMenuRoleConfigurationMenu'][];
+      groups: components['schemas']['admin-menu.dto.roleMenuCatalogGroup'][];
+    };
+    'admin-menu.dto.roleMenuRoleConfigurationMenu': {
+      ssrMenuName: string;
+      configurable: boolean;
+      enabled: boolean;
+      title?: string | undefined;
+      description?: string | undefined;
+      icon?: string | undefined;
+      order?: number | undefined;
+      group?: string | string[] | undefined;
+      separator?: boolean | undefined;
+    };
+    'admin-menu.dto.roleMenuCreate': {
+      roleId: number | string;
+      ssrSiteName: string;
+      ssrMenuName: string;
+    };
+    'admin-menu.dto.roleMenuDelete': {
+      roleId: number | string;
+      ssrSiteName: string;
+      ssrMenuName: string;
+    };
     'admin-rbac.dto.rbacGrantCreate': {
       /** @description Role */
       roleId: number | string;
@@ -2866,7 +2973,7 @@ export interface components {
       /** @description Operations */
       _operationsRow?: unknown;
     };
-    'admin-role.dto.roleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_df7f5acbd9f3fd911a4e090ed804e5b1f1b23497':
+    'admin-role.dto.roleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_00362228eea4e802d6e2c7867458da4616aecbcc':
       | {
           /** @description ID */
           id: number | string;
@@ -4955,6 +5062,112 @@ export interface operations {
     };
     authToken: true;
   };
+  AdminMenuRoleMenu_catalog: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['admin-menu.dto.roleMenuCatalogRes'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminMenuRoleMenu_roleConfiguration: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        roleId: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['admin-menu.dto.roleMenuRoleConfigurationRes'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminMenuRoleMenu_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-menu.dto.roleMenuCreate'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminMenuRoleMenu_delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-menu.dto.roleMenuDelete'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
   AdminRbacRbacGrant_select: {
     parameters: {
       query?: {
@@ -5386,7 +5599,7 @@ export interface operations {
           'application/json': {
             code: string;
             message: string;
-            data?: components['schemas']['admin-role.dto.roleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_df7f5acbd9f3fd911a4e090ed804e5b1f1b23497'];
+            data?: components['schemas']['admin-role.dto.roleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_00362228eea4e802d6e2c7867458da4616aecbcc'];
           };
         };
       };

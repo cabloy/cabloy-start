@@ -148,7 +148,8 @@ describe('policyInvalidation.test.ts', { concurrency: false }, () => {
 
   it('service:rbacPolicyRevision maintains state independently by instance', async () => {
     const instanceName = 'isolateTest' as any;
-    let revisionId: string | undefined;
+    let isolatedRevisionId: string | undefined;
+    let isolatedRevision: number | undefined;
     let defaultRevisionId: string | undefined;
     let defaultRevisionExisted = false;
     let defaultRevision: string | undefined;
@@ -164,10 +165,10 @@ describe('policyInvalidation.test.ts', { concurrency: false }, () => {
         async () => {
           const adminRbac = app.scope('admin-rbac');
           const existing = await adminRbac.model.policyRevision.get({});
-          assert.equal(existing, undefined);
+          isolatedRevision = existing?.revision;
           const revision = adminRbac.service.rbacPolicyRevision;
           const before = Number(await revision.current());
-          revisionId = String((await adminRbac.model.policyRevision.get({}))?.id);
+          isolatedRevisionId = String((await adminRbac.model.policyRevision.get({}))?.id);
           assert.equal(await revision.invalidate(), String(before + 1));
         },
         { instanceName },
@@ -177,10 +178,17 @@ describe('policyInvalidation.test.ts', { concurrency: false }, () => {
         assert.equal(await revision.current(), defaultRevision);
       });
     } finally {
-      if (revisionId) {
+      if (isolatedRevisionId) {
         await app.bean.executor.mockCtx(
           async () => {
-            await app.scope('admin-rbac').model.policyRevision.deleteById(revisionId!);
+            const policyRevision = app.scope('admin-rbac').model.policyRevision;
+            if (isolatedRevision === undefined) {
+              await policyRevision.deleteById(isolatedRevisionId!);
+            } else {
+              await policyRevision.updateById(isolatedRevisionId!, {
+                revision: isolatedRevision,
+              });
+            }
           },
           { instanceName },
         );

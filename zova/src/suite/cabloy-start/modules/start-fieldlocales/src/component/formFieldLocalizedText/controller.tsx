@@ -70,7 +70,7 @@ export class ControllerFormFieldLocalizedText extends BeanControllerBase {
                     size="small"
                     aria-label={this.scope.locale.EditLocales()}
                     disabled={!localesField}
-                    nativeOnClick={() => this.openLocalesDialog()}
+                    nativeOnClick={() => this.openLocalesDialog(readonly)}
                   ></VBtn>
                 ),
               }}
@@ -84,7 +84,7 @@ export class ControllerFormFieldLocalizedText extends BeanControllerBase {
   @Use({ injectionScope: 'host' })
   $$form: any;
 
-  private openLocalesDialog() {
+  private openLocalesDialog(readonly = false) {
     const localesField = this.$props.options?.localesField;
     if (!localesField) return;
     const form = this.$$form;
@@ -103,7 +103,7 @@ export class ControllerFormFieldLocalizedText extends BeanControllerBase {
               key={locale}
               label={items[locale] ? this.$scopeBase.locale[items[locale]]() : locale}
               modelValue={values[locale] ?? ''}
-              readonly={!Object.prototype.hasOwnProperty.call(items, locale)}
+              readonly={readonly || !Object.prototype.hasOwnProperty.call(items, locale)}
               onUpdate:modelValue={value => {
                 if (Object.prototype.hasOwnProperty.call(items, locale)) values[locale] = value;
               }}
@@ -116,15 +116,17 @@ export class ControllerFormFieldLocalizedText extends BeanControllerBase {
           <VBtn variant="text" nativeOnClick={() => modal.close()}>
             {this.scope.locale.Cancel()}
           </VBtn>
-          <VBtn
-            color="primary"
-            nativeOnClick={() => {
-              form.setFieldValue(localesField, normalizeLocalizedTextMap(values), false);
-              modal.close();
-            }}
-          >
-            {this.scope.locale.Ok()}
-          </VBtn>
+          {!readonly && (
+            <VBtn
+              color="primary"
+              nativeOnClick={() => {
+                form.setFieldValue(localesField, normalizeLocalizedTextMap(values), false);
+                modal.close();
+              }}
+            >
+              {this.scope.locale.Ok()}
+            </VBtn>
+          )}
         </>
       ),
     });

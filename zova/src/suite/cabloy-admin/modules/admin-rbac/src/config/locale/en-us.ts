@@ -15,6 +15,8 @@ export default {
   ConfigureDepartments: 'Configure Departments',
   RemoveDepartment: 'Remove Department',
   DepartmentsNotConfigured: 'Departments are not configured',
+  SystemAdminPolicyProtected:
+    'Resource permissions for the system administrator role are protected and cannot be configured here.',
   LoadFailed: 'Policy data could not be loaded',
   Retry: 'Retry',
   ToggleColumn: 'Toggle all applicable permissions for',

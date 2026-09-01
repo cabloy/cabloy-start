@@ -31,6 +31,7 @@ export interface IDtoOptionsRoleUpdate extends IDecoratorDtoOptions {}
                         children: [
                           { type: 'field', name: 'name' },
                           { type: 'field', name: 'title' },
+                          { type: 'field', name: 'titleLocales' },
                           { type: 'field', name: 'siteIds' },
                         ],
                       },
@@ -53,8 +54,13 @@ export interface IDtoOptionsRoleUpdate extends IDecoratorDtoOptions {}
     }),
   ],
   fields: {
-    name: $makeSchema(v.required(), ZovaRender.readonly(), z.string()),
-    title: $makeSchema(v.required(), v.min(1), v.trim(), z.string()),
+    name: $makeSchema(v.optional(), ZovaRender.readonly(), z.string()),
+    title: $makeSchema(
+      v.optional(),
+      v.min(1),
+      v.trim(),
+      z.string(),
+    ),
     titleLocales: $makeSchema(v.optional(), z.record(z.string(), z.string())),
     siteIds: $makeSchema(
       v.optional(),

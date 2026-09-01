@@ -52,7 +52,7 @@ export class DtoRoleSelectResItem extends $Dto.get(() => ModelRole, {
   @Api.field(
     v.title($locale('Operations')),
     ZovaRender.order(1, 'max'),
-    ZovaRender.cell('start-table:actionOperationsRow', {
+    ZovaRender.cell('admin-role:actionOperationsRow', {
       actions: [
         ZovaRender.tableActionRow('start-table:actionUpdate'),
         ZovaRender.tableActionRow('start-table:actionDelete'),

@@ -34,7 +34,13 @@ export class ModelRole extends BeanModelBase {
       },
       onSuccess: async () => {
         await this.$$modelUserResource.$invalidateQueries({ queryKey: ['item', userId] });
+        await this._refreshCurrentSubjectMenus(userId);
       },
     });
+  }
+
+  private async _refreshCurrentSubjectMenus(userId: TableIdentity): Promise<void> {
+    if (!process.env.CLIENT || String(this.$passport.user?.id) !== String(userId)) return;
+    this.app.reload();
   }
 }

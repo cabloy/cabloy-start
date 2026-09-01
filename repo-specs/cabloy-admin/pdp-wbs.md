@@ -23,6 +23,8 @@ This document owns delivery sequencing and completion checks. The [PRD](./prd.md
 
 Dependencies: none.
 
+The baseline traceability review uses the complete acceptance catalogue as a whole; it does not itself execute a particular ATP scenario.
+
 #### WBS-ADM-10-01: Freeze the accepted technical baseline
 
 Primary documents:
@@ -42,7 +44,7 @@ Tasks:
 
 Acceptance checks:
 
-- each `PRD-ADM-*` family maps to SRS contracts, WBS work, and `ATP-ADM-*` evidence;
+- each product requirement family maps to formal SRS contracts, delivery work, and acceptance evidence;
 - no open policy question changes the phase-one data or authority model;
 - no document presents Organization as a phase-one entity, module, or scope.
 
@@ -235,7 +237,7 @@ Acceptance checks:
 
 - moves lock/recheck ancestry and cannot create a cycle;
 - normal delete does not recursively remove descendants or memberships;
-- lifecycle behavior satisfies `SRS-ADM-DEP-*` and `ATP-ADM-DEP-*`.
+- lifecycle behavior satisfies the Department technical contracts and their formal acceptance scenarios.
 
 ### Phase 60: Department memberships and managers
 
@@ -320,7 +322,7 @@ Tasks:
 
 - reconcile PRD, SRS, WBS, ATP evidence, and progress status;
 - record waivers only with owner, reason, and expiry;
-- confirm deferred scope remains absent from source and generated contracts.
+- confirm explicitly excluded capability scope remains absent from source and generated contracts.
 
 Acceptance checks:
 
@@ -419,9 +421,274 @@ Tasks:
 
 Acceptance checks:
 
-- all applicable `ATP-ADM-POL-*` and `ATP-ADM-SCP-*` scenarios pass with identified source revision and retained evidence;
+- all applicable dynamic policy and data-scope acceptance scenarios pass with identified source revision and retained evidence;
 - no generated output is hand-edited, no stale dependency link remains, and all open gates/waivers are recorded;
 - Phase 70 release closure remains blocked until Phase 80 and all prior applicable gates are complete.
+
+### Phase 90: Role-menu visibility delivery and acceptance
+
+Dependencies: `WBS-ADM-20-*`, `WBS-ADM-30-*`, `WBS-ADM-80-*`, and the existing SSR/menu foundations. Phase 90 extends navigation disclosure only; it does not reopen verified Phase 70/80 evidence or change action/data-scope authority. ADR 0003 acceptance, the definedness-based `roles` contract, and the source-informed registered-site inventory are completion gates inside `WBS-ADM-90-01`, not predecessors of that same task.
+
+#### WBS-ADM-90-01: Reclose the role-menu decision and registered-site inventory
+
+Primary areas:
+
+- `repo-specs/cabloy-admin/decisions/0003-role-menu-visibility.md`
+- `repo-specs/cabloy-admin/{prd,srs,test-plan}.md`
+- SSR-site, `@SsrMenu`, and menu-group registrations
+
+Tasks:
+
+- record the approved ADR 0003 amendment before source implementation;
+- inventory actual currently registered SSR-site trees, including omitted-`site` declarations bound to every site and final keyed leaf names;
+- define `roles === undefined` as public/non-configurable, `roles: []` as dynamic-only/default-deny, and nonempty static roles as static-match OR dynamic-association visibility;
+- establish `roleId + ssrSiteName + ssrMenuName` as the future association identity and retain groups as derived presentation rather than grant targets;
+- close this authority increment only after authoritative PRD/ADR/SRS/WBS/ATP records reconcile. It does not modify runtime source, schemas, generated consumers, or execute role-menu acceptance procedures.
+
+Acceptance checks:
+
+- the accepted inventory distinguishes registered site partitions, actual bound leaves, omitted-site bindings, final keyed names, public leaves, restricted leaves, and presentation-only groups;
+- the authority chain consistently defines the three `roles` states, static-or-dynamic union, no implicit `systemAdmin` visibility bypass, and fail-closed renamed/retired identities;
+- persistence terminology consistently uses `roleId`, `ssrSiteName`, and final `ssrMenuName`, not an Admin-only `siteId` or immutable policy key;
+- the inventory and ADR preserve navigation disclosure as distinct from API, action, Resource, route, and data-scope authority.
+
+Traceability: `PRD-ADM-MNU-01`–`PRD-ADM-MNU-05`; `SRS-ADM-MNU-01`–`SRS-ADM-MNU-10`; `ATP-ADM-MNU-01`–`ATP-ADM-MNU-06`.
+
+#### WBS-ADM-90-02: Implement role-menu persistence and lifecycle in the current version path
+
+Primary areas:
+
+- `vona/src/suite/cabloy-admin/modules/admin-rbac/src/`
+- `admin-menu` `meta.version.ts`, entity/model/service tests
+- `admin-rbac` current-version-path removal and `admin-role` role-deletion lifecycle integration
+
+Tasks:
+
+- add the distinct active-instance role-menu association with `roleId`, `ssrSiteName`, final `ssrMenuName`, lookup indexes, and ordinary lifecycle fields; row existence is the only enabled dynamic state and an uncheck deletes the row;
+- move the entity schema from `admin-rbac` to the current `admin-menu` version-1 path without incrementing either module's `vonaModule.fileVersion`;
+- validate target role/site-tree/final-leaf eligibility transactionally, prevent duplicate races without `table.unique(...)`, and clean associations on role deletion;
+- make unknown, renamed, retired, or no-longer-bound site/menu identities fail closed and available only to a protected repair/reconciliation path.
+
+Acceptance checks:
+
+- action grants and role-menu associations remain different entities, services, and semantics;
+- cross-instance, wrong-site, public-leaf, stale-name, duplicate, absent-row deletion, and partial-write paths fail safely;
+- the changed `meta.version.ts` path is covered by `npm run test` and test-owned associations are removed in `finally`.
+
+Traceability: `PRD-ADM-MNU-01`–`PRD-ADM-MNU-04`; `SRS-ADM-MNU-03`–`SRS-ADM-MNU-05`, `SRS-ADM-MNU-15`; `ATP-ADM-MNU-01`, `ATP-ADM-MNU-02`, `ATP-ADM-MNU-04`.
+
+#### WBS-ADM-90-03: Deliver server-side catalog, SSR evaluation, and safe public projection
+
+Primary areas:
+
+- `vona/src/suite-vendor/a-cabloy/modules/a-ssr/`
+- `vona/src/suite/cabloy-admin/modules/admin-menu/src/`
+- existing `home-base` menu endpoint and Admin menu declarations
+
+Tasks:
+
+- derive a protected site-tree catalog from registered SSR sites and actual menu/group bindings, including omitted-`site` declarations and final keyed leaf names;
+- evaluate the definedness-based static/dynamic policy per request before private metadata is projected away, retaining structural site/instance/host/locale cache behavior;
+- implement public, dynamic-only/default-deny, and static-or-dynamic union visibility without an implicit `systemAdmin` shortcut;
+- derive groups from filtered children and redact every policy-private field from the unchanged public menu endpoint.
+
+Acceptance checks:
+
+- structural caching never returns a subject-specific visible result to another caller;
+- public, dynamic-only, and static-or-dynamic leaf semantics are exact, and empty groups are omitted;
+- public menu responses contain neither role declarations, association state, protected catalog metadata, revisions, nor role topology.
+
+Traceability: `PRD-ADM-MNU-02`–`PRD-ADM-MNU-05`; `SRS-ADM-MNU-02`, `SRS-ADM-MNU-07`–`SRS-ADM-MNU-10`; `ATP-ADM-MNU-02`, `ATP-ADM-MNU-03`, `ATP-ADM-MNU-05`, `ATP-ADM-MNU-08`.
+
+#### WBS-ADM-90-04: Deliver protected configuration APIs and separate invalidation
+
+Primary areas:
+
+- `admin-menu` controller, DTOs, service, menu-visibility revision/configuration-query invalidation, generated OpenAPI
+- `admin-role` Menu Authorization composition integration
+
+Tasks:
+
+- expose a `systemAdmin`-protected registered-site catalog and role configuration command/query surface with narrow safe DTOs;
+- validate active-instance role, exact `ssrSiteName`, final `ssrMenuName`, configurable-leaf state, and surviving-association state at the service layer;
+- create a dedicated menu-visibility revision and configuration-query invalidation path instead of repurposing action-RBAC or coarse permission invalidation; retain normal `roleMenu` Model entity/query-cache invalidation for SSR association lookup rather than bypassing it;
+- generate frontend contracts from Vona DTO/controller/OpenAPI truth.
+
+Acceptance checks:
+
+- catalog/configuration admission and projections cannot leak raw SSR metadata, other-role assignments, Passport topology, or API authority claims;
+- committed configuration mutations invalidate only the relevant visibility resolver/editor state and do not leave stale effective policy;
+- generated API consumers contain the intended contract without hand edits.
+
+Traceability: `PRD-ADM-MNU-01`–`PRD-ADM-MNU-03`, `PRD-ADM-MNU-05`; `SRS-ADM-MNU-04`, `SRS-ADM-MNU-06`, `SRS-ADM-MNU-11`, `SRS-ADM-MNU-14`; `ATP-ADM-MNU-01`, `ATP-ADM-MNU-04`, `ATP-ADM-MNU-05`, `ATP-ADM-MNU-09`.
+
+#### WBS-ADM-90-05: Add the Role-detail Menu Authorization editor
+
+Primary areas:
+
+- `vona/src/suite/cabloy-admin/modules/admin-role/src/dto/roleView.tsx`
+- `zova/src/suite/cabloy-admin/modules/admin-menu/src/`
+- generated consumers and Start Admin Role Resource composition
+
+Tasks:
+
+- add the server-rendered Menu Authorization block beside Resource Permissions in the existing Role View;
+- implement a dedicated `admin-menu` model/component for catalog/configuration state and mutations;
+- retain `rest-resource.model.resource` as the only generic Role CRUD/cache owner and invalidate/refetch only the affected role-configuration state;
+- keep targeted editor-state invalidation separate from authenticated menu freshness, which is handled by `WBS-ADM-90-06`;
+- preserve Start Admin SSR/hydration equivalence and safe empty/loading/error states.
+
+Acceptance checks:
+
+- Role detail displays only its safe site-tree configuration state; public leaves and groups have no configurable checkbox, and the UI cannot submit hidden policy topology;
+- the new block coexists with Resource Permissions without a competing Role Resource cache owner;
+- the generated consumer and paired Start Admin outputs reflect Vona-first contract truth.
+
+Traceability: `PRD-ADM-MNU-01`, `PRD-ADM-MNU-03`, `PRD-ADM-MNU-05`; `SRS-ADM-MNU-06`, `SRS-ADM-MNU-13`, `SRS-ADM-MNU-14`; `ATP-ADM-MNU-01`, `ATP-ADM-MNU-08`, `ATP-ADM-MNU-09`.
+
+#### WBS-ADM-90-06: Implement authoritative menu and session freshness
+
+Primary areas:
+
+- `admin-menu` mutation/session integration and visibility resolver
+- current-subject application reload and authenticated application bootstrap
+- site menu model ownership and server-authoritative retrieval
+
+Tasks:
+
+- make a committed role-menu policy mutation observable on the next authenticated menu retrieval;
+- after invalidating the affected role-configuration state, invoke `this.app.reload()` when the affected role is held by the current Passport subject;
+- after invalidating the affected User Resource item, invoke `this.app.reload()` when ordinary-role replacement targets the current Passport subject;
+- do not invoke targeted Passport refresh, mutation-level relogin fallback, or `home-layoutadmin` `ModelMenu.refreshMenus()` from these mutation callbacks;
+- do not reload the current browser for mutations affecting another subject; preserve each site's public-path/locale menu query key and do not add role identity;
+- do not add real-time cross-browser push.
+
+Acceptance checks:
+
+- current-subject policy and membership changes cause an application reload and the reloaded application reflects fresh server-authoritative authenticated and menu state;
+- mutations affecting another subject do not trigger an unnecessary local reload;
+- continuing-session behavior remains server-authoritative and does not expose role identity through a browser cache key;
+- one browser's update does not imply unplanned push semantics for other browsers.
+
+Traceability: `PRD-ADM-MNU-02`, `PRD-ADM-MNU-03`, `PRD-ADM-MNU-06`; `SRS-ADM-MNU-08`, `SRS-ADM-MNU-11`–`SRS-ADM-MNU-13`; `ATP-ADM-MNU-02`, `ATP-ADM-MNU-07`, `ATP-ADM-MNU-08`.
+
+#### WBS-ADM-90-07: Prove focused role-menu policy, isolation, and browser behavior
+
+Primary areas:
+
+- `admin-menu` and `admin-role` module-local tests
+- SSR menu/server tests
+- `repo-e2e/specs/cabloy-admin.spec.ts`
+- retained Phase 90 acceptance evidence after actual execution
+
+Tasks:
+
+- test protected site-tree catalog/configuration access, public/dynamic-only/static-or-dynamic semantics, enabled/disabled assignments, role union, and stale-name denial;
+- test active-instance/site isolation, omitted-site bindings, final keyed leaf identities, public menu redaction, and direct API denial despite visible/guessed navigation;
+- test affected-current-subject application reload, unrelated-subject no-reload, post-reload SSR/hydration and menu correctness, Role editor rendering, renamed/retired identity reconciliation, and derived empty-group behavior;
+- use separate `mockCtx(...)` boundaries for any deliberately competing operation and clean test-owned rows in `finally`.
+
+Acceptance checks:
+
+- all `ATP-ADM-MNU-01`–`ATP-ADM-MNU-08` scenarios have passing, redacted, traceable evidence only after their procedures execute;
+- direct server authorization remains separately negative-tested from browser navigation disclosure;
+- no Phase 90 status advances beyond observed evidence.
+
+Traceability: `PRD-ADM-MNU-*`; `SRS-ADM-MNU-01`–`SRS-ADM-MNU-13`; `ATP-ADM-MNU-01`–`ATP-ADM-MNU-08`.
+
+### Phase 100: Extract the paired admin-menu module
+
+Dependencies: `WBS-ADM-90-08`. This refactoring moves role-menu domain ownership from the existing `admin-rbac` implementation to paired `admin-menu` modules. It preserves the approved menu-visibility behavior and independent authorization boundary, creates no new suite or Admin site, intentionally permits menu API and generated-consumer renaming during development, and keeps each affected `vonaModule.fileVersion` at `1`.
+
+#### WBS-ADM-100-01: Establish paired admin-menu module ownership
+
+Primary areas:
+
+- `vona/src/suite/cabloy-admin/modules/admin-menu/`
+- `zova/src/suite/cabloy-admin/modules/admin-menu/`
+- suite metadata, package dependencies, and `admin-role` Menu Authorization composition
+
+Tasks:
+
+- scaffold paired suite-contained `admin-menu` modules through the established Vona/Zova command families and register normal metadata/dependencies;
+- move all menu-domain backend and frontend source from `admin-rbac` to `admin-menu`, including role-menu associations, menu-visibility revisions, catalog/configuration DTOs/controllers/services, SSR resolver integration, generated consumer ownership, model state, and editor component;
+- update `admin-role` to compose the `admin-menu` editor while retaining `rest-resource.model.resource` as the sole generic Role CRUD/cache owner;
+- remove menu-domain exports, dependencies, and terminology from `admin-rbac`, which continues to own action grants and Department/owner data-scope policy only.
+
+Acceptance checks:
+
+- both source roots contain the paired `admin-menu` module and dependency metadata resolves normally;
+- every menu-domain owner is `admin-menu`, while `admin-rbac` retains no role-menu persistence, API, projection, revision, resolver, model, or editor responsibility;
+- no new SSR site, flavor, public path, tenant, identity, persistence, or API-authorization boundary is introduced.
+
+Traceability: `PRD-ADM-MNU-01`–`PRD-ADM-MNU-06`; `SRS-ADM-MNU-03`, `SRS-ADM-MNU-06`, `SRS-ADM-MNU-10`–`SRS-ADM-MNU-15`; `ATP-ADM-MNU-01`–`ATP-ADM-MNU-09`.
+
+#### WBS-ADM-100-02: Move version-1 menu persistence and contracts
+
+Primary areas:
+
+- `admin-menu` and `admin-rbac` `meta.version.ts` paths
+- `admin-menu` entity/model/service/controller/DTO/OpenAPI sources
+- generated Zova menu consumer
+
+Tasks:
+
+- remove role-menu tables from the `admin-rbac` version-1 creation path and create the unchanged development-stage menu schema in `admin-menu` version 1;
+- move entity/model/service/controller/DTO/OpenAPI truth to `admin-menu` and regenerate consumers; legacy menu routes and generated-consumer names need not be retained;
+- retain active-instance scope, exact role/site/final-leaf identity, transaction/race behavior, safe catalog projection, separate visibility revision, and independent API authorization;
+- run `npm run test` after changing either `meta.version.ts` path.
+
+Acceptance checks:
+
+- both affected Vona modules retain `vonaModule.fileVersion: 1` and test database initialization creates the role-menu schema exclusively through `admin-menu`;
+- generated API/schema outputs identify `admin-menu` ownership and are not hand-edited;
+- old `admin-rbac` role-menu API paths and generated-consumer names are absent rather than maintained as compatibility aliases.
+
+Traceability: `PRD-ADM-MNU-01`–`PRD-ADM-MNU-06`; `SRS-ADM-MNU-03`–`SRS-ADM-MNU-15`; `ATP-ADM-MNU-01`–`ATP-ADM-MNU-09`.
+
+#### WBS-ADM-100-03: Close the extraction contract loop and regression proof
+
+Primary areas:
+
+- affected Vona/Zova metadata and generated consumers
+- Start Admin SSR/REST artifacts and Vona dependency handoff
+- targeted role-menu, Role View, SSR, and authorization tests
+
+Tasks:
+
+- regenerate from Vona contract truth, run the paired `npm run build:zova:admin` output, then run `npm run deps:vona`;
+- execute targeted menu-domain, Role View, direct API-authorization, and SSR/hydration tests, followed by `npm run test` for the version-path edit;
+- retain new revision-scoped proof for the role-menu ATP scenarios without rewriting the prior Phase 90 historical evidence.
+
+Acceptance checks:
+
+- `npm run build:zova:admin` completes before `npm run deps:vona`; REST-only output is not accepted;
+- menu visibility behavior and direct API authorization remain independently proven after the ownership move;
+- no generated consumer is hand-edited, and the new evidence identifies the extraction revision, environment, procedure, and result.
+
+Traceability: `PRD-ADM-MNU-*`; `SRS-ADM-MNU-10`, `SRS-ADM-MNU-14`, `SRS-ADM-MNU-15`; `ATP-ADM-MNU-01`–`ATP-ADM-MNU-09`.
+
+#### WBS-ADM-90-08: Close the Vona/Zova contract loop and Phase 90 evidence
+
+Primary areas:
+
+- owning Vona contracts and generated Zova consumers
+- Start Admin SSR/REST outputs and Vona dependency handoff
+- Phase 90 evidence/progress reconciliation
+
+Tasks:
+
+- generate consumers from Vona contract truth and verify that no generated consumer is hand-edited;
+- run targeted role-menu tests, `npm run test` after the version-path edit, paired Start Admin build, dependency handoff, and applicable quality/browser checks;
+- reconcile PRD/SRS/WBS/ATP identifiers, retained redacted evidence, ADR status, and progress only after the required acceptance procedures pass.
+
+Acceptance checks:
+
+- `npm run build:zova:admin` completes before `npm run deps:vona`; REST-only output is not accepted as a reverse-chain substitute;
+- `ATP-ADM-MNU-09` and all applicable preceding ATP evidence identify revision, environment, procedure, and outcome;
+- Phase 90 remains `not-started` until implementation/evidence exists and becomes verified only through retained traceable proof.
+
+Traceability: `PRD-ADM-MNU-*`; `SRS-ADM-MNU-14`, `SRS-ADM-MNU-15`; `ATP-ADM-MNU-01`–`ATP-ADM-MNU-09`.
 
 ## Future Implementation Commands
 
@@ -446,20 +713,31 @@ npm run test
 
 ## Traceability Matrix
 
-| WBS group       | PRD source                       | SRS source                                         | Required ATP evidence                                                                                     |
-| --------------- | -------------------------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `WBS-ADM-10-*`  | All                              | All                                                | Traceability review                                                                                       |
-| `WBS-ADM-20-*`  | `PRD-ADM-SEC-*`, `PRD-ADM-UI-*`  | `SRS-ADM-API-*`, `SRS-ADM-UI-*`                    | `ATP-ADM-CTR-01`, `ATP-ADM-RES-01`, `ATP-ADM-SSR-01`                                                      |
-| `WBS-ADM-30-*`  | `PRD-ADM-USR-*`, `PRD-ADM-ROL-*` | `SRS-ADM-USR-*`, `SRS-ADM-ROL-*`                   | `ATP-ADM-USR-01`, `ATP-ADM-ROL-01`                                                                        |
-| `WBS-ADM-40-*`  | `PRD-ADM-SUP-*`                  | `SRS-ADM-SUP-*`, `SRS-ADM-TXN-*`, `SRS-ADM-AUD-*`  | `ATP-ADM-SUP-01`, `ATP-ADM-SUP-02`, `ATP-ADM-SUP-RACE-01`                                                 |
-| `WBS-ADM-50-*`  | `PRD-ADM-DEP-*`                  | `SRS-ADM-DEP-*`                                    | `ATP-ADM-DEP-01`, `ATP-ADM-DEP-02`                                                                        |
-| `WBS-ADM-60-*`  | `PRD-ADM-MEM-*`                  | `SRS-ADM-MEM-*`                                    | `ATP-ADM-MEM-01`, `ATP-ADM-MEM-02`, `ATP-ADM-MGR-01`, `ATP-ADM-RES-01`–`ATP-ADM-RES-03`, `ATP-ADM-SSR-01` |
-| `WBS-ADM-80-01` | `PRD-ADM-POL-*`                  | `SRS-ADM-POL-01`–`SRS-ADM-POL-09`                  | `ATP-ADM-POL-01`                                                                                          |
-| `WBS-ADM-80-02` | `PRD-ADM-POL-*`, `PRD-ADM-SCP-*` | `SRS-ADM-POL-*`, `SRS-ADM-SCP-01`–`SRS-ADM-SCP-05` | `ATP-ADM-POL-02`, `ATP-ADM-SCP-01`                                                                        |
-| `WBS-ADM-80-03` | `PRD-ADM-SCP-*`                  | `SRS-ADM-SCP-06`–`SRS-ADM-SCP-13`                  | `ATP-ADM-SCP-02`                                                                                          |
-| `WBS-ADM-80-04` | `PRD-ADM-POL-*`, `PRD-ADM-SCP-*` | `SRS-ADM-POL-09`, `SRS-ADM-SCP-09`                 | `ATP-ADM-POL-03`, `ATP-ADM-POL-04`                                                                        |
-| `WBS-ADM-80-05` | All Phase 80                     | `SRS-ADM-API-*`, `SRS-ADM-NFR-*`                   | `ATP-ADM-POL-01`–`ATP-ADM-POL-04`, `ATP-ADM-SCP-01`–`ATP-ADM-SCP-02`                                      |
-| `WBS-ADM-70-*`  | All applicable                   | `SRS-ADM-NFR-*`                                    | All applicable ATP evidence                                                                               |
+| WBS group        | PRD source                                           | SRS source                                                             | Required ATP evidence                                                                                     |
+| ---------------- | ---------------------------------------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `WBS-ADM-10-*`   | All                                                  | All                                                                    | Traceability review                                                                                       |
+| `WBS-ADM-20-*`   | `PRD-ADM-SEC-*`, `PRD-ADM-UI-*`                      | `SRS-ADM-API-*`, `SRS-ADM-UI-*`                                        | `ATP-ADM-CTR-01`, `ATP-ADM-RES-01`, `ATP-ADM-SSR-01`                                                      |
+| `WBS-ADM-30-*`   | `PRD-ADM-USR-*`, `PRD-ADM-ROL-*`                     | `SRS-ADM-USR-*`, `SRS-ADM-ROL-*`                                       | `ATP-ADM-USR-01`, `ATP-ADM-ROL-01`                                                                        |
+| `WBS-ADM-40-*`   | `PRD-ADM-SUP-*`                                      | `SRS-ADM-SUP-*`, `SRS-ADM-TXN-*`, `SRS-ADM-AUD-*`                      | `ATP-ADM-SUP-01`, `ATP-ADM-SUP-02`, `ATP-ADM-SUP-RACE-01`                                                 |
+| `WBS-ADM-50-*`   | `PRD-ADM-DEP-*`                                      | `SRS-ADM-DEP-*`                                                        | `ATP-ADM-DEP-01`, `ATP-ADM-DEP-02`                                                                        |
+| `WBS-ADM-60-*`   | `PRD-ADM-MEM-*`                                      | `SRS-ADM-MEM-*`                                                        | `ATP-ADM-MEM-01`, `ATP-ADM-MEM-02`, `ATP-ADM-MGR-01`, `ATP-ADM-RES-01`–`ATP-ADM-RES-03`, `ATP-ADM-SSR-01` |
+| `WBS-ADM-80-01`  | `PRD-ADM-POL-*`                                      | `SRS-ADM-POL-01`–`SRS-ADM-POL-09`                                      | `ATP-ADM-POL-01`                                                                                          |
+| `WBS-ADM-80-02`  | `PRD-ADM-POL-*`, `PRD-ADM-SCP-*`                     | `SRS-ADM-POL-*`, `SRS-ADM-SCP-01`–`SRS-ADM-SCP-05`                     | `ATP-ADM-POL-02`, `ATP-ADM-SCP-01`                                                                        |
+| `WBS-ADM-80-03`  | `PRD-ADM-SCP-*`                                      | `SRS-ADM-SCP-06`–`SRS-ADM-SCP-13`                                      | `ATP-ADM-SCP-02`                                                                                          |
+| `WBS-ADM-80-04`  | `PRD-ADM-POL-*`, `PRD-ADM-SCP-*`                     | `SRS-ADM-POL-09`, `SRS-ADM-SCP-09`                                     | `ATP-ADM-POL-03`, `ATP-ADM-POL-04`                                                                        |
+| `WBS-ADM-80-05`  | All Phase 80                                         | `SRS-ADM-API-*`, `SRS-ADM-NFR-*`                                       | `ATP-ADM-POL-01`–`ATP-ADM-POL-04`, `ATP-ADM-SCP-01`–`ATP-ADM-SCP-02`                                      |
+| `WBS-ADM-90-01`  | `PRD-ADM-MNU-01`, `PRD-ADM-MNU-04`, `PRD-ADM-MNU-05` | `SRS-ADM-MNU-01`, `SRS-ADM-MNU-02`, `SRS-ADM-MNU-09`, `SRS-ADM-MNU-10` | `ATP-ADM-MNU-01`, `ATP-ADM-MNU-03`, `ATP-ADM-MNU-05`, `ATP-ADM-MNU-06`                                    |
+| `WBS-ADM-90-02`  | `PRD-ADM-MNU-01`–`PRD-ADM-MNU-04`                    | `SRS-ADM-MNU-03`–`SRS-ADM-MNU-05`, `SRS-ADM-MNU-15`                    | `ATP-ADM-MNU-01`, `ATP-ADM-MNU-02`, `ATP-ADM-MNU-04`                                                      |
+| `WBS-ADM-90-03`  | `PRD-ADM-MNU-02`–`PRD-ADM-MNU-05`                    | `SRS-ADM-MNU-02`, `SRS-ADM-MNU-07`–`SRS-ADM-MNU-10`                    | `ATP-ADM-MNU-02`, `ATP-ADM-MNU-03`, `ATP-ADM-MNU-05`, `ATP-ADM-MNU-08`                                    |
+| `WBS-ADM-90-04`  | `PRD-ADM-MNU-01`–`PRD-ADM-MNU-03`, `PRD-ADM-MNU-05`  | `SRS-ADM-MNU-04`, `SRS-ADM-MNU-06`, `SRS-ADM-MNU-11`, `SRS-ADM-MNU-14` | `ATP-ADM-MNU-01`, `ATP-ADM-MNU-04`, `ATP-ADM-MNU-05`, `ATP-ADM-MNU-09`                                    |
+| `WBS-ADM-90-05`  | `PRD-ADM-MNU-01`, `PRD-ADM-MNU-03`, `PRD-ADM-MNU-05` | `SRS-ADM-MNU-06`, `SRS-ADM-MNU-13`, `SRS-ADM-MNU-14`                   | `ATP-ADM-MNU-01`, `ATP-ADM-MNU-08`, `ATP-ADM-MNU-09`                                                      |
+| `WBS-ADM-90-06`  | `PRD-ADM-MNU-02`, `PRD-ADM-MNU-03`, `PRD-ADM-MNU-06` | `SRS-ADM-MNU-08`, `SRS-ADM-MNU-11`–`SRS-ADM-MNU-13`                    | `ATP-ADM-MNU-02`, `ATP-ADM-MNU-07`, `ATP-ADM-MNU-08`                                                      |
+| `WBS-ADM-90-07`  | `PRD-ADM-MNU-*`                                      | `SRS-ADM-MNU-01`–`SRS-ADM-MNU-13`                                      | `ATP-ADM-MNU-01`–`ATP-ADM-MNU-08`                                                                         |
+| `WBS-ADM-90-08`  | `PRD-ADM-MNU-*`                                      | `SRS-ADM-MNU-14`, `SRS-ADM-MNU-15`                                     | `ATP-ADM-MNU-01`–`ATP-ADM-MNU-09`                                                                         |
+| `WBS-ADM-100-01` | `PRD-ADM-MNU-*`                                      | `SRS-ADM-MNU-03`, `SRS-ADM-MNU-06`, `SRS-ADM-MNU-10`–`SRS-ADM-MNU-15`  | `ATP-ADM-MNU-01`–`ATP-ADM-MNU-09`                                                                         |
+| `WBS-ADM-100-02` | `PRD-ADM-MNU-*`                                      | `SRS-ADM-MNU-03`–`SRS-ADM-MNU-15`                                      | `ATP-ADM-MNU-01`–`ATP-ADM-MNU-09`                                                                         |
+| `WBS-ADM-100-03` | `PRD-ADM-MNU-*`                                      | `SRS-ADM-MNU-10`, `SRS-ADM-MNU-14`, `SRS-ADM-MNU-15`                   | `ATP-ADM-MNU-01`–`ATP-ADM-MNU-09`                                                                         |
+| `WBS-ADM-70-*`   | All applicable                                       | `SRS-ADM-NFR-*`                                                        | All applicable ATP evidence                                                                               |
 
 ## Related Records
 
@@ -470,5 +748,7 @@ npm run test
 - [Delivery Progress](./progress.md)
 - [ADR 0001: Establish Cabloy Admin MVP Boundaries](./decisions/0001-admin-mvp-boundaries.md)
 - [ADR 0002: Dynamic RBAC and Department Data Scope](./decisions/0002-dynamic-rbac-and-data-scope.md)
+- [ADR 0003: Role Menu Visibility](./decisions/0003-role-menu-visibility.md)
+- [Menu Guide](../../repo-docs/backend/menu-guide.md)
 - [Suites and Modules](../../repo-docs/fullstack/suites-and-modules.md)
 - [Contract Loop Playbook](../../repo-docs/fullstack/contract-loop-playbook.md)

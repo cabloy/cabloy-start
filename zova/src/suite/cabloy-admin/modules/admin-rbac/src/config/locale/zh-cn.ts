@@ -15,6 +15,7 @@ export default {
   ConfigureDepartments: '配置部门',
   RemoveDepartment: '移除部门',
   DepartmentsNotConfigured: '部门尚未配置',
+  SystemAdminPolicyProtected: '系统管理员角色的资源权限受保护，无法在此配置。',
   LoadFailed: '无法加载策略数据',
   Retry: '重试',
   ToggleColumn: '切换所有适用权限：',

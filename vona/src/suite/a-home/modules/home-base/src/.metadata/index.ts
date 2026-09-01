@@ -27,7 +27,6 @@ declare module 'vona-module-home-base' {
           export interface ServiceMenu {
             get $beanFullName(): 'home-base.service.menu';
             get $onionName(): 'home-base:menu';
-
           }
 
         export interface ServicePermission {
@@ -38,7 +37,6 @@ declare module 'vona-module-home-base' {
           export interface ServicePermission {
             get $beanFullName(): 'home-base.service.permission';
             get $onionName(): 'home-base:permission';
-
           }
 
         export interface ServiceSiteCatalog {
@@ -49,7 +47,6 @@ declare module 'vona-module-home-base' {
           export interface ServiceSiteCatalog {
             get $beanFullName(): 'home-base.service.siteCatalog';
             get $onionName(): 'home-base:siteCatalog';
-
           }
 }
 /** service: end */
@@ -198,11 +195,14 @@ import 'vona-module-a-openapi';
   }
 
 /** controller: end */
+/** locale: begin */
+import { locales } from './locales.ts';
+/** locale: end */
 /** main: begin */
 export * from '../main.ts';
 /** main: end */
 /** scope: begin */
-import { BeanScopeBase, type BeanScopeUtil } from 'vona';
+import { BeanScopeBase, type BeanScopeUtil, type TypeModuleLocales, type TypeLocaleBase } from 'vona';
 import { Scope } from 'vona-module-a-bean';
 
 @Scope()
@@ -210,6 +210,7 @@ export class ScopeModuleHomeBase extends BeanScopeBase {}
 
 export interface ScopeModuleHomeBase {
   util: BeanScopeUtil;
+locale: TypeModuleLocales<(typeof locales)[TypeLocaleBase]>;
 service: IModuleService;
 }
 
@@ -225,7 +226,9 @@ declare module 'vona' {
 
 
 
-
+  export interface IBeanScopeLocale {
+    'home-base': (typeof locales)[TypeLocaleBase];
+  }
 
 
 }

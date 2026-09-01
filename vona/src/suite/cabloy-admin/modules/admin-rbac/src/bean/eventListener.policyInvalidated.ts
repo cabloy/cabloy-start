@@ -44,14 +44,17 @@ export class EventListenerPolicyInvalidated
     const grants = await this.scope.model.rbacGrant.select({
       where: { roleId: { _in_: removedRoleIds } },
     });
-    if (!grants.length) return;
-    const grantDepartments = await this.scope.model.rbacGrantDepartment.select({
-      where: { rbacGrantId: { _in_: grants.map(item => item.id) } },
-    });
-    if (grantDepartments.length) {
-      await this.scope.model.rbacGrantDepartment.deleteBulk(grantDepartments.map(item => item.id));
+    if (grants.length) {
+      const grantDepartments = await this.scope.model.rbacGrantDepartment.select({
+        where: { rbacGrantId: { _in_: grants.map(item => item.id) } },
+      });
+      if (grantDepartments.length) {
+        await this.scope.model.rbacGrantDepartment.deleteBulk(
+          grantDepartments.map(item => item.id),
+        );
+      }
+      await this.scope.model.rbacGrant.deleteBulk(grants.map(item => item.id));
     }
-    await this.scope.model.rbacGrant.deleteBulk(grants.map(item => item.id));
   }
 
   private uniqueIds(ids: string[] | undefined): string[] {

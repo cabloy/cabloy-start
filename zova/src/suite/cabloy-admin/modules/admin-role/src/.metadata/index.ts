@@ -153,6 +153,41 @@ export interface IZovaComponentRecord {
 }
 }
 /** components: end */
+/** tableCell: begin */
+export * from '../bean/tableCell.actionOperationsRow.jsx';
+import { ITableCellOptionsActionOperationsRow } from '../bean/tableCell.actionOperationsRow.jsx';
+import 'zova-module-a-table';
+declare module 'zova-module-a-table' {
+
+    export interface ITableCellRecord {
+      'admin-role:actionOperationsRow': ITableCellOptionsActionOperationsRow;
+    }
+
+
+}
+declare module 'zova-module-admin-role' {
+
+        export interface TableCellActionOperationsRow {
+          /** @internal */
+          get scope(): ScopeModuleAdminRole;
+        }
+
+        export interface TableCellActionOperationsRow {
+          get $beanFullName(): 'admin-role.tableCell.actionOperationsRow';
+          get $onionName(): 'admin-role:actionOperationsRow';
+          get $onionOptions(): ITableCellOptionsActionOperationsRow;
+        }
+}
+/** tableCell: end */
+/** tableCell: begin */
+import { TableCellActionOperationsRow } from '../bean/tableCell.actionOperationsRow.jsx';
+import 'zova';
+declare module 'zova' {
+  export interface IBeanRecordGeneral {
+    'admin-role.tableCell.actionOperationsRow': TableCellActionOperationsRow;
+  }
+}
+/** tableCell: end */
 /** locale: begin */
 import { locales } from './locales.js';
 /** locale: end */

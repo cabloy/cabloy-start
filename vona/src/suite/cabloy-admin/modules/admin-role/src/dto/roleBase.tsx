@@ -34,6 +34,11 @@ export interface IDtoOptionsRoleBase extends IDecoratorDtoOptions {}
       }),
     ),
     titleLocales: $makeMetadata(ZovaRender.visible(false)),
+    builtin: $makeMetadata(
+      v.title($locale('RoleBuiltin')),
+      ZovaRender.order(3),
+      ZovaRender.cell('start-switch:switch', { color: 'success' }),
+    ),
     siteIds: $makeMetadata(
       v.title($locale('RoleSiteIds')),
       ZovaRender.order(4),
@@ -66,6 +71,7 @@ export class DtoRoleRead extends $Class.pick(DtoRoleBase, [
   'name',
   'title',
   'titleLocales',
+  'builtin',
   'siteIds',
 ]) {
   @Api.field(

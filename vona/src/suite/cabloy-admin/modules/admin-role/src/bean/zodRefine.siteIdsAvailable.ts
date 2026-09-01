@@ -6,6 +6,7 @@ import type {
 
 import { BeanBase } from 'vona';
 import { ZodRefine } from 'vona-module-a-zod';
+import { roleSiteIdAll } from 'vona-module-home-user';
 
 export type TypeZodRefineSiteIdsAvailableData = string[];
 
@@ -21,6 +22,13 @@ export class ZodRefineSiteIdsAvailable
     refinementCtx: TypeRefinementCtx,
     _options: IZodRefineOptionsSiteIdsAvailable,
   ) {
+    if (!this.scope.service.role.isRoleSiteIdsAllOnly(value) && value.includes(roleSiteIdAll)) {
+      refinementCtx.addIssue({
+        code: 'custom',
+        message: this.scope.locale.SiteIdsAllExclusive(),
+      });
+      return;
+    }
     const unavailableSiteIds = this.scope.service.role.getUnavailableSiteIds(value);
     if (unavailableSiteIds.length) {
       refinementCtx.addIssue({

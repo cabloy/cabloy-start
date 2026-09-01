@@ -4,12 +4,14 @@ import { describe, it } from 'node:test';
 import { app } from 'vona-mock';
 
 import { DtoRoleUpdate } from '../src/dto/roleUpdate.tsx';
+import { DtoRoleView } from '../src/dto/roleView.tsx';
 import { DtoUserRoleReplace } from '../src/dto/userRoleReplace.ts';
 
 const rolePath = '/admin/role';
 
 function assertRoleProjection(role: Record<string, unknown>) {
   assert.deepEqual(Object.keys(role).sort(), [
+    'builtin',
     'id',
     'name',
     'siteIds',
@@ -28,11 +30,36 @@ describe('role.test.ts', { concurrency: false }, () => {
       }) as any;
       assert.ok(component, JSON.stringify(apiJson.components?.schemas));
       assert.equal(component.properties.name.rest?.readonly, true);
-      assert.equal(component.required?.includes('name'), true);
+      assert.equal(component.properties.builtin, undefined);
+      assert.equal(component.required?.includes('name'), false);
       const rootMetadata = Object.values(apiJson.components!.schemas as any).find(item => {
         return (item as any).rest?.schemaScene === 'form';
       });
       assert.ok(rootMetadata);
+    });
+  });
+
+  it('dto:role:view passes the role identity to authorization editors', async () => {
+    await app.bean.executor.mockCtx(async () => {
+      const apiJson = await app.bean.openapi.generateJsonOfClass(DtoRoleView);
+      const component = Object.values(apiJson.components!.schemas as any).find(item => {
+        return (item as any).properties?.name && (item as any).properties?.builtin;
+      }) as any;
+      assert.ok(component, JSON.stringify(apiJson.components?.schemas));
+      const tabs = component.rest?.blocks?.[0]?.options?.blocks?.[0]?.options?.blocks?.[0]?.options
+        ?.formLayout?.children[0];
+      const policyBlock = tabs?.children[1]?.children[0]?.block;
+      const menuBlock = tabs?.children[2]?.children[0]?.block;
+      assert.equal(policyBlock?.render, 'admin-rbac:blockPolicyEditor');
+      assert.deepEqual(policyBlock?.options, {
+        roleId: 'cel://id',
+        roleName: "cel://getValue('name')",
+      });
+      assert.equal(menuBlock?.render, 'admin-menu:blockRoleMenuEditor');
+      assert.deepEqual(menuBlock?.options, {
+        roleId: 'cel://id',
+        roleName: "cel://getValue('name')",
+      });
     });
   });
 
@@ -97,6 +124,7 @@ describe('role.test.ts', { concurrency: false }, () => {
           roleIds.push(role.id);
           assertRoleProjection(role);
           assert.equal(role.name, roleName);
+          assert.equal(role.builtin, false);
           assert.deepEqual(role.titleLocales, {
             'zh-cn': '管理员角色',
             'retired-locale': 'Retired title',
@@ -119,9 +147,36 @@ describe('role.test.ts', { concurrency: false }, () => {
               });
             });
             assert.equal(builtinResult, undefined);
-            assert.equal(builtinError?.code, 'admin-role:1002');
+            assert.equal(builtinError?.code, 'admin-role:1001');
             assert.equal(builtinError?.status, 409);
           }
+
+          const wildcardRole = await app.bean.executor.performAction('post', rolePath, {
+            body: {
+              name: `${roleName}-all-sites`,
+              title: 'All sites role',
+              siteIds: ['*'],
+            },
+          });
+          roleIds.push(wildcardRole.id);
+          assertRoleProjection(wildcardRole);
+          assert.deepEqual(wildcardRole.siteIds, ['*']);
+          assert.deepEqual(wildcardRole.sites, [{ siteId: '*', title: 'All Sites' }]);
+
+          const [mixedSiteResult, mixedSiteError] = await catchError(() => {
+            return app.bean.executor.performAction('post', rolePath, {
+              body: {
+                name: `${roleName}-mixed-site`,
+                title: 'Mixed site',
+                siteIds: ['*', 'admin'],
+              },
+            });
+          });
+          assert.equal(mixedSiteResult, undefined);
+          assert.equal(mixedSiteError?.code, 422);
+          const mixedSiteIssue = (mixedSiteError?.message as any)?.[0];
+          assert.equal(mixedSiteIssue?.message, 'All Sites cannot be combined with specific sites');
+          assert.deepEqual(mixedSiteIssue?.path, ['siteIds']);
 
           const [invalidSiteResult, invalidSiteError] = await catchError(() => {
             return app.bean.executor.performAction('post', rolePath, {
@@ -161,6 +216,7 @@ describe('role.test.ts', { concurrency: false }, () => {
           });
           assertRoleProjection(view);
           assert.equal(view.name, roleName);
+          assert.equal(view.builtin, false);
 
           const updateResult = await app.bean.executor.performAction('patch', '/admin/role/:id', {
             params: { id: roleId },
@@ -193,23 +249,68 @@ describe('role.test.ts', { concurrency: false }, () => {
             { siteId: 'admin', title: 'Admin' },
           ]);
 
+          assert.equal(
+            await app.bean.executor.performAction('patch', '/admin/role/:id', {
+              params: { id: roleId },
+              body: { siteIds: ['*'] },
+            }),
+            null,
+          );
+          const wildcardUpdatedRole = await app.bean.executor.performAction(
+            'get',
+            '/admin/role/:id',
+            {
+              params: { id: roleId },
+            },
+          );
+          assert.deepEqual(wildcardUpdatedRole.siteIds, ['*']);
+          assert.deepEqual(wildcardUpdatedRole.sites, [{ siteId: '*', title: 'All Sites' }]);
+
           const admin = await app.bean.user.findOneByName('admin');
           assert.ok(admin);
           const homeUser = app.scope('home-user');
           const registeredUser = await homeUser.model.role.getByName('registeredUser');
           assert.ok(registeredUser);
+          assert.equal(registeredUser.builtin, true);
           const systemAdmin = await homeUser.model.role.getByName('systemAdmin');
           assert.ok(systemAdmin);
+          assert.equal(systemAdmin.builtin, true);
 
           const roles = await app.bean.executor.performAction('get', rolePath);
-          assert.equal(
-            roles.list.some(item => item.name === 'registeredUser'),
-            false,
-          );
-          assert.equal(
-            roles.list.some(item => item.name === 'systemAdmin'),
-            false,
-          );
+          const registeredUserListItem = roles.list.find(item => item.name === 'registeredUser');
+          assert.ok(registeredUserListItem);
+          assert.equal(registeredUserListItem.builtin, true);
+          const systemAdminListItem = roles.list.find(item => item.name === 'systemAdmin');
+          assert.ok(systemAdminListItem);
+          assert.equal(systemAdminListItem.builtin, true);
+
+          const persistedBuiltinRole = await homeUser.model.role.insert({
+            name: `${roleName}-builtin`,
+            title: 'Persisted built-in role',
+            siteIds: ['web'],
+            builtin: true,
+          });
+          roleIds.push(persistedBuiltinRole.id as string);
+          const persistedBuiltinList = await app.bean.executor.performAction('get', rolePath, {
+            query: { where: { id: { _eq_: persistedBuiltinRole.id } } },
+          });
+          assert.equal(persistedBuiltinList.list.length, 1);
+          assert.equal(persistedBuiltinList.list[0].builtin, true);
+          const [persistedBuiltinUpdateResult, persistedBuiltinUpdateError] = await catchError(() => {
+            return app.bean.executor.performAction('patch', '/admin/role/:id', {
+              params: { id: persistedBuiltinRole.id },
+              body: { name: `${roleName}-builtin-renamed` },
+            });
+          });
+          assert.equal(persistedBuiltinUpdateResult, undefined);
+          assert.equal(persistedBuiltinUpdateError?.code, 'admin-role:1002');
+          const [persistedBuiltinDeleteResult, persistedBuiltinDeleteError] = await catchError(() => {
+            return app.bean.executor.performAction('delete', '/admin/role/:id', {
+              params: { id: persistedBuiltinRole.id },
+            });
+          });
+          assert.equal(persistedBuiltinDeleteResult, undefined);
+          assert.equal(persistedBuiltinDeleteError?.code, 'admin-role:1002');
 
           const membershipCandidates = await app.bean.executor.performAction(
             'get',
@@ -352,20 +453,63 @@ describe('role.test.ts', { concurrency: false }, () => {
           assert.equal(missingUserError?.code, 404);
 
           for (const fixedRole of [registeredUser, systemAdmin]) {
-            assert.equal(
-              await app.bean.executor.performAction('get', '/admin/role/:id', {
+            const fixedRoleView = await app.bean.executor.performAction('get', '/admin/role/:id', {
+              params: { id: fixedRole.id },
+            });
+            assertRoleProjection(fixedRoleView);
+            assert.equal(fixedRoleView.name, fixedRole.name);
+            assert.equal(fixedRoleView.builtin, true);
+
+            const fixedUpdateResult = await app.bean.executor.performAction(
+              'patch',
+              '/admin/role/:id',
+              {
                 params: { id: fixedRole.id },
-              }),
-              undefined,
+                body: { siteIds: ['*'] },
+              },
             );
-            const [fixedUpdateResult, fixedUpdateError] = await catchError(() => {
+            assert.equal(fixedUpdateResult, null);
+            const updatedFixedRole = await app.bean.executor.performAction(
+              'get',
+              '/admin/role/:id',
+              {
+                params: { id: fixedRole.id },
+              },
+            );
+            assert.deepEqual(updatedFixedRole.siteIds, ['*']);
+            assert.deepEqual(updatedFixedRole.sites, [{ siteId: '*', title: 'All Sites' }]);
+
+            assert.equal(
+              await app.bean.executor.performAction('patch', '/admin/role/:id', {
+                params: { id: fixedRole.id },
+                body: { title: 'Localized built-in title' },
+              }),
+              null,
+            );
+            assert.equal(
+              await app.bean.executor.performAction('patch', '/admin/role/:id', {
+                params: { id: fixedRole.id },
+                body: { titleLocales: { 'zh-cn': '本地化内置角色' } },
+              }),
+              null,
+            );
+            const localizedFixedRole = await app.bean.executor.performAction(
+              'get',
+              '/admin/role/:id',
+              { params: { id: fixedRole.id } },
+            );
+            assert.equal(localizedFixedRole.title, 'Localized built-in title');
+            assert.deepEqual(localizedFixedRole.titleLocales, { 'zh-cn': '本地化内置角色' });
+
+            const [fixedProtectedUpdateResult, fixedProtectedUpdateError] = await catchError(() => {
               return app.bean.executor.performAction('patch', '/admin/role/:id', {
                 params: { id: fixedRole.id },
-                body: { name: fixedRole.name, title: 'Protected role update' },
+                body: { name: `${fixedRole.name}-renamed` },
               });
             });
-            assert.equal(fixedUpdateResult, undefined);
-            assert.equal(fixedUpdateError?.code, 'admin-role:1002');
+            assert.equal(fixedProtectedUpdateResult, undefined);
+            assert.equal(fixedProtectedUpdateError?.code, 'admin-role:1002');
+
             const [fixedDeleteResult, fixedDeleteError] = await catchError(() => {
               return app.bean.executor.performAction('delete', '/admin/role/:id', {
                 params: { id: fixedRole.id },
@@ -383,10 +527,7 @@ describe('role.test.ts', { concurrency: false }, () => {
             [roleId],
           );
           assertRoleProjection(selected.list[0]);
-          assert.deepEqual(selected.list[0].sites, [
-            { siteId: 'web', title: 'Web' },
-            { siteId: 'admin', title: 'Admin' },
-          ]);
+          assert.deepEqual(selected.list[0].sites, [{ siteId: '*', title: 'All Sites' }]);
 
           const deletedRole = await app.bean.executor.performAction('post', rolePath, {
             body: {
@@ -504,6 +645,7 @@ describe('role.test.ts', { concurrency: false }, () => {
           (await homeUser.model.role.getById(roleId!))?.title,
           'Updated admin role test',
         );
+        assert.deepEqual((await homeUser.model.role.getById(roleId!))?.siteIds, ['*']);
         assert.equal(
           await homeUser.model.roleUser.get({ userId: userIds[0], roleId: roleId! }),
           undefined,

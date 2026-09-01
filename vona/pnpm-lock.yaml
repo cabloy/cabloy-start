@@ -24,7 +24,7 @@ importers:
     dependencies:
       '@babel/core':
         specifier: ^7.29.0
-        version: 7.29.0
+        version: 7.29.0(supports-color@5.5.0)
       '@babel/traverse':
         specifier: ^7.29.0
         version: 7.29.0
@@ -81,7 +81,7 @@ importers:
         version: 11.3.5
       ioredis:
         specifier: ^5.10.1
-        version: 5.10.1
+        version: 5.10.1(supports-color@5.5.0)
       knex:
         specifier: ^3.3.0
         version: 3.3.0(better-sqlite3@12.10.0)
@@ -331,6 +331,9 @@ importers:
       vona-module-admin-department:
         specifier: workspace:^
         version: link:src/suite/cabloy-admin/modules/admin-department
+      vona-module-admin-menu:
+        specifier: workspace:^
+        version: link:src/suite/cabloy-admin/modules/admin-menu
       vona-module-admin-rbac:
         specifier: workspace:^
         version: link:src/suite/cabloy-admin/modules/admin-rbac
@@ -412,21 +415,12 @@ importers:
       zod:
         specifier: npm:@cabloy/zod@4.3.8
         version: '@cabloy/zod@4.3.8'
-      zova-rest-cabloy-basic-admin:
-        specifier: workspace:^
-        version: link:.zova-rest/cabloy-basic-admin
       zova-rest-cabloy-start-admin:
         specifier: workspace:^
         version: link:.zova-rest/cabloy-start-admin
       zova-rest-cabloy-start-web:
         specifier: workspace:^
         version: link:.zova-rest/cabloy-start-web
-      zova-rest-cabloy-store-admin:
-        specifier: workspace:^
-        version: link:.zova-rest/cabloy-store-admin
-      zova-rest-cabloy-store-web:
-        specifier: workspace:^
-        version: link:.zova-rest/cabloy-store-web
     devDependencies:
       '@cabloy/cli':
         specifier: workspace:^
@@ -488,81 +482,6 @@ importers:
       why-is-node-running:
         specifier: ^3.2.2
         version: 3.2.2
-
-  .zova-rest/cabloy-basic-admin:
-    dependencies:
-      '@tanstack/query-core':
-        specifier: ^5.100.10
-        version: 5.101.0
-      '@tanstack/vue-query':
-        specifier: ^5.100.10
-        version: 5.101.0(vue@3.5.38(typescript@5.9.3))
-      openapi3-ts:
-        specifier: ^4.5.0
-        version: 4.5.0
-      table-identity:
-        specifier: ^1.1.4
-        version: link:../../packages-utils/table-identity
-      typestyle:
-        specifier: ^2.4.0
-        version: 2.4.0
-      vue:
-        specifier: ^3.5.34
-        version: 3.5.38(typescript@5.9.3)
-      zod:
-        specifier: npm:@cabloy/zod@4.3.8
-        version: '@cabloy/zod@4.3.8'
-      zova:
-        specifier: ^5.1.84
-        version: 5.1.154(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
-      zova-jsx:
-        specifier: ^1.1.48
-        version: 1.1.88(typescript@5.9.3)
-      zova-module-a-api:
-        specifier: ^5.1.15
-        version: 5.1.22
-      zova-module-a-bean:
-        specifier: ^5.1.24
-        version: 5.1.33
-      zova-module-a-behavior:
-        specifier: ^5.1.19
-        version: 5.1.26
-      zova-module-a-command:
-        specifier: ^5.1.26
-        version: 5.1.34
-      zova-module-a-form:
-        specifier: ^5.1.32
-        version: 5.1.49(vue@3.5.38(typescript@5.9.3))
-      zova-module-a-icon:
-        specifier: ^5.1.20
-        version: 5.1.27
-      zova-module-a-interceptor:
-        specifier: ^5.1.22
-        version: 5.1.31
-      zova-module-a-model:
-        specifier: ^5.1.23
-        version: 5.1.35(vue@3.5.38(typescript@5.9.3))
-      zova-module-a-openapi:
-        specifier: ^5.1.29
-        version: 5.1.50
-      zova-module-a-router:
-        specifier: ^5.1.21
-        version: 5.1.34
-      zova-module-a-routertabs:
-        specifier: ^5.1.24
-        version: 5.1.34
-      zova-module-a-ssr:
-        specifier: ^5.1.18
-        version: 5.1.38
-      zova-module-a-style:
-        specifier: ^5.1.25
-        version: 5.1.35
-      zova-module-a-table:
-        specifier: ^5.1.27
-        version: 5.1.38(vue@3.5.38(typescript@5.9.3))
-      zova-module-rest-resource:
-        specifier: ^5.1.32
-        version: 5.1.46
 
   .zova-rest/cabloy-start-admin:
     dependencies:
@@ -725,186 +644,6 @@ importers:
       zova-module-rest-resource:
         specifier: ^5.1.48
         version: 5.1.48
-
-  .zova-rest/cabloy-store-admin:
-    dependencies:
-      '@cabloy/logger':
-        specifier: ^1.1.21
-        version: 1.1.25
-      '@cabloy/module-info':
-        specifier: ^2.0.0
-        version: 2.0.3
-      '@cabloy/vue-router':
-        specifier: ^4.4.16
-        version: 4.4.16(vue@3.5.38(typescript@5.9.3))
-      '@date-io/luxon':
-        specifier: ^3.2.0
-        version: 3.2.0(luxon@3.7.2)
-      '@tanstack/query-core':
-        specifier: ^5.100.10
-        version: 5.101.0
-      '@tanstack/vue-query':
-        specifier: ^5.100.10
-        version: 5.101.0(vue@3.5.38(typescript@5.9.3))
-      luxon:
-        specifier: ^3.7.2
-        version: 3.7.2
-      openapi3-ts:
-        specifier: ^4.5.0
-        version: 4.5.0
-      table-identity:
-        specifier: ^1.1.4
-        version: link:../../packages-utils/table-identity
-      vue:
-        specifier: ^3.5.34
-        version: 3.5.38(typescript@5.9.3)
-      vuetify:
-        specifier: ^4.1.1
-        version: 4.1.10(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
-      zod:
-        specifier: npm:@cabloy/zod@4.3.8
-        version: '@cabloy/zod@4.3.8'
-      zova:
-        specifier: ^5.1.95
-        version: 5.1.154(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
-      zova-jsx:
-        specifier: ^1.1.56
-        version: 1.1.88(typescript@5.9.3)
-      zova-module-a-api:
-        specifier: ^5.1.15
-        version: 5.1.22
-      zova-module-a-bean:
-        specifier: ^5.1.25
-        version: 5.1.33
-      zova-module-a-behavior:
-        specifier: ^5.1.19
-        version: 5.1.26
-      zova-module-a-command:
-        specifier: ^5.1.26
-        version: 5.1.34
-      zova-module-a-form:
-        specifier: ^5.1.32
-        version: 5.1.49(vue@3.5.38(typescript@5.9.3))
-      zova-module-a-icon:
-        specifier: ^5.1.20
-        version: 5.1.27
-      zova-module-a-interceptor:
-        specifier: ^5.1.23
-        version: 5.1.31
-      zova-module-a-model:
-        specifier: ^5.1.24
-        version: 5.1.35(vue@3.5.38(typescript@5.9.3))
-      zova-module-a-openapi:
-        specifier: ^5.1.31
-        version: 5.1.50
-      zova-module-a-router:
-        specifier: ^5.1.23
-        version: 5.1.34
-      zova-module-a-routertabs:
-        specifier: ^5.1.25
-        version: 5.1.34
-      zova-module-a-ssr:
-        specifier: ^5.1.20
-        version: 5.1.38
-      zova-module-a-style:
-        specifier: ^5.1.26
-        version: 5.1.35
-      zova-module-a-table:
-        specifier: ^5.1.27
-        version: 5.1.38(vue@3.5.38(typescript@5.9.3))
-      zova-module-rest-resource:
-        specifier: ^5.1.32
-        version: 5.1.46
-
-  .zova-rest/cabloy-store-web:
-    dependencies:
-      '@cabloy/logger':
-        specifier: ^1.1.21
-        version: 1.1.25
-      '@cabloy/module-info':
-        specifier: ^2.0.0
-        version: 2.0.3
-      '@cabloy/vue-router':
-        specifier: ^4.4.16
-        version: 4.4.16(vue@3.5.38(typescript@5.9.3))
-      '@date-io/luxon':
-        specifier: ^3.2.0
-        version: 3.2.0(luxon@3.7.2)
-      '@tanstack/query-core':
-        specifier: ^5.100.10
-        version: 5.101.0
-      '@tanstack/vue-query':
-        specifier: ^5.100.10
-        version: 5.101.0(vue@3.5.38(typescript@5.9.3))
-      luxon:
-        specifier: ^3.7.2
-        version: 3.7.2
-      openapi3-ts:
-        specifier: ^4.5.0
-        version: 4.5.0
-      table-identity:
-        specifier: ^1.1.4
-        version: link:../../packages-utils/table-identity
-      vue:
-        specifier: ^3.5.34
-        version: 3.5.38(typescript@5.9.3)
-      vuetify:
-        specifier: ^4.1.1
-        version: 4.1.10(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
-      zod:
-        specifier: npm:@cabloy/zod@4.3.8
-        version: '@cabloy/zod@4.3.8'
-      zova:
-        specifier: ^5.1.95
-        version: 5.1.154(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
-      zova-jsx:
-        specifier: ^1.1.56
-        version: 1.1.88(typescript@5.9.3)
-      zova-module-a-api:
-        specifier: ^5.1.15
-        version: 5.1.22
-      zova-module-a-bean:
-        specifier: ^5.1.25
-        version: 5.1.33
-      zova-module-a-behavior:
-        specifier: ^5.1.19
-        version: 5.1.26
-      zova-module-a-command:
-        specifier: ^5.1.26
-        version: 5.1.34
-      zova-module-a-form:
-        specifier: ^5.1.32
-        version: 5.1.49(vue@3.5.38(typescript@5.9.3))
-      zova-module-a-icon:
-        specifier: ^5.1.20
-        version: 5.1.27
-      zova-module-a-interceptor:
-        specifier: ^5.1.23
-        version: 5.1.31
-      zova-module-a-model:
-        specifier: ^5.1.24
-        version: 5.1.35(vue@3.5.38(typescript@5.9.3))
-      zova-module-a-openapi:
-        specifier: ^5.1.31
-        version: 5.1.50
-      zova-module-a-router:
-        specifier: ^5.1.23
-        version: 5.1.34
-      zova-module-a-routertabs:
-        specifier: ^5.1.25
-        version: 5.1.34
-      zova-module-a-ssr:
-        specifier: ^5.1.20
-        version: 5.1.38
-      zova-module-a-style:
-        specifier: ^5.1.26
-        version: 5.1.35
-      zova-module-a-table:
-        specifier: ^5.1.27
-        version: 5.1.38(vue@3.5.38(typescript@5.9.3))
-      zova-module-rest-resource:
-        specifier: ^5.1.32
-        version: 5.1.46
 
   packages-cli/cabloy-cli:
     dependencies:
@@ -2784,7 +2523,7 @@ importers:
     dependencies:
       ioredis:
         specifier: ^5.10.1
-        version: 5.10.1
+        version: 5.10.1(supports-color@5.5.0)
     devDependencies:
       clean-package:
         specifier: ^2.2.0
@@ -3142,6 +2881,9 @@ importers:
       vona-module-admin-department:
         specifier: ^5.0.0
         version: link:modules/admin-department
+      vona-module-admin-menu:
+        specifier: ^5.0.0
+        version: link:modules/admin-menu
       vona-module-admin-rbac:
         specifier: ^5.0.0
         version: link:modules/admin-rbac
@@ -3165,7 +2907,7 @@ importers:
         specifier: ^6.1.3
         version: 6.1.3
 
-  src/suite/cabloy-admin/modules/admin-rbac:
+  src/suite/cabloy-admin/modules/admin-menu:
     dependencies:
       vona-module-a-openapiutils:
         specifier: workspace:^
@@ -3176,12 +2918,31 @@ importers:
       vona-module-a-redlock:
         specifier: workspace:^
         version: link:../../../../suite-vendor/a-vona/modules/a-redlock
-      vona-module-admin-department:
+      vona-module-a-ssr:
         specifier: workspace:^
-        version: link:../admin-department
+        version: link:../../../../suite-vendor/a-cabloy/modules/a-ssr
       vona-module-home-user:
         specifier: workspace:^
         version: link:../../../a-home/modules/home-user
+    devDependencies:
+      clean-package:
+        specifier: ^2.2.0
+        version: 2.2.0
+      rimraf:
+        specifier: ^6.1.3
+        version: 6.1.3
+
+  src/suite/cabloy-admin/modules/admin-rbac:
+    dependencies:
+      vona-module-a-openapiutils:
+        specifier: workspace:^
+        version: link:../../../../suite-vendor/a-vona/modules/a-openapiutils
+      vona-module-a-rbac:
+        specifier: workspace:^
+        version: link:../../../../suite-vendor/a-cabloy/modules/a-rbac
+      vona-module-admin-department:
+        specifier: workspace:^
+        version: link:../admin-department
     devDependencies:
       clean-package:
         specifier: ^2.2.0
@@ -8389,9 +8150,6 @@ packages:
   zova-module-a-fetch@5.1.25:
     resolution: {integrity: sha512-kbMB/jIynN0dhivEZLLaY+ic9mU0rZJBeyjXwzAiWuOS330YsxipasxBZhACJD8s29RmLC9EQajI+vVLoBEveQ==}
 
-  zova-module-a-form@5.1.49:
-    resolution: {integrity: sha512-p/faHaDELk2xH4TbuXQ9E+vIUZ4yZYS4URFF0HtrJ+bXDBMCJmjOl3H0encedLh9ZS0dGYpvejHPh3nLvw27JA==}
-
   zova-module-a-form@5.1.50:
     resolution: {integrity: sha512-pfC9pL9SDO7HI7453oTyWbplBBTG+yz31K7Q6ERkSr3YnSPWl5gub93DL4cRPObnotDzrDDb+LWU9JuAdmHmQw==}
 
@@ -8407,14 +8165,8 @@ packages:
   zova-module-a-meta@5.1.22:
     resolution: {integrity: sha512-09n66+Hw5jxfrpybYYZnWxpTYsVWAuk1cP4b8JQIQ+pfye2njTrg+seTLectL71cNb0k60bULv2npGEGgHmmFw==}
 
-  zova-module-a-model@5.1.35:
-    resolution: {integrity: sha512-mS9+KDyAcD3arJVKgZ+GtBtGQySU4ywqsQ9ufqq0yIGi/Z9a8T4ageLCCoAGorZdrmOlWMHThIOGtIYpG7l4XA==}
-
   zova-module-a-model@5.1.36:
     resolution: {integrity: sha512-AEiYy68vFzw3OBrJMUfq05Xh0M4TR0Qj/9p4jfZ3IS7qIXu+4w/52wsInvbfy0V9tOistp+kui6kB3Lm1/UAiQ==}
-
-  zova-module-a-openapi@5.1.50:
-    resolution: {integrity: sha512-ZrYFZaVARpBf5ByfCtCPD4z/2ByAZn42XsKUJZuqWcvVrccY7v3kaiXoCrfQAz9aDar+wqwXOo548eAHz4wzqg==}
 
   zova-module-a-openapi@5.1.51:
     resolution: {integrity: sha512-7oi32wKEnpnVhrC5jS5rv1pDan/NjZbj4rj9sUiGvwXU5pwG5O6XiiA/IHoyLVhHu4EkeE4ldYow9sQVKDquMw==}
@@ -8449,20 +8201,11 @@ packages:
   zova-module-a-zova@5.1.103:
     resolution: {integrity: sha512-rtGMHo5NRlXkFlAz07jEgd/J7C/2zzZ9A9UXW8tJBhpSQTY4YBec+1wwCfOEjUcpDjUjNjn6UHGAV7fg1maS/g==}
 
-  zova-module-rest-resource@5.1.46:
-    resolution: {integrity: sha512-YTwikQL9lnbR6+6t9LklwKc0W37Ws2qXJAWSOcddl9b4Xbqrm8nsFMngDHq2vIOMlmRQgenXTDBTqAeDhKM2iQ==}
-
   zova-module-rest-resource@5.1.48:
     resolution: {integrity: sha512-UIM3Ft9iPjOiobnJgo0Pm+LVVaCz466n1l+DL6iOXbE2UoZ0uYfdygqdm31m2sP+XPLFiT4PCY8wPQQ1tzlFIg==}
 
-  zova-suite-a-zova@5.1.153:
-    resolution: {integrity: sha512-Q7R6GL5O/Tlqk4cnFYumMR2eeCwAqfnTtFrYQuuQMpz7BmYhAPmMmJQWF2reHlRjG6B4dbOPZ5pxl1iWagY7PA==}
-
   zova-suite-a-zova@5.1.154:
     resolution: {integrity: sha512-ii1qFxaBNc4PpNSj+sKgiH0Ryefr4KE0Gb5M8o2Df0hoe8//3uM7QK02GyQDKAK+bu6Q+7mwBZFW8hcD8TrEYw==}
-
-  zova@5.1.154:
-    resolution: {integrity: sha512-QF0f+wwLeuf18hsmZj1/3G/AQ9cNQYMKZiCoBBsTDh7oIhaxsmI5wxtjo59HiOEkk5ZmWPHqwjA4iepTLoKqeg==}
 
   zova@5.1.155:
     resolution: {integrity: sha512-TbaG8D/s/ML5gGBoaLeW92bjYyDd+8AU+Vw3y3cQopOtnthGLMiLnssKmzUOavyOiVGb25tyNAqgAWrGz4z/vQ==}
@@ -8762,6 +8505,26 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@babel/core@7.29.0(supports-color@5.5.0)':
+    dependencies:
+      '@babel/code-frame': 7.29.0
+      '@babel/generator': 7.29.1
+      '@babel/helper-compilation-targets': 7.28.6
+      '@babel/helper-module-transforms': 7.28.6(@babel/core@7.29.0(supports-color@5.5.0))
+      '@babel/helpers': 7.29.2
+      '@babel/parser': 7.29.7
+      '@babel/template': 7.28.6
+      '@babel/traverse': 7.29.0
+      '@babel/types': 7.29.7
+      '@jridgewell/remapping': 2.3.5
+      convert-source-map: 2.0.0
+      debug: 4.4.3(supports-color@5.5.0)
+      gensync: 1.0.0-beta.2
+      json5: 2.2.3
+      semver: 6.3.1
+    transitivePeerDependencies:
+      - supports-color
+
   '@babel/generator@7.29.1':
     dependencies:
       '@babel/parser': 7.29.7
@@ -8808,6 +8571,15 @@ snapshots:
     dependencies:
       '@babel/traverse': 7.29.0
       '@babel/types': 7.29.7
+    transitivePeerDependencies:
+      - supports-color
+
+  '@babel/helper-module-transforms@7.28.6(@babel/core@7.29.0(supports-color@5.5.0))':
+    dependencies:
+      '@babel/core': 7.29.0(supports-color@5.5.0)
+      '@babel/helper-module-imports': 7.28.6
+      '@babel/helper-validator-identifier': 7.29.7
+      '@babel/traverse': 7.29.0
     transitivePeerDependencies:
       - supports-color
 
@@ -9750,7 +9522,7 @@ snapshots:
 
   '@sesamecare-oss/redlock@1.4.0(ioredis@5.10.1)':
     dependencies:
-      ioredis: 5.10.1
+      ioredis: 5.10.1(supports-color@5.5.0)
 
   '@sindresorhus/merge-streams@2.3.0': {}
 
@@ -10665,7 +10437,7 @@ snapshots:
   bullmq@5.76.8:
     dependencies:
       cron-parser: 4.9.0
-      ioredis: 5.10.1
+      ioredis: 5.10.1(supports-color@5.5.0)
       msgpackr: 2.0.1
       node-abort-controller: 3.1.1
       semver: 7.8.0
@@ -11732,7 +11504,7 @@ snapshots:
 
   interpret@2.2.0: {}
 
-  ioredis@5.10.1:
+  ioredis@5.10.1(supports-color@5.5.0):
     dependencies:
       '@ioredis/commands': 1.5.1
       cluster-key-slot: 1.1.2
@@ -13975,14 +13747,6 @@ snapshots:
       - debug
       - supports-color
 
-  zova-module-a-form@5.1.49(vue@3.5.38(typescript@5.9.3)):
-    dependencies:
-      '@tanstack/vue-form': 1.33.2(vue@3.5.38(typescript@5.9.3))
-      '@tanstack/vue-store': 0.11.0(vue@3.5.38(typescript@5.9.3))
-    transitivePeerDependencies:
-      - '@vue/composition-api'
-      - vue
-
   zova-module-a-form@5.1.50(vue@3.5.38(typescript@5.9.3)):
     dependencies:
       '@tanstack/vue-form': 1.33.2(vue@3.5.38(typescript@5.9.3))
@@ -14001,18 +13765,6 @@ snapshots:
 
   zova-module-a-meta@5.1.22: {}
 
-  zova-module-a-model@5.1.35(vue@3.5.38(typescript@5.9.3)):
-    dependencies:
-      '@tanstack/query-core': 5.101.0
-      '@tanstack/query-persist-client-core': 5.101.0
-      '@tanstack/vue-query': 5.101.0(vue@3.5.38(typescript@5.9.3))
-      localforage: 1.10.0
-      mutate-on-copy: 1.1.13
-      table-identity: link:packages-utils/table-identity
-    transitivePeerDependencies:
-      - '@vue/composition-api'
-      - vue
-
   zova-module-a-model@5.1.36(vue@3.5.38(typescript@5.9.3)):
     dependencies:
       '@tanstack/query-core': 5.101.0
@@ -14024,12 +13776,6 @@ snapshots:
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
-
-  zova-module-a-openapi@5.1.50:
-    dependencies:
-      '@cabloy/json-schema-to-zod': 2.6.5
-      openapi3-ts: 4.5.0
-      typestyle: 2.4.0
 
   zova-module-a-openapi@5.1.51:
     dependencies:
@@ -14092,43 +13838,7 @@ snapshots:
       - typescript
       - vue
 
-  zova-module-rest-resource@5.1.46: {}
-
   zova-module-rest-resource@5.1.48: {}
-
-  zova-suite-a-zova@5.1.153(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3)):
-    dependencies:
-      zova-module-a-api: 5.1.22
-      zova-module-a-app: 5.1.26
-      zova-module-a-bean: 5.1.33
-      zova-module-a-behavior: 5.1.26
-      zova-module-a-behaviors: 5.1.22
-      zova-module-a-boundary: 5.1.22
-      zova-module-a-command: 5.1.34
-      zova-module-a-fetch: 5.1.25
-      zova-module-a-form: 5.1.49(vue@3.5.38(typescript@5.9.3))
-      zova-module-a-icon: 5.1.27
-      zova-module-a-interceptor: 5.1.31
-      zova-module-a-logger: 5.1.28
-      zova-module-a-meta: 5.1.22
-      zova-module-a-model: 5.1.35(vue@3.5.38(typescript@5.9.3))
-      zova-module-a-openapi: 5.1.50
-      zova-module-a-router: 5.1.34
-      zova-module-a-routerstack: 5.1.27
-      zova-module-a-routertabs: 5.1.34
-      zova-module-a-ssr: 5.1.38
-      zova-module-a-ssrhmr: 5.1.23
-      zova-module-a-ssrserver: 5.1.26
-      zova-module-a-style: 5.1.35
-      zova-module-a-table: 5.1.38(vue@3.5.38(typescript@5.9.3))
-      zova-module-a-zod: 5.1.37
-      zova-module-a-zova: 5.1.103(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
-    transitivePeerDependencies:
-      - '@vue/composition-api'
-      - debug
-      - supports-color
-      - typescript
-      - vue
 
   zova-suite-a-zova@5.1.154(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3)):
     dependencies:
@@ -14157,17 +13867,6 @@ snapshots:
       zova-module-a-table: 5.1.38(vue@3.5.38(typescript@5.9.3))
       zova-module-a-zod: 5.1.37
       zova-module-a-zova: 5.1.103(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
-    transitivePeerDependencies:
-      - '@vue/composition-api'
-      - debug
-      - supports-color
-      - typescript
-      - vue
-
-  zova@5.1.154(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3)):
-    dependencies:
-      zova-core: 5.1.88(patch_hash=144450bd7a567a6067e5857c0cf4c780981b7e90bc48745c09e1696a9b6f1b97)(typescript@5.9.3)
-      zova-suite-a-zova: 5.1.153(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3))
     transitivePeerDependencies:
       - '@vue/composition-api'
       - debug

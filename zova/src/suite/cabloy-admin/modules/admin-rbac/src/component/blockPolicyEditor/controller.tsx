@@ -35,6 +35,7 @@ import { groupRbacPolicyActions } from '../../model/rbacPolicy.js';
 
 export interface ControllerBlockPolicyEditorProps extends IResourceBlockOptionsBase {
   roleId: TableIdentity;
+  roleName: string;
 }
 
 declare module 'zova-module-a-openapi' {
@@ -94,6 +95,16 @@ export class ControllerBlockPolicyEditor extends BeanControllerBase {
     return roleId;
   }
 
+  get roleName(): string {
+    const roleName = this.$props.roleName;
+    if (roleName === undefined) throw new Error('should provide Role name');
+    return roleName;
+  }
+
+  get systemAdminPolicyProtected(): boolean {
+    return this.roleName === 'systemAdmin';
+  }
+
   get queryCatalog() {
     return this.modelRbacPolicy.catalog();
   }
@@ -137,6 +148,7 @@ export class ControllerBlockPolicyEditor extends BeanControllerBase {
   }
 
   protected async __init__() {
+    if (this.systemAdminPolicyProtected) return;
     this.modelRbacPolicy = (await this.bean._getBeanSelector(
       'admin-rbac.model.rbacPolicy',
       true,
@@ -163,6 +175,13 @@ export class ControllerBlockPolicyEditor extends BeanControllerBase {
 
   protected render() {
     const locale = this.scope.locale;
+    if (this.systemAdminPolicyProtected) {
+      return (
+        <VAlert class={this.$props.class} type="info" variant="tonal">
+          {locale.SystemAdminPolicyProtected()}
+        </VAlert>
+      );
+    }
     if (this._isPending()) {
       return (
         <VCard class={this.$props.class} variant="outlined">
@@ -337,9 +356,11 @@ export class ControllerBlockPolicyEditor extends BeanControllerBase {
         {this._renderActionIdentifier(action)}
         {dataScopes.map(dataScope => (
           <td key={dataScope} class="vertical-align-top">
-            {action.dataScopes.includes(dataScope)
-              ? this._renderScopeCheckbox(action.actionKey, dataScope)
-              : undefined}
+            {action.dataScopes.includes(dataScope) ? (
+              <div class="d-flex justify-center">
+                {this._renderScopeCheckbox(action.actionKey, dataScope)}
+              </div>
+            ) : undefined}
             {dataScope === 'customDepartments' && action.dataScopes.includes(dataScope)
               ? this._renderCustomDepartmentsCell(action.actionKey)
               : undefined}
@@ -730,11 +751,12 @@ export class ControllerBlockPolicyEditor extends BeanControllerBase {
       {
         title: locale.ConfigureColumnDepartments(),
         slotDefault: () => (
-          <div class="d-flex flex-column ga-4">
+          <>
             <p class="text-body-2 text-medium-emphasis">
               {locale.ConfigureColumnDepartmentsHint()}
             </p>
             <VTreeview
+              class="mt-4"
               items={this.departmentTree}
               itemTitle="name"
               itemValue="id"
@@ -748,7 +770,7 @@ export class ControllerBlockPolicyEditor extends BeanControllerBase {
                 this.departmentDialogSelectedIds = this._getSelectedIds(value);
               }}
             ></VTreeview>
-          </div>
+          </>
         ),
         slotActions: modal => (
           <>

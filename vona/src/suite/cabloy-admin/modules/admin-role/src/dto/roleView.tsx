@@ -46,6 +46,20 @@ export interface IDtoOptionsRoleView extends IDecoratorDtoOptions {}
                             type: 'block',
                             block: ZovaRender.block('admin-rbac:blockPolicyEditor', {
                               roleId: cel('id'),
+                              roleName: cel("getValue('name')"),
+                            }),
+                          },
+                        ],
+                      },
+                      {
+                        type: 'tab',
+                        title: $locale('MenuAuthorization'),
+                        children: [
+                          {
+                            type: 'block',
+                            block: ZovaRender.block('admin-menu:blockRoleMenuEditor', {
+                              roleId: cel('id'),
+                              roleName: cel("getValue('name')"),
                             }),
                           },
                         ],

@@ -1,4 +1,4 @@
-import type { Page, Response } from '@playwright/test';
+import type { Page, Request, Response } from '@playwright/test';
 
 import { expect, test } from '@playwright/test';
 
@@ -171,6 +171,17 @@ async function createRole(page: Page, name: string) {
     siteIds: ['admin'],
   });
   return (await response.json()).data as { id: number | string };
+}
+
+async function getRoleByName(page: Page, name: string) {
+  const response = await requestApi(page, 'GET', '/api/admin/role');
+  const payload = (await response.json()) as {
+    data?: { list: Array<{ id: number | string; name: string }> };
+    list?: Array<{ id: number | string; name: string }>;
+  };
+  const role = (payload.data ?? payload).list?.find(item => item.name === name);
+  if (!role) throw new Error(`Role not found: ${name}`);
+  return role;
 }
 
 interface UserRoleSummary {
@@ -850,6 +861,28 @@ test(
       await expect(page.getByText(firstDepartmentName, { exact: true })).toBeVisible();
       await expect(page.getByText(secondDepartmentName, { exact: true })).toBeVisible();
 
+      const customDepartmentsColumnToggle = scopedPolicyTable.getByRole('checkbox', {
+        name: 'Toggle all applicable permissions for Specified Departments',
+        exact: true,
+      });
+      await customDepartmentsColumnToggle.click();
+      const columnDepartmentDialog = page.getByRole('dialog');
+      await expect(columnDepartmentDialog).toBeVisible();
+      await expect(
+        columnDepartmentDialog.getByText(
+          'The selected departments will apply to every applicable permission.',
+          { exact: true },
+        ),
+      ).toBeVisible();
+      await expect(
+        columnDepartmentDialog.getByText(firstDepartmentName, { exact: true }),
+      ).toBeVisible();
+      await expect(
+        columnDepartmentDialog.getByText(secondDepartmentName, { exact: true }),
+      ).toBeVisible();
+      await columnDepartmentDialog.getByRole('button', { name: 'Cancel', exact: true }).click();
+      await expect(columnDepartmentDialog).toBeHidden();
+
       await page.reload({ waitUntil: 'load' });
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
       const reloadedConfiguration = await getRolePolicyConfiguration(page, firstRoleId);
@@ -959,7 +992,75 @@ test(
 );
 
 test(
-  'ATP-ADM-POL-04: delegated Student Resource projects scoped actions without authorizing stale mutations',
+  'ATP-ADM-POL-04: system administrator authorization is protected without loading errors',
+  { tag: ['@admin', '@cabloy-admin'] },
+  async ({ page }) => {
+    const pageErrors = collectPageErrors(page);
+    const consoleErrors = collectConsoleErrors(page);
+    await loginAsAdmin(page);
+
+    const systemAdmin = await getRoleByName(page, 'systemAdmin');
+    const policyConfigurationPath = `/api/admin/rbac/rbacPolicy/roles/${systemAdmin.id}/configuration`;
+    const menuConfigurationPath = `/api/admin/menu/roleMenu/roles/${systemAdmin.id}/configuration`;
+    const policyConfigurationRequests: string[] = [];
+    const menuConfigurationRequests: string[] = [];
+    const collectConfigurationRequest = (request: Request) => {
+      const pathname = new URL(request.url()).pathname;
+      if (pathname === policyConfigurationPath) {
+        policyConfigurationRequests.push(request.url());
+      } else if (pathname === menuConfigurationPath) {
+        menuConfigurationRequests.push(request.url());
+      }
+    };
+    page.on('request', collectConfigurationRequest);
+    try {
+      await page.goto(`${resourcePath('admin-role:role')}/${systemAdmin.id}`, {
+        waitUntil: 'load',
+      });
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+      const detail = page.locator('main');
+      const permissionsTab = detail.getByRole('tab', {
+        name: 'Resource Permissions',
+        exact: true,
+      });
+      await permissionsTab.click();
+      await expect(
+        detail.getByText(
+          'Resource permissions for the system administrator role are protected and cannot be configured here.',
+          { exact: true },
+        ),
+      ).toBeVisible();
+      expect(policyConfigurationRequests).toEqual([]);
+      await expect(detail.getByRole('button', { name: 'Retry', exact: true })).toHaveCount(0);
+
+      const menuAuthorizationTab = detail.getByRole('tab', {
+        name: 'Menu Authorization',
+        exact: true,
+      });
+      await menuAuthorizationTab.click();
+      await expect(menuAuthorizationTab).toHaveAttribute('aria-selected', 'true');
+      await expect(
+        detail.getByText(
+          'Menu authorization for the system administrator role is protected and cannot be configured here.',
+          { exact: true },
+        ),
+      ).toBeVisible();
+      await expect(
+        detail.getByRole('checkbox', { name: 'Toggle menu authorization for Role', exact: true }),
+      ).toHaveCount(0);
+      await expect(detail.getByRole('button', { name: 'Retry', exact: true })).toHaveCount(0);
+      expect(policyConfigurationRequests).toEqual([]);
+      expect(menuConfigurationRequests).toEqual([]);
+      expect(pageErrors).toEqual([]);
+      expect(consoleErrors).toEqual([]);
+    } finally {
+      page.off('request', collectConfigurationRequest);
+    }
+  },
+);
+
+test(
+  'ATP-ADM-POL-05: delegated Student Resource projects scoped actions without authorizing stale mutations',
   { tag: ['@admin', '@cabloy-admin'] },
   async ({ page, request }, testInfo) => {
     const baseURL = testInfo.project.use.baseURL;
