@@ -2,7 +2,7 @@ import type { IDecoratorSsrSiteOptions } from 'vona-module-a-ssr';
 
 import { BeanBase } from 'vona';
 import { Service } from 'vona-module-a-bean';
-import { roleSiteIdAll } from 'vona-module-home-user';
+import { roleSiteIdAll } from 'vona-module-a-openapiutils';
 
 import type { DtoSiteCatalogSelectRes } from '../dto/siteCatalogSelectRes.ts';
 

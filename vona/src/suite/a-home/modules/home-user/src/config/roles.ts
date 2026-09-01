@@ -1,6 +1,6 @@
 import type { LocalizedTextMap } from 'vona-module-a-user';
 
-export const roleSiteIdAll = '*';
+import { roleSiteIdAll } from 'vona-module-a-openapiutils';
 
 export interface IRoleConfig {
   title: string;
