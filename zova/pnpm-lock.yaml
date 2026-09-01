@@ -213,9 +213,6 @@ importers:
       zova-module-admin-department:
         specifier: workspace:^
         version: link:src/suite/cabloy-admin/modules/admin-department
-      zova-module-admin-menu:
-        specifier: workspace:^
-        version: link:src/suite/cabloy-admin/modules/admin-menu
       zova-module-admin-rbac:
         specifier: workspace:^
         version: link:src/suite/cabloy-admin/modules/admin-rbac
