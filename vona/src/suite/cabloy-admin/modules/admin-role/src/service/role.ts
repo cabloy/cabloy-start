@@ -5,7 +5,7 @@ import type { EntityRole, ModelRole } from 'vona-module-home-user';
 import { BeanBase } from 'vona';
 import { Service } from 'vona-module-a-bean';
 import { Core } from 'vona-module-a-core';
-import { roleSiteIdAll } from 'vona-module-home-user';
+import { roleSiteIdAll } from 'vona-module-a-openapiutils';
 
 import type { DtoRoleCreate } from '../dto/roleCreate.tsx';
 import type { DtoRoleSelectRes } from '../dto/roleSelectRes.tsx';

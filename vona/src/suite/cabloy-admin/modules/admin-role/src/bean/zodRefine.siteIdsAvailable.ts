@@ -5,8 +5,8 @@ import type {
 } from 'vona-module-a-zod';
 
 import { BeanBase } from 'vona';
+import { roleSiteIdAll } from 'vona-module-a-openapiutils';
 import { ZodRefine } from 'vona-module-a-zod';
-import { roleSiteIdAll } from 'vona-module-home-user';
 
 export type TypeZodRefineSiteIdsAvailableData = string[];
 
