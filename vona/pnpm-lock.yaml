@@ -645,8 +645,8 @@ importers:
         specifier: ^5.1.38
         version: 5.1.38(vue@3.5.38(typescript@5.9.3))
       zova-module-rest-resource:
-        specifier: ^5.1.48
-        version: 5.1.48
+        specifier: ^5.1.49
+        version: 5.1.49
 
   .zova-rest/cabloy-start-web:
     dependencies:
@@ -726,8 +726,8 @@ importers:
         specifier: ^5.1.38
         version: 5.1.38(vue@3.5.38(typescript@5.9.3))
       zova-module-rest-resource:
-        specifier: ^5.1.48
-        version: 5.1.48
+        specifier: ^5.1.49
+        version: 5.1.49
 
   .zova-rest/cabloy-store-admin:
     dependencies:
@@ -8468,6 +8468,9 @@ packages:
   zova-module-rest-resource@5.1.48:
     resolution: {integrity: sha512-UIM3Ft9iPjOiobnJgo0Pm+LVVaCz466n1l+DL6iOXbE2UoZ0uYfdygqdm31m2sP+XPLFiT4PCY8wPQQ1tzlFIg==}
 
+  zova-module-rest-resource@5.1.49:
+    resolution: {integrity: sha512-tLf3BLov4GnV1QPivvLro6T2sNdriDZ8vZMsghuUN7dl+PRCG2pI0q9hBCrqe2faRSIcVUXowwnEbEynmaM7Zg==}
+
   zova-suite-a-zova@5.1.154:
     resolution: {integrity: sha512-ii1qFxaBNc4PpNSj+sKgiH0Ryefr4KE0Gb5M8o2Df0hoe8//3uM7QK02GyQDKAK+bu6Q+7mwBZFW8hcD8TrEYw==}
 
@@ -14074,6 +14077,8 @@ snapshots:
       - vue
 
   zova-module-rest-resource@5.1.48: {}
+
+  zova-module-rest-resource@5.1.49: {}
 
   zova-suite-a-zova@5.1.154(typescript@5.9.3)(vue@3.5.38(typescript@5.9.3)):
     dependencies:
