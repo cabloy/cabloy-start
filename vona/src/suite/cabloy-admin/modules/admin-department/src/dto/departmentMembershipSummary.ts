@@ -1,12 +1,12 @@
-import type { TableIdentity } from 'table-identity';
 import type { IDecoratorDtoOptions } from 'vona-module-a-web';
 
-import { $makeSchema, Api, v } from 'vona-module-a-openapiutils';
+import { Api, v } from 'vona-module-a-openapiutils';
+import { $Dto } from 'vona-module-a-orm';
 import { Dto } from 'vona-module-a-web';
 import { ZovaRender } from 'zova-rest-cabloy-start-admin';
 
 import { $locale } from '../.metadata/locales.ts';
-import { DtoDepartmentUserSummary } from './departmentUserSummary.ts';
+import { ModelDepartmentMembership } from '../model/departmentMembership.ts';
 
 export interface IDtoOptionsDepartmentMembershipSummary extends IDecoratorDtoOptions {}
 
@@ -26,28 +26,10 @@ export interface IDtoOptionsDepartmentMembershipSummary extends IDecoratorDtoOpt
     }),
   ],
 })
-export class DtoDepartmentMembershipSummary {
-  @Api.field(v.required(), v.tableIdentity())
-  id: TableIdentity;
-
-  @Api.field(ZovaRender.visible(false), v.required(), v.tableIdentity())
-  userId: TableIdentity;
-
-  @Api.field(v.title($locale('UserName')), v.required(), v.object(DtoDepartmentUserSummary))
-  user: DtoDepartmentUserSummary;
-
-  @Api.field(
-    v.title($locale('Position')),
-    $makeSchema(v.optional(), v.nullable(), v.max(100), String),
-  )
-  position?: string | null;
-
-  @Api.field(v.title($locale('Enabled')), v.required())
-  enabled: boolean;
-
-  @Api.field(v.title($locale('Primary')), v.required())
-  primary: boolean;
-
+export class DtoDepartmentMembershipSummary extends $Dto.get(() => ModelDepartmentMembership, {
+  columns: ['id', 'userId', 'position', 'enabled', 'primary'],
+  include: { user: true },
+}) {
   @Api.field(v.title($locale('DepartmentManager')), ZovaRender.visible(false), v.required())
   manager: boolean;
 

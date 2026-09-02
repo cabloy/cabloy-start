@@ -118,6 +118,11 @@ declare module 'vona-module-admin-department' {
           parent: IModelRelationBelongsTo<'admin-department:department', 'admin-department:department', false, 'id'|'name'>;
         };
       }
+export interface IModelOptionsDepartmentMembership {
+        relations: {
+          user: IModelRelationBelongsTo<'admin-department:departmentMembership', 'home-user:user', false, 'id'|'name'|'avatar'>;
+        };
+      }
   export interface ModelDepartment {
       [SymbolKeyEntity]: EntityDepartment;
       [SymbolKeyEntityMeta]: EntityDepartmentMeta;
@@ -323,7 +328,6 @@ export * from '../dto/departmentSelectResItem.tsx';
 export * from '../dto/departmentTree.ts';
 export * from '../dto/departmentUpdate.tsx';
 export * from '../dto/departmentUpdateBase.ts';
-export * from '../dto/departmentUserSummary.ts';
 export * from '../dto/departmentView.tsx';
 import type { IDtoOptionsDepartmentActivation } from '../dto/departmentActivation.ts';
 import type { IDtoOptionsDepartmentBase } from '../dto/departmentBase.tsx';
@@ -346,7 +350,6 @@ import type { IDtoOptionsDepartmentSelectResItem } from '../dto/departmentSelect
 import type { IDtoOptionsDepartmentTreeItem } from '../dto/departmentTree.ts';
 import type { IDtoOptionsDepartmentUpdate } from '../dto/departmentUpdate.tsx';
 import type { IDtoOptionsDepartmentUpdateBase } from '../dto/departmentUpdateBase.ts';
-import type { IDtoOptionsDepartmentUserSummary } from '../dto/departmentUserSummary.ts';
 import type { IDtoOptionsDepartmentView } from '../dto/departmentView.tsx';
 import 'vona-module-a-web';
 declare module 'vona-module-a-web' {
@@ -373,7 +376,6 @@ declare module 'vona-module-a-web' {
 'admin-department:departmentTree': IDtoOptionsDepartmentTreeItem;
 'admin-department:departmentUpdate': IDtoOptionsDepartmentUpdate;
 'admin-department:departmentUpdateBase': IDtoOptionsDepartmentUpdateBase;
-'admin-department:departmentUserSummary': IDtoOptionsDepartmentUserSummary;
 'admin-department:departmentView': IDtoOptionsDepartmentView;
     }
 
@@ -405,7 +407,6 @@ import type { DtoDepartmentSelectResItem } from '../dto/departmentSelectResItem.
 import type { DtoDepartmentTree } from '../dto/departmentTree.ts';
 import type { DtoDepartmentUpdate } from '../dto/departmentUpdate.tsx';
 import type { DtoDepartmentUpdateBase } from '../dto/departmentUpdateBase.ts';
-import type { DtoDepartmentUserSummary } from '../dto/departmentUserSummary.ts';
 import type { DtoDepartmentView } from '../dto/departmentView.tsx';
 declare module 'vona-module-admin-department' {
 
@@ -491,10 +492,6 @@ declare module 'vona-module-admin-department' {
 
     export interface IDtoOptionsDepartmentUpdateBase {
       fields?: TypeEntityOptionsFields<DtoDepartmentUpdateBase, IDtoOptionsDepartmentUpdateBase[TypeSymbolKeyFieldsMore]>;
-    }
-
-    export interface IDtoOptionsDepartmentUserSummary {
-      fields?: TypeEntityOptionsFields<DtoDepartmentUserSummary, IDtoOptionsDepartmentUserSummary[TypeSymbolKeyFieldsMore]>;
     }
 
     export interface IDtoOptionsDepartmentView {

@@ -12,7 +12,6 @@ import type { DtoDepartmentMembershipCreate } from '../dto/departmentMembershipC
 import type { DtoDepartmentMembershipDelete } from '../dto/departmentMembershipDelete.ts';
 import type { DtoDepartmentMembershipPrimary } from '../dto/departmentMembershipPrimary.ts';
 import type { DtoDepartmentMembershipSelectRes } from '../dto/departmentMembershipSelectRes.ts';
-import type { DtoDepartmentMembershipSummary } from '../dto/departmentMembershipSummary.ts';
 import type { DtoDepartmentMembershipUpdate } from '../dto/departmentMembershipUpdate.ts';
 import type { DtoDepartmentMove } from '../dto/departmentMove.ts';
 import type { DtoDepartmentReorder } from '../dto/departmentReorder.ts';
@@ -174,7 +173,19 @@ export class ServiceDepartment extends BeanBase {
   async selectMemberships(departmentId: TableIdentity): Promise<DtoDepartmentMembershipSelectRes> {
     const department = await this.scope.model.department.getById(departmentId);
     if (!department) this.app.throw(404, 'Department not found');
-    return { list: await this.getMembershipSummaries(department) };
+    const memberships = await this.scope.model.departmentMembership.select({
+      where: { departmentId: department.id },
+      include: { user: true },
+      orders: [['id', 'asc']],
+    });
+    return {
+      list: memberships
+        .filter(membership => membership.user)
+        .map(membership => ({
+          ...membership,
+          manager: String(department.managerId) === String(membership.userId),
+        })),
+    };
   }
 
   async createMembership(
@@ -343,34 +354,6 @@ export class ServiceDepartment extends BeanBase {
 
   private assertDepartmentEnabledForMembershipMutation(department: EntityDepartment): void {
     if (!department.enabled) this.scope.error.DepartmentMembershipDepartmentDisabled.throw();
-  }
-
-  private async getMembershipSummaries(
-    department: EntityDepartment,
-  ): Promise<DtoDepartmentMembershipSummary[]> {
-    const memberships = await this.scope.model.departmentMembership.select({
-      where: { departmentId: department.id },
-      orders: [['id', 'asc']],
-    });
-    const users = memberships.length
-      ? await this.$scope.homeUser.model.user.mget(memberships.map(item => item.userId))
-      : [];
-    const usersById = new Map(users.map(user => [String(user.id), user]));
-    return memberships.flatMap((membership): DtoDepartmentMembershipSummary[] => {
-      const user = usersById.get(String(membership.userId));
-      if (!user) return [];
-      return [
-        {
-          id: membership.id,
-          userId: membership.userId,
-          user: { id: user.id, name: user.name, avatar: user.avatar ?? null },
-          position: membership.position ?? null,
-          enabled: membership.enabled,
-          primary: membership.primary,
-          manager: String(department.managerId) === String(membership.userId),
-        },
-      ];
-    });
   }
 
   private normalizeParentId(parentId: TableIdentity | null | undefined): TableIdentity | null {

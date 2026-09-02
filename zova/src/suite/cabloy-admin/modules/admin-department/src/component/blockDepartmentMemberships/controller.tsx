@@ -52,7 +52,7 @@ export class ControllerBlockDepartmentMemberships extends BeanControllerBase {
   }
 
   get managerName() {
-    return this.membershipItems?.find(item => item.manager)?.user.name;
+    return this.membershipItems?.find(item => item.manager)?.user?.name;
   }
 
   protected async __init__() {

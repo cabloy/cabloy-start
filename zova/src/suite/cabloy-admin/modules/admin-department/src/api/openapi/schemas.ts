@@ -233,10 +233,6 @@ export type ApiSchemaAdminDepartmentDtoDepartmentMembershipSummary =
   components['schemas']['admin-department.dto.departmentMembershipSummary'];
 export type ApiSchemaAdminDepartmentDtoDepartmentMembershipSummaryPartial =
   Partial<ApiSchemaAdminDepartmentDtoDepartmentMembershipSummary>;
-export type ApiSchemaAdminDepartmentDtoDepartmentUserSummary_626802c24df1498cec99aab0854fedf90c9b6dd3_0aab216abd3467dd07f61c69172266c2441af477_c4656f36fd04b7e6710079f758ab6240097007f7 =
-  components['schemas']['admin-department.dto.departmentUserSummary_626802c24df1498cec99aab0854fedf90c9b6dd3_0aab216abd3467dd07f61c69172266c2441af477_c4656f36fd04b7e6710079f758ab6240097007f7'];
-export type ApiSchemaAdminDepartmentDtoDepartmentUserSummary_626802c24df1498cec99aab0854fedf90c9b6dd3_0aab216abd3467dd07f61c69172266c2441af477_c4656f36fd04b7e6710079f758ab6240097007f7Partial =
-  Partial<ApiSchemaAdminDepartmentDtoDepartmentUserSummary_626802c24df1498cec99aab0854fedf90c9b6dd3_0aab216abd3467dd07f61c69172266c2441af477_c4656f36fd04b7e6710079f758ab6240097007f7>;
 export type ApiSchemaAdminDepartmentDtoDepartmentMembershipCreate =
   components['schemas']['admin-department.dto.departmentMembershipCreate'];
 export type ApiSchemaAdminDepartmentDtoDepartmentMembershipCreatePartial =
@@ -269,6 +265,49 @@ export type ApiSchemaAdminDepartmentDtoDepartmentActivation =
   components['schemas']['admin-department.dto.departmentActivation'];
 export type ApiSchemaAdminDepartmentDtoDepartmentActivationPartial =
   Partial<ApiSchemaAdminDepartmentDtoDepartmentActivation>;
+export type ApiSchemaAdminMenuDtoRoleMenuCatalogRes =
+  components['schemas']['admin-menu.dto.roleMenuCatalogRes'];
+export type ApiSchemaAdminMenuDtoRoleMenuCatalogResPartial =
+  Partial<ApiSchemaAdminMenuDtoRoleMenuCatalogRes>;
+export type ApiSchemaAdminMenuDtoRoleMenuCatalogSite =
+  components['schemas']['admin-menu.dto.roleMenuCatalogSite'];
+export type ApiSchemaAdminMenuDtoRoleMenuCatalogSitePartial =
+  Partial<ApiSchemaAdminMenuDtoRoleMenuCatalogSite>;
+export type ApiSchemaAdminMenuDtoRoleMenuCatalogMenu =
+  components['schemas']['admin-menu.dto.roleMenuCatalogMenu'];
+export type ApiSchemaAdminMenuDtoRoleMenuCatalogMenuPartial =
+  Partial<ApiSchemaAdminMenuDtoRoleMenuCatalogMenu>;
+export type ApiSchemaAdminMenuDtoRoleMenuCatalogGroup =
+  components['schemas']['admin-menu.dto.roleMenuCatalogGroup'];
+export type ApiSchemaAdminMenuDtoRoleMenuCatalogGroupPartial =
+  Partial<ApiSchemaAdminMenuDtoRoleMenuCatalogGroup>;
+export type ApiSchemaAdminMenuDtoRoleMenuRoleConfigurationRes =
+  components['schemas']['admin-menu.dto.roleMenuRoleConfigurationRes'];
+export type ApiSchemaAdminMenuDtoRoleMenuRoleConfigurationResPartial =
+  Partial<ApiSchemaAdminMenuDtoRoleMenuRoleConfigurationRes>;
+export type ApiSchemaAdminMenuDtoRoleMenuRoleConfigurationSite =
+  components['schemas']['admin-menu.dto.roleMenuRoleConfigurationSite'];
+export type ApiSchemaAdminMenuDtoRoleMenuRoleConfigurationSitePartial =
+  Partial<ApiSchemaAdminMenuDtoRoleMenuRoleConfigurationSite>;
+export type ApiSchemaAdminMenuDtoRoleMenuRoleConfigurationMenu =
+  components['schemas']['admin-menu.dto.roleMenuRoleConfigurationMenu'];
+export type ApiSchemaAdminMenuDtoRoleMenuRoleConfigurationMenuPartial =
+  Partial<ApiSchemaAdminMenuDtoRoleMenuRoleConfigurationMenu>;
+export type ApiSchemaAdminMenuDtoRoleMenuCreate =
+  components['schemas']['admin-menu.dto.roleMenuCreate'];
+export type ApiSchemaAdminMenuDtoRoleMenuCreatePartial =
+  Partial<ApiSchemaAdminMenuDtoRoleMenuCreate>;
+export type ApiSchemaAdminMenuDtoRoleMenuBatch =
+  components['schemas']['admin-menu.dto.roleMenuBatch'];
+export type ApiSchemaAdminMenuDtoRoleMenuBatchPartial = Partial<ApiSchemaAdminMenuDtoRoleMenuBatch>;
+export type ApiSchemaAdminMenuDtoRoleMenuBatchItem =
+  components['schemas']['admin-menu.dto.roleMenuBatchItem'];
+export type ApiSchemaAdminMenuDtoRoleMenuBatchItemPartial =
+  Partial<ApiSchemaAdminMenuDtoRoleMenuBatchItem>;
+export type ApiSchemaAdminMenuDtoRoleMenuDelete =
+  components['schemas']['admin-menu.dto.roleMenuDelete'];
+export type ApiSchemaAdminMenuDtoRoleMenuDeletePartial =
+  Partial<ApiSchemaAdminMenuDtoRoleMenuDelete>;
 export type ApiSchemaAdminRbacDtoRbacGrantCreate =
   components['schemas']['admin-rbac.dto.rbacGrantCreate'];
 export type ApiSchemaAdminRbacDtoRbacGrantCreatePartial =
@@ -336,10 +375,10 @@ export type ApiSchemaAdminRoleDtoRoleSelectResItem =
   components['schemas']['admin-role.dto.roleSelectResItem'];
 export type ApiSchemaAdminRoleDtoRoleSelectResItemPartial =
   Partial<ApiSchemaAdminRoleDtoRoleSelectResItem>;
-export type ApiSchemaAdminRoleDtoRoleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_df7f5acbd9f3fd911a4e090ed804e5b1f1b23497 =
-  components['schemas']['admin-role.dto.roleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_df7f5acbd9f3fd911a4e090ed804e5b1f1b23497'];
-export type ApiSchemaAdminRoleDtoRoleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_df7f5acbd9f3fd911a4e090ed804e5b1f1b23497Partial =
-  Partial<ApiSchemaAdminRoleDtoRoleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_df7f5acbd9f3fd911a4e090ed804e5b1f1b23497>;
+export type ApiSchemaAdminRoleDtoRoleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_dfa5393c924ec7673aadfc44138eb510ba67ff8c =
+  components['schemas']['admin-role.dto.roleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_dfa5393c924ec7673aadfc44138eb510ba67ff8c'];
+export type ApiSchemaAdminRoleDtoRoleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_dfa5393c924ec7673aadfc44138eb510ba67ff8cPartial =
+  Partial<ApiSchemaAdminRoleDtoRoleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_dfa5393c924ec7673aadfc44138eb510ba67ff8c>;
 export type ApiSchemaAdminRoleDtoRoleUpdate = components['schemas']['admin-role.dto.roleUpdate'];
 export type ApiSchemaAdminRoleDtoRoleUpdatePartial = Partial<ApiSchemaAdminRoleDtoRoleUpdate>;
 export type ApiSchemaAdminRoleDtoUserRoleReplace =

@@ -1,7 +1,7 @@
 import type { TableIdentity } from 'table-identity';
 import type { IDecoratorEntityOptions } from 'vona-module-a-orm';
 
-import { $makeMetadata, $makeSchema, Api, v } from 'vona-module-a-openapiutils';
+import { $makeMetadata, $makeSchema, $resourceName, Api, v } from 'vona-module-a-openapiutils';
 import { Entity, EntityBase } from 'vona-module-a-orm';
 import { ZovaRender } from 'zova-rest-cabloy-start-admin';
 
@@ -31,7 +31,18 @@ export class EntityDepartmentMembership extends EntityBase {
   @Api.field(v.title($locale('Department')), v.required(), ZovaRender.order(1), v.tableIdentity())
   departmentId: TableIdentity;
 
-  @Api.field(v.title($locale('User')), v.required(), ZovaRender.order(2), v.tableIdentity())
+  @Api.field(
+    v.title($locale('User')),
+    v.required(),
+    ZovaRender.order(2),
+    ZovaRender.field('start-resource:formFieldResourcePicker', {
+      resource: $resourceName('admin-user:user'),
+    }),
+    ZovaRender.cell('admin-user:userName', {
+      resource: $resourceName('admin-user:user'),
+    }),
+    v.tableIdentity(),
+  )
   userId: TableIdentity;
 
   @Api.field(
@@ -41,7 +52,12 @@ export class EntityDepartmentMembership extends EntityBase {
   )
   position?: string;
 
-  @Api.field(v.title($locale('Enabled')), v.required(), ZovaRender.order(4))
+  @Api.field(
+    v.title($locale('Enabled')),
+    v.required(),
+    ZovaRender.order(4),
+    ZovaRender.cell('start-switch:switch', { color: 'success' }),
+  )
   enabled: boolean;
 
   @Api.field(ZovaRender.visible(false), v.required())
