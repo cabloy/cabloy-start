@@ -174,6 +174,7 @@ export class ServiceDepartment extends BeanBase {
     const department = await this.scope.model.department.getById(departmentId);
     if (!department) this.app.throw(404, 'Department not found');
     const memberships = await this.scope.model.departmentMembership.select({
+      columns: ['id', 'userId', 'position', 'enabled', 'primary'],
       where: { departmentId: department.id },
       include: { user: true },
       orders: [['id', 'asc']],

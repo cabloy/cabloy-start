@@ -1,6 +1,6 @@
 {
   "name": "cabloy-start",
-  "private": "true",
+  "version": "5.0.0",
   "description": "A Node.js fullstack framework",
   "keywords": [
     "cabloy",
@@ -8,15 +8,15 @@
     "vona",
     "zova"
   ],
-  "homepage": "https://github.com/cabloy/cabloy#readme",
+  "homepage": "https://github.com/cabloy/cabloy-start#readme",
   "bugs": {
-    "url": "https://github.com/cabloy/cabloy/issues"
+    "url": "https://github.com/cabloy/cabloy-start/issues"
   },
   "license": "MIT",
   "author": "zhennann",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cabloy/cabloy.git"
+    "url": "git+https://github.com/cabloy/cabloy-start.git"
   },
   "type": "module",
   "scripts": {

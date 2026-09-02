@@ -333,11 +333,10 @@ test(
       const createdResponse = await created;
       membershipId = (await createdResponse.json()).data as number | string;
       await expect(dialog).toBeHidden();
-      await expect(page.getByText('admin', { exact: true })).toBeVisible();
-      await expect(page.getByText(initialPosition, { exact: true })).toBeVisible();
 
       const membershipRow = page.getByRole('row').filter({ hasText: initialPosition });
       await expect(membershipRow).toBeVisible();
+      await expect(membershipRow.getByRole('button', { name: 'admin', exact: true })).toBeVisible();
       await expect(
         membershipRow.getByRole('button', {
           name: 'Edit Membership',
@@ -359,6 +358,8 @@ test(
 
       await membershipRow.getByRole('button', { name: 'Edit Membership', exact: true }).click();
       await expect(dialog).toBeVisible();
+      await expect(dialog.getByRole('checkbox', { name: 'Enabled', exact: true })).toBeChecked();
+      await expect(dialog.getByLabel('Department Manager', { exact: true })).toHaveCount(0);
       await dialog.getByLabel('Position').fill(updatedPosition);
       const updated = waitForApiResponse(
         page,
@@ -366,7 +367,8 @@ test(
         new RegExp(`/api/admin/department/${departmentId}/memberships/${membershipId}$`),
       );
       await dialog.getByRole('button', { name: 'Save', exact: true }).click();
-      await updated;
+      const updatedResponse = await updated;
+      expect(updatedResponse.request().postDataJSON()).not.toHaveProperty('managerMembershipId');
       await expect(dialog).toBeHidden();
       await expect(page.getByText(updatedPosition, { exact: true })).toBeVisible();
 

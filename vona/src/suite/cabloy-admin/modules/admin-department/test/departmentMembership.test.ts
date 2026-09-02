@@ -40,7 +40,11 @@ async function deleteDepartments(ids: string[]) {
   await app.bean.executor.mockCtx(async () => {
     for (const id of ids.toReversed()) {
       const department = await departmentService().view(id);
-      if (department) await departmentService().delete(id);
+      if (!department) continue;
+      if (department.managerId !== undefined) {
+        await departmentService().updateManager(id, { membershipId: null });
+      }
+      await departmentService().delete(id);
     }
   });
 }
@@ -68,6 +72,14 @@ describe('departmentMembership.test.ts', { concurrency: false }, () => {
         const apiJson = await app.bean.openapi.generateJsonOfClass(DtoClass);
         assert.ok(apiJson.components?.schemas);
       }
+
+      const apiJson = await app.bean.openapi.generateJsonOfClass(DtoDepartmentMembershipUpdate);
+      const schema = apiJson.components?.schemas?.[
+        'admin-department.dto.departmentMembershipUpdate'
+      ] as any;
+      assert.ok(schema);
+      assert.equal(schema.properties.enabled.rest.form.render, 'start-switch:formFieldSwitch');
+      assert.equal(schema.properties.managerMembershipId.rest.visible, false);
     });
   });
 

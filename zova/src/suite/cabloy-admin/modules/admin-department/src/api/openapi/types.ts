@@ -2614,6 +2614,7 @@ export interface components {
     'admin-department.dto.departmentMembershipUpdate': {
       /** @description Position */
       position?: string | undefined;
+      /** @description Enabled */
       enabled?: boolean | undefined;
       /** @description Department Manager */
       managerMembershipId?: number | string | undefined;
