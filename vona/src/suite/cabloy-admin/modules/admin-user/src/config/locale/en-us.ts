@@ -19,7 +19,7 @@ export default {
   Department: 'Department',
   DepartmentName: 'Department Name',
   Position: 'Position',
-  Primary: 'Primary',
+  Primary: 'Default Department',
   Enabled: 'Enabled',
   RoleName: 'Role Name',
   RoleTitle: 'Role Title',

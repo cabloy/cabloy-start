@@ -3,6 +3,7 @@ import assert from 'node:assert';
 import { describe, it } from 'node:test';
 import { app } from 'vona-mock';
 
+import { DtoUserDepartmentMembershipSummary } from '../src/dto/userDepartmentMembershipSummary.ts';
 import { DtoUserRoleSummary } from '../src/dto/userRoleSummary.ts';
 import { DtoUserUpdate } from '../src/dto/userUpdate.tsx';
 
@@ -67,6 +68,22 @@ describe('user.test.ts', { concurrency: false }, () => {
       const action = component.rest?.blocks?.[0]?.options?.blocks?.[0]?.options?.actions?.[0];
       assert.equal(action?.render, 'admin-role:actionReplaceUserRoles');
       assert.deepEqual(action?.options?.permission, { formScene: ['view'] });
+    });
+  });
+
+  it('dto:user:department membership summary emits switch-cell metadata', async () => {
+    await app.bean.executor.mockCtx(async () => {
+      const apiJson = await app.bean.openapi.generateJsonOfClass(
+        DtoUserDepartmentMembershipSummary,
+      );
+      const component = Object.values(apiJson.components!.schemas as any).find(item => {
+        return (item as any).properties?.enabled && (item as any).properties?.primary;
+      }) as any;
+      assert.ok(component, JSON.stringify(apiJson.components?.schemas));
+      for (const name of ['enabled', 'primary']) {
+        assert.equal(component.properties[name].rest?.table?.render, 'start-switch:switch');
+        assert.equal(component.properties[name].rest?.table?.columnProps?.color, 'success');
+      }
     });
   });
 

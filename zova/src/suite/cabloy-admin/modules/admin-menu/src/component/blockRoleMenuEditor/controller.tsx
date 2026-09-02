@@ -21,6 +21,7 @@ import { BeanControllerBase } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 
 import type { IRoleMenuEnabledBatchData, ModelRoleMenu } from '../../model/roleMenu.ts';
+import type { IRoleMenuEditorOperation, RoleMenuEditorLayers } from './state.js';
 import type { IRoleMenuTreeGroup, IRoleMenuTreeMenu, IRoleMenuTreeNode } from './tree.js';
 
 import {
@@ -30,8 +31,6 @@ import {
   normalizeRoleMenuEditorChanges,
   reconcileRoleMenuEditorLayers,
   rejectRoleMenuEditorOperation,
-  type IRoleMenuEditorOperation,
-  type RoleMenuEditorLayers,
 } from './state.js';
 import { createRoleMenuTree, getRoleMenuTreeGroupState } from './tree.js';
 

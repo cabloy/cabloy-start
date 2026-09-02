@@ -1378,17 +1378,37 @@ test(
     let rootAId: number | string | undefined;
     let rootBId: number | string | undefined;
     let childId: number | string | undefined;
+    let rootAMembershipId: number | string | undefined;
     let protectedDepartmentId: number | string | undefined;
     let protectedMembershipId: number | string | undefined;
     try {
       rootAId = await createDepartment(page, rootA);
       rootBId = await createDepartment(page, rootB);
       childId = await createDepartment(page, child, rootAId);
+      rootAMembershipId = await createMembership(page, rootAId, 1);
       protectedDepartmentId = await createDepartment(page, protectedDepartment);
       protectedMembershipId = await createMembership(page, protectedDepartmentId, 1);
       await requestApi(page, 'PUT', `/api/admin/department/${protectedDepartmentId}/manager`, {
         membershipId: protectedMembershipId,
       });
+      await requestApi(
+        page,
+        'PUT',
+        `/api/admin/department/${protectedDepartmentId}/memberships/${protectedMembershipId}/primary`,
+        { primary: true },
+      );
+
+      await page.goto('/admin/rest/resource/admin-user%3Auser/1', { waitUntil: 'load' });
+      await expect(page.getByRole('columnheader', { name: 'Enabled', exact: true })).toBeVisible();
+      await expect(
+        page.getByRole('columnheader', { name: 'Default Department', exact: true }),
+      ).toBeVisible();
+      const rootAMembershipRow = page.getByRole('row').filter({ hasText: rootA });
+      await expect(rootAMembershipRow.getByRole('checkbox').nth(0)).toBeChecked();
+      await expect(rootAMembershipRow.getByRole('checkbox').nth(1)).not.toBeChecked();
+      const protectedMembershipRow = page.getByRole('row').filter({ hasText: protectedDepartment });
+      await expect(protectedMembershipRow.getByRole('checkbox').nth(0)).toBeChecked();
+      await expect(protectedMembershipRow.getByRole('checkbox').nth(1)).toBeChecked();
 
       await page.goto(resourcePath('admin-department:department'), {
         waitUntil: 'load',
@@ -1538,6 +1558,9 @@ test(
       }
       if (childId !== undefined) {
         await deleteDepartment(page, childId);
+      }
+      if (rootAMembershipId !== undefined && rootAId !== undefined) {
+        await deleteMembership(page, rootAId, rootAMembershipId);
       }
       if (rootBId !== undefined) await deleteDepartment(page, rootBId);
       if (rootAId !== undefined) await deleteDepartment(page, rootAId);

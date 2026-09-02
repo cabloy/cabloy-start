@@ -18,7 +18,7 @@ export default {
   Department: '部门',
   DepartmentName: '部门名称',
   Position: '职位',
-  Primary: '主要成员关系',
+  Primary: '默认部门',
   Enabled: '已启用',
   RoleName: '角色名称',
   RoleTitle: '角色标题',

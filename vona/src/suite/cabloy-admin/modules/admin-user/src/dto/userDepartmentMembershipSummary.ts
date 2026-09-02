@@ -32,9 +32,17 @@ export class DtoUserDepartmentMembershipSummary {
   )
   position?: string | null;
 
-  @Api.field(v.title($locale('Enabled')), v.required())
+  @Api.field(
+    v.title($locale('Enabled')),
+    ZovaRender.cell('start-switch:switch', { color: 'success' }),
+    v.required(),
+  )
   enabled: boolean;
 
-  @Api.field(v.title($locale('Primary')), v.required())
+  @Api.field(
+    v.title($locale('Primary')),
+    ZovaRender.cell('start-switch:switch', { color: 'success' }),
+    v.required(),
+  )
   primary: boolean;
 }

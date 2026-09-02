@@ -1,14 +1,17 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import type {
+  IRoleMenuEditorOperation,
+  RoleMenuEditorLayers,
+} from '../../src/component/blockRoleMenuEditor/state.js';
+
 import {
   applyRoleMenuEditorOperation,
   commitRoleMenuEditorOperation,
   getRoleMenuEditorEnabled,
   reconcileRoleMenuEditorLayers,
   rejectRoleMenuEditorOperation,
-  type IRoleMenuEditorOperation,
-  type RoleMenuEditorLayers,
 } from '../../src/component/blockRoleMenuEditor/state.js';
 
 const menu = { ssrSiteName: 'test:admin', ssrMenuName: 'test:menu' };
