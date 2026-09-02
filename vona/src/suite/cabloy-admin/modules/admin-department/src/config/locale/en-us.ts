@@ -11,7 +11,7 @@ export default {
   DepartmentMemberships: 'Department Memberships',
   User: 'User',
   Position: 'Position',
-  Primary: 'Primary',
+  Primary: 'Default Department',
   DepartmentManager: 'Department Manager',
   DepartmentNameAlreadyInUse: 'The Department name is already in use for this parent',
   DepartmentParentInvalid: 'The requested parent Department is unavailable',
@@ -24,7 +24,8 @@ export default {
   DepartmentMembershipUnavailable: 'The requested Department membership is unavailable',
   DepartmentMembershipDepartmentDisabled:
     'The Department must be enabled before adding or enabling memberships and assigning a manager',
-  DepartmentMembershipPrimaryRequiresEnabled: 'Only an enabled membership can be primary',
+  DepartmentMembershipPrimaryRequiresEnabled:
+    "Only an enabled membership can be the user's default department",
   DepartmentManagerMembershipInvalid:
     'The Department manager must be an enabled membership of this Department',
   DepartmentMembershipManagerReplacementRequired:

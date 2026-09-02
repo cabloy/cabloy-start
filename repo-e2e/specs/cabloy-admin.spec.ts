@@ -344,7 +344,7 @@ test(
       ).toBeVisible();
       await expect(
         membershipRow.getByRole('button', {
-          name: 'Set Primary Membership',
+          name: "Set User's Default Department",
           exact: true,
         }),
       ).toBeVisible();
@@ -375,12 +375,12 @@ test(
         new RegExp(`/api/admin/department/${departmentId}/memberships/${membershipId}/primary$`),
       );
       await updatedMembershipRow
-        .getByRole('button', { name: 'Set Primary Membership', exact: true })
+        .getByRole('button', { name: "Set User's Default Department", exact: true })
         .click();
       await primarySet;
       await expect(
         updatedMembershipRow.getByRole('button', {
-          name: 'Clear Primary Membership',
+          name: "Clear User's Default Department",
           exact: true,
         }),
       ).toBeVisible();
@@ -391,12 +391,12 @@ test(
         new RegExp(`/api/admin/department/${departmentId}/memberships/${membershipId}/primary$`),
       );
       await updatedMembershipRow
-        .getByRole('button', { name: 'Clear Primary Membership', exact: true })
+        .getByRole('button', { name: "Clear User's Default Department", exact: true })
         .click();
       await primaryCleared;
       await expect(
         updatedMembershipRow.getByRole('button', {
-          name: 'Set Primary Membership',
+          name: "Set User's Default Department",
           exact: true,
         }),
       ).toBeVisible();

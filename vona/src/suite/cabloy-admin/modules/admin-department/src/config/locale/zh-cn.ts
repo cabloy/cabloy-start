@@ -11,7 +11,7 @@ export default {
   DepartmentMemberships: '部门成员关系',
   User: '用户',
   Position: '职位',
-  Primary: '主要成员关系',
+  Primary: '默认部门',
   DepartmentManager: '部门负责人',
   DepartmentNameAlreadyInUse: '该上级部门下的部门名称已被使用',
   DepartmentParentInvalid: '请求的上级部门不可用',
@@ -22,7 +22,7 @@ export default {
   DepartmentMembershipManagerReferenced: '该成员关系是部门负责人，必须显式处理',
   DepartmentMembershipUnavailable: '请求的部门成员关系不可用',
   DepartmentMembershipDepartmentDisabled: '部门必须启用后才能添加或启用成员关系，以及设置负责人',
-  DepartmentMembershipPrimaryRequiresEnabled: '只有已启用的成员关系才能设为主要成员关系',
+  DepartmentMembershipPrimaryRequiresEnabled: '只有已启用的成员关系才能设为用户的默认部门',
   DepartmentManagerMembershipInvalid: '部门负责人必须是本部门已启用的成员关系',
   DepartmentMembershipManagerReplacementRequired: '变更该成员关系前必须清除或替换部门负责人',
   DepartmentMembershipManagerTransitionInvalid:

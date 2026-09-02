@@ -17,8 +17,8 @@ export default {
   EditMembership: 'Edit Membership',
   MembershipsLoadFailed: 'Unable to load Department memberships.',
   Retry: 'Retry',
-  SetPrimary: 'Set Primary Membership',
-  ClearPrimary: 'Clear Primary Membership',
+  SetPrimary: "Set User's Default Department",
+  ClearPrimary: "Clear User's Default Department",
   DeleteMembershipConfirm: 'Delete this Department membership?',
   DeleteManagerMembershipConfirm:
     'Delete this manager membership and clear the Department manager?',
