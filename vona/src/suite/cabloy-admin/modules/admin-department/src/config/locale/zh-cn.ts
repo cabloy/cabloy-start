@@ -10,6 +10,7 @@ export default {
   DepartmentMembership: '部门成员关系',
   DepartmentMemberships: '部门成员关系',
   User: '用户',
+  UserName: '用户名称',
   Position: '职位',
   Primary: '默认部门',
   DepartmentManager: '部门负责人',

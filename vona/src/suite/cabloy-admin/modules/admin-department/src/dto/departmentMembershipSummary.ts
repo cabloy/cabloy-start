@@ -30,10 +30,10 @@ export class DtoDepartmentMembershipSummary {
   @Api.field(v.required(), v.tableIdentity())
   id: TableIdentity;
 
-  @Api.field(v.title($locale('User')), v.required(), v.tableIdentity())
+  @Api.field(ZovaRender.visible(false), v.required(), v.tableIdentity())
   userId: TableIdentity;
 
-  @Api.field(v.title($locale('User')), v.required(), v.object(DtoDepartmentUserSummary))
+  @Api.field(v.title($locale('UserName')), v.required(), v.object(DtoDepartmentUserSummary))
   user: DtoDepartmentUserSummary;
 
   @Api.field(

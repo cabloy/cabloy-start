@@ -10,6 +10,7 @@ export default {
   DepartmentMembership: 'Department Membership',
   DepartmentMemberships: 'Department Memberships',
   User: 'User',
+  UserName: 'User Name',
   Position: 'Position',
   Primary: 'Default Department',
   DepartmentManager: 'Department Manager',
