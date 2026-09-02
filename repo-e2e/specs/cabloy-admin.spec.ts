@@ -313,7 +313,9 @@ test(
       await expect(page.getByRole('link', { name: 'Edit Department', exact: true })).toHaveCount(0);
       await expect(page.getByRole('button', { name: 'Add Membership', exact: true })).toBeVisible();
       await expect(page.getByText('No data available', { exact: true })).toBeVisible();
-      await expect(page.getByTestId('department-manager')).toHaveText('No manager assigned');
+      await expect(page.getByTestId('department-manager')).toHaveText(
+        'No Department Manager Assigned',
+      );
       await expect(page.getByRole('button', { name: 'Submit', exact: true })).toHaveCount(0);
 
       await page.getByRole('button', { name: 'Add Membership', exact: true }).click();
@@ -349,7 +351,7 @@ test(
         }),
       ).toBeVisible();
       await expect(
-        membershipRow.getByRole('button', { name: 'Set Manager', exact: true }),
+        membershipRow.getByRole('button', { name: 'Set Department Manager', exact: true }),
       ).toBeVisible();
       await expect(
         membershipRow.getByRole('button', { name: 'Delete', exact: true }),
@@ -416,12 +418,14 @@ test(
         'PUT',
         new RegExp(`/api/admin/department/${departmentId}/manager$`),
       );
-      await updatedMembershipRow.getByRole('button', { name: 'Set Manager', exact: true }).click();
+      await updatedMembershipRow
+        .getByRole('button', { name: 'Set Department Manager', exact: true })
+        .click();
       await managerUpdated;
       await expect(page.getByTestId('department-manager')).toHaveText('admin');
       await expect(
         updatedMembershipRow.getByRole('button', {
-          name: 'Clear Manager',
+          name: 'Clear Department Manager',
           exact: true,
         }),
       ).toBeVisible();
@@ -433,13 +437,15 @@ test(
         new RegExp(`/api/admin/department/${departmentId}/manager$`),
       );
       await updatedMembershipRow
-        .getByRole('button', { name: 'Clear Manager', exact: true })
+        .getByRole('button', { name: 'Clear Department Manager', exact: true })
         .click();
       await managerCleared;
-      await expect(page.getByTestId('department-manager')).toHaveText('No manager assigned');
+      await expect(page.getByTestId('department-manager')).toHaveText(
+        'No Department Manager Assigned',
+      );
       await expect(
         updatedMembershipRow.getByRole('button', {
-          name: 'Set Manager',
+          name: 'Set Department Manager',
           exact: true,
         }),
       ).toBeVisible();
@@ -450,7 +456,9 @@ test(
         'PUT',
         new RegExp(`/api/admin/department/${departmentId}/manager$`),
       );
-      await updatedMembershipRow.getByRole('button', { name: 'Set Manager', exact: true }).click();
+      await updatedMembershipRow
+        .getByRole('button', { name: 'Set Department Manager', exact: true })
+        .click();
       await managerReset;
       await expect(page.getByTestId('department-manager')).toHaveText('admin');
 
@@ -467,9 +475,12 @@ test(
       await updatedMembershipRow.getByRole('button', { name: 'Delete', exact: true }).click();
       const confirmation = page.getByRole('dialog');
       await expect(
-        confirmation.getByText('Delete this manager membership and clear the Department manager?', {
-          exact: true,
-        }),
+        confirmation.getByText(
+          'Delete this Department manager membership and clear the Department manager?',
+          {
+            exact: true,
+          },
+        ),
       ).toBeVisible();
       const deleted = waitForApiResponse(
         page,
@@ -481,7 +492,9 @@ test(
       expect(deletedResponse.request().postDataJSON()).toEqual({
         managerMembershipId: null,
       });
-      await expect(page.getByTestId('department-manager')).toHaveText('No manager assigned');
+      await expect(page.getByTestId('department-manager')).toHaveText(
+        'No Department Manager Assigned',
+      );
       membershipId = undefined;
       await expect(page.getByText(updatedPosition, { exact: true })).toHaveCount(0);
       await expect(page.getByText('No data available', { exact: true })).toBeVisible();

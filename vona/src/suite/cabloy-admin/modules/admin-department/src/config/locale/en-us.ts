@@ -23,7 +23,7 @@ export default {
     'The membership is the Department manager and must be handled explicitly',
   DepartmentMembershipUnavailable: 'The requested Department membership is unavailable',
   DepartmentMembershipDepartmentDisabled:
-    'The Department must be enabled before adding or enabling memberships and assigning a manager',
+    'The Department must be enabled before adding or enabling memberships and assigning a Department manager',
   DepartmentMembershipPrimaryRequiresEnabled:
     "Only an enabled membership can be the user's default department",
   DepartmentManagerMembershipInvalid:
