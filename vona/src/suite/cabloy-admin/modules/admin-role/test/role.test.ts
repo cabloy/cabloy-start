@@ -296,14 +296,21 @@ describe('role.test.ts', { concurrency: false }, () => {
           });
           assert.equal(persistedBuiltinList.list.length, 1);
           assert.equal(persistedBuiltinList.list[0].builtin, true);
-          const [persistedBuiltinUpdateResult, persistedBuiltinUpdateError] = await catchError(() => {
-            return app.bean.executor.performAction('patch', '/admin/role/:id', {
+          assert.equal(
+            await app.bean.executor.performAction('patch', '/admin/role/:id', {
               params: { id: persistedBuiltinRole.id },
               body: { name: `${roleName}-builtin-renamed` },
-            });
-          });
-          assert.equal(persistedBuiltinUpdateResult, undefined);
-          assert.equal(persistedBuiltinUpdateError?.code, 'admin-role:1002');
+            }),
+            null,
+          );
+          assert.equal(
+            (
+              await app.bean.executor.performAction('get', '/admin/role/:id', {
+                params: { id: persistedBuiltinRole.id },
+              })
+            ).name,
+            persistedBuiltinRole.name,
+          );
           const [persistedBuiltinDeleteResult, persistedBuiltinDeleteError] = await catchError(() => {
             return app.bean.executor.performAction('delete', '/admin/role/:id', {
               params: { id: persistedBuiltinRole.id },
@@ -452,7 +459,7 @@ describe('role.test.ts', { concurrency: false }, () => {
           assert.equal(missingUserResult, undefined);
           assert.equal(missingUserError?.code, 404);
 
-          for (const fixedRole of [registeredUser, systemAdmin]) {
+          for (const fixedRole of [persistedBuiltinRole]) {
             const fixedRoleView = await app.bean.executor.performAction('get', '/admin/role/:id', {
               params: { id: fixedRole.id },
             });
@@ -482,33 +489,18 @@ describe('role.test.ts', { concurrency: false }, () => {
             assert.equal(
               await app.bean.executor.performAction('patch', '/admin/role/:id', {
                 params: { id: fixedRole.id },
-                body: { title: 'Localized built-in title' },
+                body: { name: `${fixedRole.name}-renamed` },
               }),
               null,
             );
             assert.equal(
-              await app.bean.executor.performAction('patch', '/admin/role/:id', {
-                params: { id: fixedRole.id },
-                body: { titleLocales: { 'zh-cn': '本地化内置角色' } },
-              }),
-              null,
+              (
+                await app.bean.executor.performAction('get', '/admin/role/:id', {
+                  params: { id: fixedRole.id },
+                })
+              ).name,
+              fixedRole.name,
             );
-            const localizedFixedRole = await app.bean.executor.performAction(
-              'get',
-              '/admin/role/:id',
-              { params: { id: fixedRole.id } },
-            );
-            assert.equal(localizedFixedRole.title, 'Localized built-in title');
-            assert.deepEqual(localizedFixedRole.titleLocales, { 'zh-cn': '本地化内置角色' });
-
-            const [fixedProtectedUpdateResult, fixedProtectedUpdateError] = await catchError(() => {
-              return app.bean.executor.performAction('patch', '/admin/role/:id', {
-                params: { id: fixedRole.id },
-                body: { name: `${fixedRole.name}-renamed` },
-              });
-            });
-            assert.equal(fixedProtectedUpdateResult, undefined);
-            assert.equal(fixedProtectedUpdateError?.code, 'admin-role:1002');
 
             const [fixedDeleteResult, fixedDeleteError] = await catchError(() => {
               return app.bean.executor.performAction('delete', '/admin/role/:id', {

@@ -94,6 +94,13 @@ export class ServiceRole extends BeanBase {
     if (!user) this.app.throw(404, 'User not found');
 
     const requestedRoleIds = this.uniqueRoleIds(command.roleIds);
+    const systemAdminRole = await this.getLockedSystemAdminRole();
+    const systemAdminRoleId = String(systemAdminRole.id);
+    const requestedRoleIdSet = new Set(requestedRoleIds.map(String));
+    if (requestedRoleIdSet.has(systemAdminRoleId)) {
+      this.scope.error.BuiltinRoleProtected.throw();
+    }
+
     const memberships = await this.$scope.homeUser.model.roleUser.select({
       where: { userId: user.id },
     });
@@ -106,26 +113,19 @@ export class ServiceRole extends BeanBase {
     if (requestedRoles.size !== requestedRoleIds.length) {
       this.scope.error.InvalidRoleMembership.throw();
     }
-    const existingRoles = await this.lockRoles(memberships.map(item => item.roleId));
-    const rolesById = new Map([...existingRoles, ...requestedRoles]);
+    await this.lockRoles(memberships.map(item => item.roleId));
 
-    const requestedRoleIdSet = new Set(requestedRoleIds.map(String));
     const obsoleteMembershipIds = memberships
       .filter(item => {
-        const role = rolesById.get(String(item.roleId));
         return (
-          !role ||
-          (!this.isProtectedMembershipRole(role.name) &&
-            !requestedRoleIdSet.has(String(item.roleId)))
+          String(item.roleId) !== systemAdminRoleId &&
+          !requestedRoleIdSet.has(String(item.roleId))
         );
       })
       .map(item => item.id);
     const currentOrdinaryRoleIds = new Set(
       memberships
-        .filter(item => {
-          const role = rolesById.get(String(item.roleId));
-          return role && !this.isProtectedMembershipRole(role.name);
-        })
+        .filter(item => String(item.roleId) !== systemAdminRoleId)
         .map(item => String(item.roleId)),
     );
     const missingRoleIds = requestedRoleIds.filter(id => !currentOrdinaryRoleIds.has(String(id)));
@@ -157,6 +157,15 @@ export class ServiceRole extends BeanBase {
       : params?.where;
     const result = await this.$scope.homeUser.model.role.selectAndCount({ ...params, where });
     return { ...result, list: result.list.map(toRoleItem) as DtoRoleSelectRes['list'] };
+  }
+
+  private async getLockedSystemAdminRole(): Promise<EntityRole> {
+    const role = await this.$scope.homeUser.model.role.getForUpdate({ name: 'systemAdmin' });
+    if (!role) {
+      this.scope.error.ProtectedCommandInvalid.throw();
+      throw new Error('system administrator role is unavailable');
+    }
+    return role;
   }
 
   private isProtectedMembershipRole(name: string): boolean {
