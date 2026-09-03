@@ -1,0 +1,83 @@
+name: Bug report
+description: Report a reproducible problem in Cabloy Start.
+title: '[Bug]: '
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping improve Cabloy Start. Do not include vulnerability details, credentials, tokens, personal data, or sensitive system information in this public issue.
+  - type: checkboxes
+    id: searched-issues
+    attributes:
+      label: Existing issues
+      description: Check whether this problem has already been reported.
+      options:
+        - label: I searched existing issues and did not find a duplicate.
+          required: true
+  - type: dropdown
+    id: affected-area
+    attributes:
+      label: Affected area
+      options:
+        - Vona backend
+        - Zova frontend
+        - Start Admin
+        - Start Web
+        - Vona–Zova integration or generated contracts
+        - CLI or tooling
+        - Documentation
+        - Other
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual behavior
+      description: Describe what happened.
+      placeholder: Explain the observed result and any error message.
+    validations:
+      required: true
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+      description: Describe what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Provide a minimal reproduction or exact steps to reproduce the problem.
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include the Cabloy Start revision or version, OS, Node.js, pnpm, database/client and version, plus browser/runtime details when relevant.
+      placeholder: |
+        Cabloy Start revision/version:
+        OS:
+        Node.js:
+        pnpm:
+        Database/client and version:
+        Browser/runtime:
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Sanitized logs or screenshots
+      description: Optional. Remove credentials, tokens, personal data, and sensitive system information.
+  - type: checkboxes
+    id: public-content-safety
+    attributes:
+      label: Public-content safety
+      options:
+        - label: This is not a vulnerability disclosure and does not include credentials, tokens, personal data, or sensitive system information.
+          required: true

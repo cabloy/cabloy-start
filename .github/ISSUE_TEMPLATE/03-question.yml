@@ -1,0 +1,36 @@
+name: Question
+description: Ask a public question about Cabloy Start.
+title: '[Question]: '
+labels:
+  - question
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for public questions. Do not report a suspected vulnerability here: Cabloy Start does not currently publish a private vulnerability-reporting channel. Do not include vulnerability details, credentials, tokens, personal data, or sensitive system information.
+  - type: textarea
+    id: question
+    attributes:
+      label: Question and intended outcome
+      description: What do you need to understand or accomplish?
+    validations:
+      required: true
+  - type: textarea
+    id: attempted
+    attributes:
+      label: What have you tried?
+      description: Include relevant documentation, source, or issue links and the result so far.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Optional. Include Cabloy Start revision/version, OS, Node.js, pnpm, database/client and version, or browser/runtime details when they affect the answer.
+  - type: checkboxes
+    id: public-content-safety
+    attributes:
+      label: Public-content safety
+      options:
+        - label: This question does not include vulnerability details, credentials, tokens, personal data, or sensitive system information.
+          required: true

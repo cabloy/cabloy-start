@@ -1,0 +1,60 @@
+name: Feature request
+description: Propose an improvement for Cabloy Start.
+title: '[Feature]: '
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for sharing an idea. Do not include vulnerability details, credentials, tokens, personal data, or sensitive system information in this public issue.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: What problem would this improvement solve, and for whom?
+    validations:
+      required: true
+  - type: textarea
+    id: desired-outcome
+    attributes:
+      label: Desired outcome
+      description: Describe the behavior or result you would like to see.
+    validations:
+      required: true
+  - type: dropdown
+    id: affected-area
+    attributes:
+      label: Affected area
+      multiple: true
+      options:
+        - Vona backend
+        - Zova frontend
+        - Start Admin
+        - Start Web
+        - Vona–Zova integration or generated contracts
+        - CLI or tooling
+        - Documentation
+        - Other
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives or current workaround
+      description: Optional. Describe alternatives or workarounds you considered.
+  - type: textarea
+    id: implementation-ideas
+    attributes:
+      label: Implementation ideas or references
+      description: Optional. Include links or technical ideas that may help discussion.
+  - type: textarea
+    id: documentation-impact
+    attributes:
+      label: Documentation impact
+      description: Optional. Identify documentation that may need to change.
+  - type: checkboxes
+    id: public-content-safety
+    attributes:
+      label: Public-content safety
+      options:
+        - label: This request does not include vulnerability details, credentials, tokens, personal data, or sensitive system information.
+          required: true
