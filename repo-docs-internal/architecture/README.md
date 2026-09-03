@@ -35,3 +35,4 @@ Before adding or updating a note, ask:
 
 - [Backend Resource Field Update Workflow](./backend-resource-field-workflow.md)
 - [Vona Cross-Model Query-Cache Dependencies](./vona-cross-model-query-cache-dependencies.md)
+- [Vona Queue Retry and Durable Outbox Recovery](./vona-queue-retry-and-durable-outbox-recovery.md)
