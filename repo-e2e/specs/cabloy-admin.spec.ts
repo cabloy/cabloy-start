@@ -1399,6 +1399,12 @@ test(
       );
 
       await page.goto('/admin/rest/resource/admin-user%3Auser/1', { waitUntil: 'load' });
+      await expect(
+        page.getByRole('columnheader', { name: 'Department', exact: true }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole('columnheader', { name: 'Department Name', exact: true }),
+      ).toHaveCount(0);
       await expect(page.getByRole('columnheader', { name: 'Enabled', exact: true })).toBeVisible();
       await expect(
         page.getByRole('columnheader', { name: 'Default Department', exact: true }),
@@ -1409,6 +1415,16 @@ test(
       const protectedMembershipRow = page.getByRole('row').filter({ hasText: protectedDepartment });
       await expect(protectedMembershipRow.getByRole('checkbox').nth(0)).toBeChecked();
       await expect(protectedMembershipRow.getByRole('checkbox').nth(1)).toBeChecked();
+      const departmentLink = rootAMembershipRow.getByRole('link', { name: rootA, exact: true });
+      await expect(departmentLink).toHaveAttribute(
+        'href',
+        new RegExp(`/admin/rest/resource/admin-department%3Adepartment/${rootAId}/?$`),
+      );
+      await departmentLink.click();
+      await expect(page).toHaveURL(
+        new RegExp(`/admin/rest/resource/admin-department%3Adepartment/${rootAId}`),
+      );
+      await expect(page.getByLabel('Department Name', { exact: true })).toHaveValue(rootA);
 
       await page.goto(resourcePath('admin-department:department'), {
         waitUntil: 'load',

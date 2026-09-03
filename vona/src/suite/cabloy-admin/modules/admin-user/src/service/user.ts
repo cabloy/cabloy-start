@@ -47,6 +47,7 @@ export class ServiceUser extends BeanBase {
       this.app.scope('admin-department').model.departmentMembership.select({
         where: { userId: user.id },
         orders: [['id', 'asc']],
+        include: { department: true },
       }),
     ]);
     const roleIds = roles.map(item => item.roleId);
@@ -67,22 +68,14 @@ export class ServiceUser extends BeanBase {
       ];
     });
 
-    const departmentIds = memberships.map(item => item.departmentId);
-    const departments = departmentIds.length
-      ? await this.app.scope('admin-department').model.department.mget(departmentIds)
-      : [];
-    const departmentsById = new Map(
-      departments.map(department => [String(department.id), department]),
-    );
     const membershipSummaries = memberships.flatMap(
       (membership): DtoUserDepartmentMembershipSummary[] => {
-        const department = departmentsById.get(String(membership.departmentId));
-        if (!department) return [];
+        if (!membership.department) return [];
         return [
           {
             id: membership.id,
-            departmentId: department.id,
-            departmentName: department.name,
+            departmentId: membership.departmentId,
+            department: membership.department,
             position: membership.position ?? null,
             enabled: membership.enabled,
             primary: membership.primary,

@@ -84,7 +84,79 @@ describe('user.test.ts', { concurrency: false }, () => {
         assert.equal(component.properties[name].rest?.table?.render, 'start-switch:switch');
         assert.equal(component.properties[name].rest?.table?.columnProps?.color, 'success');
       }
+      assert.equal(
+        component.properties.departmentId.rest?.table?.render,
+        'admin-department:departmentName',
+      );
+      assert.equal(
+        component.properties.departmentId.rest?.table?.columnProps?.resource,
+        'admin-department:department',
+      );
+      const departmentRef = component.properties.department.$ref as string | undefined;
+      assert.ok(departmentRef, JSON.stringify(component.properties.department));
+      const departmentSchemaName = departmentRef.slice('#/components/schemas/'.length);
+      const department = apiJson.components?.schemas?.[departmentSchemaName] as any;
+      assert.ok(department, departmentSchemaName);
+      assert.equal(department.rest?.visible, false);
+      assert.deepEqual(Object.keys(department.properties).sort(), ['id', 'name']);
+      assert.equal(component.properties.departmentName, undefined);
     });
+  });
+
+  it('action:user:view resolves department membership relation', async () => {
+    let userId: string | undefined;
+    let departmentId: string | undefined;
+    let membershipId: string | undefined;
+    const departmentName = `department-user-view-${crypto.randomUUID()}`;
+    try {
+      await app.bean.executor.mockCtx(async () => {
+        const user = await app.bean.user.register({
+          name: `admin-user-department-${crypto.randomUUID()}`,
+        });
+        userId = String(user.id);
+        const departmentService = app.scope('admin-department').service.department;
+        const department = await departmentService.create({ name: departmentName, parentId: null });
+        departmentId = String(department.id);
+        const membership = await departmentService.createMembership(department.id, {
+          userId: user.id,
+          position: 'Engineer',
+        });
+        membershipId = String(membership.id);
+
+        await app.bean.passport.signinMock();
+        try {
+          const view = await app.bean.executor.performAction('get', '/admin/user/:id', {
+            params: { id: user.id },
+          });
+          const membershipSummary = view.departmentMemberships.find(
+            item => String(item.id) === String(membership.id),
+          );
+          assert.deepEqual(membershipSummary, {
+            id: membership.id,
+            departmentId: department.id,
+            department: { id: department.id, name: departmentName },
+            position: 'Engineer',
+            enabled: true,
+            primary: false,
+          });
+          assert.equal('departmentName' in membershipSummary, false);
+        } finally {
+          await app.bean.passport.signout();
+        }
+      });
+    } finally {
+      await app.bean.executor.mockCtx(async () => {
+        const departmentScope = app.scope('admin-department');
+        if (membershipId)
+          await departmentScope.model.departmentMembership.deleteBulk([membershipId]);
+        if (departmentId) await departmentScope.service.department.delete(departmentId);
+        if (userId) {
+          const homeUser = app.scope('home-user');
+          await homeUser.model.roleUser.delete({ userId });
+          await app.bean.user.removeById(userId);
+        }
+      });
+    }
   });
 
   it('action:user:operationalProfileAndActivationCommands', async () => {

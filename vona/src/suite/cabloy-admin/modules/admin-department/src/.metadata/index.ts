@@ -120,7 +120,8 @@ declare module 'vona-module-admin-department' {
       }
 export interface IModelOptionsDepartmentMembership {
         relations: {
-          user: IModelRelationBelongsTo<'admin-department:departmentMembership', 'home-user:user', false, 'id'|'name'|'avatar'>;
+          department: IModelRelationBelongsTo<'admin-department:departmentMembership', 'admin-department:department', false, 'id'|'name'>;
+user: IModelRelationBelongsTo<'admin-department:departmentMembership', 'home-user:user', false, 'id'|'name'|'avatar'>;
         };
       }
   export interface ModelDepartment {

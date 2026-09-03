@@ -9,6 +9,14 @@ export interface IModelOptionsDepartmentMembership extends IDecoratorModelOption
 @Model<IModelOptionsDepartmentMembership>({
   entity: EntityDepartmentMembership,
   relations: {
+    department: $relation.belongsTo(
+      'admin-department:departmentMembership',
+      'admin-department:department',
+      'departmentId',
+      {
+        columns: ['id', 'name'],
+      },
+    ),
     user: $relation.belongsTo('admin-department:departmentMembership', 'home-user:user', 'userId', {
       columns: ['id', 'name', 'avatar'],
     }),

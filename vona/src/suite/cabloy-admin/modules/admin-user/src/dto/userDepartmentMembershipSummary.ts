@@ -1,11 +1,12 @@
 import type { TableIdentity } from 'table-identity';
 import type { IDecoratorDtoOptions } from 'vona-module-a-web';
 
-import { $makeSchema, Api, v } from 'vona-module-a-openapiutils';
+import { $makeSchema, $resourceName, Api, v } from 'vona-module-a-openapiutils';
 import { Dto } from 'vona-module-a-web';
 import { ZovaRender } from 'zova-rest-cabloy-start-admin';
 
 import { $locale } from '../.metadata/locales.ts';
+import { DtoUserDepartmentSummary } from './userDepartmentSummary.ts';
 
 export interface IDtoOptionsUserDepartmentMembershipSummary extends IDecoratorDtoOptions {}
 
@@ -17,14 +18,21 @@ export interface IDtoOptionsUserDepartmentMembershipSummary extends IDecoratorDt
   ],
 })
 export class DtoUserDepartmentMembershipSummary {
-  @Api.field(v.required(), v.tableIdentity())
+  @Api.field(ZovaRender.visible(false), v.required(), v.tableIdentity())
   id: TableIdentity;
 
-  @Api.field(v.title($locale('Department')), v.required(), v.tableIdentity())
+  @Api.field(
+    v.title($locale('Department')),
+    ZovaRender.cell('admin-department:departmentName', {
+      resource: $resourceName('admin-department:department'),
+    }),
+    v.required(),
+    v.tableIdentity(),
+  )
   departmentId: TableIdentity;
 
-  @Api.field(v.title($locale('DepartmentName')), v.required())
-  departmentName: string;
+  @Api.field(v.required(), v.lazy(ZovaRender.visible(false), DtoUserDepartmentSummary))
+  department: DtoUserDepartmentSummary;
 
   @Api.field(
     v.title($locale('Position')),
