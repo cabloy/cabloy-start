@@ -43,17 +43,11 @@ export class TableCellDepartmentName extends BeanBase implements ITableCellRende
     const relation = this._getRelation(options, renderContext);
     const name = relation?.name ?? next();
     const id = relation?.id ?? cellContext.row.id;
-    const href = $host.$router.getPagePath('/rest/resource/:resource/:id/:formScene?', {
+    const pagePath = $host.$router.getPagePath('/rest/resource/:resource/:id/:formScene?', {
       params: { resource: 'admin-department:department', id: id.toString() },
     });
-    const hrefWithSite = this.sys.util.getAbsoluteUrlFromPagePath(href, true);
     return (
-      <VBtn
-        class={options.class}
-        color={options.color}
-        href={hrefWithSite}
-        variant={options.variant}
-      >
+      <VBtn class={options.class} color={options.color} to={pagePath} variant={options.variant}>
         {name}
       </VBtn>
     );
