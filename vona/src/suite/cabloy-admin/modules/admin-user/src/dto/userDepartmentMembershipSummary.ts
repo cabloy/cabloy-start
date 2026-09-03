@@ -1,12 +1,12 @@
-import type { TableIdentity } from 'table-identity';
 import type { IDecoratorDtoOptions } from 'vona-module-a-web';
 
-import { $makeSchema, $resourceName, Api, v } from 'vona-module-a-openapiutils';
+import { $makeMetadata, $resourceName, v } from 'vona-module-a-openapiutils';
+import { $Dto } from 'vona-module-a-orm';
 import { Dto } from 'vona-module-a-web';
+import { ModelDepartmentMembership } from 'vona-module-admin-department';
 import { ZovaRender } from 'zova-rest-cabloy-start-admin';
 
 import { $locale } from '../.metadata/locales.ts';
-import { DtoUserDepartmentSummary } from './userDepartmentSummary.ts';
 
 export interface IDtoOptionsUserDepartmentMembershipSummary extends IDecoratorDtoOptions {}
 
@@ -16,41 +16,21 @@ export interface IDtoOptionsUserDepartmentMembershipSummary extends IDecoratorDt
       blocks: [ZovaRender.block('start-details:blockTable')],
     }),
   ],
+  fields: {
+    id: $makeMetadata(ZovaRender.visible(false)),
+    departmentId: $makeMetadata(
+      ZovaRender.cell('admin-department:departmentName', {
+        resource: $resourceName('admin-department:department'),
+      }),
+    ),
+    primary: $makeMetadata(
+      v.title($locale('Primary')),
+      ZovaRender.visible(true),
+      ZovaRender.cell('start-switch:switch', { color: 'success' }),
+    ),
+  },
 })
-export class DtoUserDepartmentMembershipSummary {
-  @Api.field(ZovaRender.visible(false), v.required(), v.tableIdentity())
-  id: TableIdentity;
-
-  @Api.field(
-    v.title($locale('Department')),
-    ZovaRender.cell('admin-department:departmentName', {
-      resource: $resourceName('admin-department:department'),
-    }),
-    v.required(),
-    v.tableIdentity(),
-  )
-  departmentId: TableIdentity;
-
-  @Api.field(v.required(), v.lazy(ZovaRender.visible(false), DtoUserDepartmentSummary))
-  department: DtoUserDepartmentSummary;
-
-  @Api.field(
-    v.title($locale('Position')),
-    $makeSchema(v.optional(), v.nullable(), v.max(100), String),
-  )
-  position?: string | null;
-
-  @Api.field(
-    v.title($locale('Enabled')),
-    ZovaRender.cell('start-switch:switch', { color: 'success' }),
-    v.required(),
-  )
-  enabled: boolean;
-
-  @Api.field(
-    v.title($locale('Primary')),
-    ZovaRender.cell('start-switch:switch', { color: 'success' }),
-    v.required(),
-  )
-  primary: boolean;
-}
+export class DtoUserDepartmentMembershipSummary extends $Dto.get(() => ModelDepartmentMembership, {
+  columns: ['id', 'departmentId', 'position', 'enabled', 'primary'],
+  include: { department: true },
+}) {}

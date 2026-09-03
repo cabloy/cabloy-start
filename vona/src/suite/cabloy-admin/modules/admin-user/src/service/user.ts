@@ -45,6 +45,7 @@ export class ServiceUser extends BeanBase {
     const [roles, memberships] = await Promise.all([
       this.$scope.homeUser.model.roleUser.select({ where: { userId: user.id } }),
       this.app.scope('admin-department').model.departmentMembership.select({
+        columns: ['id', 'departmentId', 'position', 'enabled', 'primary'],
         where: { userId: user.id },
         orders: [['id', 'asc']],
         include: { department: true },

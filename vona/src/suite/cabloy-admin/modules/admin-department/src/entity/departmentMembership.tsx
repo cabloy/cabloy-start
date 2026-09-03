@@ -48,9 +48,9 @@ export class EntityDepartmentMembership extends EntityBase {
   @Api.field(
     v.title($locale('Position')),
     ZovaRender.order(3),
-    $makeSchema(v.optional(), v.max(100), String),
+    $makeSchema(v.optional(), v.nullable(), v.max(100), String),
   )
-  position?: string;
+  position?: string | null;
 
   @Api.field(
     v.title($locale('Enabled')),

@@ -3167,20 +3167,22 @@ export interface components {
       systemAdmin: boolean;
     };
     'admin-user.dto.userDepartmentMembershipSummary': {
+      /** @description ID */
       id: number | string;
       /** @description Department */
       departmentId: number | string;
-      department: components['schemas']['admin-user.dto.userDepartmentSummary_626802c24df1498cec99aab0854fedf90c9b6dd3_1816ff740d81c738ec055c7038bbd93beb9405a7_a253326c1f29096fd97a2376dada0ad62c5a410a'];
       /** @description Position */
       position?: string | undefined;
       /** @description Enabled */
       enabled: boolean;
       /** @description Default Department */
       primary: boolean;
-    };
-    'admin-user.dto.userDepartmentSummary_626802c24df1498cec99aab0854fedf90c9b6dd3_1816ff740d81c738ec055c7038bbd93beb9405a7_a253326c1f29096fd97a2376dada0ad62c5a410a': {
-      id: number | string;
-      name: string;
+      department?: {
+        /** @description ID */
+        id: number | string;
+        /** @description Department Name */
+        name: string;
+      };
     };
     'admin-user.dto.userUpdate': {
       /** @description User Name */

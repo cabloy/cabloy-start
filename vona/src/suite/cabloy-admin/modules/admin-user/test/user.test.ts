@@ -92,22 +92,23 @@ describe('user.test.ts', { concurrency: false }, () => {
         component.properties.departmentId.rest?.table?.columnProps?.resource,
         'admin-department:department',
       );
-      const departmentRef = component.properties.department.$ref as string | undefined;
-      assert.ok(departmentRef, JSON.stringify(component.properties.department));
-      const departmentSchemaName = departmentRef.slice('#/components/schemas/'.length);
-      const department = apiJson.components?.schemas?.[departmentSchemaName] as any;
-      assert.ok(department, departmentSchemaName);
+      const department = component.properties.department;
+      assert.ok(department, JSON.stringify(component.properties));
+      assert.equal(department.$ref, undefined);
       assert.equal(department.rest?.visible, false);
+      assert.equal(component.required?.includes('department'), false);
       assert.deepEqual(Object.keys(department.properties).sort(), ['id', 'name']);
+      assert.deepEqual(component.properties.position.type, ['string', 'null']);
       assert.equal(component.properties.departmentName, undefined);
     });
   });
 
   it('action:user:view resolves department membership relation', async () => {
     let userId: string | undefined;
-    let departmentId: string | undefined;
-    let membershipId: string | undefined;
+    const departmentIds: string[] = [];
+    const membershipIds: string[] = [];
     const departmentName = `department-user-view-${crypto.randomUUID()}`;
+    const departmentWithoutPositionName = `department-user-view-${crypto.randomUUID()}`;
     try {
       await app.bean.executor.mockCtx(async () => {
         const user = await app.bean.user.register({
@@ -116,12 +117,22 @@ describe('user.test.ts', { concurrency: false }, () => {
         userId = String(user.id);
         const departmentService = app.scope('admin-department').service.department;
         const department = await departmentService.create({ name: departmentName, parentId: null });
-        departmentId = String(department.id);
+        departmentIds.push(String(department.id));
+        const departmentWithoutPosition = await departmentService.create({
+          name: departmentWithoutPositionName,
+          parentId: null,
+        });
+        departmentIds.push(String(departmentWithoutPosition.id));
         const membership = await departmentService.createMembership(department.id, {
           userId: user.id,
           position: 'Engineer',
         });
-        membershipId = String(membership.id);
+        membershipIds.push(String(membership.id));
+        const membershipWithoutPosition = await departmentService.createMembership(
+          departmentWithoutPosition.id,
+          { userId: user.id },
+        );
+        membershipIds.push(String(membershipWithoutPosition.id));
 
         await app.bean.passport.signinMock();
         try {
@@ -139,6 +150,20 @@ describe('user.test.ts', { concurrency: false }, () => {
             enabled: true,
             primary: false,
           });
+          const membershipWithoutPositionSummary = view.departmentMemberships.find(
+            item => String(item.id) === String(membershipWithoutPosition.id),
+          );
+          assert.deepEqual(membershipWithoutPositionSummary, {
+            id: membershipWithoutPosition.id,
+            departmentId: departmentWithoutPosition.id,
+            department: {
+              id: departmentWithoutPosition.id,
+              name: departmentWithoutPositionName,
+            },
+            position: null,
+            enabled: true,
+            primary: false,
+          });
           assert.equal('departmentName' in membershipSummary, false);
         } finally {
           await app.bean.passport.signout();
@@ -147,9 +172,12 @@ describe('user.test.ts', { concurrency: false }, () => {
     } finally {
       await app.bean.executor.mockCtx(async () => {
         const departmentScope = app.scope('admin-department');
-        if (membershipId)
-          await departmentScope.model.departmentMembership.deleteBulk([membershipId]);
-        if (departmentId) await departmentScope.service.department.delete(departmentId);
+        if (membershipIds.length) {
+          await departmentScope.model.departmentMembership.deleteBulk(membershipIds);
+        }
+        for (const departmentId of departmentIds.reverse()) {
+          await departmentScope.service.department.delete(departmentId);
+        }
         if (userId) {
           const homeUser = app.scope('home-user');
           await homeUser.model.roleUser.delete({ userId });
