@@ -1,19 +1,14 @@
-import type { IRbacActionDescriptor, IRbacPolicyRequest } from 'vona-module-a-rbac';
+import type { IRbacPolicyRequest } from 'vona-module-a-rbac';
 
 import assert from 'node:assert';
-import { describe, it, mock } from 'node:test';
+import { describe, it } from 'node:test';
 import { app } from 'vona-mock';
 
-const actionKey = 'test:controller#select';
-const action: IRbacActionDescriptor = {
-  actionKey,
-  controllerBeanFullName: 'test:controller',
-  action: 'select',
-  route: {} as any,
-  options: { dataScope: true },
-};
+const actionKey = 'training-student.controller.student#select';
 
 function createRequest(): IRbacPolicyRequest {
+  const action = app.bean.rbacCatalog.getCatalog().get(actionKey);
+  assert.ok(action);
   return { action, policyActionKey: actionKey };
 }
 
@@ -39,11 +34,6 @@ describe('rbacScope.test.ts', { concurrency: false }, () => {
     let customDepartmentId: string | undefined;
     let ownDepartmentId: string | undefined;
     let descendantDepartmentId: string | undefined;
-    const getCatalog = mock.method(
-      app.bean.rbacCatalog,
-      'getCatalog',
-      () => new Map([[actionKey, action]]),
-    );
     try {
       await app.bean.executor.mockCtx(async () => {
         await app.bean.passport.signinMock();
@@ -182,34 +172,30 @@ describe('rbacScope.test.ts', { concurrency: false }, () => {
         }
       });
     } finally {
-      try {
-        await app.bean.executor.mockCtx(async () => {
-          const adminRbac = app.scope('admin-rbac');
-          for (const grantDepartmentId of grantDepartmentIds.toReversed()) {
-            await adminRbac.model.rbacGrantDepartment.deleteById(grantDepartmentId);
-          }
-          for (const grantId of grantIds.toReversed()) {
-            await adminRbac.model.rbacGrant.deleteById(grantId);
-          }
-          if (membershipIds.length) {
-            await app.scope('admin-department').model.departmentMembership.delete({
-              id: { _in_: membershipIds },
-            });
-          }
-          for (const departmentId of departmentIds.toReversed()) {
-            await app.scope('admin-department').model.department.deleteById(departmentId);
-          }
-          if (delegatedUserId) {
-            await app.scope('home-user').model.roleUser.delete({ userId: delegatedUserId });
-          }
-          if (roleId) await app.scope('home-user').model.role.deleteById(roleId);
-          for (const userId of userIds.toReversed()) {
-            await app.bean.user.removeById(userId);
-          }
-        });
-      } finally {
-        getCatalog.mock.restore();
-      }
+      await app.bean.executor.mockCtx(async () => {
+        const adminRbac = app.scope('admin-rbac');
+        for (const grantDepartmentId of grantDepartmentIds.toReversed()) {
+          await adminRbac.model.rbacGrantDepartment.deleteById(grantDepartmentId);
+        }
+        for (const grantId of grantIds.toReversed()) {
+          await adminRbac.model.rbacGrant.deleteById(grantId);
+        }
+        if (membershipIds.length) {
+          await app.scope('admin-department').model.departmentMembership.delete({
+            id: { _in_: membershipIds },
+          });
+        }
+        for (const departmentId of departmentIds.toReversed()) {
+          await app.scope('admin-department').model.department.deleteById(departmentId);
+        }
+        if (delegatedUserId) {
+          await app.scope('home-user').model.roleUser.delete({ userId: delegatedUserId });
+        }
+        if (roleId) await app.scope('home-user').model.role.deleteById(roleId);
+        for (const userId of userIds.toReversed()) {
+          await app.bean.user.removeById(userId);
+        }
+      });
     }
   });
 });

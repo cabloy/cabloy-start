@@ -1,65 +1,18 @@
 import { catchError } from '@cabloy/utils';
 import assert from 'node:assert';
-import { describe, it, mock } from 'node:test';
+import { describe, it } from 'node:test';
 import { app } from 'vona-mock';
-import { $locale as $localeRecord } from 'vona-module-training-record';
 
 const ssrSiteName = 'start-siteadmin:admin';
 const otherSsrSiteName = 'start-siteweb:web';
-const dynamicMenuName = 'test:roleMenu#dynamic';
-const publicMenuName = 'test:roleMenu#public';
-const groupName = 'test:roleMenuGroup';
-const siteTitle = 'Admin';
-
-function createSsrMenuOnions() {
-  return [
-    {
-      name: 'test:roleMenu',
-      beanOptions: {
-        options: {
-          enable: true,
-          site: ssrSiteName,
-          items: {
-            dynamic: {
-              roles: [],
-              title: $localeRecord('RecordCreate'),
-              group: groupName,
-              link: '/private',
-              meta: { query: { api: 'private' } },
-            },
-            public: { title: 'Public title', roles: undefined },
-          },
-        },
-      },
-    },
-  ] as any;
-}
-
-function createSsrMenuGroupOnions() {
-  return [
-    {
-      name: groupName,
-      beanOptions: {
-        options: {
-          enable: true,
-          site: ssrSiteName,
-          item: { title: 'Menu group' },
-        },
-      },
-    },
-  ] as any;
-}
+const configurableMenuName = 'training-record:record#record';
+const publicMenuName = 'start-siteweb:home';
+const groupName = 'start-siteadmin:management';
 
 describe('roleMenuProjection.test.ts', { concurrency: false }, () => {
   it('projects only safe catalog data and target-role associations', async () => {
     const roleName = `admin-menu-role-menu-projection-${crypto.randomUUID()}`;
     let roleId: string | undefined;
-    const getMenus = mock.method(app.bean.onion.ssrMenu, 'getOnionsEnabled', createSsrMenuOnions);
-    const getGroups = mock.method(
-      app.bean.onion.ssrMenuGroup,
-      'getOnionsEnabled',
-      createSsrMenuGroupOnions,
-    );
     try {
       await app.bean.executor.mockCtx(
         async () => {
@@ -72,36 +25,43 @@ describe('roleMenuProjection.test.ts', { concurrency: false }, () => {
           await app.scope('admin-menu').service.roleMenu.create({
             roleId,
             ssrSiteName,
-            ssrMenuName: dynamicMenuName,
+            ssrMenuName: configurableMenuName,
           });
 
           const projection = app.scope('admin-menu').service.roleMenuProjection;
           const catalog = await projection.catalog();
           assert.match(catalog.revision, /^\d+$/);
+          const site = catalog.list.find(item => item.ssrSiteName === ssrSiteName);
+          assert.ok(site);
+          const group = site.groups.find(item => item.ssrMenuGroupName === groupName);
+          assert.deepEqual(group, {
+            ssrMenuGroupName: groupName,
+            onionName: groupName,
+            title: 'Management',
+            order: 1001,
+          });
+          const menu = site.menus.find(item => item.ssrMenuName === configurableMenuName);
+          assert.deepEqual(menu, {
+            ssrMenuName: configurableMenuName,
+            onionName: 'training-record:record',
+            configurable: true,
+            title: 'Student Training Record',
+            order: 1002,
+            group: groupName,
+          });
+          const publicSite = catalog.list.find(item => item.ssrSiteName === otherSsrSiteName);
+          assert.ok(publicSite);
           assert.deepEqual(
-            catalog.list.map(item => item.ssrSiteName),
-            [ssrSiteName, otherSsrSiteName],
-          );
-          const site = catalog.list.find(item => item.ssrSiteName === ssrSiteName)!;
-          assert.equal(site.title, siteTitle);
-          assert.deepEqual(site.groups, [
-            { ssrMenuGroupName: groupName, onionName: groupName, title: 'Menu group' },
-          ]);
-          assert.deepEqual(site.menus, [
-            {
-              ssrMenuName: dynamicMenuName,
-              onionName: 'test:roleMenu',
-              configurable: true,
-              title: 'Create Student Training Record',
-              group: groupName,
-            },
+            publicSite.menus.find(item => item.ssrMenuName === publicMenuName),
             {
               ssrMenuName: publicMenuName,
-              onionName: 'test:roleMenu',
+              onionName: 'start-siteweb:home',
               configurable: false,
-              title: 'Public title',
+              title: 'Home',
+              icon: 'home',
+              order: 101,
             },
-          ]);
+          );
           assert.equal(JSON.stringify(catalog).includes('roles'), false);
           assert.equal(JSON.stringify(catalog).includes('link'), false);
           assert.equal(JSON.stringify(catalog).includes('meta'), false);
@@ -110,66 +70,58 @@ describe('roleMenuProjection.test.ts', { concurrency: false }, () => {
           assert.equal(String(configuration.roleId), roleId);
           const configurationSite = configuration.list.find(
             item => item.ssrSiteName === ssrSiteName,
-          )!;
-          assert.equal(configurationSite.title, siteTitle);
-          assert.deepEqual(configurationSite.groups, [
-            { ssrMenuGroupName: groupName, onionName: groupName, title: 'Menu group' },
-          ]);
-          assert.deepEqual(configurationSite.menus, [
+          );
+          assert.ok(configurationSite);
+          assert.deepEqual(
+            configurationSite.menus.find(item => item.ssrMenuName === configurableMenuName),
             {
-              ssrMenuName: dynamicMenuName,
-              onionName: 'test:roleMenu',
+              ssrMenuName: configurableMenuName,
+              onionName: 'training-record:record',
               configurable: true,
               enabled: true,
-              title: 'Create Student Training Record',
+              title: 'Student Training Record',
+              order: 1002,
               group: groupName,
             },
+          );
+          const publicConfigurationSite = configuration.list.find(
+            item => item.ssrSiteName === otherSsrSiteName,
+          );
+          assert.ok(publicConfigurationSite);
+          assert.deepEqual(
+            publicConfigurationSite.menus.find(item => item.ssrMenuName === publicMenuName),
             {
               ssrMenuName: publicMenuName,
-              onionName: 'test:roleMenu',
+              onionName: 'start-siteweb:home',
               configurable: false,
               enabled: false,
-              title: 'Public title',
+              title: 'Home',
+              icon: 'home',
+              order: 101,
             },
-          ]);
+          );
         },
         { locale: 'en-us' },
       );
     } finally {
-      try {
-        await app.bean.executor.mockCtx(async () => {
-          if (!roleId) return;
-          const adminMenu = app.scope('admin-menu');
-          const rows = await adminMenu.model.roleMenu.select({ where: { roleId } });
-          if (rows.length) await adminMenu.model.roleMenu.deleteBulk(rows.map(item => item.id));
-          const role = await app.scope('home-user').model.role.getById(roleId);
-          if (role) await app.scope('admin-role').service.role.delete(role.id);
-        });
-      } finally {
-        getGroups.mock.restore();
-        getMenus.mock.restore();
-      }
+      await app.bean.executor.mockCtx(async () => {
+        if (!roleId) return;
+        const adminMenu = app.scope('admin-menu');
+        const rows = await adminMenu.model.roleMenu.select({ where: { roleId } });
+        if (rows.length) await adminMenu.model.roleMenu.deleteBulk(rows.map(item => item.id));
+        const role = await app.scope('home-user').model.role.getById(roleId);
+        if (role) await app.scope('admin-role').service.role.delete(role.id);
+      });
     }
   });
 
   it('rejects unavailable target roles without disclosing another role configuration', async () => {
-    const getMenus = mock.method(app.bean.onion.ssrMenu, 'getOnionsEnabled', createSsrMenuOnions);
-    const getGroups = mock.method(
-      app.bean.onion.ssrMenuGroup,
-      'getOnionsEnabled',
-      createSsrMenuGroupOnions,
-    );
-    try {
-      await app.bean.executor.mockCtx(async () => {
-        const [result, error] = await catchError(() =>
-          app.scope('admin-menu').service.roleMenuProjection.roleConfiguration('999999999'),
-        );
-        assert.equal(result, undefined);
-        assert.equal(error?.code, 422);
-      });
-    } finally {
-      getGroups.mock.restore();
-      getMenus.mock.restore();
-    }
+    await app.bean.executor.mockCtx(async () => {
+      const [result, error] = await catchError(() =>
+        app.scope('admin-menu').service.roleMenuProjection.roleConfiguration('999999999'),
+      );
+      assert.equal(result, undefined);
+      assert.equal(error?.code, 422);
+    });
   });
 });

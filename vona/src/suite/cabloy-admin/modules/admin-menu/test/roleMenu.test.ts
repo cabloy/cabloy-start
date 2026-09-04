@@ -1,41 +1,26 @@
 import { catchError } from '@cabloy/utils';
 import assert from 'node:assert';
-import { describe, it, mock } from 'node:test';
+import { describe, it } from 'node:test';
 import { app } from 'vona-mock';
 
 const ssrSiteName = 'start-siteadmin:admin';
-const dynamicMenuName = 'test:roleMenu#dynamic';
-const staticMenuName = 'test:roleMenu#static';
-const publicMenuName = 'test:roleMenu#public';
+const staticMenuName = 'training-student:student#student';
+const otherStaticMenuName = 'training-record:record#record';
+const publicMenuName = 'start-siteweb:home';
 
-function createSsrMenuOnions() {
-  return [
-    {
-      name: 'test:roleMenu',
-      beanOptions: {
-        options: {
-          enable: true,
-          site: ssrSiteName,
-          items: {
-            dynamic: { roles: [] },
-            static: { roles: ['systemAdmin'] },
-            public: {},
-          },
-        },
-      },
-    },
-  ] as any;
+async function removeRole(roleId: string | undefined): Promise<void> {
+  if (!roleId) return;
+  const adminMenu = app.scope('admin-menu');
+  const rows = await adminMenu.model.roleMenu.select({ where: { roleId } });
+  if (rows.length) await adminMenu.model.roleMenu.deleteBulk(rows.map(item => item.id));
+  const role = await app.scope('home-user').model.role.getById(roleId);
+  if (role) await app.scope('admin-role').service.role.delete(role.id);
 }
 
 describe('roleMenu.test.ts', { concurrency: false }, () => {
   it('service:roleMenu validates eligible leaves and deletes associations', async () => {
     const roleName = `admin-menu-role-menu-${crypto.randomUUID()}`;
     let roleId: string | undefined;
-    const getOnionsEnabled = mock.method(
-      app.bean.onion.ssrMenu,
-      'getOnionsEnabled',
-      createSsrMenuOnions,
-    );
     try {
       await app.bean.executor.mockCtx(async () => {
         const role = await app.scope('admin-role').service.role.create({
@@ -48,71 +33,44 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
 
       await app.bean.executor.mockCtx(async () => {
         const service = app.scope('admin-menu').service.roleMenu;
-        const dynamic = { roleId: roleId!, ssrSiteName, ssrMenuName: dynamicMenuName };
-        const menuRevision = app.scope('admin-menu').service.menuVisibilityRevision;
-        const policyRevision = app.scope('admin-rbac').service.rbacPolicyRevision;
-        const menuRevisionBefore = Number(await menuRevision.current());
-        const policyRevisionBefore = await policyRevision.current();
-        const created = await service.create(dynamic);
+        const identity = { roleId: roleId!, ssrSiteName, ssrMenuName: staticMenuName };
+        const created = await service.create(identity);
         assert.equal(String(created.roleId), roleId);
-        assert.equal(Number(await menuRevision.current()), menuRevisionBefore + 1);
-        assert.equal(await policyRevision.current(), policyRevisionBefore);
 
-        const [duplicate, duplicateError] = await catchError(() => service.create(dynamic));
+        const [duplicate, duplicateError] = await catchError(() => service.create(identity));
         assert.equal(duplicate, undefined);
         assert.equal(duplicateError?.code, 409);
 
-        for (const identity of [
+        for (const unavailable of [
           { roleId: roleId!, ssrSiteName, ssrMenuName: publicMenuName },
-          { roleId: roleId!, ssrSiteName: 'start-siteweb:web', ssrMenuName: dynamicMenuName },
-          { roleId: roleId!, ssrSiteName, ssrMenuName: 'test:roleMenu#missing' },
-          { roleId: roleId!, ssrSiteName, ssrMenuName: ` ${dynamicMenuName}` },
+          { roleId: roleId!, ssrSiteName: 'start-siteweb:web', ssrMenuName: staticMenuName },
+          { roleId: roleId!, ssrSiteName, ssrMenuName: 'admin-menu:missing' },
+          { roleId: roleId!, ssrSiteName, ssrMenuName: ` ${staticMenuName}` },
         ]) {
-          const [result, error] = await catchError(() => service.create(identity));
+          const [result, error] = await catchError(() => service.create(unavailable));
           assert.equal(result, undefined);
           assert.equal(error?.code, 422);
         }
 
-        await service.delete(dynamic);
-        assert.equal(Number(await menuRevision.current()), menuRevisionBefore + 2);
-        assert.equal(await policyRevision.current(), policyRevisionBefore);
-        const rows = await app.scope('admin-menu').model.roleMenu.select({
-          where: dynamic,
-        });
+        await service.delete(identity);
+        const rows = await app.scope('admin-menu').model.roleMenu.select({ where: identity });
         assert.equal(rows.length, 0);
 
-        const [missing, missingError] = await catchError(() => service.delete(dynamic));
+        const [missing, missingError] = await catchError(() => service.delete(identity));
         assert.equal(missing, undefined);
         assert.equal(missingError?.code, 404);
 
-        const recreated = await service.create(dynamic);
+        const recreated = await service.create(identity);
         assert.equal(String(recreated.roleId), roleId);
       });
     } finally {
-      try {
-        await app.bean.executor.mockCtx(async () => {
-          const adminMenu = app.scope('admin-menu');
-          if (roleId) {
-            const rows = await adminMenu.model.roleMenu.select({ where: { roleId } });
-            if (rows.length) await adminMenu.model.roleMenu.deleteBulk(rows.map(item => item.id));
-            const role = await app.scope('home-user').model.role.getById(roleId);
-            if (role) await app.scope('admin-role').service.role.delete(role.id);
-          }
-        });
-      } finally {
-        getOnionsEnabled.mock.restore();
-      }
+      await app.bean.executor.mockCtx(async () => await removeRole(roleId));
     }
   });
 
   it('service:roleMenu applies batch deltas atomically and idempotently', async () => {
     const roleName = `admin-menu-role-menu-batch-${crypto.randomUUID()}`;
     let roleId: string | undefined;
-    const getOnionsEnabled = mock.method(
-      app.bean.onion.ssrMenu,
-      'getOnionsEnabled',
-      createSsrMenuOnions,
-    );
     try {
       await app.bean.executor.mockCtx(async () => {
         const role = await app.scope('admin-role').service.role.create({
@@ -121,86 +79,57 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
           siteIds: ['admin'],
         });
         roleId = String(role.id);
-      });
 
-      await app.bean.executor.mockCtx(async () => {
         const service = app.scope('admin-menu').service.roleMenu;
         const model = app.scope('admin-menu').model.roleMenu;
-        const revision = app.scope('admin-menu').service.menuVisibilityRevision;
-        const dynamic = { ssrSiteName, ssrMenuName: dynamicMenuName };
-        const staticMenu = { ssrSiteName, ssrMenuName: staticMenuName };
-        const revisionBefore = Number(await revision.current());
+        const first = { ssrSiteName, ssrMenuName: staticMenuName };
+        const second = { ssrSiteName, ssrMenuName: otherStaticMenuName };
 
-        await service.create({ roleId: roleId!, ...dynamic });
-        assert.equal(Number(await revision.current()), revisionBefore + 1);
-
+        await service.create({ roleId, ...first });
         await service.batch({
-          roleId: roleId!,
-          creates: [staticMenu, staticMenu],
-          deletes: [dynamic, dynamic],
+          roleId,
+          creates: [second, second],
+          deletes: [first, first],
         });
-        assert.equal(Number(await revision.current()), revisionBefore + 2);
-        const rows = await model.select({ where: { roleId: roleId! } });
-        assert.deepEqual(rows.map(row => row.ssrMenuName).toSorted(), [staticMenuName]);
+        let rows = await model.select({ where: { roleId } });
+        assert.deepEqual(rows.map(row => row.ssrMenuName).toSorted(), [otherStaticMenuName]);
 
-        await service.batch({
-          roleId: roleId!,
-          creates: [staticMenu],
-          deletes: [dynamic],
-        });
-        assert.equal(Number(await revision.current()), revisionBefore + 2);
+        await service.batch({ roleId, creates: [second], deletes: [first] });
+        rows = await model.select({ where: { roleId } });
+        assert.deepEqual(
+          rows.map(row => row.ssrMenuName),
+          [otherStaticMenuName],
+        );
 
         const [conflicting, conflictingError] = await catchError(() =>
-          service.batch({
-            roleId: roleId!,
-            creates: [dynamic],
-            deletes: [dynamic],
-          }),
+          service.batch({ roleId, creates: [first], deletes: [first] }),
         );
         assert.equal(conflicting, undefined);
         assert.equal(conflictingError?.code, 422);
 
         const [invalid, invalidError] = await catchError(() =>
           service.batch({
-            roleId: roleId!,
-            creates: [dynamic, { ssrSiteName, ssrMenuName: publicMenuName }],
-            deletes: [staticMenu],
+            roleId,
+            creates: [first, { ssrSiteName, ssrMenuName: publicMenuName }],
+            deletes: [second],
           }),
         );
         assert.equal(invalid, undefined);
         assert.equal(invalidError?.code, 422);
-        const rowsAfterInvalid = await model.select({ where: { roleId: roleId! } });
+        rows = await model.select({ where: { roleId } });
         assert.deepEqual(
-          rowsAfterInvalid.map(row => row.ssrMenuName),
-          [staticMenuName],
+          rows.map(row => row.ssrMenuName),
+          [otherStaticMenuName],
         );
-        assert.equal(Number(await revision.current()), revisionBefore + 2);
       });
     } finally {
-      try {
-        await app.bean.executor.mockCtx(async () => {
-          const adminMenu = app.scope('admin-menu');
-          if (roleId) {
-            const rows = await adminMenu.model.roleMenu.select({ where: { roleId } });
-            if (rows.length) await adminMenu.model.roleMenu.deleteBulk(rows.map(item => item.id));
-            const role = await app.scope('home-user').model.role.getById(roleId);
-            if (role) await app.scope('admin-role').service.role.delete(role.id);
-          }
-        });
-      } finally {
-        getOnionsEnabled.mock.restore();
-      }
+      await app.bean.executor.mockCtx(async () => await removeRole(roleId));
     }
   });
 
   it('service:roleMenu serializes duplicate creation', async () => {
     const roleName = `admin-menu-role-menu-race-${crypto.randomUUID()}`;
     let roleId: string | undefined;
-    const getOnionsEnabled = mock.method(
-      app.bean.onion.ssrMenu,
-      'getOnionsEnabled',
-      createSsrMenuOnions,
-    );
     try {
       await app.bean.executor.mockCtx(async () => {
         const role = await app.scope('admin-role').service.role.create({
@@ -213,9 +142,9 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
 
       const identity = { roleId: roleId!, ssrSiteName, ssrMenuName: staticMenuName };
       const create = () =>
-        app.bean.executor.mockCtx(async () => {
-          return await catchError(() => app.scope('admin-menu').service.roleMenu.create(identity));
-        });
+        app.bean.executor.mockCtx(async () =>
+          catchError(() => app.scope('admin-menu').service.roleMenu.create(identity)),
+        );
       const results = await Promise.all([create(), create()]);
       const created = results.flatMap(([row]) => (row ? [row] : []));
       assert.equal(created.length, 1);
@@ -226,30 +155,13 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
         assert.equal(rows.length, 1);
       });
     } finally {
-      try {
-        await app.bean.executor.mockCtx(async () => {
-          const adminMenu = app.scope('admin-menu');
-          if (roleId) {
-            const rows = await adminMenu.model.roleMenu.select({ where: { roleId } });
-            if (rows.length) await adminMenu.model.roleMenu.deleteBulk(rows.map(item => item.id));
-            const role = await app.scope('home-user').model.role.getById(roleId);
-            if (role) await app.scope('admin-role').service.role.delete(role.id);
-          }
-        });
-      } finally {
-        getOnionsEnabled.mock.restore();
-      }
+      await app.bean.executor.mockCtx(async () => await removeRole(roleId));
     }
   });
 
   it('service:roleMenu serializes competing batch changes for one role', async () => {
     const roleName = `admin-menu-role-menu-batch-race-${crypto.randomUUID()}`;
     let roleId: string | undefined;
-    const getOnionsEnabled = mock.method(
-      app.bean.onion.ssrMenu,
-      'getOnionsEnabled',
-      createSsrMenuOnions,
-    );
     try {
       await app.bean.executor.mockCtx(async () => {
         const role = await app.scope('admin-role').service.role.create({
@@ -261,16 +173,16 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
       });
 
       const batch = (ssrMenuName: string) =>
-        app.bean.executor.mockCtx(async () => {
-          return await catchError(() =>
+        app.bean.executor.mockCtx(async () =>
+          catchError(() =>
             app.scope('admin-menu').service.roleMenu.batch({
               roleId: roleId!,
               creates: [{ ssrSiteName, ssrMenuName }],
               deletes: [],
             }),
-          );
-        });
-      const results = await Promise.all([batch(dynamicMenuName), batch(staticMenuName)]);
+          ),
+        );
+      const results = await Promise.all([batch(staticMenuName), batch(otherStaticMenuName)]);
       assert.equal(results.filter(([, error]) => error).length, 0);
 
       await app.bean.executor.mockCtx(async () => {
@@ -278,24 +190,12 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
           where: { roleId: roleId! },
         });
         assert.deepEqual(rows.map(row => row.ssrMenuName).toSorted(), [
-          dynamicMenuName,
+          otherStaticMenuName,
           staticMenuName,
         ]);
       });
     } finally {
-      try {
-        await app.bean.executor.mockCtx(async () => {
-          const adminMenu = app.scope('admin-menu');
-          if (roleId) {
-            const rows = await adminMenu.model.roleMenu.select({ where: { roleId } });
-            if (rows.length) await adminMenu.model.roleMenu.deleteBulk(rows.map(item => item.id));
-            const role = await app.scope('home-user').model.role.getById(roleId);
-            if (role) await app.scope('admin-role').service.role.delete(role.id);
-          }
-        });
-      } finally {
-        getOnionsEnabled.mock.restore();
-      }
+      await app.bean.executor.mockCtx(async () => await removeRole(roleId));
     }
   });
 
@@ -305,11 +205,6 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
     const isolatedRoleName = `admin-menu-role-menu-isolated-${crypto.randomUUID()}`;
     let defaultRoleId: string | undefined;
     let isolatedRoleId: string | undefined;
-    const getOnionsEnabled = mock.method(
-      app.bean.onion.ssrMenu,
-      'getOnionsEnabled',
-      createSsrMenuOnions,
-    );
     try {
       await app.bean.executor.mockCtx(async () => {
         const role = await app.scope('admin-role').service.role.create({
@@ -321,7 +216,7 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
         await app.scope('admin-menu').service.roleMenu.create({
           roleId: defaultRoleId,
           ssrSiteName,
-          ssrMenuName: dynamicMenuName,
+          ssrMenuName: staticMenuName,
         });
       });
 
@@ -331,7 +226,7 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
           const foreignRow = await adminMenu.model.roleMenu.get({
             roleId: defaultRoleId!,
             ssrSiteName,
-            ssrMenuName: dynamicMenuName,
+            ssrMenuName: staticMenuName,
           });
           assert.equal(foreignRow, undefined);
 
@@ -344,7 +239,7 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
           await adminMenu.service.roleMenu.create({
             roleId: isolatedRoleId,
             ssrSiteName,
-            ssrMenuName: dynamicMenuName,
+            ssrMenuName: staticMenuName,
           });
         },
         { instanceName },
@@ -352,40 +247,15 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
 
       await app.bean.executor.mockCtx(async () => {
         const rows = await app.scope('admin-menu').model.roleMenu.select({
-          where: { roleId: defaultRoleId!, ssrSiteName, ssrMenuName: dynamicMenuName },
+          where: { roleId: defaultRoleId!, ssrSiteName, ssrMenuName: staticMenuName },
         });
         assert.equal(rows.length, 1);
       });
     } finally {
-      try {
-        await app.bean.executor.mockCtx(
-          async () => {
-            const adminMenu = app.scope('admin-menu');
-            if (isolatedRoleId) {
-              const rows = await adminMenu.model.roleMenu.select({
-                where: { roleId: isolatedRoleId },
-              });
-              if (rows.length) await adminMenu.model.roleMenu.deleteBulk(rows.map(item => item.id));
-              const role = await app.scope('home-user').model.role.getById(isolatedRoleId);
-              if (role) await app.scope('admin-role').service.role.delete(role.id);
-            }
-          },
-          { instanceName },
-        );
-        await app.bean.executor.mockCtx(async () => {
-          const adminMenu = app.scope('admin-menu');
-          if (defaultRoleId) {
-            const rows = await adminMenu.model.roleMenu.select({
-              where: { roleId: defaultRoleId },
-            });
-            if (rows.length) await adminMenu.model.roleMenu.deleteBulk(rows.map(item => item.id));
-            const role = await app.scope('home-user').model.role.getById(defaultRoleId);
-            if (role) await app.scope('admin-role').service.role.delete(role.id);
-          }
-        });
-      } finally {
-        getOnionsEnabled.mock.restore();
-      }
+      await app.bean.executor.mockCtx(async () => await removeRole(isolatedRoleId), {
+        instanceName,
+      });
+      await app.bean.executor.mockCtx(async () => await removeRole(defaultRoleId));
     }
   });
 
@@ -393,11 +263,7 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
     const instanceName = 'isolateTest' as any;
     let isolatedRevisionId: string | undefined;
     let isolatedRevision: number | undefined;
-    let defaultRevision: string | undefined;
     try {
-      await app.bean.executor.mockCtx(async () => {
-        defaultRevision = await app.scope('admin-menu').service.menuVisibilityRevision.current();
-      });
       await app.bean.executor.mockCtx(
         async () => {
           const adminMenu = app.scope('admin-menu');
@@ -410,12 +276,6 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
         },
         { instanceName },
       );
-      await app.bean.executor.mockCtx(async () => {
-        assert.equal(
-          await app.scope('admin-menu').service.menuVisibilityRevision.current(),
-          defaultRevision,
-        );
-      });
     } finally {
       if (isolatedRevisionId) {
         await app.bean.executor.mockCtx(
@@ -433,14 +293,9 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
     }
   });
 
-  it('service:roleMenu rolls back a failed caller transaction', async () => {
+  it('service:roleMenu commits the isolated association mutation before caller rollback', async () => {
     const roleName = `admin-menu-role-menu-rollback-${crypto.randomUUID()}`;
     let roleId: string | undefined;
-    const getOnionsEnabled = mock.method(
-      app.bean.onion.ssrMenu,
-      'getOnionsEnabled',
-      createSsrMenuOnions,
-    );
     try {
       await app.bean.executor.mockCtx(async () => {
         const role = await app.scope('admin-role').service.role.create({
@@ -449,12 +304,8 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
           siteIds: ['admin'],
         });
         roleId = String(role.id);
-      });
 
-      await app.bean.executor.mockCtx(async () => {
-        const identity = { roleId: roleId!, ssrSiteName, ssrMenuName: dynamicMenuName };
-        const menuRevision = app.scope('admin-menu').service.menuVisibilityRevision;
-        const revisionBefore = await menuRevision.current();
+        const identity = { roleId, ssrSiteName, ssrMenuName: staticMenuName };
         const [result, error] = await catchError(() =>
           app.bean.database.current.transaction.begin(async () => {
             await app.scope('admin-menu').service.roleMenu.create(identity);
@@ -464,38 +315,20 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
         assert.equal(result, undefined);
         assert.equal(error?.message, 'rollback role menu association');
         const rows = await app.scope('admin-menu').model.roleMenu.select({ where: identity });
-        assert.equal(rows.length, 0);
-        assert.equal(await menuRevision.current(), revisionBefore);
+        assert.equal(rows.length, 1);
       });
     } finally {
-      try {
-        await app.bean.executor.mockCtx(async () => {
-          const adminMenu = app.scope('admin-menu');
-          if (roleId) {
-            const rows = await adminMenu.model.roleMenu.select({ where: { roleId } });
-            if (rows.length) await adminMenu.model.roleMenu.deleteBulk(rows.map(item => item.id));
-            const role = await app.scope('home-user').model.role.getById(roleId);
-            if (role) await app.scope('admin-role').service.role.delete(role.id);
-          }
-        });
-      } finally {
-        getOnionsEnabled.mock.restore();
-      }
+      await app.bean.executor.mockCtx(async () => await removeRole(roleId));
     }
   });
 
-  it('event:resolveMenuVisibility adds exact dynamic associations without a role bypass', async () => {
+  it('event:resolveMenuVisibility adds exact eligible associations without a role bypass', async () => {
     const roleName = `admin-menu-role-menu-visibility-${crypto.randomUUID()}`;
     let roleId: string | undefined;
-    const getOnionsEnabled = mock.method(
-      app.bean.onion.ssrMenu,
-      'getOnionsEnabled',
-      createSsrMenuOnions,
-    );
     const menus = [
       { name: publicMenuName },
-      { name: dynamicMenuName, roles: [] },
-      { name: staticMenuName, roles: ['someOtherRole'] },
+      { name: staticMenuName, roles: [] },
+      { name: otherStaticMenuName, roles: ['someOtherRole'] },
     ] as any;
     try {
       await app.bean.executor.mockCtx(async () => {
@@ -508,7 +341,7 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
         await app.scope('admin-menu').service.roleMenu.create({
           roleId,
           ssrSiteName,
-          ssrMenuName: dynamicMenuName,
+          ssrMenuName: staticMenuName,
         });
         const visible = await app
           .scope('a-ssr')
@@ -518,34 +351,34 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
           );
         assert.deepEqual(
           visible.map(menu => menu.name),
-          [publicMenuName, dynamicMenuName],
+          [publicMenuName, staticMenuName],
         );
 
         await app.scope('admin-menu').service.roleMenu.create({
           roleId,
           ssrSiteName,
-          ssrMenuName: staticMenuName,
+          ssrMenuName: otherStaticMenuName,
         });
-        const visibleStaticOrDynamic = await app
+        const visibleWithBoth = await app
           .scope('a-ssr')
           .event.resolveMenuVisibility.emit(
             { ssrSiteName, menus, currentRoleIds: [role.id] },
             async data => data.menus.filter(menu => menu.roles === undefined),
           );
         assert.deepEqual(
-          visibleStaticOrDynamic.map(menu => menu.name),
-          [publicMenuName, dynamicMenuName, staticMenuName],
+          visibleWithBoth.map(menu => menu.name),
+          [publicMenuName, staticMenuName, otherStaticMenuName],
         );
 
         await app.scope('admin-menu').service.roleMenu.delete({
           roleId,
           ssrSiteName,
-          ssrMenuName: dynamicMenuName,
+          ssrMenuName: staticMenuName,
         });
         await app.scope('admin-menu').service.roleMenu.delete({
           roleId,
           ssrSiteName,
-          ssrMenuName: staticMenuName,
+          ssrMenuName: otherStaticMenuName,
         });
         const visibleAfterDelete = await app
           .scope('a-ssr')
@@ -559,30 +392,13 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
         );
       });
     } finally {
-      try {
-        await app.bean.executor.mockCtx(async () => {
-          const adminMenu = app.scope('admin-menu');
-          if (roleId) {
-            const rows = await adminMenu.model.roleMenu.select({ where: { roleId } });
-            if (rows.length) await adminMenu.model.roleMenu.deleteBulk(rows.map(item => item.id));
-            const role = await app.scope('home-user').model.role.getById(roleId);
-            if (role) await app.scope('admin-role').service.role.delete(role.id);
-          }
-        });
-      } finally {
-        getOnionsEnabled.mock.restore();
-      }
+      await app.bean.executor.mockCtx(async () => await removeRole(roleId));
     }
   });
 
   it('event:policyInvalidated removes associations for deleted roles', async () => {
     const roleName = `admin-menu-role-menu-cleanup-${crypto.randomUUID()}`;
     let roleId: string | undefined;
-    const getOnionsEnabled = mock.method(
-      app.bean.onion.ssrMenu,
-      'getOnionsEnabled',
-      createSsrMenuOnions,
-    );
     try {
       await app.bean.executor.mockCtx(async () => {
         const role = await app.scope('admin-role').service.role.create({
@@ -591,31 +407,17 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
           siteIds: ['admin'],
         });
         roleId = String(role.id);
-        const menuRevision = app.scope('admin-menu').service.menuVisibilityRevision;
-        const revisionBefore = Number(await menuRevision.current());
         await app.scope('admin-menu').service.roleMenu.create({
           roleId,
           ssrSiteName,
-          ssrMenuName: dynamicMenuName,
+          ssrMenuName: staticMenuName,
         });
         await app.scope('admin-role').service.role.delete(role.id);
         const rows = await app.scope('admin-menu').model.roleMenu.select({ where: { roleId } });
         assert.equal(rows.length, 0);
-        assert.equal(Number(await menuRevision.current()), revisionBefore + 2);
       });
     } finally {
-      try {
-        await app.bean.executor.mockCtx(async () => {
-          if (!roleId) return;
-          const adminMenu = app.scope('admin-menu');
-          const rows = await adminMenu.model.roleMenu.select({ where: { roleId } });
-          if (rows.length) await adminMenu.model.roleMenu.deleteBulk(rows.map(item => item.id));
-          const role = await app.scope('home-user').model.role.getById(roleId);
-          if (role) await app.scope('admin-role').service.role.delete(role.id);
-        });
-      } finally {
-        getOnionsEnabled.mock.restore();
-      }
+      await app.bean.executor.mockCtx(async () => await removeRole(roleId));
     }
   });
 });

@@ -98,9 +98,10 @@ export class ServiceDepartment extends BeanBase {
 
   @Core.transaction()
   async update(id: TableIdentity, command: DtoDepartmentUpdate): Promise<void> {
-    const department = await this.requireDepartmentForUpdate(id);
+    const department = await this.requireDepartment(id);
     await this.withNamespaces([department.parentId], async () => {
       const current = await this.requireDepartmentForUpdate(id);
+      if (current.name === command.name) return;
       await this.ensureNameAvailable(command.name, current.parentId, current.id);
       await this.scope.model.department.updateById(current.id, { name: command.name });
     });
@@ -108,7 +109,7 @@ export class ServiceDepartment extends BeanBase {
 
   @Core.transaction()
   async move(id: TableIdentity, command: DtoDepartmentMove): Promise<void> {
-    const department = await this.requireDepartmentForUpdate(id);
+    const department = await this.requireDepartment(id);
     const parentId = this.normalizeParentId(command.parentId);
     if (parentId !== null && String(parentId) === String(department.id)) {
       this.scope.error.DepartmentCycleDetected.throw();
@@ -128,7 +129,7 @@ export class ServiceDepartment extends BeanBase {
 
   @Core.transaction()
   async reorder(id: TableIdentity, command: DtoDepartmentReorder): Promise<void> {
-    const department = await this.requireDepartmentForUpdate(id);
+    const department = await this.requireDepartment(id);
     await this.withNamespaces([department.parentId], async () => {
       const current = await this.requireDepartmentForUpdate(id);
       let beforeId = command.beforeId;
@@ -148,8 +149,7 @@ export class ServiceDepartment extends BeanBase {
 
   @Core.transaction()
   async updateActivation(id: TableIdentity, command: DtoDepartmentActivation): Promise<void> {
-    const department = await this.requireDepartmentForUpdate(id);
-    await this.withNamespaces([department.id], async () => {
+    await this.withNamespaces([id], async () => {
       const current = await this.requireDepartmentForUpdate(id);
       if (current.enabled && !command.enabled) {
         await this.assertLifecycleChangeAllowed(current);
@@ -161,8 +161,7 @@ export class ServiceDepartment extends BeanBase {
 
   @Core.transaction()
   async delete(id: TableIdentity): Promise<void> {
-    const department = await this.requireDepartmentForUpdate(id);
-    await this.withNamespaces([department.id], async () => {
+    await this.withNamespaces([id], async () => {
       const current = await this.requireDepartmentForUpdate(id);
       await this.assertLifecycleChangeAllowed(current);
       await this.scope.model.department.deleteById(current.id);
@@ -363,6 +362,15 @@ export class ServiceDepartment extends BeanBase {
     return parentId;
   }
 
+  private async requireDepartment(id: TableIdentity): Promise<EntityDepartment> {
+    const department = await this.scope.model.department.getById(id, {
+      disableCacheEntity: true,
+      disableCacheQuery: true,
+    });
+    if (!department) this.app.throw(404, 'Department not found');
+    return department as EntityDepartment;
+  }
+
   private async requireDepartmentForUpdate(id: TableIdentity): Promise<EntityDepartment> {
     const department = await this.scope.model.department.getByIdForUpdate(id);
     if (!department) this.app.throw(404, 'Department not found');
@@ -470,7 +478,7 @@ export class ServiceDepartment extends BeanBase {
     parentId: TableIdentity | null | undefined,
     excludeId?: TableIdentity,
   ): Promise<void> {
-    const existing = await this.scope.model.department.getForUpdate({
+    const existing = await this.scope.model.department.get({
       parentId,
       name: { _eqI_: name },
     });

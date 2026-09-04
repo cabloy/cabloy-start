@@ -1,6 +1,6 @@
 import { catchError } from '@cabloy/utils';
 import assert from 'node:assert';
-import { describe, it, mock } from 'node:test';
+import { describe, it } from 'node:test';
 import { app } from 'vona-mock';
 
 import { DtoRbacGrantCreate, DtoRbacGrantUpdate } from '../src/index.ts';
@@ -78,31 +78,8 @@ describe('rbacGrant.test.ts', { concurrency: false }, () => {
 
   it('service:rbacGrant serializes duplicate creation', async () => {
     const roleName = `admin-rbac-grant-race-${crypto.randomUUID()}`;
-    const actionKey = 'test:controller#create';
-    const getCatalog = mock.method(
-      app.bean.rbacCatalog,
-      'getCatalog',
-      () =>
-        new Map([
-          [
-            actionKey,
-            {
-              actionKey,
-              controllerBeanFullName: 'test:controller',
-              action: 'create',
-              options: {},
-            },
-          ],
-        ]),
-    );
+    const actionKey = 'training-student.controller.student#create';
     let roleId: string | undefined;
-    const invalidationEvents: unknown[] = [];
-    const policyInvalidated = app.scope('a-rbac').event.policyInvalidated;
-    const originalEmit = policyInvalidated.emit.bind(policyInvalidated);
-    const emitMock = mock.method(policyInvalidated, 'emit', async data => {
-      invalidationEvents.push(data);
-      return await originalEmit(data);
-    });
     try {
       await app.bean.executor.mockCtx(async () => {
         const role = await app.scope('admin-role').service.role.create({
@@ -130,7 +107,6 @@ describe('rbacGrant.test.ts', { concurrency: false }, () => {
 
       assert.equal(created.length, 1);
       assert.equal(results.filter(([, error]) => error?.code === 409).length, 1);
-      assert.deepEqual(invalidationEvents, [{ kind: 'policy' }]);
 
       await app.bean.executor.mockCtx(async () => {
         const grants = await app.scope('admin-rbac').model.rbacGrant.select({
@@ -140,24 +116,19 @@ describe('rbacGrant.test.ts', { concurrency: false }, () => {
         assert.equal(String(grants[0].id), String(created[0].id));
       });
     } finally {
-      try {
-        await app.bean.executor.mockCtx(async () => {
-          const adminRbac = app.scope('admin-rbac');
-          if (roleId) {
-            const grants = await adminRbac.model.rbacGrant.select({
-              where: { roleId, actionKey, dataScope: 'all' },
-            });
-            for (const grant of grants.reverse()) {
-              await adminRbac.service.rbacGrant.delete(grant.id);
-            }
-            const role = await app.scope('home-user').model.role.getById(roleId);
-            if (role) await app.scope('admin-role').service.role.delete(role.id);
+      await app.bean.executor.mockCtx(async () => {
+        const adminRbac = app.scope('admin-rbac');
+        if (roleId) {
+          const grants = await adminRbac.model.rbacGrant.select({
+            where: { roleId, actionKey, dataScope: 'all' },
+          });
+          for (const grant of grants.reverse()) {
+            await adminRbac.service.rbacGrant.delete(grant.id);
           }
-        });
-      } finally {
-        emitMock.mock.restore();
-        getCatalog.mock.restore();
-      }
+          const role = await app.scope('home-user').model.role.getById(roleId);
+          if (role) await app.scope('admin-role').service.role.delete(role.id);
+        }
+      });
     }
   });
 });

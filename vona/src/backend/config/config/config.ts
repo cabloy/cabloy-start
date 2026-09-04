@@ -14,6 +14,8 @@ declare module 'vona' {
   export interface IInstanceRecord {
     shareTest: never;
     isolateTest: never;
+    policyInvalidationTest: never;
+    policyInvalidationPeerTest: never;
   }
 }
 
