@@ -293,7 +293,7 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
     }
   });
 
-  it('service:roleMenu commits the isolated association mutation before caller rollback', async () => {
+  it('service:roleMenu uses available datasource isolation around caller rollback', async () => {
     const roleName = `admin-menu-role-menu-rollback-${crypto.randomUUID()}`;
     let roleId: string | undefined;
     try {
@@ -306,6 +306,7 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
         roleId = String(role.id);
 
         const identity = { roleId, ssrSiteName, ssrMenuName: staticMenuName };
+        const supportsDatasourceLevels = app.bean.database.current.dialect.capabilities.level;
         const [result, error] = await catchError(() =>
           app.bean.database.current.transaction.begin(async () => {
             await app.scope('admin-menu').service.roleMenu.create(identity);
@@ -315,7 +316,7 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
         assert.equal(result, undefined);
         assert.equal(error?.message, 'rollback role menu association');
         const rows = await app.scope('admin-menu').model.roleMenu.select({ where: identity });
-        assert.equal(rows.length, 1);
+        assert.equal(rows.length, supportsDatasourceLevels ? 1 : 0);
       });
     } finally {
       await app.bean.executor.mockCtx(async () => await removeRole(roleId));
