@@ -4,7 +4,15 @@ Use this page as the compact lookup surface for root scripts in Cabloy Basic and
 
 For the broader Reference landing page, see [Reference Introduction](/reference/introduction).
 
-Always start with the active repository's root `package.json`. Cabloy Basic is the public generated-project baseline; Cabloy Start is the licensed private repository and has its own root command surface.
+Always start with the active repository's root `package.json`. Cabloy Basic is the public generated-project baseline; Cabloy Start is the public MIT-licensed edition in its own repository and has its own root command surface.
+
+## Generated workspace manifests
+
+The tracked root `package.json` is the primary command surface. The tracked `vona/package.original.json` and `zova/package.original.json` files are durable bootstrap manifest inputs. Their sibling `vona/package.json` and `zova/package.json` files are ignored generated working dependency closures, not durable edit targets.
+
+Root `npm run init` runs `scripts/init.ts`, which restores each generated workspace manifest from its `package.original.json` input before running dependency generation. During Vona initialization, it also seeds generated `.zova-rest` workspace dependencies before the first install and dependency-tool run. Direct edits to either ignored workspace manifest are overwritten by the next root initialization.
+
+Run root `npm run init` deliberately after a fresh clone, recovery of generated workspace state, or a framework upgrade. Do not treat it as an automatic follow-up for narrow changes.
 
 ## Cabloy Basic entrypoints
 
@@ -112,9 +120,9 @@ repo-e2e/specs/a-commerce.spec.ts
 
 It also reconciles the two framework E2E scripts and the `@playwright/test` development dependency. Keep additional project browser specs under other filenames in `repo-e2e/specs`; the upgrader updates only the listed framework files. The current fresh baseline is required and is not repaired for unsupported legacy project layouts.
 
-### Cabloy Start private repository
+### Cabloy Start repository
 
-The Start E2E baseline is maintained in the private repository:
+The Start E2E baseline is maintained in the separate Start repository:
 
 ```text
 repo-e2e/config/
@@ -122,7 +130,7 @@ repo-e2e/scripts/
 repo-e2e/specs/
 ```
 
-The public-package upgrade flow does not source or reconcile the private Start baseline, its root E2E scripts, or `@playwright/test`. Keep project browser tests in the flat `repo-e2e/specs/` directory under distinct filenames, for example `repo-e2e/specs/my-project.spec.ts`.
+The public-package upgrade flow does not source or reconcile the Start-owned baseline, its root E2E scripts, or `@playwright/test`. Keep project browser tests in the flat `repo-e2e/specs/` directory under distinct filenames, for example `repo-e2e/specs/my-project.spec.ts`.
 
 ## SSR browser checks
 
