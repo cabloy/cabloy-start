@@ -440,7 +440,7 @@ importers:
         specifier: ^7.6.2
         version: 7.8.0
       zova-cli-set-front:
-        specifier: ^1.2.102
+        specifier: ^1.2.103
         version: link:../cli-set-front
     devDependencies:
       clean-package:
@@ -549,7 +549,7 @@ importers:
         specifier: ^1.1.17
         version: link:../../packages-utils/zova-openapi
       zova-vite:
-        specifier: ^1.1.44
+        specifier: ^1.1.45
         version: link:../../packages-utils/zova-vite
     devDependencies:
       clean-package:
@@ -752,8 +752,8 @@ importers:
         specifier: ^7.28.6
         version: 7.28.6(@babel/core@7.29.0)
       '@cabloy/dotenv':
-        specifier: ^1.2.8
-        version: 1.2.8
+        specifier: ^1.2.9
+        version: 1.2.9
       '@cabloy/extend':
         specifier: ^3.2.8
         version: 3.2.8
@@ -2284,8 +2284,8 @@ packages:
   '@cabloy/deps@1.1.8':
     resolution: {integrity: sha512-CWaVGSwPI5qLSuRF+WmB+1CwbRe9+PR+nkUmKc9/Dj7sB75qPXLTYACn23T/jIylbDbWCL82LoOa455Vgseyeg==}
 
-  '@cabloy/dotenv@1.2.8':
-    resolution: {integrity: sha512-1Xn0IsfMVWSZW0Gi7MBGbW6JL8kD7GN/B199RbDlIIy3PbSTdbKF2Gh/NIR2FNCChD1kQaG0FW/mR1tKgMNxbg==}
+  '@cabloy/dotenv@1.2.9':
+    resolution: {integrity: sha512-iR7KWj1YI2SiTjlcSMnZ/wYw/PMcgAJRvOHdWDrwehY8YOuG6uKPTez1hTCR4kfrhiBnZwM/acZvmqjflx18GA==}
 
   '@cabloy/extend@3.2.8':
     resolution: {integrity: sha512-BrXYUtlC1kFY33hNxL/hEaS7wW8TsOuu22k0VCEtzg2iw+USkb4BqONth5Uv2pJcIlDMeWx8A8aUIRF3WQ2ckQ==}
@@ -5152,8 +5152,8 @@ packages:
   capital-case@1.0.4:
     resolution: {integrity: sha512-ds37W8CytHgwnhGGTi88pcPyR15qoNkOpYwmMMfnWqqWgESapLqvDx6huFjQ5vqWSn2Z06173XNA7LtMOeUh1A==}
 
-  cascade-extend@2.2.8:
-    resolution: {integrity: sha512-cs8DkxDoYv0YSFnbZyn/xaaodKgp+iV9xv8IeAWpYRyM5vxIXGKS8Ej0jLwneFFYTaF7juIjOlktOjEidDZURA==}
+  cascade-extend@2.2.9:
+    resolution: {integrity: sha512-YevoTZSywFhLNnHWh9GSzHgrwAJmsDzR0sQeOZ8BG5NlwF8MyH0457ocLVyGgB/m9rTHmRXJkzzvPuDcjpTtfQ==}
 
   ccount@2.0.1:
     resolution: {integrity: sha512-eyrF0jiFpY+3drT6383f1qhkbGsLSifNAjA61IUjZjmLCWjItY6LB9ft9YhoDgwfmclB2zhu51Lc7+95b8NRAg==}
@@ -8624,9 +8624,9 @@ snapshots:
 
   '@cabloy/deps@1.1.8': {}
 
-  '@cabloy/dotenv@1.2.8':
+  '@cabloy/dotenv@1.2.9':
     dependencies:
-      cascade-extend: 2.2.8
+      cascade-extend: 2.2.9
       dotenv: 16.6.1
       dotenv-expand: 11.0.7
       globby: 16.2.0
@@ -11069,7 +11069,7 @@ snapshots:
       tslib: 2.8.1
       upper-case-first: 2.0.2
 
-  cascade-extend@2.2.8:
+  cascade-extend@2.2.9:
     dependencies:
       '@cabloy/extend': 3.2.8
 
