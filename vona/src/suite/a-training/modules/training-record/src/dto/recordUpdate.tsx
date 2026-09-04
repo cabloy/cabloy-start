@@ -14,6 +14,7 @@ import { DtoDetailRecordSubjectResItem } from './detailRecordSubjectResItem.tsx'
 export interface IDtoOptionsRecordUpdate extends IDecoratorDtoOptions {}
 
 @Dto<IDtoOptionsRecordUpdate>({
+  openapi: { title: $locale('RecordUpdate') },
   blocks: [
     ZovaRender.block('start-pageentry:blockPageEntry', {
       blocks: [

@@ -15,6 +15,7 @@ import { DtoDetailRecordSubjectView } from './detailRecordSubjectView.tsx';
 export interface IDtoOptionsRecordView extends IDecoratorDtoOptions {}
 
 @Dto<IDtoOptionsRecordView>({
+  openapi: { title: $locale('RecordView') },
   blocks: [
     ZovaRender.block('start-pageentry:blockPageEntry', {
       blocks: [
