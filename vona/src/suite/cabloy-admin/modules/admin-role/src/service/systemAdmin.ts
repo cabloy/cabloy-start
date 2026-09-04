@@ -61,13 +61,13 @@ export class ServiceSystemAdmin extends BeanBase {
       targetId,
       'grant',
       command,
+      false,
       async ({ target, role, membership, actorId, commandId }) => {
         if (membership) this.scope.error.ProtectedCommandInvalid.throw();
         if (!target.activated || target.accountStatus === 'disabled') {
           this.scope.error.InactiveSystemAdminTarget.throw();
         }
-        await this.$scope.homeUser.model.roleUser.insert({ userId: target.id, roleId: role.id });
-        await this.app.scope('a-rbac').event.policyInvalidated.emit({ kind: 'role' });
+        await this.bean.role.addUserId(role.id, target.id);
         await this.accept(
           actorId,
           target.id,
@@ -86,14 +86,14 @@ export class ServiceSystemAdmin extends BeanBase {
       targetId,
       'revoke',
       command,
-      async ({ target, membership, actorId, commandId }) => {
+      false,
+      async ({ target, role, membership, actorId, commandId }) => {
         if (!membership) {
           this.scope.error.ProtectedCommandInvalid.throw();
           throw new Error('system administrator membership is unavailable');
         }
         await this.ensureNotFinalSystemAdmin(target.id);
-        await this.$scope.homeUser.model.roleUser.deleteById(membership.id);
-        await this.app.scope('a-rbac').event.policyInvalidated.emit({ kind: 'role' });
+        await this.bean.role.removeUserId(role.id, target.id);
         await this.accept(
           actorId,
           target.id,
@@ -116,6 +116,7 @@ export class ServiceSystemAdmin extends BeanBase {
       targetId,
       action,
       command,
+      true,
       async ({ target, membership, actorId, commandId }) => {
         if (!membership || target.accountStatus === command.accountStatus) {
           this.scope.error.ProtectedCommandInvalid.throw();
@@ -145,6 +146,7 @@ export class ServiceSystemAdmin extends BeanBase {
       targetId,
       action,
       command,
+      true,
       async ({ target, membership, actorId, commandId }) => {
         if (!membership || target.activated === command.activated) {
           this.scope.error.ProtectedCommandInvalid.throw();
@@ -166,6 +168,7 @@ export class ServiceSystemAdmin extends BeanBase {
     targetId: TableIdentity,
     action: TypeSystemAdminCommand,
     command: TypeProtectedCommand,
+    clearPermissionCaches: boolean,
     operation: (context: TypeProtectedOperationContext) => Promise<void>,
   ): Promise<void> {
     const actor = await this.getCurrentSystemAdmin();
@@ -178,7 +181,7 @@ export class ServiceSystemAdmin extends BeanBase {
         this.scope.error.InvalidProtectedReason.throw();
         throw new Error('protected administrator reason is required');
       }
-      await this.executeAccepted(targetId, commandId, operation);
+      await this.executeAccepted(targetId, commandId, clearPermissionCaches, operation);
     } catch (error) {
       await this.appendRejectedAudit(actor.id, targetId, action, reason, commandId, error);
       throw error;
@@ -189,6 +192,7 @@ export class ServiceSystemAdmin extends BeanBase {
   private async executeAccepted(
     targetId: TableIdentity,
     commandId: string,
+    clearPermissionCaches: boolean,
     operation: (context: TypeProtectedOperationContext) => Promise<void>,
   ): Promise<void> {
     const actor = await this.getCurrentSystemAdmin();
@@ -196,7 +200,7 @@ export class ServiceSystemAdmin extends BeanBase {
     const target = await this.getLockedUser(targetId);
     const membership = await this.getLockedSystemAdminMembership(target.id, role.id);
     await operation({ actorId: actor.id, commandId, target, role, membership });
-    this.ctx.db.commit(() => this.bean.permission.clearAllCaches());
+    if (clearPermissionCaches) this.ctx.db.commit(() => this.bean.permission.clearAllCaches());
   }
 
   @Core.transaction({ propagation: 'REQUIRES_NEW' })

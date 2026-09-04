@@ -96,14 +96,10 @@ export class ServiceRole extends BeanBase {
     const requestedRoleIds = this.uniqueRoleIds(command.roleIds);
     const systemAdminRole = await this.getLockedSystemAdminRole();
     const systemAdminRoleId = String(systemAdminRole.id);
-    const requestedRoleIdSet = new Set(requestedRoleIds.map(String));
-    if (requestedRoleIdSet.has(systemAdminRoleId)) {
+    if (requestedRoleIds.some(id => String(id) === systemAdminRoleId)) {
       this.scope.error.BuiltinRoleProtected.throw();
     }
 
-    const memberships = await this.$scope.homeUser.model.roleUser.select({
-      where: { userId: user.id },
-    });
     const requestedRoles = await this.lockRoles(requestedRoleIds);
     for (const role of requestedRoles.values()) {
       if (this.isProtectedMembershipRole(role.name)) {
@@ -113,34 +109,9 @@ export class ServiceRole extends BeanBase {
     if (requestedRoles.size !== requestedRoleIds.length) {
       this.scope.error.InvalidRoleMembership.throw();
     }
-    await this.lockRoles(memberships.map(item => item.roleId));
-
-    const obsoleteMembershipIds = memberships
-      .filter(item => {
-        return (
-          String(item.roleId) !== systemAdminRoleId &&
-          !requestedRoleIdSet.has(String(item.roleId))
-        );
-      })
-      .map(item => item.id);
-    const currentOrdinaryRoleIds = new Set(
-      memberships
-        .filter(item => String(item.roleId) !== systemAdminRoleId)
-        .map(item => String(item.roleId)),
-    );
-    const missingRoleIds = requestedRoleIds.filter(id => !currentOrdinaryRoleIds.has(String(id)));
-
-    if (obsoleteMembershipIds.length) {
-      await this.$scope.homeUser.model.roleUser.deleteBulk(obsoleteMembershipIds);
-    }
-    if (missingRoleIds.length) {
-      await this.$scope.homeUser.model.roleUser.insertBulk(
-        missingRoleIds.map(roleId => ({ userId: user.id, roleId })),
-      );
-    }
-    if (obsoleteMembershipIds.length || missingRoleIds.length) {
-      await this.app.scope('a-rbac').event.policyInvalidated.emit({ kind: 'role' });
-    }
+    await this.bean.role.replaceUserRoleIds(user.id, requestedRoleIds, {
+      preserveRoleIds: [systemAdminRole.id],
+    });
   }
 
   private async selectRoles(

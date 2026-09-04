@@ -76,6 +76,64 @@ describe('policyInvalidation.test.ts', { concurrency: false }, () => {
     }
   });
 
+  it('event:roleMembershipChanged bridges one logical membership mutation', async () => {
+    const instanceName = 'shareTest' as any;
+    let existingRevision: number | undefined;
+    let revisionId: string | undefined;
+    let cacheClearCount = 0;
+    const clearAllCaches = mock.method(app.bean.permission, 'clearAllCaches', async () => {
+      cacheClearCount += 1;
+    });
+    try {
+      await app.bean.executor.mockCtx(
+        async () => {
+          const adminRbac = app.scope('admin-rbac');
+          const revision = adminRbac.service.rbacPolicyRevision;
+          existingRevision = (await adminRbac.model.policyRevision.get({}))?.revision;
+          const before = Number(await revision.current());
+          revisionId = String((await adminRbac.model.policyRevision.get({}))?.id);
+          const policyInvalidated = app.scope('a-rbac').event.policyInvalidated;
+          const originalEmit = policyInvalidated.emit.bind(policyInvalidated);
+          const invalidations: unknown[] = [];
+          const emitMock = mock.method(policyInvalidated, 'emit', async data => {
+            invalidations.push(data);
+            return await originalEmit(data);
+          });
+          try {
+            await app.scope('a-user').event.roleMembershipChanged.emit({
+              userIds: ['membership-user'],
+              roleIds: ['membership-role'],
+            });
+            assert.deepEqual(invalidations, [{ kind: 'role' }]);
+            assert.equal(Number(await revision.current()), before + 1);
+            assert.equal(cacheClearCount, 1);
+          } finally {
+            emitMock.mock.restore();
+          }
+        },
+        { instanceName },
+      );
+    } finally {
+      try {
+        if (revisionId) {
+          await app.bean.executor.mockCtx(
+            async () => {
+              const policyRevision = app.scope('admin-rbac').model.policyRevision;
+              if (existingRevision === undefined) {
+                await policyRevision.deleteById(revisionId!);
+              } else {
+                await policyRevision.updateById(revisionId!, { revision: existingRevision });
+              }
+            },
+            { instanceName },
+          );
+        }
+      } finally {
+        clearAllCaches.mock.restore();
+      }
+    }
+  });
+
   it('event:policyInvalidated advances revision for each PostgreSQL contender', async t => {
     const isPostgres = await app.bean.executor.mockCtx(async () => app.ctx.db.dialectName === 'pg');
     if (!isPostgres) {
