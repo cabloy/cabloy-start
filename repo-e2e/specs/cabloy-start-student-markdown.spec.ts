@@ -26,7 +26,12 @@ function waitForCaptchaCreate(page: Page) {
 function waitForApiResponse(page: Page, method: string, pathname: string) {
   return page.waitForResponse(response => {
     const url = new URL(response.url());
-    return response.request().method() === method && response.ok() && url.pathname === pathname;
+    return (
+      response.request().method() === method &&
+      response.ok() &&
+      url.pathname === pathname &&
+      !response.request().headers()['x-vona-openapi-schema']
+    );
   });
 }
 
@@ -48,8 +53,15 @@ async function loginAsAdmin(page: Page) {
 async function openStudentListPage(page: Page) {
   const response = await page.goto(resourcePath(studentResource), { waitUntil: 'load' });
   expect(response?.ok()).toBeTruthy();
+  await expectStudentListPage(page);
+}
+
+async function expectStudentListPage(page: Page) {
+  await expect(page).toHaveURL(
+    /\/admin\/rest\/resource\/training-student(?:%3A|:|%253A)student(?:[/?#]|$)/,
+  );
   await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
-  await expect(page.getByLabel('Student Name', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Create', exact: true })).toBeVisible();
 }
 
 function descriptionEditor(page: Page) {
@@ -86,7 +98,7 @@ test(
       studentId = (await createResponse.json()).data as TableIdentity;
       expect(studentId).toBeDefined();
 
-      await openStudentListPage(page);
+      await expectStudentListPage(page);
       const row = page.getByRole('row').filter({ hasText: studentName });
       await expect(row).toBeVisible();
       await expect(row.getByRole('button', { name: 'Summary', exact: true })).toBeVisible();
@@ -105,7 +117,7 @@ test(
         content: { descriptionMarkdown: '2' },
       });
 
-      await openStudentListPage(page);
+      await expectStudentListPage(page);
       const updatedRow = page.getByRole('row').filter({ hasText: studentName });
       await expect(updatedRow).toBeVisible();
 
