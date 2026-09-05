@@ -2,11 +2,15 @@ import { catchError } from '@cabloy/utils';
 import assert from 'node:assert';
 import { describe, it } from 'node:test';
 import { app } from 'vona-mock';
+import { resolveVisibleSsrMenuGroups } from 'vona-module-a-ssr';
 
 const ssrSiteName = 'start-siteadmin:admin';
 const staticMenuName = 'training-student:student#student';
 const otherStaticMenuName = 'training-record:record#record';
 const publicMenuName = 'start-siteweb:home';
+const groupMenuName = 'start-siteadmin:management';
+const omittedSiteMenuName = 'admin-role:role';
+const webSsrSiteName = 'start-siteweb:web';
 
 async function removeRole(roleId: string | undefined): Promise<void> {
   if (!roleId) return;
@@ -18,7 +22,7 @@ async function removeRole(roleId: string | undefined): Promise<void> {
 }
 
 describe('roleMenu.test.ts', { concurrency: false }, () => {
-  it('service:roleMenu validates eligible leaves and deletes associations', async () => {
+  it('ATP-ADM-MNU-04: validates exact eligible leaves and rejects stale identities', async () => {
     const roleName = `admin-menu-role-menu-${crypto.randomUUID()}`;
     let roleId: string | undefined;
     try {
@@ -43,7 +47,9 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
 
         for (const unavailable of [
           { roleId: roleId!, ssrSiteName, ssrMenuName: publicMenuName },
+          { roleId: roleId!, ssrSiteName, ssrMenuName: groupMenuName },
           { roleId: roleId!, ssrSiteName: 'start-siteweb:web', ssrMenuName: staticMenuName },
+          { roleId: roleId!, ssrSiteName, ssrMenuName: 'training-student:student' },
           { roleId: roleId!, ssrSiteName, ssrMenuName: 'admin-menu:missing' },
           { roleId: roleId!, ssrSiteName, ssrMenuName: ` ${staticMenuName}` },
         ]) {
@@ -62,6 +68,86 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
 
         const recreated = await service.create(identity);
         assert.equal(String(recreated.roleId), roleId);
+      });
+    } finally {
+      await app.bean.executor.mockCtx(async () => await removeRole(roleId));
+    }
+  });
+
+  it('ATP-ADM-MNU-04: keeps omitted-site menu identities separately addressable per site', async () => {
+    const roleName = `admin-menu-role-menu-omitted-site-${crypto.randomUUID()}`;
+    let roleId: string | undefined;
+    try {
+      await app.bean.executor.mockCtx(async () => {
+        const role = await app.scope('admin-role').service.role.create({
+          name: roleName,
+          title: 'Role menu omitted-site fixture',
+          siteIds: ['admin'],
+        });
+        roleId = String(role.id);
+        const service = app.scope('admin-menu').service.roleMenu;
+        const identities = [
+          { roleId, ssrSiteName, ssrMenuName: omittedSiteMenuName },
+          { roleId, ssrSiteName: webSsrSiteName, ssrMenuName: omittedSiteMenuName },
+        ];
+
+        for (const identity of identities) await service.create(identity);
+        const rows = await app.scope('admin-menu').model.roleMenu.select({ where: { roleId } });
+        assert.deepEqual(
+          rows
+            .map(row => [row.ssrSiteName, row.ssrMenuName])
+            .toSorted(([leftSite], [rightSite]) => leftSite.localeCompare(rightSite)),
+          [
+            [ssrSiteName, omittedSiteMenuName],
+            [webSsrSiteName, omittedSiteMenuName],
+          ],
+        );
+
+        await service.delete(identities[0]);
+        assert.equal(await app.scope('admin-menu').model.roleMenu.get(identities[0]), undefined);
+        assert.ok(await app.scope('admin-menu').model.roleMenu.get(identities[1]));
+      });
+    } finally {
+      await app.bean.executor.mockCtx(async () => await removeRole(roleId));
+    }
+  });
+
+  it('ATP-ADM-MNU-04: ignores retired persisted menu identities during visibility resolution', async () => {
+    const roleName = `admin-menu-role-menu-retired-${crypto.randomUUID()}`;
+    let roleId: string | undefined;
+    try {
+      await app.bean.executor.mockCtx(async () => {
+        const role = await app.scope('admin-role').service.role.create({
+          name: roleName,
+          title: 'Role menu retired identity fixture',
+          siteIds: ['admin'],
+        });
+        roleId = String(role.id);
+        const menus = [{ name: staticMenuName, roles: [] }] as any;
+        const resolve = async () =>
+          await app
+            .scope('a-ssr')
+            .event.resolveMenuVisibility.emit(
+              { ssrSiteName, menus, currentRoleIds: [role.id] },
+              async data => data.menus.filter(menu => menu.roles === undefined),
+            );
+
+        await app.scope('admin-menu').model.roleMenu.insert({
+          roleId,
+          ssrSiteName,
+          ssrMenuName: 'training-student:student#retired',
+        });
+        assert.deepEqual(await resolve(), []);
+
+        await app.scope('admin-menu').service.roleMenu.create({
+          roleId,
+          ssrSiteName,
+          ssrMenuName: staticMenuName,
+        });
+        assert.deepEqual(
+          (await resolve()).map(menu => menu.name),
+          [staticMenuName],
+        );
       });
     } finally {
       await app.bean.executor.mockCtx(async () => await removeRole(roleId));
@@ -323,78 +409,127 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
     }
   });
 
-  it('event:resolveMenuVisibility adds exact eligible associations without a role bypass', async () => {
-    const roleName = `admin-menu-role-menu-visibility-${crypto.randomUUID()}`;
-    let roleId: string | undefined;
+  it('ATP-ADM-MNU-02: resolves public, dynamic, and static leaves across current roles', async () => {
+    const dynamicRoleName = `admin-menu-role-menu-dynamic-${crypto.randomUUID()}`;
+    const staticRoleName = `admin-menu-role-menu-static-${crypto.randomUUID()}`;
+    let dynamicRoleId: string | undefined;
+    let staticRoleId: string | undefined;
     const menus = [
       { name: publicMenuName },
       { name: staticMenuName, roles: [] },
-      { name: otherStaticMenuName, roles: ['someOtherRole'] },
+      { name: otherStaticMenuName, roles: [staticRoleName] },
     ] as any;
     try {
       await app.bean.executor.mockCtx(async () => {
-        const role = await app.scope('admin-role').service.role.create({
-          name: roleName,
-          title: 'Role menu visibility fixture',
-          siteIds: ['admin'],
-        });
-        roleId = String(role.id);
-        await app.scope('admin-menu').service.roleMenu.create({
-          roleId,
-          ssrSiteName,
-          ssrMenuName: staticMenuName,
-        });
-        const visible = await app
-          .scope('a-ssr')
-          .event.resolveMenuVisibility.emit(
-            { ssrSiteName, menus, currentRoleIds: [role.id] },
-            async data => data.menus.filter(menu => menu.roles === undefined),
-          );
+        const [dynamicRole, staticRole] = await Promise.all([
+          app.scope('admin-role').service.role.create({
+            name: dynamicRoleName,
+            title: 'Role menu dynamic visibility fixture',
+            siteIds: ['admin'],
+          }),
+          app.scope('admin-role').service.role.create({
+            name: staticRoleName,
+            title: 'Role menu static visibility fixture',
+            siteIds: ['admin'],
+          }),
+        ]);
+        dynamicRoleId = String(dynamicRole.id);
+        staticRoleId = String(staticRole.id);
+        const resolve = async (currentRoleIds: Array<number | string>) =>
+          await app
+            .scope('a-ssr')
+            .event.resolveMenuVisibility.emit({ ssrSiteName, menus, currentRoleIds }, async data =>
+              data.menus.filter(menu => {
+                if (menu.roles === undefined) return true;
+                if (!menu.roles.length) return false;
+                return currentRoleIds.some(roleId => String(roleId) === String(staticRole.id));
+              }),
+            );
+
         assert.deepEqual(
-          visible.map(menu => menu.name),
-          [publicMenuName, staticMenuName],
+          (await resolve([])).map(menu => menu.name),
+          [publicMenuName],
+        );
+        assert.deepEqual(
+          (await resolve([staticRole.id])).map(menu => menu.name),
+          [publicMenuName, otherStaticMenuName],
+        );
+        const systemAdmin = await app.scope('home-user').model.role.get({
+          name: 'systemAdmin',
+        });
+        assert.ok(systemAdmin);
+        assert.deepEqual(
+          (await resolve([systemAdmin.id])).map(menu => menu.name),
+          [publicMenuName],
         );
 
         await app.scope('admin-menu').service.roleMenu.create({
-          roleId,
+          roleId: dynamicRoleId,
+          ssrSiteName,
+          ssrMenuName: staticMenuName,
+        });
+        assert.deepEqual(
+          (await resolve([dynamicRole.id])).map(menu => menu.name),
+          [publicMenuName, staticMenuName],
+        );
+        assert.deepEqual(
+          (await resolve([dynamicRole.id, staticRole.id])).map(menu => menu.name),
+          [publicMenuName, staticMenuName, otherStaticMenuName],
+        );
+
+        await app.scope('admin-menu').service.roleMenu.create({
+          roleId: dynamicRoleId,
           ssrSiteName,
           ssrMenuName: otherStaticMenuName,
         });
-        const visibleWithBoth = await app
-          .scope('a-ssr')
-          .event.resolveMenuVisibility.emit(
-            { ssrSiteName, menus, currentRoleIds: [role.id] },
-            async data => data.menus.filter(menu => menu.roles === undefined),
-          );
         assert.deepEqual(
-          visibleWithBoth.map(menu => menu.name),
+          (await resolve([dynamicRole.id])).map(menu => menu.name),
           [publicMenuName, staticMenuName, otherStaticMenuName],
         );
 
         await app.scope('admin-menu').service.roleMenu.delete({
-          roleId,
+          roleId: dynamicRoleId,
           ssrSiteName,
           ssrMenuName: staticMenuName,
         });
         await app.scope('admin-menu').service.roleMenu.delete({
-          roleId,
+          roleId: dynamicRoleId,
           ssrSiteName,
           ssrMenuName: otherStaticMenuName,
         });
-        const visibleAfterDelete = await app
-          .scope('a-ssr')
-          .event.resolveMenuVisibility.emit(
-            { ssrSiteName, menus, currentRoleIds: [role.id] },
-            async data => data.menus.filter(menu => menu.roles === undefined),
-          );
         assert.deepEqual(
-          visibleAfterDelete.map(menu => menu.name),
+          (await resolve([dynamicRole.id])).map(menu => menu.name),
           [publicMenuName],
         );
       });
     } finally {
-      await app.bean.executor.mockCtx(async () => await removeRole(roleId));
+      await app.bean.executor.mockCtx(async () => {
+        await removeRole(staticRoleId);
+        await removeRole(dynamicRoleId);
+      });
     }
+  });
+
+  it('ATP-ADM-MNU-03: removes empty menu groups after their visible leaves are filtered', async () => {
+    await app.bean.executor.mockCtx(async () => {
+      const groups = [
+        { name: 'visible-group', title: 'Visible' },
+        { name: 'hidden-group', title: 'Hidden' },
+      ];
+      const menus = [
+        { name: 'visible-leaf', group: 'visible-group' },
+        { name: 'hidden-leaf', group: 'hidden-group', roles: [] },
+      ] as any;
+      const visibleMenus = await app
+        .scope('a-ssr')
+        .event.resolveMenuVisibility.emit({ ssrSiteName, menus, currentRoleIds: [] }, async data =>
+          data.menus.filter(menu => menu.roles === undefined),
+        );
+      assert.deepEqual(
+        resolveVisibleSsrMenuGroups(visibleMenus, groups).map(group => group.name),
+        ['visible-group'],
+      );
+    });
   });
 
   it('event:policyInvalidated removes associations for deleted roles', async () => {

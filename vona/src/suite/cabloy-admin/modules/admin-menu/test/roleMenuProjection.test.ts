@@ -124,4 +124,101 @@ describe('roleMenuProjection.test.ts', { concurrency: false }, () => {
       assert.equal(error?.code, 422);
     });
   });
+
+  it('ATP-ADM-MNU-05: public menu projection omits policy state for dynamic-role callers', async () => {
+    const userIds: string[] = [];
+    let userName!: string;
+    let roleId: string | undefined;
+    const retrieveMenus = async () =>
+      await app.bean.executor.performAction('get', '/home/base/menu/:publicPath', {
+        innerAccess: false,
+        params: { publicPath: 'admin' },
+      });
+    try {
+      await app.bean.executor.mockCtx(async () => {
+        const user = await app.bean.user.register({
+          name: `admin-menu-projection-${crypto.randomUUID()}`,
+        });
+        userIds.push(String(user.id));
+        userName = user.name;
+        await app.bean.user.activate(user);
+        await app.bean.passport.signinMock();
+        try {
+          const role = await app.scope('admin-role').service.role.create({
+            name: `admin-menu-projection-role-${crypto.randomUUID()}`,
+            title: 'Role menu public projection fixture',
+            siteIds: ['admin'],
+          });
+          roleId = String(role.id);
+          await app.scope('home-user').model.roleUser.insert({ userId: user.id, roleId: role.id });
+          await app.scope('admin-menu').service.roleMenu.create({
+            roleId,
+            ssrSiteName,
+            ssrMenuName: configurableMenuName,
+          });
+        } finally {
+          await app.bean.passport.signout();
+        }
+      });
+
+      await app.bean.executor.mockCtx(async () => {
+        const anonymous = await retrieveMenus();
+        assert.equal(
+          (anonymous.menus ?? []).some(
+            (menu: { name: string }) => menu.name === configurableMenuName,
+          ),
+          false,
+        );
+
+        await app.bean.passport.signinSystem('mock', userIds[0] as any, userName);
+        try {
+          const associated = await retrieveMenus();
+          assert.equal(
+            (associated.menus ?? []).some(
+              (menu: { name: string }) => menu.name === configurableMenuName,
+            ),
+            true,
+          );
+          const serialized = JSON.stringify(associated);
+          for (const forbidden of ['roles', 'configurable', 'enabled', 'policyRevision']) {
+            assert.equal(serialized.includes(forbidden), false, forbidden);
+          }
+        } finally {
+          await app.bean.passport.signout();
+        }
+
+        await app.bean.passport.signinMock();
+        try {
+          const staticRole = await retrieveMenus();
+          assert.equal(
+            (staticRole.menus ?? []).some(
+              (menu: { name: string }) => menu.name === configurableMenuName,
+            ),
+            true,
+          );
+        } finally {
+          await app.bean.passport.signout();
+        }
+      });
+    } finally {
+      await app.bean.executor.mockCtx(async () => {
+        if (roleId) {
+          const adminMenu = app.scope('admin-menu');
+          const rows = await adminMenu.model.roleMenu.select({ where: { roleId } });
+          if (rows.length) await adminMenu.model.roleMenu.deleteBulk(rows.map(item => item.id));
+          const memberships = await app
+            .scope('home-user')
+            .model.roleUser.select({ where: { roleId } });
+          if (memberships.length) {
+            await app
+              .scope('home-user')
+              .model.roleUser.deleteBulk(memberships.map(item => item.id));
+          }
+          const role = await app.scope('home-user').model.role.getById(roleId);
+          if (role) await app.scope('admin-role').service.role.delete(role.id);
+        }
+        for (const userId of userIds.toReversed()) await app.bean.user.removeById(userId);
+      });
+    }
+  });
 });

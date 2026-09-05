@@ -1,4 +1,4 @@
-import type { Page, Request, Response } from '@playwright/test';
+import type { Frame, Page, Request, Response } from '@playwright/test';
 
 import { expect, test } from '@playwright/test';
 
@@ -1002,6 +1002,461 @@ test(
       if (firstRoleId !== undefined) await deleteRole(page, firstRoleId);
       if (secondDepartmentId !== undefined) await deleteDepartment(page, secondDepartmentId);
       if (firstDepartmentId !== undefined) await deleteDepartment(page, firstDepartmentId);
+    }
+  },
+);
+
+test(
+  'ATP-ADM-MNU-06: browser menu disclosure never authorizes controller actions',
+  { tag: ['@admin', '@cabloy-admin'] },
+  async ({ page, request }, testInfo) => {
+    const baseURL = testInfo.project.use.baseURL;
+    if (!baseURL) throw new Error('Admin E2E base URL is unavailable');
+    const browser = page.context().browser();
+    if (!browser) throw new Error('Admin E2E browser is unavailable');
+    const account = await registerAccountUser(request, testInfo);
+    const roleName = `ATP Menu Disclosure Role ${testInfo.workerIndex}-${Date.now()}`;
+    let roleId: number | string | undefined;
+    let accountContext: Awaited<ReturnType<typeof page.context>> | undefined;
+    await loginAsAdmin(page);
+    try {
+      roleId = (await createRole(page, roleName)).id;
+      await replaceUserRoles(page, account.id, [roleId]);
+      await requestApi(page, 'PUT', '/api/admin/menu/roleMenu/batch', {
+        roleId,
+        creates: [
+          {
+            ssrSiteName: 'start-siteadmin:admin',
+            ssrMenuName: 'training-student:student#student',
+          },
+        ],
+        deletes: [],
+      });
+
+      accountContext = await browser.newContext({ baseURL });
+      const accountPage = await accountContext.newPage();
+      await loginAsAccountUser(accountPage, account.username, account.password);
+      const publicMenu = await requestApi(accountPage, 'GET', '/api/home/base/menu/admin');
+      const publicMenuPayload = (await publicMenu.json()) as {
+        data?: { menus?: Array<{ name: string }> };
+        menus?: Array<{ name: string }>;
+      };
+      const publicMenuBody = publicMenuPayload.data ?? publicMenuPayload;
+      expect(publicMenuBody.menus).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ name: 'training-student:student#student' }),
+        ]),
+      );
+      for (const forbidden of ['roles', 'configurable', 'enabled', 'policyRevision']) {
+        expect(JSON.stringify(publicMenuBody)).not.toContain(forbidden);
+      }
+
+      for (const path of ['/api/training/student', '/api/training/record']) {
+        expect((await requestApiResponse(accountPage, 'GET', path)).status()).toBe(403);
+      }
+      await requestApi(page, 'PUT', '/api/admin/menu/roleMenu/batch', {
+        roleId,
+        creates: [],
+        deletes: [
+          {
+            ssrSiteName: 'start-siteadmin:admin',
+            ssrMenuName: 'training-student:student#student',
+          },
+        ],
+      });
+      for (const path of ['/api/training/student', '/api/training/record']) {
+        expect((await requestApiResponse(accountPage, 'GET', path)).status()).toBe(403);
+      }
+    } finally {
+      if (accountContext) await accountContext.close();
+      if (roleId !== undefined) await deleteRole(page, roleId);
+      await removeAccountFixture(request, account);
+    }
+  },
+);
+
+test(
+  'ATP-ADM-MNU-08: Role details server-render, hydrate, and compose the menu editor',
+  { tag: ['@admin', '@cabloy-admin'] },
+  async ({ page }) => {
+    const pageErrors = collectPageErrors(page);
+    const consoleErrors = collectConsoleErrors(page);
+    const suffix = `${test.info().workerIndex}-${Date.now()}`;
+    const roleName = `ATP Menu Role ${suffix}`;
+    await loginAsAdmin(page);
+
+    let roleId: number | string | undefined;
+    try {
+      roleId = (await createRole(page, roleName)).id;
+      const response = await page.goto(`${resourcePath('admin-role:role')}/${roleId}`, {
+        waitUntil: 'load',
+      });
+      expect(response?.ok()).toBeTruthy();
+      const html = await response!.text();
+      expect(html).toContain('data-server-rendered');
+      expect(html.toLowerCase()).not.toContain('data-zova-hydrated');
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+
+      const detail = page.locator('main');
+      const menuAuthorizationTab = detail.getByRole('tab', {
+        name: 'Menu Authorization',
+        exact: true,
+      });
+      const configurationPath = `/api/admin/menu/roleMenu/roles/${roleId}/configuration`;
+      await menuAuthorizationTab.click();
+      await expect(menuAuthorizationTab).toHaveAttribute('aria-selected', 'true');
+      const studentAuthorization = detail.getByRole('checkbox', {
+        name: 'Toggle menu authorization for Student',
+        exact: true,
+      });
+      await expect(studentAuthorization).toBeVisible();
+      await expect(studentAuthorization).not.toBeChecked();
+      await expect(detail.getByText('Public', { exact: true }).first()).toBeVisible();
+      await expect(
+        detail.getByRole('checkbox', {
+          name: 'Toggle menu group authorization for Management',
+          exact: true,
+        }),
+      ).toHaveCount(1);
+      const refetched = page.waitForResponse(response => {
+        return (
+          response.request().method() === 'GET' &&
+          new URL(response.url()).pathname === configurationPath
+        );
+      });
+      const updated = waitForApiResponse(page, 'PUT', /^\/api\/admin\/menu\/roleMenu\/batch$/);
+      await studentAuthorization.click();
+      const updateBody = (await updated).request().postDataJSON() as {
+        roleId: number | string;
+        creates: Array<{ ssrSiteName: string; ssrMenuName: string }>;
+        deletes: unknown[];
+      };
+      expect(updateBody).toEqual({
+        roleId: String(roleId),
+        creates: [
+          {
+            ssrSiteName: 'start-siteadmin:admin',
+            ssrMenuName: 'training-student:student#student',
+          },
+        ],
+        deletes: [],
+      });
+      expect((await refetched).ok()).toBeTruthy();
+      await expect(studentAuthorization).toBeChecked();
+      expect(pageErrors).toEqual([]);
+      expect(consoleErrors).toEqual([]);
+    } finally {
+      if (roleId !== undefined) await deleteRole(page, roleId);
+    }
+  },
+);
+
+test(
+  'ATP-ADM-MNU-08: group menu toggles persist configurable descendant leaves only',
+  { tag: ['@admin', '@cabloy-admin'] },
+  async ({ page }) => {
+    const pageErrors = collectPageErrors(page);
+    const consoleErrors = collectConsoleErrors(page);
+    const roleName = `ATP Menu Group Role ${test.info().workerIndex}-${Date.now()}`;
+    await loginAsAdmin(page);
+
+    let roleId: number | string | undefined;
+    try {
+      roleId = (await createRole(page, roleName)).id;
+      await page.goto(`${resourcePath('admin-role:role')}/${roleId}`, { waitUntil: 'load' });
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+      const detail = page.locator('main');
+      await detail.getByRole('tab', { name: 'Menu Authorization', exact: true }).click();
+      const publicChip = detail.getByText('Public', { exact: true }).first();
+      await expect(publicChip).toBeVisible();
+      await expect(publicChip.locator('xpath=..').getByRole('checkbox')).toHaveCount(0);
+
+      const groupToggle = detail.getByRole('checkbox', {
+        name: 'Toggle menu group authorization for Management',
+        exact: true,
+      });
+      await expect(groupToggle).toBeVisible();
+      const updated = waitForApiResponse(page, 'PUT', /^\/api\/admin\/menu\/roleMenu\/batch$/);
+      await groupToggle.click();
+      const updateBody = (await updated).request().postDataJSON() as {
+        roleId: number | string;
+        creates: Array<{ ssrSiteName: string; ssrMenuName: string }>;
+        deletes: Array<{ ssrSiteName: string; ssrMenuName: string }>;
+      };
+      const changedMenus = [...updateBody.creates, ...updateBody.deletes];
+      expect(updateBody.roleId).toBe(String(roleId));
+      expect(changedMenus).not.toHaveLength(0);
+      for (const menu of changedMenus) {
+        expect(menu).toEqual({
+          ssrSiteName: expect.any(String),
+          ssrMenuName: expect.any(String),
+        });
+        expect(menu.ssrMenuName).not.toBe('management');
+        expect(menu.ssrMenuName).not.toBe('start-siteadmin:management');
+      }
+      expect(changedMenus).not.toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            ssrSiteName: 'start-siteadmin:admin',
+            ssrMenuName: 'management',
+          }),
+          expect.objectContaining({
+            ssrSiteName: 'start-siteadmin:admin',
+            ssrMenuName: 'start-siteadmin:management',
+          }),
+        ]),
+      );
+      expect(pageErrors).toEqual([]);
+      expect(consoleErrors).toEqual([]);
+    } finally {
+      if (roleId !== undefined) await deleteRole(page, roleId);
+    }
+  },
+);
+
+test(
+  'ATP-ADM-MNU-07: role-menu mutations reload only the current role-holder browser',
+  { tag: ['@admin', '@cabloy-admin'] },
+  async ({ page, request }, testInfo) => {
+    const baseURL = testInfo.project.use.baseURL;
+    if (!baseURL) throw new Error('Admin E2E base URL is unavailable');
+    const browser = page.context().browser();
+    if (!browser) throw new Error('Admin E2E browser is unavailable');
+    const suffix = `${testInfo.workerIndex}-${Date.now()}`;
+    const heldRoleName = `ATP Menu Current Role ${suffix}`;
+    const replacementRoleName = `ATP Menu Replacement Role ${suffix}`;
+    const unrelatedRoleName = `ATP Menu Unrelated Role ${suffix}`;
+    const userId = 1;
+    await loginAsAdmin(page);
+
+    let heldRoleId: number | string | undefined;
+    let replacementRoleId: number | string | undefined;
+    let unrelatedRoleId: number | string | undefined;
+    let unrelatedAccount: RegisteredAccount | undefined;
+    let originalNonSystemAdminRoleIds: Array<number | string> | undefined;
+    let subjectContext: ReturnType<typeof page.context> | undefined;
+    try {
+      const originalRoles = await getUserRoles(page, userId);
+      originalNonSystemAdminRoleIds = originalRoles
+        .filter(role => !role.systemAdmin)
+        .map(role => role.id);
+      heldRoleId = (await createRole(page, heldRoleName)).id;
+      replacementRoleId = (await createRole(page, replacementRoleName)).id;
+      unrelatedRoleId = (await createRole(page, unrelatedRoleName)).id;
+      unrelatedAccount = await registerAccountUser(request, testInfo);
+      await replaceUserRoles(page, userId, [...originalNonSystemAdminRoleIds, heldRoleId]);
+
+      subjectContext = await browser.newContext({ baseURL });
+      const subjectPage = await subjectContext.newPage();
+      await loginAsAdmin(subjectPage);
+
+      let otherBrowserReloads = 0;
+      const countOtherBrowserReload = (frame: Frame) => {
+        if (frame === page.mainFrame()) otherBrowserReloads += 1;
+      };
+      page.on('framenavigated', countOtherBrowserReload);
+      try {
+        await subjectPage.goto(`${resourcePath('admin-role:role')}/${heldRoleId}`, {
+          waitUntil: 'load',
+        });
+        await expect(subjectPage.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+        const heldDetail = subjectPage.locator('main');
+        await heldDetail.getByRole('tab', { name: 'Menu Authorization', exact: true }).click();
+        const heldCheckbox = heldDetail.getByRole('checkbox', {
+          name: 'Toggle menu authorization for Student',
+          exact: true,
+        });
+        await expect(heldCheckbox).toBeVisible();
+        await expect(heldCheckbox).not.toBeChecked();
+        const updatedHeldRole = waitForApiResponse(
+          subjectPage,
+          'PUT',
+          new RegExp(`/api/admin/menu/roleMenu/batch$`),
+        );
+        const reloadedSubject = subjectPage.waitForEvent(
+          'framenavigated',
+          frame => frame === subjectPage.mainFrame(),
+        );
+        await heldCheckbox.click();
+        expect((await updatedHeldRole).ok()).toBeTruthy();
+        await reloadedSubject;
+        await expect(subjectPage.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+        await expect(subjectPage).not.toHaveURL(/\/admin\/login(?:\?|$)/);
+        const currentPassport = await requestApi(
+          subjectPage,
+          'GET',
+          '/api/home/user/passport/current',
+        );
+        const currentPassportPayload = (await currentPassport.json()) as {
+          data?: { roles: Array<{ id: number | string }> };
+          roles?: Array<{ id: number | string }>;
+        };
+        expect((currentPassportPayload.data ?? currentPassportPayload).roles).toEqual(
+          expect.arrayContaining([expect.objectContaining({ id: heldRoleId })]),
+        );
+        await subjectPage.goto(`${resourcePath('admin-role:role')}/${heldRoleId}`, {
+          waitUntil: 'load',
+        });
+        await expect(subjectPage.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+        const reloadedHeldDetail = subjectPage.locator('main');
+        await reloadedHeldDetail
+          .getByRole('tab', { name: 'Menu Authorization', exact: true })
+          .click();
+        await expect(
+          reloadedHeldDetail.getByRole('checkbox', {
+            name: 'Toggle menu authorization for Student',
+            exact: true,
+          }),
+        ).toBeChecked();
+        expect(otherBrowserReloads).toBe(0);
+
+        const replacementRequestPath = `/api/admin/role/user/${userId}/roles`;
+        await subjectPage.goto(`${resourcePath('admin-user:user')}/${userId}`, {
+          waitUntil: 'load',
+        });
+        await expect(subjectPage.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+        await subjectPage
+          .getByRole('button', {
+            name: 'Replace Non-System-Administrator Roles',
+            exact: true,
+          })
+          .click();
+        const replacementDialog = subjectPage.getByRole('dialog');
+        await expect(replacementDialog).toBeVisible();
+        const currentRolePicker = replacementDialog.locator('.v-select');
+        await currentRolePicker.click();
+        const currentReplacementOptions = subjectPage.locator('.v-overlay__content').filter({
+          has: subjectPage.locator('.v-list-item-title'),
+        });
+        await expect(
+          currentReplacementOptions.getByText('System Administrator', { exact: true }),
+        ).toHaveCount(0);
+        await currentReplacementOptions.getByText(heldRoleName, { exact: true }).click();
+        await currentReplacementOptions.getByText(replacementRoleName, { exact: true }).click();
+        await currentRolePicker.press('Escape');
+        const reloadedForReplacement = subjectPage.waitForEvent(
+          'framenavigated',
+          frame => frame === subjectPage.mainFrame(),
+        );
+        const currentUserReplacement = waitForApiResponse(
+          subjectPage,
+          'PUT',
+          new RegExp(`${replacementRequestPath}$`),
+        );
+        await replacementDialog.getByRole('button', { name: 'Save', exact: true }).click();
+        const currentReplacementBody = (await currentUserReplacement).request().postDataJSON() as {
+          roleIds: Array<number | string>;
+        };
+        expect(currentReplacementBody.roleIds).toEqual(expect.arrayContaining([replacementRoleId]));
+        expect(currentReplacementBody.roleIds).not.toEqual(
+          expect.arrayContaining(
+            originalRoles.filter(role => role.systemAdmin).map(role => role.id),
+          ),
+        );
+        await reloadedForReplacement;
+        await expect(subjectPage.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+        await expect(subjectPage).not.toHaveURL(/\/admin\/login(?:\?|$)/);
+        const passportAfterReplacement = await requestApi(
+          subjectPage,
+          'GET',
+          '/api/home/user/passport/current',
+        );
+        const passportAfterReplacementPayload = (await passportAfterReplacement.json()) as {
+          data?: { roles: Array<{ id: number | string }> };
+          roles?: Array<{ id: number | string }>;
+        };
+        expect(
+          (passportAfterReplacementPayload.data ?? passportAfterReplacementPayload).roles,
+        ).toEqual(expect.arrayContaining([expect.objectContaining({ id: replacementRoleId })]));
+        await subjectPage.goto(`${resourcePath('admin-role:role')}/${replacementRoleId}`, {
+          waitUntil: 'load',
+        });
+        await expect(subjectPage.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+        expect(otherBrowserReloads).toBe(0);
+
+        await subjectPage.goto(`${resourcePath('admin-user:user')}/${unrelatedAccount.id}`, {
+          waitUntil: 'load',
+        });
+        await expect(subjectPage.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+        await subjectPage
+          .getByRole('button', {
+            name: 'Replace Non-System-Administrator Roles',
+            exact: true,
+          })
+          .click();
+        const unrelatedUserDialog = subjectPage.getByRole('dialog');
+        await expect(unrelatedUserDialog).toBeVisible();
+        const unrelatedUserRolePicker = unrelatedUserDialog.locator('.v-select');
+        await unrelatedUserRolePicker.click();
+        const unrelatedUserOptions = subjectPage.locator('.v-overlay__content').filter({
+          has: subjectPage.locator('.v-list-item-title'),
+        });
+        await unrelatedUserOptions.getByText(unrelatedRoleName, { exact: true }).click();
+        await unrelatedUserRolePicker.press('Escape');
+        let unrelatedUserReloads = 0;
+        const countUnrelatedUserReload = (frame: Frame) => {
+          if (frame === subjectPage.mainFrame()) unrelatedUserReloads += 1;
+        };
+        subjectPage.on('framenavigated', countUnrelatedUserReload);
+        try {
+          const unrelatedUserReplacement = waitForApiResponse(
+            subjectPage,
+            'PUT',
+            new RegExp(`/api/admin/role/user/${unrelatedAccount.id}/roles$`),
+          );
+          await unrelatedUserDialog.getByRole('button', { name: 'Save', exact: true }).click();
+          expect((await unrelatedUserReplacement).ok()).toBeTruthy();
+          await subjectPage.waitForTimeout(250);
+          expect(unrelatedUserReloads).toBe(0);
+          expect(otherBrowserReloads).toBe(0);
+        } finally {
+          subjectPage.off('framenavigated', countUnrelatedUserReload);
+        }
+
+        await subjectPage.goto(`${resourcePath('admin-role:role')}/${unrelatedRoleId}`, {
+          waitUntil: 'load',
+        });
+        await expect(subjectPage.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+        const unrelatedDetail = subjectPage.locator('main');
+        await unrelatedDetail.getByRole('tab', { name: 'Menu Authorization', exact: true }).click();
+        const unrelatedCheckbox = unrelatedDetail.getByRole('checkbox', {
+          name: 'Toggle menu authorization for Student',
+          exact: true,
+        });
+        await expect(unrelatedCheckbox).toBeVisible();
+        await expect(unrelatedCheckbox).not.toBeChecked();
+        let unrelatedRoleReloads = 0;
+        const countUnrelatedRoleReload = (frame: Frame) => {
+          if (frame === subjectPage.mainFrame()) unrelatedRoleReloads += 1;
+        };
+        subjectPage.on('framenavigated', countUnrelatedRoleReload);
+        try {
+          const updatedUnrelatedRole = waitForApiResponse(
+            subjectPage,
+            'PUT',
+            new RegExp(`/api/admin/menu/roleMenu/batch$`),
+          );
+          await unrelatedCheckbox.click();
+          expect((await updatedUnrelatedRole).ok()).toBeTruthy();
+          await expect(unrelatedCheckbox).toBeChecked();
+          await subjectPage.waitForTimeout(250);
+          expect(unrelatedRoleReloads).toBe(0);
+          expect(otherBrowserReloads).toBe(0);
+        } finally {
+          subjectPage.off('framenavigated', countUnrelatedRoleReload);
+        }
+      } finally {
+        page.off('framenavigated', countOtherBrowserReload);
+      }
+    } finally {
+      if (subjectContext) await subjectContext.close();
+      if (originalNonSystemAdminRoleIds) {
+        await replaceUserRoles(page, userId, originalNonSystemAdminRoleIds);
+      }
+      if (unrelatedAccount) await removeAccountFixture(request, unrelatedAccount);
+      if (unrelatedRoleId !== undefined) await deleteRole(page, unrelatedRoleId);
+      if (replacementRoleId !== undefined) await deleteRole(page, replacementRoleId);
+      if (heldRoleId !== undefined) await deleteRole(page, heldRoleId);
     }
   },
 );
