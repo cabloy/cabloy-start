@@ -10,10 +10,6 @@ Cabloy Start is a public, MIT-licensed business-system edition baseline for [Cab
 
 Cabloy Basic and Cabloy Start share the Cabloy architecture, but intentionally differ in their UI layers, frontend flavors, modules, SSR baselines, and project assets. Create a Cabloy Basic project with `npm create cabloy`; clone this repository to use Cabloy Start.
 
-## Release status
-
-This checkout's root manifest declares Cabloy Start version `5.0.0`. It is checkout metadata, not evidence of a formal Cabloy Start release: there is currently no Start tag, GitHub Release, npm publication, or Start-specific release workflow.
-
 ## Prerequisites
 
 - Git
@@ -22,9 +18,7 @@ This checkout's root manifest declares Cabloy Start version `5.0.0`. It is check
 - Redis `>=7.2.6`
 - One documented development database baseline: SQLite, MySQL `>=8`, or PostgreSQL `>=16`
 
-These data-service versions are documented development baselines, not an exhaustive compatibility guarantee. SQLite setups using `better-sqlite3` may require a working native build toolchain for `node-gyp`.
-
-CI currently validates Ubuntu with Node.js 24. Setup guidance is available for Windows and macOS, but Cabloy Start does not publish a formal cross-platform support matrix.
+SQLite setups using `better-sqlite3` may require a working native build toolchain for `node-gyp`.
 
 ## Get started
 
@@ -63,7 +57,7 @@ npm run upgrade:dry-run
 npm run upgrade
 ```
 
-These commands synchronize framework-owned content from the public Cabloy package. They do not download a Cabloy Start release or publish one.
+These commands synchronize framework-owned content from the public Cabloy package.
 
 ## Support
 
