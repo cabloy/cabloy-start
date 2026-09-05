@@ -574,6 +574,8 @@ Traceability: `PRD-ADM-MNU-02`, `PRD-ADM-MNU-03`, `PRD-ADM-MNU-06`; `SRS-ADM-MNU
 
 #### WBS-ADM-90-07: Prove focused role-menu policy, isolation, and browser behavior
 
+Dependencies: `WBS-ADM-100-01` and `WBS-ADM-100-02`; it executes `ATP-ADM-MNU-01`–`ATP-ADM-MNU-08` against the extracted `admin-menu` ownership.
+
 Primary areas:
 
 - `admin-menu` and `admin-role` module-local tests
@@ -598,7 +600,7 @@ Traceability: `PRD-ADM-MNU-*`; `SRS-ADM-MNU-01`–`SRS-ADM-MNU-13`; `ATP-ADM-MNU
 
 ### Phase 100: Extract the paired admin-menu module
 
-Dependencies: `WBS-ADM-90-08`. This refactoring moves role-menu domain ownership from the existing `admin-rbac` implementation to paired `admin-menu` modules. It preserves the approved menu-visibility behavior and independent authorization boundary, creates no new suite or Admin site, intentionally permits menu API and generated-consumer renaming during development, and keeps each affected `vonaModule.fileVersion` at `1`.
+Dependencies: `WBS-ADM-90-01`–`WBS-ADM-90-06`. This refactoring moves role-menu domain ownership from the existing `admin-rbac` implementation to paired `admin-menu` modules before current-revision Phase 90 behavior acceptance. It preserves the approved menu-visibility behavior and independent authorization boundary, creates no new suite or Admin site, intentionally permits menu API and generated-consumer renaming during development, and keeps each affected `vonaModule.fileVersion` at `1`. `WBS-ADM-90-07` executes `ATP-ADM-MNU-01`–`ATP-ADM-MNU-08` against the extracted ownership; `WBS-ADM-100-03` then closes the extraction contract-loop and regression proof before `WBS-ADM-90-08` performs the combined Phase 90 evidence closure.
 
 #### WBS-ADM-100-01: Establish paired admin-menu module ownership
 
@@ -648,6 +650,8 @@ Traceability: `PRD-ADM-MNU-01`–`PRD-ADM-MNU-06`; `SRS-ADM-MNU-03`–`SRS-ADM-M
 
 #### WBS-ADM-100-03: Close the extraction contract loop and regression proof
 
+Dependencies: `WBS-ADM-100-01`, `WBS-ADM-100-02`, and `WBS-ADM-90-07`.
+
 Primary areas:
 
 - affected Vona/Zova metadata and generated consumers
@@ -669,6 +673,8 @@ Acceptance checks:
 Traceability: `PRD-ADM-MNU-*`; `SRS-ADM-MNU-10`, `SRS-ADM-MNU-14`, `SRS-ADM-MNU-15`; `ATP-ADM-MNU-01`–`ATP-ADM-MNU-09`.
 
 #### WBS-ADM-90-08: Close the Vona/Zova contract loop and Phase 90 evidence
+
+Dependencies: `WBS-ADM-90-07` and `WBS-ADM-100-03`.
 
 Primary areas:
 
