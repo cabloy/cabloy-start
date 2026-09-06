@@ -5,11 +5,17 @@ import { app } from 'vona-mock';
 describe('roleMenuOpenapi.test.ts', () => {
   it('emits only the protected role-menu configuration contract', async () => {
     await app.bean.executor.mockCtx(async () => {
-      const controller = app.bean.onion.controller
-        .getOnionsEnabledCached()
-        .find(item => item.beanOptions.beanFullName === 'admin-menu.controller.roleMenu')
-        ?.beanOptions.beanClass;
+      const controllers = app.bean.onion.controller.getOnionsEnabledCached();
+      const controller = controllers.find(
+        item => item.beanOptions.beanFullName === 'admin-menu.controller.roleMenu',
+      )?.beanOptions.beanClass;
       if (!controller) throw new Error('admin-menu.controller.roleMenu not found');
+      assert.equal(
+        controllers.some(
+          item => item.beanOptions.beanFullName === 'admin-rbac.controller.roleMenu',
+        ),
+        false,
+      );
 
       const expectations = [
         {
@@ -71,6 +77,16 @@ describe('roleMenuOpenapi.test.ts', () => {
             `#/components/schemas/${expectation.response}`,
           );
         }
+      }
+
+      for (const doc of contractDocs.values()) {
+        const operationIds = Object.values(doc.paths ?? {})
+          .flatMap(path => Object.values(path as Record<string, { operationId?: string }>))
+          .map(operation => operation.operationId);
+        assert.equal(
+          operationIds.some(operationId => operationId?.startsWith('AdminRbacRoleMenu_')),
+          false,
+        );
       }
 
       const catalogDoc = contractDocs.get('catalog');

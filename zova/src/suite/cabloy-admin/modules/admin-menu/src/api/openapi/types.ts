@@ -1700,6 +1700,8 @@ export interface components {
           }
         | undefined;
       siteIds: string[];
+      /** @default false */
+      builtin?: boolean;
     };
     'home-user.dto.passportJwt': {
       passport: components['schemas']['home-user.dto.passport'];
@@ -1744,6 +1746,7 @@ export interface components {
       id: string;
       token: string;
     };
+    /** @description Create Student Training Record */
     'training-record.dto.recordCreate': {
       /** @description Training Record Name */
       name: string;
@@ -1887,7 +1890,8 @@ export interface components {
       /** @default true */
       signed?: boolean;
     };
-    'training-record.dto.recordView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_88947ca8c18d5d4ad1f377d379e77df5fe5c0ce5':
+    /** @description View Student Training Record */
+    'training-record.dto.recordView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_79ca06e0fa89c8f250537d4a0b8a8cc1e39df05a':
       | {
           /**
            * Format: date-time
@@ -1964,6 +1968,7 @@ export interface components {
             | undefined;
         }
       | undefined;
+    /** @description Update Student Training Record */
     'training-record.dto.recordUpdate': {
       /** @description Training Record Name */
       name: string;
@@ -2009,6 +2014,7 @@ export interface components {
     'training-record.dto.recordBulkDelete': {
       ids: (number | string)[];
     };
+    /** @description Create Student */
     'training-student.dto.studentCreate': {
       /** @description Student Name */
       name: string;
@@ -2215,7 +2221,8 @@ export interface components {
           signed?: boolean;
         }
       | undefined;
-    'training-student.dto.studentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_8752bd7d3491e7061a679318d3adb0c202acec11':
+    /** @description View Student */
+    'training-student.dto.studentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_1587266c819c8b70731e8ba64e7460d7f2809951':
       | {
           /**
            * Format: date-time
@@ -2335,6 +2342,7 @@ export interface components {
           _descriptionMarkdown?: string | undefined;
         }
       | undefined;
+    /** @description Update Student */
     'training-student.dto.studentUpdate': {
       /** @description Student Name */
       name: string;
@@ -2581,27 +2589,27 @@ export interface components {
       list: components['schemas']['admin-department.dto.departmentMembershipSummary'][];
     };
     'admin-department.dto.departmentMembershipSummary': {
+      /** @description ID */
       id: number | string;
       /** @description User */
       userId: number | string;
-      user: components['schemas']['admin-department.dto.departmentUserSummary_626802c24df1498cec99aab0854fedf90c9b6dd3_0aab216abd3467dd07f61c69172266c2441af477_c4656f36fd04b7e6710079f758ab6240097007f7'];
       /** @description Position */
       position?: string | undefined;
       /** @description Enabled */
       enabled: boolean;
-      /** @description Primary */
       primary: boolean;
+      user?: {
+        /** @description ID */
+        id: number | string;
+        /** @description User Name */
+        name: string;
+        /** @description Avatar */
+        avatar?: string | undefined;
+      };
       /** @description Department Manager */
       manager: boolean;
       /** @description Operations */
       _operationsRow?: unknown;
-    };
-    /** @description User */
-    'admin-department.dto.departmentUserSummary_626802c24df1498cec99aab0854fedf90c9b6dd3_0aab216abd3467dd07f61c69172266c2441af477_c4656f36fd04b7e6710079f758ab6240097007f7': {
-      id: number | string;
-      /** @description User */
-      name: string;
-      avatar?: unknown;
     };
     'admin-department.dto.departmentMembershipCreate': {
       /** @description User */
@@ -2612,6 +2620,7 @@ export interface components {
     'admin-department.dto.departmentMembershipUpdate': {
       /** @description Position */
       position?: string | undefined;
+      /** @description Enabled */
       enabled?: boolean | undefined;
       /** @description Department Manager */
       managerMembershipId?: number | string | undefined;
@@ -2623,7 +2632,7 @@ export interface components {
         }
       | undefined;
     'admin-department.dto.departmentMembershipPrimary': {
-      /** @description Primary */
+      /** @description Default Department */
       primary: boolean;
     };
     'admin-department.dto.departmentManagerUpdate': {
@@ -2961,6 +2970,11 @@ export interface components {
         | undefined;
       /** @description Site IDs */
       siteIds: string[];
+      /**
+       * @description Built-in
+       * @default false
+       */
+      builtin?: boolean;
       sites?: components['schemas']['home-base.dto.siteCatalogSelectResItem'][] | undefined;
     };
     'admin-role.dto.roleCreate': {
@@ -2999,11 +3013,16 @@ export interface components {
         | undefined;
       /** @description Site IDs */
       siteIds: string[];
+      /**
+       * @description Built-in
+       * @default false
+       */
+      builtin?: boolean;
       sites?: components['schemas']['home-base.dto.siteCatalogSelectResItem'][] | undefined;
       /** @description Operations */
       _operationsRow?: unknown;
     };
-    'admin-role.dto.roleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_00362228eea4e802d6e2c7867458da4616aecbcc':
+    'admin-role.dto.roleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_dfa5393c924ec7673aadfc44138eb510ba67ff8c':
       | {
           /** @description ID */
           id: number | string;
@@ -3019,14 +3038,19 @@ export interface components {
             | undefined;
           /** @description Site IDs */
           siteIds: string[];
+          /**
+           * @description Built-in
+           * @default false
+           */
+          builtin?: boolean;
           sites?: components['schemas']['home-base.dto.siteCatalogSelectResItem'][] | undefined;
         }
       | undefined;
     'admin-role.dto.roleUpdate': {
       /** @description Role Name */
-      name: string;
+      name?: string | undefined;
       /** @description Role Title */
-      title: string;
+      title?: string | undefined;
       /** @description Role Locales */
       titleLocales?:
         | {
@@ -3149,17 +3173,22 @@ export interface components {
       systemAdmin: boolean;
     };
     'admin-user.dto.userDepartmentMembershipSummary': {
+      /** @description ID */
       id: number | string;
       /** @description Department */
       departmentId: number | string;
-      /** @description Department Name */
-      departmentName: string;
       /** @description Position */
       position?: string | undefined;
       /** @description Enabled */
       enabled: boolean;
-      /** @description Primary */
+      /** @description Default Department */
       primary: boolean;
+      department?: {
+        /** @description ID */
+        id: number | string;
+        /** @description Department Name */
+        name: string;
+      };
     };
     'admin-user.dto.userUpdate': {
       /** @description User Name */
@@ -4336,7 +4365,7 @@ export interface operations {
           'application/json': {
             code: string;
             message: string;
-            data?: components['schemas']['training-record.dto.recordView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_88947ca8c18d5d4ad1f377d379e77df5fe5c0ce5'];
+            data?: components['schemas']['training-record.dto.recordView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_79ca06e0fa89c8f250537d4a0b8a8cc1e39df05a'];
           };
         };
       };
@@ -4511,7 +4540,7 @@ export interface operations {
           'application/json': {
             code: string;
             message: string;
-            data?: components['schemas']['training-student.dto.studentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_8752bd7d3491e7061a679318d3adb0c202acec11'];
+            data?: components['schemas']['training-student.dto.studentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_1587266c819c8b70731e8ba64e7460d7f2809951'];
           };
         };
       };
@@ -5657,7 +5686,7 @@ export interface operations {
           'application/json': {
             code: string;
             message: string;
-            data?: components['schemas']['admin-role.dto.roleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_00362228eea4e802d6e2c7867458da4616aecbcc'];
+            data?: components['schemas']['admin-role.dto.roleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_dfa5393c924ec7673aadfc44138eb510ba67ff8c'];
           };
         };
       };

@@ -112,8 +112,9 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
     }
   });
 
-  it('ATP-ADM-MNU-04: ignores retired persisted menu identities during visibility resolution', async () => {
+  it('ATP-ADM-MNU-09: reconciles a retired persisted identity to the exact current leaf', async () => {
     const roleName = `admin-menu-role-menu-retired-${crypto.randomUUID()}`;
+    const retiredMenuName = 'training-student:student#retired';
     let roleId: string | undefined;
     try {
       await app.bean.executor.mockCtx(async () => {
@@ -131,23 +132,40 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
               { ssrSiteName, menus, currentRoleIds: [role.id] },
               async data => data.menus.filter(menu => menu.roles === undefined),
             );
+        const projection = app.scope('admin-menu').service.roleMenuProjection;
+        const service = app.scope('admin-menu').service.roleMenu;
+        const retired = { ssrSiteName, ssrMenuName: retiredMenuName };
+        const current = { ssrSiteName, ssrMenuName: staticMenuName };
 
-        await app.scope('admin-menu').model.roleMenu.insert({
-          roleId,
-          ssrSiteName,
-          ssrMenuName: 'training-student:student#retired',
-        });
+        await app.scope('admin-menu').model.roleMenu.insert({ roleId, ...retired });
         assert.deepEqual(await resolve(), []);
+        const retiredConfiguration = await projection.roleConfiguration(roleId);
+        const retiredCurrentMenu = retiredConfiguration.list
+          .flatMap(site => site.menus)
+          .find(menu => menu.ssrMenuName === staticMenuName);
+        assert.equal(retiredCurrentMenu?.enabled, false);
 
-        await app.scope('admin-menu').service.roleMenu.create({
-          roleId,
-          ssrSiteName,
-          ssrMenuName: staticMenuName,
-        });
+        const [unavailable, unavailableError] = await catchError(() =>
+          service.create({ roleId, ...retired }),
+        );
+        assert.equal(unavailable, undefined);
+        assert.equal(unavailableError?.code, 422);
+
+        await service.batch({ roleId, creates: [current], deletes: [retired] });
+        assert.equal(
+          await app.scope('admin-menu').model.roleMenu.get({ roleId, ...retired }),
+          undefined,
+        );
+        assert.ok(await app.scope('admin-menu').model.roleMenu.get({ roleId, ...current }));
         assert.deepEqual(
           (await resolve()).map(menu => menu.name),
           [staticMenuName],
         );
+        const currentConfiguration = await projection.roleConfiguration(roleId);
+        const currentMenu = currentConfiguration.list
+          .flatMap(site => site.menus)
+          .find(menu => menu.ssrMenuName === staticMenuName);
+        assert.equal(currentMenu?.enabled, true);
       });
     } finally {
       await app.bean.executor.mockCtx(async () => await removeRole(roleId));
