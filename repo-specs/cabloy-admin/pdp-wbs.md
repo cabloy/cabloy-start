@@ -598,6 +598,30 @@ Acceptance checks:
 
 Traceability: `PRD-ADM-MNU-*`; `SRS-ADM-MNU-01`–`SRS-ADM-MNU-13`; `ATP-ADM-MNU-01`–`ATP-ADM-MNU-08`.
 
+#### WBS-ADM-90-08: Close the Vona/Zova contract loop and Phase 90 evidence
+
+Dependencies: `WBS-ADM-90-07` and `WBS-ADM-100-03`.
+
+Primary areas:
+
+- owning Vona contracts and generated Zova consumers
+- Start Admin SSR/REST outputs and Vona dependency handoff
+- Phase 90 evidence/progress reconciliation
+
+Tasks:
+
+- generate consumers from Vona contract truth and verify that no generated consumer is hand-edited;
+- run targeted role-menu tests, `npm run test` after the version-path edit, paired Start Admin build, dependency handoff, and applicable quality/browser checks;
+- reconcile PRD/SRS/WBS/ATP identifiers, retained redacted evidence, ADR status, and progress only after the required acceptance procedures pass.
+
+Acceptance checks:
+
+- `npm run build:zova:admin` completes before `npm run deps:vona`; REST-only output is not accepted as a reverse-chain substitute;
+- `ATP-ADM-MNU-09` and all applicable preceding ATP evidence identify revision, environment, procedure, and outcome;
+- Phase 90 remains `not-started` until implementation/evidence exists and becomes verified only through retained traceable proof.
+
+Traceability: `PRD-ADM-MNU-*`; `SRS-ADM-MNU-14`, `SRS-ADM-MNU-15`; `ATP-ADM-MNU-01`–`ATP-ADM-MNU-09`.
+
 ### Phase 100: Extract the paired admin-menu module
 
 Dependencies: `WBS-ADM-90-01`–`WBS-ADM-90-06`. This refactoring moves role-menu domain ownership from the existing `admin-rbac` implementation to paired `admin-menu` modules before current-revision Phase 90 behavior acceptance. It preserves the approved menu-visibility behavior and independent authorization boundary, creates no new suite or Admin site, intentionally permits menu API and generated-consumer renaming during development, and keeps each affected `vonaModule.fileVersion` at `1`. `WBS-ADM-90-07` executes `ATP-ADM-MNU-01`–`ATP-ADM-MNU-08` against the extracted ownership; `WBS-ADM-100-03` then closes the extraction contract-loop and regression proof before `WBS-ADM-90-08` performs the combined Phase 90 evidence closure.
@@ -671,30 +695,6 @@ Acceptance checks:
 - no generated consumer is hand-edited, and the new evidence identifies the extraction revision, environment, procedure, and result.
 
 Traceability: `PRD-ADM-MNU-*`; `SRS-ADM-MNU-10`, `SRS-ADM-MNU-14`, `SRS-ADM-MNU-15`; `ATP-ADM-MNU-01`–`ATP-ADM-MNU-09`.
-
-#### WBS-ADM-90-08: Close the Vona/Zova contract loop and Phase 90 evidence
-
-Dependencies: `WBS-ADM-90-07` and `WBS-ADM-100-03`.
-
-Primary areas:
-
-- owning Vona contracts and generated Zova consumers
-- Start Admin SSR/REST outputs and Vona dependency handoff
-- Phase 90 evidence/progress reconciliation
-
-Tasks:
-
-- generate consumers from Vona contract truth and verify that no generated consumer is hand-edited;
-- run targeted role-menu tests, `npm run test` after the version-path edit, paired Start Admin build, dependency handoff, and applicable quality/browser checks;
-- reconcile PRD/SRS/WBS/ATP identifiers, retained redacted evidence, ADR status, and progress only after the required acceptance procedures pass.
-
-Acceptance checks:
-
-- `npm run build:zova:admin` completes before `npm run deps:vona`; REST-only output is not accepted as a reverse-chain substitute;
-- `ATP-ADM-MNU-09` and all applicable preceding ATP evidence identify revision, environment, procedure, and outcome;
-- Phase 90 remains `not-started` until implementation/evidence exists and becomes verified only through retained traceable proof.
-
-Traceability: `PRD-ADM-MNU-*`; `SRS-ADM-MNU-14`, `SRS-ADM-MNU-15`; `ATP-ADM-MNU-01`–`ATP-ADM-MNU-09`.
 
 ## Future Implementation Commands
 
