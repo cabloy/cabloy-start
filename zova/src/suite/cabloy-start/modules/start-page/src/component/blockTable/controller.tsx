@@ -1,3 +1,4 @@
+import type { DataTableHeader } from 'vuetify';
 import type { IComponentOptions } from 'zova';
 import type { IJsxRenderContextPage, IResourceBlockOptionsBase } from 'zova-module-a-openapi';
 
@@ -42,6 +43,9 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
           }}
           data={$$page.data as unknown as TData[]}
           schema={$$page.schemaRow}
+          schemaOrder={$$page.schemaOrder}
+          sorting={$$page.sorting}
+          onSortingChange={updater => $$page.onSortingChange(updater)}
           tableScope={$$page.jsxCelScope}
           slotDefault={$$table => {
             return this._renderTable($$table);
@@ -54,20 +58,46 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
   public _renderTable($$table: BeanControllerTableBase<TData>) {
     const { $$page } = this.$$renderContext;
     const table = $$table.table;
-    const headers = table.getFlatHeaders().map(header => {
-      const columnDefHeader = header.column.columnDef.header;
+    const headers: DataTableHeader[] = table.getFlatHeaders().map(header => {
+      const column = header.column;
+      const columnDefHeader = column.columnDef.header;
+      const rest = (column.columnDef.meta as any)?.rest;
       return {
         title:
           typeof columnDefHeader === 'function'
             ? columnDefHeader(header.getContext())
             : columnDefHeader,
         key: header.id,
+        align: rest?.align === 'left' ? 'start' : rest?.align === 'right' ? 'end' : rest?.align,
+        width: rest?.width,
+        minWidth: rest?.width,
+        fixed: rest?.fixed === 'left' ? 'start' : rest?.fixed === 'right' ? 'end' : undefined,
+        sortable: column.getCanSort(),
       };
     });
+    const sortableKeys = new Set(
+      headers.filter(header => header.sortable).map(header => header.key),
+    );
     const dataTableOptions: VDataTableServer['$props'] = {
       'loading': !$$page.paged,
       'itemsLength': $$page.paged?.total as string | number,
       'itemsPerPage': $$page.queryPaged.pageSize,
+      'multiSort': false,
+      'sortBy': $$page.sorting.map(sorting => ({
+        key: sorting.id,
+        order: sorting.desc ? 'desc' : 'asc',
+      })),
+      'onUpdate:sortBy': sortBy => {
+        const sorting = sortBy?.[0];
+        $$page.onSortingChange(
+          sorting &&
+            typeof sorting.key === 'string' &&
+            sortableKeys.has(sorting.key) &&
+            (sorting.order === 'asc' || sorting.order === 'desc')
+            ? [{ id: sorting.key, desc: sorting.order === 'desc' }]
+            : [],
+        );
+      },
       'onUpdate:options': options => {
         $$page.setPageSize(options.itemsPerPage);
         $$page.gotoPage(options.page);

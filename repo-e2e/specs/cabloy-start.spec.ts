@@ -48,6 +48,18 @@ async function openStudentListPage(page: Page) {
   await expect(page.getByLabel('Student Name', { exact: true })).toBeVisible();
 }
 
+function waitForStudentSelect(page: Page, requireSuccess = true) {
+  return page.waitForResponse(response => {
+    const url = new URL(response.url());
+    return (
+      response.request().method() === 'GET' &&
+      (!requireSuccess || response.ok()) &&
+      url.pathname === '/api/training/student' &&
+      !response.request().headers()['x-vona-openapi-schema']
+    );
+  });
+}
+
 async function openStudentCreatePage(page: Page) {
   await openStudentListPage(page);
   await page.getByRole('button', { name: 'Create', exact: true }).click();
@@ -391,6 +403,100 @@ test(
     await page.setViewportSize({ width: 1024, height: 900 });
     await expect(drawer).toHaveClass(/\bv-navigation-drawer--active\b/);
     expect(pageErrors).toEqual([]);
+  },
+);
+
+test(
+  'ATP-START-TABLE-01: Student table submits server sorting and applies column metadata',
+  { tag: ['@admin', '@flow'] },
+  async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    const pageErrors = collectPageErrors(page);
+    await loginAsAdmin(page);
+
+    const studentName = `Table E2E ${Date.now()}`;
+    const accessToken = (await page.context().cookies()).find(
+      cookie => cookie.name === 'token',
+    )?.value;
+    expect(accessToken).toBeTruthy();
+    let studentId: string | number | undefined;
+    try {
+      const createResult = await page.evaluate(
+        async ({ data, accessToken }) => {
+          const response = await fetch('/api/training/student', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          });
+          return { ok: response.ok, data: (await response.json()).data };
+        },
+        { data: { name: studentName, mobile: '13812345678', level: 1 }, accessToken },
+      );
+      expect(createResult.ok).toBeTruthy();
+      studentId = createResult.data;
+      expect(['string', 'number']).toContain(typeof studentId);
+
+      const initialSelect = waitForStudentSelect(page);
+      await openStudentListPage(page);
+      await initialSelect;
+      await page.setViewportSize({ width: 800, height: 900 });
+
+      const nameHeader = page.getByRole('columnheader', { name: 'Student Name', exact: true });
+      const operationsHeader = page.getByRole('columnheader', { name: 'Operations', exact: true });
+      await expect(nameHeader).toBeVisible();
+      await expect(operationsHeader).toBeVisible();
+      await expect(nameHeader).toHaveCSS('position', 'sticky');
+      await expect(nameHeader).toHaveCSS('min-width', '240px');
+      await expect(nameHeader).toHaveCSS('text-align', 'start');
+      await expect(operationsHeader).toHaveCSS('position', 'sticky');
+      await expect(operationsHeader).toHaveCSS('min-width', '360px');
+      await expect(operationsHeader).toHaveCSS('text-align', 'center');
+
+      const ascendingResponse = waitForStudentSelect(page, false);
+      await nameHeader.click();
+      const ascending = await ascendingResponse;
+      expect(ascending.status()).toBe(200);
+      const ascendingUrl = new URL(ascending.url());
+      expect(JSON.parse(ascendingUrl.searchParams.get('orders')!)).toEqual([['name', 'asc']]);
+
+      const descendingResponse = waitForStudentSelect(page, false);
+      await nameHeader.click();
+      const descending = await descendingResponse;
+      expect(descending.status()).toBe(200);
+      const descendingUrl = new URL(descending.url());
+      expect(JSON.parse(descendingUrl.searchParams.get('orders')!)).toEqual([['name', 'desc']]);
+
+      const tableWrapper = page
+        .locator('.v-table__wrapper')
+        .filter({ has: page.locator('table') })
+        .first();
+      await expect(tableWrapper).toBeVisible();
+      expect(
+        await tableWrapper.evaluate(element => element.scrollWidth > element.clientWidth),
+      ).toBeTruthy();
+      await tableWrapper.evaluate(element => {
+        element.scrollLeft = element.scrollWidth;
+      });
+      await expect(operationsHeader).toHaveCSS('position', 'sticky');
+      expect(pageErrors).toEqual([]);
+    } finally {
+      if (studentId !== undefined) {
+        const deleteResult = await page.evaluate(
+          async ({ id, accessToken }) => {
+            const response = await fetch(`/api/training/student/deleteForce/${id}`, {
+              method: 'DELETE',
+              headers: { Authorization: `Bearer ${accessToken}` },
+            });
+            return { ok: response.ok };
+          },
+          { id: studentId, accessToken },
+        );
+        expect(deleteResult.ok).toBeTruthy();
+      }
+    }
   },
 );
 

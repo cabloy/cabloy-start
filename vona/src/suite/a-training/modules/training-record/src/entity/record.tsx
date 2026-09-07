@@ -48,7 +48,15 @@ export class EntityRecord extends EntityBase {
   @Api.field(
     v.title($locale('Student')),
     v.required(),
+    v.filter({
+      table: 'trainingStudent',
+      joinType: 'innerJoin',
+      joinOn: ['studentId', 'trainingStudent.id'],
+      originalName: 'name',
+      op: '_includesI_',
+    }),
     ZovaRender.order(2),
+    ZovaRender.column({ enableSorting: true }),
     ZovaRender.field('start-resource:formFieldResourcePicker', {
       resource: $resourceName('training-student:student'),
     }),

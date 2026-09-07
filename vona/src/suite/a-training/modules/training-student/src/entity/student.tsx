@@ -19,11 +19,12 @@ export interface IEntityOptionsStudent extends IDecoratorEntityOptions {}
 @Entity<IEntityOptionsStudent>('trainingStudent', {
   openapi: { title: $locale('Student') },
   fields: {
-    id: $makeMetadata(ZovaRender.order(1, 'core')),
+    id: $makeMetadata(ZovaRender.order(1, 'core'), ZovaRender.column({ width: 70, fixed: 'left' })),
     iid: $makeMetadata(ZovaRender.visible(false)),
     deleted: $makeMetadata(ZovaRender.visible(false)),
     createdAt: $makeMetadata(
       ZovaRender.order(-2, 'max'),
+      ZovaRender.column({ align: 'center', width: 180, enableSorting: true }),
       ZovaRender.field('start-date:formFieldDate'),
       ZovaRender.cell('start-date:date'),
     ),
@@ -40,6 +41,13 @@ export class EntityStudent extends EntityBase {
     v.required(),
     v.min(2),
     ZovaRender.order(1),
+    ZovaRender.column({
+      align: 'left',
+      width: 240,
+      fixed: 'left',
+      enableSorting: true,
+      sortDescFirst: true,
+    }),
     ZovaRender.cell('start-table:actionView'),
   )
   name: string;
@@ -88,6 +96,7 @@ export class EntityStudent extends EntityBase {
     v.title($locale('Level')),
     v.required(),
     ZovaRender.order(5),
+    ZovaRender.column({ align: 'center', width: 140, enableSorting: true }),
     ZovaRender.field('training-student:formFieldLevel', {
       items: studentLevelItems,
       placeholder: $locale('Level'),
