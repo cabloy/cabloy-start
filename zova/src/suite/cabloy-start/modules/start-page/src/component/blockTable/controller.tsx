@@ -22,11 +22,21 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
   static $componentOptions: IComponentOptions = { inheritAttrs: false, deepExtendDefault: true };
 
   tableRef: BeanControllerTableBase<TData>;
+  private cTable: string;
 
   @Use({ injectionScope: 'host' })
   $$renderContext: IJsxRenderContextPage;
 
-  protected async __init__() {}
+  protected async __init__() {
+    this.cTable = this.$style({
+      $nest: {
+        '&.v-data-table .v-table__wrapper > table > thead > tr > th.v-data-table__th--sortable:not(.v-data-table__th--sorted) .v-data-table-header__sort-icon':
+          {
+            opacity: 0.5,
+          },
+      },
+    });
+  }
 
   get permissions() {
     return this.$$renderContext.$celScope.permissions;
@@ -79,6 +89,7 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
       headers.filter(header => header.sortable).map(header => header.key),
     );
     const dataTableOptions: VDataTableServer['$props'] = {
+      'class': this.cTable,
       'loading': !$$page.paged,
       'itemsLength': $$page.paged?.total as string | number,
       'itemsPerPage': $$page.queryPaged.pageSize,

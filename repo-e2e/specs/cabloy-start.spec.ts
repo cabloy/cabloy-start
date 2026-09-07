@@ -451,9 +451,16 @@ test(
       await expect(nameHeader).toHaveCSS('position', 'sticky');
       await expect(nameHeader).toHaveCSS('min-width', '240px');
       await expect(nameHeader).toHaveCSS('text-align', 'start');
+      await expect(nameHeader).toHaveClass(/\bv-data-table__th--sortable\b/);
+      await expect(nameHeader).not.toHaveClass(/\bv-data-table__th--sorted\b/);
+      await expect(nameHeader.locator('.v-data-table-header__sort-icon')).toHaveCSS(
+        'opacity',
+        '0.5',
+      );
       await expect(operationsHeader).toHaveCSS('position', 'sticky');
       await expect(operationsHeader).toHaveCSS('min-width', '360px');
       await expect(operationsHeader).toHaveCSS('text-align', 'center');
+      await expect(operationsHeader.locator('.v-data-table-header__sort-icon')).toHaveCount(0);
 
       const ascendingResponse = waitForStudentSelect(page, false);
       await nameHeader.click();
@@ -461,6 +468,9 @@ test(
       expect(ascending.status()).toBe(200);
       const ascendingUrl = new URL(ascending.url());
       expect(JSON.parse(ascendingUrl.searchParams.get('orders')!)).toEqual([['name', 'asc']]);
+      await expect(nameHeader).toHaveClass(/\bv-data-table__th--sorted\b/);
+      await expect(nameHeader).toHaveAttribute('aria-sort', 'ascending');
+      await expect(nameHeader.locator('.v-data-table-header__sort-icon')).toHaveCSS('opacity', '1');
 
       const descendingResponse = waitForStudentSelect(page, false);
       await nameHeader.click();
@@ -468,6 +478,8 @@ test(
       expect(descending.status()).toBe(200);
       const descendingUrl = new URL(descending.url());
       expect(JSON.parse(descendingUrl.searchParams.get('orders')!)).toEqual([['name', 'desc']]);
+      await expect(nameHeader).toHaveAttribute('aria-sort', 'descending');
+      await expect(nameHeader.locator('.v-data-table-header__sort-icon')).toHaveCSS('opacity', '1');
 
       const tableWrapper = page
         .locator('.v-table__wrapper')
