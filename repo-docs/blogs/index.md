@@ -1,5 +1,7 @@
 ---
 title: Blogs
+pageClass: cabloy-blogs-index
+aside: false
 ---
 
 # Blogs

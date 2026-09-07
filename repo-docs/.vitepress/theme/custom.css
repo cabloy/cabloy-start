@@ -63,6 +63,27 @@
   color: #fdba74;
 }
 
+@media (min-width: 960px) {
+  .cabloy-blogs-index .VPDoc:not(.has-sidebar) .container,
+  .cabloy-blogs-index .VPDoc:not(.has-sidebar) .content {
+    max-width: 1440px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .cabloy-blogs-article .VPDoc.has-aside:not(.has-sidebar) .container {
+    max-width: 1216px;
+  }
+
+  .cabloy-blogs-article .VPDoc.has-aside:not(.has-sidebar) .content {
+    max-width: 960px;
+  }
+
+  .cabloy-blogs-article .VPDoc.has-aside:not(.has-sidebar) .content-container {
+    max-width: 896px;
+  }
+}
+
 .cabloy-blog-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));

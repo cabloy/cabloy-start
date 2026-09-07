@@ -97,6 +97,7 @@ const fullstackGroups = [
       },
       { text: 'Framework Performance', link: '/fullstack/framework-performance' },
       { text: 'Vona + Zova Integration', link: '/fullstack/vona-zova-integration' },
+      { text: 'SSR Site and Flavor Setup', link: '/fullstack/ssr-site-and-flavor-setup' },
       { text: 'A-Pay Payment Suite', link: '/fullstack/a-pay-payment-suite' },
       {
         text: 'Payment Provider Sandbox Configuration',
@@ -191,19 +192,49 @@ export default defineConfig({
   base: '/',
   ignoreDeadLinks: [/^https?:\/\/localhost/],
   head: gaHead,
+  transformPageData(pageData) {
+    if (!/^blogs\/[^/]+\/index\.md$/.test(pageData.relativePath)) return;
+
+    const pageClass = [pageData.frontmatter.pageClass, 'cabloy-blogs-article']
+      .filter(Boolean)
+      .join(' ');
+    return {
+      frontmatter: {
+        ...pageData.frontmatter,
+        pageClass,
+      },
+    };
+  },
   markdown: {
     lineNumbers: true,
   },
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },
+      {
+        text: 'Docs',
+        items: [
+          { text: 'Fullstack', link: '/fullstack/introduction', activeMatch: '^/fullstack/' },
+          { text: 'Backend (Vona)', link: '/backend/introduction', activeMatch: '^/backend/' },
+          { text: 'Frontend (Zova)', link: '/frontend/introduction', activeMatch: '^/frontend/' },
+        ],
+      },
       { text: 'Blogs', link: '/blogs/', activeMatch: '^/blogs/' },
-      { text: 'Fullstack', link: '/fullstack/introduction', activeMatch: '^/fullstack/' },
-      { text: 'Backend (Vona)', link: '/backend/introduction', activeMatch: '^/backend/' },
-      { text: 'Frontend (Zova)', link: '/frontend/introduction', activeMatch: '^/frontend/' },
       { text: 'Editions', link: '/editions/overview', activeMatch: '^/editions/' },
       { text: 'AI Development', link: '/ai/introduction', activeMatch: '^/ai/' },
       { text: 'Reference', link: '/reference/introduction', activeMatch: '^/reference/' },
+      {
+        component: 'GitHubRepositoriesNav',
+        props: {
+          repositories: [
+            { text: 'github.com/cabloy/cabloy', link: 'https://github.com/cabloy/cabloy' },
+            {
+              text: 'github.com/cabloy/cabloy-start',
+              link: 'https://github.com/cabloy/cabloy-start',
+            },
+          ],
+        },
+      },
     ],
     sidebar: {
       '/fullstack/': fullstackGroups,
@@ -634,7 +665,6 @@ export default defineConfig({
       ],
       '/reference/': referenceGroups,
     },
-    socialLinks: [{ icon: 'github', link: 'https://github.com/cabloy/cabloy' }],
     search: {
       provider: 'local',
     },
