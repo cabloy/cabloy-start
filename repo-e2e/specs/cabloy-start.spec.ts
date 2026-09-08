@@ -447,8 +447,10 @@ test(
       await page.setViewportSize({ width: 800, height: 900 });
 
       const nameHeader = page.getByRole('columnheader', { name: 'Student Name', exact: true });
+      const levelHeader = page.getByRole('columnheader', { name: 'Training Stage', exact: true });
       const operationsHeader = page.getByRole('columnheader', { name: 'Operations', exact: true });
       await expect(nameHeader).toBeVisible();
+      await expect(levelHeader).toBeVisible();
       await expect(operationsHeader).toBeVisible();
       await expect(nameHeader).toHaveCSS('position', 'sticky');
       await expect(nameHeader).toHaveCSS('min-width', '240px');
@@ -464,34 +466,42 @@ test(
       await expect(operationsHeader).toHaveCSS('text-align', 'center');
       await expect(operationsHeader.locator('.v-data-table-header__sort-icon')).toHaveCount(0);
 
-      const ascendingResponse = waitForStudentSelect(page, false);
-      await nameHeader.click();
-      const ascending = await ascendingResponse;
-      expect(ascending.status()).toBe(200);
-      const ascendingUrl = new URL(ascending.url());
-      expect(JSON.parse(ascendingUrl.searchParams.get('orders')!)).toEqual([['name', 'asc']]);
-      await expect(nameHeader).toHaveClass(/\bv-data-table__th--sorted\b/);
-      await expect(nameHeader).toHaveAttribute('aria-sort', 'ascending');
-      await expect(nameHeader.locator('.v-data-table-header__sort-icon')).toHaveCSS('opacity', '1');
-
       const descendingResponse = waitForStudentSelect(page, false);
       await nameHeader.click();
       const descending = await descendingResponse;
       expect(descending.status()).toBe(200);
       const descendingUrl = new URL(descending.url());
       expect(JSON.parse(descendingUrl.searchParams.get('orders')!)).toEqual([['name', 'desc']]);
+      await expect(nameHeader).toHaveClass(/\bv-data-table__th--sorted\b/);
       await expect(nameHeader).toHaveAttribute('aria-sort', 'descending');
       await expect(nameHeader.locator('.v-data-table-header__sort-icon')).toHaveCSS('opacity', '1');
 
-      const ascendingAgainResponse = waitForStudentSelect(page, false);
+      const ascendingResponse = waitForStudentSelect(page, false);
       await nameHeader.click();
-      const ascendingAgain = await ascendingAgainResponse;
-      expect(ascendingAgain.status()).toBe(200);
-      const ascendingAgainUrl = new URL(ascendingAgain.url());
-      expect(JSON.parse(ascendingAgainUrl.searchParams.get('orders')!)).toEqual([['name', 'asc']]);
-      await expect(nameHeader).toHaveClass(/\bv-data-table__th--sorted\b/);
+      const ascending = await ascendingResponse;
+      expect(ascending.status()).toBe(200);
+      const ascendingUrl = new URL(ascending.url());
+      expect(JSON.parse(ascendingUrl.searchParams.get('orders')!)).toEqual([['name', 'asc']]);
       await expect(nameHeader).toHaveAttribute('aria-sort', 'ascending');
       await expect(nameHeader.locator('.v-data-table-header__sort-icon')).toHaveCSS('opacity', '1');
+
+      // This repeats the initial descending query, so the model may serve it from its query cache.
+      await nameHeader.click();
+      await expect(nameHeader).toHaveClass(/\bv-data-table__th--sorted\b/);
+      await expect(nameHeader).toHaveAttribute('aria-sort', 'descending');
+      await expect(nameHeader.locator('.v-data-table-header__sort-icon')).toHaveCSS('opacity', '1');
+
+      const levelAscendingResponse = waitForStudentSelect(page, false);
+      await levelHeader.click();
+      const levelAscending = await levelAscendingResponse;
+      expect(levelAscending.status()).toBe(200);
+      const levelAscendingUrl = new URL(levelAscending.url());
+      expect(JSON.parse(levelAscendingUrl.searchParams.get('orders')!)).toEqual([['level', 'asc']]);
+      await expect(levelHeader).toHaveAttribute('aria-sort', 'ascending');
+
+      // Returning to the same descending query may use the warmed query cache.
+      await nameHeader.click();
+      await expect(nameHeader).toHaveAttribute('aria-sort', 'descending');
 
       const tableWrapper = page
         .locator('.v-table__wrapper')

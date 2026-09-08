@@ -100,15 +100,29 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
         order: sorting.desc ? 'desc' : 'asc',
       })),
       'onUpdate:sortBy': sortBy => {
-        const sorting = sortBy?.[0];
-        $$page.onSortingChange(
-          sorting &&
-            typeof sorting.key === 'string' &&
-            sortableKeys.has(sorting.key) &&
-            (sorting.order === 'asc' || sorting.order === 'desc')
-            ? [{ id: sorting.key, desc: sorting.order === 'desc' }]
-            : [],
-        );
+        const emittedSorting = sortBy?.[0];
+        const currentSorting = $$page.sorting[0];
+        const key =
+          emittedSorting && typeof emittedSorting.key === 'string'
+            ? emittedSorting.key
+            : sortBy?.length === 0
+              ? currentSorting?.id
+              : undefined;
+        const column = key && sortableKeys.has(key) ? table.getColumn(key) : undefined;
+        if (!column) {
+          $$page.onSortingChange([]);
+          return;
+        }
+        const emittedOrder = emittedSorting?.order;
+        const order =
+          currentSorting?.id !== column.id
+            ? column.getFirstSortDir()
+            : emittedOrder === 'asc' || emittedOrder === 'desc'
+              ? emittedOrder
+              : currentSorting.desc
+                ? 'asc'
+                : 'desc';
+        $$page.onSortingChange([{ id: column.id, desc: order === 'desc' }]);
       },
       'onUpdate:options': options => {
         $$page.setPageSize(options.itemsPerPage);
