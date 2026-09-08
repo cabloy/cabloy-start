@@ -94,6 +94,7 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
       'itemsLength': $$page.paged?.total as string | number,
       'itemsPerPage': $$page.queryPaged.pageSize,
       'multiSort': false,
+      'mustSort': true,
       'sortBy': $$page.sorting.map(sorting => ({
         key: sorting.id,
         order: sorting.desc ? 'desc' : 'asc',

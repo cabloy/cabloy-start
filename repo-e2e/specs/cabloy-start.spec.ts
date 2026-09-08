@@ -441,7 +441,9 @@ test(
 
       const initialSelect = waitForStudentSelect(page);
       await openStudentListPage(page);
-      await initialSelect;
+      const initial = await initialSelect;
+      const initialUrl = new URL(initial.url());
+      expect(initialUrl.searchParams.has('orders')).toBe(false);
       await page.setViewportSize({ width: 800, height: 900 });
 
       const nameHeader = page.getByRole('columnheader', { name: 'Student Name', exact: true });
@@ -479,6 +481,16 @@ test(
       const descendingUrl = new URL(descending.url());
       expect(JSON.parse(descendingUrl.searchParams.get('orders')!)).toEqual([['name', 'desc']]);
       await expect(nameHeader).toHaveAttribute('aria-sort', 'descending');
+      await expect(nameHeader.locator('.v-data-table-header__sort-icon')).toHaveCSS('opacity', '1');
+
+      const ascendingAgainResponse = waitForStudentSelect(page, false);
+      await nameHeader.click();
+      const ascendingAgain = await ascendingAgainResponse;
+      expect(ascendingAgain.status()).toBe(200);
+      const ascendingAgainUrl = new URL(ascendingAgain.url());
+      expect(JSON.parse(ascendingAgainUrl.searchParams.get('orders')!)).toEqual([['name', 'asc']]);
+      await expect(nameHeader).toHaveClass(/\bv-data-table__th--sorted\b/);
+      await expect(nameHeader).toHaveAttribute('aria-sort', 'ascending');
       await expect(nameHeader.locator('.v-data-table-header__sort-icon')).toHaveCSS('opacity', '1');
 
       const tableWrapper = page
