@@ -15,4 +15,4 @@ export interface IDtoOptionsDepartmentSelectReq extends IDecoratorDtoOptions {}
     name: $makeSchema(v.optional(), v.trim(), z.string()),
   },
 })
-export class DtoDepartmentSelectReq extends $Dto.queryPage(EntityDepartment, ['name']) {}
+export class DtoDepartmentSelectReq extends $Dto.queryPage(EntityDepartment, ['name', 'createdAt']) {}

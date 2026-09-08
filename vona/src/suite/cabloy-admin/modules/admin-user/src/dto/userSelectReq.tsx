@@ -47,4 +47,5 @@ export class DtoUserSelectReq extends $Dto.queryPage(DtoUserBase, [
   'name',
   'activated',
   'accountStatus',
+  'createdAt',
 ]) {}

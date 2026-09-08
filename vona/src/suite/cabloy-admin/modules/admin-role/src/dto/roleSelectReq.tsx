@@ -22,4 +22,4 @@ export interface IDtoOptionsRoleSelectReq extends IDecoratorDtoOptions {}
     ),
   },
 })
-export class DtoRoleSelectReq extends $Dto.queryPage(DtoRoleBase, ['name', 'title']) {}
+export class DtoRoleSelectReq extends $Dto.queryPage(DtoRoleBase, ['name', 'title', 'createdAt']) {}
