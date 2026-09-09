@@ -30,6 +30,45 @@ npm run init
 
 `npm run init` installs dependencies, prepares generated local configuration, initializes the Vona and Zova workspaces, and generates the required frontend and backend artifacts. It is more than a package-install command.
 
+## Editions
+
+Cabloy is available through two complete project baselines, each maintained in its own repository:
+
+- **[Cabloy Basic](https://github.com/cabloy/cabloy)** — the public framework and reference edition, licensed under [MIT](https://github.com/cabloy/cabloy/blob/main/LICENSE), with a DaisyUI + Tailwind CSS UI layer and an e-commerce-oriented demonstration suite.
+- **[Cabloy Start](https://github.com/cabloy/cabloy-start)** — a public starter edition, licensed under [MIT](https://github.com/cabloy/cabloy-start/blob/main/LICENSE), with a Vuetify UI layer and built-in system-management and authorization demonstrations.
+
+Both editions share Cabloy’s Vona + Zova architecture, CLI-first workflows, bidirectional type synchronization, and AI Spec-Driven Development model. They differ primarily in their default UI layer, included demonstration suites, and out-of-the-box application baseline.
+
+For fuller guidance on choosing an edition and working in an existing checkout, see [Cabloy Editions](https://cabloy.com/editions/overview).
+
+**Legend:** ✅ Included in the default edition baseline · — Not included in the default edition baseline
+
+### Default UI Layer
+
+| Area       | Cabloy Basic           | Cabloy Start |
+| ---------- | ---------------------- | ------------ |
+| UI library | DaisyUI + Tailwind CSS | Vuetify      |
+
+### Included Core Capabilities
+
+| Capability           | Description                                                                       | Cabloy Basic | Cabloy Start |
+| -------------------- | --------------------------------------------------------------------------------- | ------------ | ------------ |
+| Master–detail forms  | Supports nested master–detail forms, including multiple levels of detail records. | ✅           | ✅           |
+| Image uploads        | Supports local storage and Cloudflare storage backends.                           | ✅           | ✅           |
+| File uploads         | Supports local storage and Cloudflare storage backends.                           | ✅           | ✅           |
+| Payment integrations | Demonstrates simulated payments, PayPal, and Stripe integrations.                 | ✅           | ✅           |
+| Markdown editor      | Includes image uploads and syntax highlighting.                                   | ✅           | ✅           |
+
+### Included Demonstration Suites
+
+| Suite                       | What it demonstrates                                                                                                                       | Cabloy Basic | Cabloy Start |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------ | ------------ |
+| Student Training Management | Master–detail forms, nested detail records, image uploads, and file uploads. Cabloy Start additionally demonstrates data-scope-based RBAC. | ✅           | ✅           |
+| E-commerce                  | A complete Admin site, Web site, personal center, payment flows, Markdown editing, and related capabilities.                               | ✅           | —            |
+| System Management           | User management, role management, department management, RBAC authorization, and menu authorization.                                       | —            | ✅           |
+
+> “Not included” means that the suite is not part of the default edition baseline. It does not limit what can be built with Cabloy.
+
 ## Common commands
 
 | Purpose                                  | Command                    |
