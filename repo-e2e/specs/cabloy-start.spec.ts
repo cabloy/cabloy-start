@@ -10,6 +10,25 @@ function collectPageErrors(page: Page) {
   return errors;
 }
 
+async function expectSiteEntryTables(page: Page, integratedTitle: string, standaloneTitle: string) {
+  await expect(page.getByText(integratedTitle, { exact: true })).toBeVisible();
+  await expect(page.getByText(standaloneTitle, { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole('link', { name: 'http://localhost:7102/', exact: true }),
+  ).toHaveAttribute('href', 'http://localhost:7102/');
+  await expect(
+    page.getByRole('link', { name: 'http://localhost:7102/admin/', exact: true }),
+  ).toHaveAttribute('href', 'http://localhost:7102/admin/');
+  await expect(
+    page.getByRole('link', { name: 'http://localhost:9000/', exact: true }),
+  ).toHaveAttribute('href', 'http://localhost:9000/');
+  await expect(
+    page.getByRole('link', { name: 'http://localhost:9000/admin/', exact: true }),
+  ).toHaveAttribute('href', 'http://localhost:9000/admin/');
+  await expect(page.locator('a[href^="http://localhost:"]')).toHaveCount(4);
+  await expect(page.getByText(/Commerce/)).toHaveCount(0);
+}
+
 function waitForCaptchaCreate(page: Page) {
   return page.waitForResponse(response => {
     const url = new URL(response.url());
@@ -36,7 +55,7 @@ async function loginAsAdmin(page: Page) {
   await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
   const dashboardResponse = await page.goto('/admin/', { waitUntil: 'load' });
   await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
-  await expect(page.getByText('Dashboard')).toBeVisible();
+  await expectSiteEntryTables(page, 'Vona integrated SSR', 'Zova standalone SSR');
   return dashboardResponse;
 }
 
@@ -288,8 +307,7 @@ test(
     expect(documentResponse?.ok()).toBeTruthy();
     await expect(page).toHaveURL(/\/$/);
     await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
-    await expect(page.getByText('Web: en-us')).toBeVisible();
-    await expect(page.getByText('Dashboard')).toHaveCount(0);
+    await expectSiteEntryTables(page, 'Vona integrated SSR', 'Zova standalone SSR');
     await expect(page.locator('body')).toBeVisible();
     await expect(page).not.toHaveTitle(/error/i);
     expect(pageErrors).toEqual([]);
@@ -306,8 +324,7 @@ test(
     await expect(page).toHaveURL(/\/zh-cn$/);
     await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
     await expect(page.locator('html')).toHaveAttribute('lang', 'zh-cn');
-    await expect(page.getByText('Web: zh-cn')).toBeVisible();
-    await expect(page.getByText('Dashboard')).toHaveCount(0);
+    await expectSiteEntryTables(page, 'Vona 集成式 SSR', 'Zova 独立式 SSR');
     expect(pageErrors).toEqual([]);
   },
 );
