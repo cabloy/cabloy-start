@@ -1,21 +1,35 @@
-# Playbook: Execute an Approved Cabloy Specification Increment
+# Execute an Approved Cabloy Specification Increment
 
 Use this playbook to deliver one approved Cabloy specification increment from a bounded WBS item through implementation, scoped verification, retained evidence, and an accurate progress handoff.
 
 The `cabloy-spec-execution` skill is a control plane. It coordinates an approved increment and its specialist workflow; it is not a second product authority, architecture authority, or code generator.
 
-## When to use this playbook
+This playbook is the execution half of [AI Spec-Driven Development](/ai/ai-spec-driven-development). It operationalizes Traceable Spec Delivery for one bounded increment; it does not redefine upstream authority or make Contract Loop synchronization sufficient evidence of verification.
+
+## Start a bounded execution increment
+
+In Claude Code, use either of these entry points:
+
+```text
+/cabloy-spec-execution <WBS-ID>
+/cabloy-spec-execution Execute the next task for <Suite Name>
+```
+
+An explicit `WBS-ID` is the most direct and precise request: it identifies the bounded increment that you want to execute.
+
+If you do not know the next `WBS-ID`, use the suite-level request instead. AI reads the suite's WBS, dependencies, current progress, blockers, and acceptance requirements, then proposes the next ready bounded increment or a finite candidate set. Review and explicitly approve the proposed WBS target and execution dossier before any implementation begins. The suite-level request authorizes exploration and recommendation; it does **not** authorize AI to choose or execute adjacent work automatically.
 
 Use `cabloy-spec-execution` when you need to:
 
 - implement one named `WBS-*` item
+- explore an existing suite and recommend its next ready bounded increment
 - execute an explicitly named, finite, approved phase with a defined closure boundary
 - verify or close a named ATP or release-gate task
 - turn one existing suite-plan increment into implementation and observed proof
 
 Requests such as “implement the suite,” “finish all specs,” or “do the next phase” are not bounded enough. Select one WBS task, or explicitly approve a finite task list and its closure boundary, before implementation begins.
 
-Use [Playbook: Plan a Cabloy Suite Specification](/ai/playbook-spec-generation) instead when the task changes a requirement, contract, dependency, scope boundary, or durable decision.
+Use [Generate a Cabloy Suite Specification](/ai/playbook-spec-generation) instead when the task changes a requirement, contract, dependency, scope boundary, or durable decision.
 
 ## Establish the execution boundary first
 
@@ -46,7 +60,7 @@ Read the suite records in this order:
 6. linked evidence, runbooks, presentation records, or rollout records when they apply
 7. `implementation-gantt.svg` and `implementation-burndown.svg` as derived views to check for freshness, not authority
 
-When records conflict, return to [Playbook: Plan a Cabloy Suite Specification](/ai/playbook-spec-generation) before implementation. Do not resolve an authority contradiction through an execution note, a chart edit, or a source workaround.
+When records conflict, return to [Generate a Cabloy Suite Specification](/ai/playbook-spec-generation) before implementation. Do not resolve an authority contradiction through an execution note, a chart edit, or a source workaround.
 
 ## Stop at readiness gates
 
@@ -139,6 +153,6 @@ Finish the increment with a concise record of:
 6. remaining blocker or evidence gap
 7. exactly one next action
 
-A next action is a handoff, not authorization to execute another task. If it requires an authority change, return to [Playbook: Plan a Cabloy Suite Specification](/ai/playbook-spec-generation).
+A next action is a handoff, not authorization to execute another task. If it requires an authority change, return to [Generate a Cabloy Suite Specification](/ai/playbook-spec-generation).
 
 For the public boundaries between docs, skills, suite authority, and CLI workflows, read [Docs, Skills, Rules, and CLI Mapping](/ai/docs-skills-rules-mapping) and [CLI to Skill Map](/ai/cli-to-skill-map).

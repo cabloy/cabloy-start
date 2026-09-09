@@ -1,41 +1,66 @@
 import { defineConfig } from 'vitepress';
 
-const editionsItems = [
-  { text: 'Overview', link: '/editions/overview' },
-  {
-    text: 'Choosing Basic vs Start',
-    link: '/editions/choosing-between-basic-and-start',
-  },
-  { text: 'Cabloy Basic', link: '/editions/cabloy-basic' },
-  { text: 'Cabloy Start', link: '/editions/cabloy-start' },
-  { text: 'Edition Detection', link: '/editions/detection' },
-];
+const editionsItems = [{ text: 'Overview', link: '/editions/overview' }];
 
 const aiItems = [
   { text: 'Introduction', link: '/ai/introduction' },
-  { text: 'Repo Guidance', link: '/ai/repo-guidance' },
-  { text: 'Skills', link: '/ai/skills' },
-  { text: 'Class Placement Rule', link: '/ai/class-placement-rule' },
-  { text: 'Global Bean Lookup', link: '/ai/global-bean-lookup' },
-  { text: 'Docs / Skills Mapping', link: '/ai/docs-skills-rules-mapping' },
-  { text: 'CLI to Skill Map', link: '/ai/cli-to-skill-map' },
-  { text: 'Future Skill Roadmap', link: '/ai/future-skill-roadmap' },
-  { text: 'Playbook: Backend Module', link: '/ai/playbook-backend-module' },
-  { text: 'Playbook: Frontend Page', link: '/ai/playbook-frontend-page' },
-  { text: 'Playbook: Contract Regeneration', link: '/ai/playbook-contract-regeneration' },
-  { text: 'Playbook: Plan a Suite Specification', link: '/ai/playbook-spec-generation' },
   {
-    text: 'Playbook: Execute an Approved Specification Increment',
-    link: '/ai/playbook-spec-execution',
+    text: 'AI Spec-Driven Development',
+    collapsed: false,
+    items: [
+      { text: 'Overview', link: '/ai/ai-spec-driven-development' },
+      { text: 'Generate a Cabloy Suite Specification', link: '/ai/playbook-spec-generation' },
+      {
+        text: 'Execute an Approved Cabloy Specification Increment',
+        link: '/ai/playbook-spec-execution',
+      },
+    ],
   },
-  { text: 'Playbook: Module Removal', link: '/ai/playbook-module-removal' },
-  { text: 'Playbook: Metadata Refresh', link: '/ai/playbook-metadata-refresh' },
-  { text: 'Playbook: Technical Blog Authoring', link: '/ai/playbook-technical-blog-authoring' },
-  { text: 'CLI for Agents', link: '/ai/cli-for-agents' },
-  { text: 'Rules and Config', link: '/ai/rules-and-config' },
-  { text: 'Edition Detection', link: '/ai/edition-detection' },
-  { text: 'Edition Consistency Checklist', link: '/ai/edition-consistency-checklist' },
-  { text: 'Verification', link: '/ai/verification' },
+  {
+    text: 'Repository Guidance & Skills',
+    collapsed: true,
+    items: [
+      { text: 'Repo Guidance', link: '/ai/repo-guidance' },
+      { text: 'Skills', link: '/ai/skills' },
+      { text: 'Docs / Skills Mapping', link: '/ai/docs-skills-rules-mapping' },
+      { text: 'CLI to Skill Map', link: '/ai/cli-to-skill-map' },
+      { text: 'Future Skill Roadmap', link: '/ai/future-skill-roadmap' },
+      { text: 'CLI for Agents', link: '/ai/cli-for-agents' },
+      { text: 'Rules and Config', link: '/ai/rules-and-config' },
+    ],
+  },
+  {
+    text: 'Implementation Playbooks',
+    collapsed: true,
+    items: [
+      { text: 'Backend Module', link: '/ai/playbook-backend-module' },
+      { text: 'Frontend Page', link: '/ai/playbook-frontend-page' },
+      { text: 'Contract Regeneration', link: '/ai/playbook-contract-regeneration' },
+      { text: 'Module Removal', link: '/ai/playbook-module-removal' },
+      { text: 'Metadata Refresh', link: '/ai/playbook-metadata-refresh' },
+    ],
+  },
+  {
+    text: 'Architecture Rules',
+    collapsed: true,
+    items: [
+      { text: 'Class Placement Rule', link: '/ai/class-placement-rule' },
+      { text: 'Global Bean Lookup', link: '/ai/global-bean-lookup' },
+    ],
+  },
+  {
+    text: 'Edition & Verification',
+    collapsed: true,
+    items: [
+      { text: 'Edition Consistency Checklist', link: '/ai/edition-consistency-checklist' },
+      { text: 'Verification', link: '/ai/verification' },
+    ],
+  },
+  {
+    text: 'Authoring',
+    collapsed: true,
+    items: [{ text: 'Technical Blog Authoring', link: '/ai/playbook-technical-blog-authoring' }],
+  },
 ];
 
 const fullstackGroups = [
@@ -104,6 +129,7 @@ const fullstackGroups = [
         link: '/fullstack/payment-sandbox-configuration',
       },
       { text: 'Contract Loop Playbook', link: '/fullstack/contract-loop-playbook' },
+      { text: 'Semantic Presentation Contract', link: '/fullstack/semantic-presentation-contract' },
       {
         text: 'Admin Resource and Web Self-Service',
         link: '/fullstack/admin-resource-and-web-self-service',
@@ -658,7 +684,7 @@ export default defineConfig({
             { text: 'SSR Init Data', link: '/frontend/ssr-init-data' },
             { text: 'SSR ClientOnly', link: '/frontend/ssr-client-only' },
             { text: 'SSR SEO Meta', link: '/frontend/ssr-seo-meta' },
-            { text: 'SSR Env', link: '/frontend/ssr-env' },
+            { text: 'SSR Environment Variables', link: '/frontend/ssr-env' },
           ],
         },
       ],

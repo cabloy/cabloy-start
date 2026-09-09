@@ -28,7 +28,7 @@ Read the repository marker first:
 - `__CABLOY_START__` → inspect the active Start repository before naming a flavor, wrapper, generated package, or site module.
 - both markers → stop: the checkout is ambiguous.
 
-The framework model is shared, but the exact flavor names, site baselines, UI layer, assets, scripts, and generated output paths can differ by edition. See [Edition Detection](/editions/detection) and [Edition Collaboration Differences](/fullstack/edition-collaboration-differences).
+The framework model is shared, but the exact flavor names, site baselines, UI layer, assets, scripts, and generated output paths can differ by edition. See [Cabloy Editions: Working in an Existing Checkout](/editions/overview#working-in-an-existing-checkout) and [Edition Collaboration Differences](/fullstack/edition-collaboration-differences).
 
 ### Confirm that a new site is needed
 
@@ -174,7 +174,7 @@ If the generated artifacts are correct and `npm run deps:vona` completed but Von
 
 ## Verify through the Vona boundary
 
-A standalone Zova development server can help with page iteration, but it does not prove copied artifacts, Vona site matching, generated type handoff, or production-like hydration.
+A Zova standalone SSR development server (the default `9000` entry) can help with page iteration, but it does not prove copied artifacts, Vona site matching, generated type handoff, or production-like hydration. An independent SSR Site/flavor remains a separately deployable application boundary; it is not another name for Zova standalone SSR.
 
 Run the narrowest meaningful checks first:
 

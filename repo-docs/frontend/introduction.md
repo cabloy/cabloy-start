@@ -80,6 +80,7 @@ Use this path when the task is about UI composition, component contracts, form o
 
 - [Component Guide](/frontend/component-guide)
 - [Form Guide](/frontend/form-guide)
+- [Semantic Presentation Contract](/fullstack/semantic-presentation-contract)
 - [Form Layout Guide](/frontend/form-layout-guide)
 - [Image Guide](/frontend/image-guide)
 - [Zova Form Under the Hood](/frontend/zova-form-under-the-hood)
@@ -121,7 +122,7 @@ Use this path when the task is about data loading, API contracts, generated SDKs
 - [SSR Init Data](/frontend/ssr-init-data)
 - [SSR ClientOnly](/frontend/ssr-client-only)
 - [SSR SEO Meta](/frontend/ssr-seo-meta)
-- [SSR Env](/frontend/ssr-env)
+- [SSR Environment Variables](/frontend/ssr-env)
 
 ### Tooling support
 

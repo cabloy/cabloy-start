@@ -16,7 +16,7 @@ A practical rule is:
 2. then choose the correct script, flavor, and appMode path
 3. only then document or automate edition-specific frontend examples
 
-For the edition-detection workflow, also see [Edition Detection](/editions/detection).
+For the edition-detection workflow, see [Cabloy Editions: For AI Development](/editions/overview#for-ai-development).
 
 ## Cabloy Basic root wrappers
 
@@ -45,9 +45,13 @@ npm run build:zova:commerce:admin
 
 `npm run build:zova:all` sequentially runs the focused Basic and Commerce batch builds. `npm run init` uses it to prepare every shipped Cabloy Basic SSR/REST flavor before Vona is initialized. For normal frontend work, continue to use `build:zova` or `build:zova:commerce` when only that suite's artifacts changed.
 
-## Basic SSR browser acceptance
+## Zova standalone SSR development
 
-The default Basic Web and Admin sites have browser smoke commands that exercise Vona SSR dispatch at port `7102`, not a standalone Zova development-server port.
+The `dev:zova:*` commands start the Zova development server, which uses `9000` in the Cabloy Basic default environment. Use this Zova standalone SSR entry for page, route, and hydration iteration. It may be used as Vona's development proxy target, but direct access to `9000` does not prove the Vona request boundary or integrated acceptance.
+
+## Vona integrated SSR browser acceptance
+
+The default Basic Web and Admin sites have browser smoke commands that exercise Vona integrated SSR through Vona SSR dispatch at port `7102`, not through the Zova standalone SSR development-server port.
 
 Prepare current SSR and REST artifacts explicitly when frontend output has changed:
 
