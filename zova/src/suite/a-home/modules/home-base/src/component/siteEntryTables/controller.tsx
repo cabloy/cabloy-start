@@ -35,7 +35,7 @@ export class ControllerSiteEntryTables extends BeanControllerBase {
       <VRow>
         {tables.map(table => (
           <VCol cols={12} md={6}>
-            <VCard class="h-100" variant="outlined">
+            <VCard class="h-100" variant="flat">
               <VCardTitle>{table.title}</VCardTitle>
               <VCardText>
                 <div class="overflow-x-auto">
