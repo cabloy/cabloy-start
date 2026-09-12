@@ -6,7 +6,11 @@ import { Row } from '@tanstack/table-core';
 import { VDataTableRow, VDataTableServer } from 'vuetify/components';
 import { BeanControllerBase, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
-import { BeanControllerTableBase, ZTable } from 'zova-module-a-table';
+import {
+  BeanControllerTableBase,
+  TableColumnIdSelection,
+  ZTable,
+} from 'zova-module-a-table';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceBlockRecord {
@@ -56,6 +60,9 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
           schemaOrder={$$page.schemaOrder}
           sorting={$$page.sorting}
           onSortingChange={updater => $$page.onSortingChange(updater)}
+          enableRowSelection={$$page.selectionEnabled}
+          rowSelection={$$page.rowSelection}
+          onRowSelectionChange={updater => $$page.onRowSelectionChange(updater)}
           tableScope={$$page.jsxCelScope}
           slotDefault={$$table => {
             return this._renderTable($$table);
@@ -77,7 +84,8 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
           typeof columnDefHeader === 'function'
             ? columnDefHeader(header.getContext())
             : columnDefHeader,
-        key: header.id,
+        key:
+          header.id === TableColumnIdSelection ? 'data-table-select' : header.id,
         align: rest?.align === 'left' ? 'start' : rest?.align === 'right' ? 'end' : rest?.align,
         width: rest?.width,
         minWidth: rest?.width,
@@ -92,6 +100,7 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
       'class': this.cTable,
       'loading': !$$page.paged,
       'itemsLength': $$page.paged?.total as string | number,
+      'page': $$page.queryPaged.pageNo,
       'itemsPerPage': $$page.queryPaged.pageSize,
       'multiSort': false,
       'mustSort': true,
@@ -128,6 +137,27 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
         $$page.setPageSize(options.itemsPerPage);
         $$page.gotoPage(options.page);
       },
+      'showSelect': $$page.selectionEnabled,
+      'selectStrategy': 'page',
+      'itemValue': (row: Row<TData>) => row.id,
+      'itemSelectable': (row: Row<TData>) => row.getCanSelect(),
+      'returnObject': false,
+      'modelValue': table
+        .getRowModel()
+        .rows.filter(row => $$page.rowSelection[row.id])
+        .map(row => row.id),
+      'onUpdate:modelValue': (values: unknown) => {
+        const selected = new Set(
+          Array.isArray(values) ? values.map(value => String(value)) : [],
+        );
+        const currentPageSelection = Object.fromEntries(
+          table
+            .getRowModel()
+            .rows.filter(row => selected.has(row.id))
+            .map(row => [row.id, true]),
+        );
+        $$page.onRowSelectionChange(currentPageSelection);
+      },
       headers,
       'items': table.getRowModel().rows,
     };
@@ -136,6 +166,7 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
         const row: Row<TData> = itemSlotProps.item;
         const slotsCell = {};
         for (const cell of row.getVisibleCells()) {
+          if (cell.column.id === TableColumnIdSelection) continue;
           const slotName = `item.${cell.column.id}`;
           slotsCell[slotName] = _props => {
             const columnDefCell = cell.column.columnDef.cell;

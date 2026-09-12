@@ -5,6 +5,7 @@ export * from '../bean/command.confirm.jsx';
 export * from '../bean/command.copy.jsx';
 export * from '../bean/command.create.jsx';
 export * from '../bean/command.delete.jsx';
+export * from '../bean/command.deleteBulk.jsx';
 export * from '../bean/command.edit.jsx';
 export * from '../bean/command.prompt.jsx';
 export * from '../bean/command.setValue.jsx';
@@ -14,29 +15,31 @@ import { ICommandOptionsConfirm } from '../bean/command.confirm.jsx';
 import { ICommandOptionsCopy } from '../bean/command.copy.jsx';
 import { ICommandOptionsCreate } from '../bean/command.create.jsx';
 import { ICommandOptionsDelete } from '../bean/command.delete.jsx';
+import { ICommandOptionsDeleteBulk } from '../bean/command.deleteBulk.jsx';
 import { ICommandOptionsEdit } from '../bean/command.edit.jsx';
 import { ICommandOptionsPrompt } from '../bean/command.prompt.jsx';
 import { ICommandOptionsSetValue } from '../bean/command.setValue.jsx';
 import { ICommandOptionsView } from '../bean/command.view.jsx';
 import 'zova-module-a-command';
 declare module 'zova-module-a-command' {
-  
+
     export interface ICommandRecord {
       'start-commands:alert': ICommandOptionsAlert;
 'start-commands:confirm': ICommandOptionsConfirm;
 'start-commands:copy': ICommandOptionsCopy;
 'start-commands:create': ICommandOptionsCreate;
 'start-commands:delete': ICommandOptionsDelete;
+'start-commands:deleteBulk': ICommandOptionsDeleteBulk;
 'start-commands:edit': ICommandOptionsEdit;
 'start-commands:prompt': ICommandOptionsPrompt;
 'start-commands:setValue': ICommandOptionsSetValue;
 'start-commands:view': ICommandOptionsView;
     }
 
-  
+
 }
 declare module 'zova-module-start-commands' {
-  
+
         export interface CommandAlert {
           /** @internal */
           get scope(): ScopeModuleStartCommands;
@@ -92,6 +95,17 @@ declare module 'zova-module-start-commands' {
           get $onionOptions(): ICommandOptionsDelete;
         }
 
+        export interface CommandDeleteBulk {
+          /** @internal */
+          get scope(): ScopeModuleStartCommands;
+        }
+
+        export interface CommandDeleteBulk {
+          get $beanFullName(): 'start-commands.command.deleteBulk';
+          get $onionName(): 'start-commands:deleteBulk';
+          get $onionOptions(): ICommandOptionsDeleteBulk;
+        }
+
         export interface CommandEdit {
           /** @internal */
           get scope(): ScopeModuleStartCommands;
@@ -134,7 +148,7 @@ declare module 'zova-module-start-commands' {
           get $beanFullName(): 'start-commands.command.view';
           get $onionName(): 'start-commands:view';
           get $onionOptions(): ICommandOptionsView;
-        } 
+        }
 }
 /** command: end */
 /** command: begin */
@@ -143,6 +157,7 @@ import { CommandConfirm } from '../bean/command.confirm.jsx';
 import { CommandCopy } from '../bean/command.copy.jsx';
 import { CommandCreate } from '../bean/command.create.jsx';
 import { CommandDelete } from '../bean/command.delete.jsx';
+import { CommandDeleteBulk } from '../bean/command.deleteBulk.jsx';
 import { CommandEdit } from '../bean/command.edit.jsx';
 import { CommandPrompt } from '../bean/command.prompt.jsx';
 import { CommandSetValue } from '../bean/command.setValue.jsx';
@@ -155,6 +170,7 @@ declare module 'zova' {
 'start-commands.command.copy': CommandCopy;
 'start-commands.command.create': CommandCreate;
 'start-commands.command.delete': CommandDelete;
+'start-commands.command.deleteBulk': CommandDeleteBulk;
 'start-commands.command.edit': CommandEdit;
 'start-commands.command.prompt': CommandPrompt;
 'start-commands.command.setValue': CommandSetValue;
@@ -178,12 +194,12 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'start-commands': ScopeModuleStartCommands;
   }
-  
-  
 
-  
 
-  
+
+
+
+
 }
 
 /** scope: end */

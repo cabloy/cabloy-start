@@ -289,8 +289,8 @@ export * from '../dto/detailRecordBase.tsx';
 export * from '../dto/detailRecordMutate.tsx';
 export * from '../dto/detailRecordResItem.tsx';
 export * from '../dto/detailRecordView.tsx';
-export * from '../dto/studentBulkDelete.ts';
 export * from '../dto/studentCreate.tsx';
+export * from '../dto/studentDeleteBulk.tsx';
 export * from '../dto/studentSelectReq.tsx';
 export * from '../dto/studentSelectRes.tsx';
 export * from '../dto/studentSelectResItem.tsx';
@@ -301,8 +301,8 @@ import type { IDtoOptionsDetailRecordBase } from '../dto/detailRecordBase.tsx';
 import type { IDtoOptionsDetailRecordMutate } from '../dto/detailRecordMutate.tsx';
 import type { IDtoOptionsDetailRecordResItem } from '../dto/detailRecordResItem.tsx';
 import type { IDtoOptionsDetailRecordView } from '../dto/detailRecordView.tsx';
-import type { IDtoOptionsStudentBulkDelete } from '../dto/studentBulkDelete.ts';
 import type { IDtoOptionsStudentCreate } from '../dto/studentCreate.tsx';
+import type { IDtoOptionsStudentDeleteBulk } from '../dto/studentDeleteBulk.tsx';
 import type { IDtoOptionsStudentSelectReq } from '../dto/studentSelectReq.tsx';
 import type { IDtoOptionsStudentSelectRes } from '../dto/studentSelectRes.tsx';
 import type { IDtoOptionsStudentSelectResItem } from '../dto/studentSelectResItem.tsx';
@@ -317,8 +317,8 @@ declare module 'vona-module-a-web' {
 'training-student:detailRecordMutate': IDtoOptionsDetailRecordMutate;
 'training-student:detailRecordResItem': IDtoOptionsDetailRecordResItem;
 'training-student:detailRecordView': IDtoOptionsDetailRecordView;
-'training-student:studentBulkDelete': IDtoOptionsStudentBulkDelete;
 'training-student:studentCreate': IDtoOptionsStudentCreate;
+'training-student:studentDeleteBulk': IDtoOptionsStudentDeleteBulk;
 'training-student:studentSelectReq': IDtoOptionsStudentSelectReq;
 'training-student:studentSelectRes': IDtoOptionsStudentSelectRes;
 'training-student:studentSelectResItem': IDtoOptionsStudentSelectResItem;
@@ -338,8 +338,8 @@ import type { DtoDetailRecordBase } from '../dto/detailRecordBase.tsx';
 import type { DtoDetailRecordMutate } from '../dto/detailRecordMutate.tsx';
 import type { DtoDetailRecordResItem } from '../dto/detailRecordResItem.tsx';
 import type { DtoDetailRecordView } from '../dto/detailRecordView.tsx';
-import type { DtoStudentBulkDelete } from '../dto/studentBulkDelete.ts';
 import type { DtoStudentCreate } from '../dto/studentCreate.tsx';
+import type { DtoStudentDeleteBulk } from '../dto/studentDeleteBulk.tsx';
 import type { DtoStudentSelectReq } from '../dto/studentSelectReq.tsx';
 import type { DtoStudentSelectRes } from '../dto/studentSelectRes.tsx';
 import type { DtoStudentSelectResItem } from '../dto/studentSelectResItem.tsx';
@@ -364,12 +364,12 @@ declare module 'vona-module-training-student' {
       fields?: TypeEntityOptionsFields<DtoDetailRecordView, IDtoOptionsDetailRecordView[TypeSymbolKeyFieldsMore]>;
     }
 
-    export interface IDtoOptionsStudentBulkDelete {
-      fields?: TypeEntityOptionsFields<DtoStudentBulkDelete, IDtoOptionsStudentBulkDelete[TypeSymbolKeyFieldsMore]>;
-    }
-
     export interface IDtoOptionsStudentCreate {
       fields?: TypeEntityOptionsFields<DtoStudentCreate, IDtoOptionsStudentCreate[TypeSymbolKeyFieldsMore]>;
+    }
+
+    export interface IDtoOptionsStudentDeleteBulk {
+      fields?: TypeEntityOptionsFields<DtoStudentDeleteBulk, IDtoOptionsStudentDeleteBulk[TypeSymbolKeyFieldsMore]>;
     }
 
     export interface IDtoOptionsStudentSelectReq {
@@ -435,6 +435,7 @@ declare module 'vona-module-training-student' {
 declare module 'vona-module-a-web' {
   export interface IApiPathPostRecord{
         '/training/student': undefined;
+'/training/student/bulk/delete': undefined;
     }
 export interface IApiPathGetRecord{
         '/training/student': undefined;
@@ -447,7 +448,6 @@ export interface IApiPathPatchRecord{
 export interface IApiPathDeleteRecord{
         '/training/student/:id': undefined;
 '/training/student/deleteForce/:id': undefined;
-'/training/student/bulk': undefined;
     }
 
 }

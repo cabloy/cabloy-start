@@ -1,26 +1,34 @@
 // eslint-disable
 /** controller: begin */
 export * from '../component/actionCreate/controller.jsx';
+export * from '../component/actionDeleteBulk/controller.jsx';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-start-table' {
-  
+
         export interface ControllerActionCreate {
           /** @internal */
           get scope(): ScopeModuleStartTable;
-        } 
+        }
+
+        export interface ControllerActionDeleteBulk {
+          /** @internal */
+          get scope(): ScopeModuleStartTable;
+        }
 }
 /** controller: end */
 /** controller: begin */
 import { ControllerActionCreate } from '../component/actionCreate/controller.jsx';
+import { ControllerActionDeleteBulk } from '../component/actionDeleteBulk/controller.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
     'start-table.controller.actionCreate': ControllerActionCreate;
+'start-table.controller.actionDeleteBulk': ControllerActionDeleteBulk;
   }
 }
 /** controller: end */
@@ -28,16 +36,21 @@ declare module 'zova' {
 /** components: begin */
 export * from './component/actionCreate.js';
 import { ZActionCreate } from './component/actionCreate.js';
+export * from './component/actionDeleteBulk.js';
+import { ZActionDeleteBulk } from './component/actionDeleteBulk.js';
 export const components = {
   'actionCreate': ZActionCreate,
+'actionDeleteBulk': ZActionDeleteBulk,
 };
 import 'zova';
 declare module 'zova' {
 export interface IComponentRecord {
   'start-table:actionCreate': ControllerActionCreate;
+'start-table:actionDeleteBulk': ControllerActionDeleteBulk;
 }
 export interface IZovaComponentRecord {
   'start-table:actionCreate': typeof ZActionCreate;
+'start-table:actionDeleteBulk': typeof ZActionDeleteBulk;
 }
 }
 /** components: end */
@@ -52,7 +65,7 @@ import { ITableCellOptionsActionUpdate } from '../bean/tableCell.actionUpdate.js
 import { ITableCellOptionsActionView } from '../bean/tableCell.actionView.jsx';
 import 'zova-module-a-table';
 declare module 'zova-module-a-table' {
-  
+
     export interface ITableCellRecord {
       'start-table:actionDelete': ITableCellOptionsActionDelete;
 'start-table:actionOperationsRow': ITableCellOptionsActionOperationsRow;
@@ -60,10 +73,10 @@ declare module 'zova-module-a-table' {
 'start-table:actionView': ITableCellOptionsActionView;
     }
 
-  
+
 }
 declare module 'zova-module-start-table' {
-  
+
         export interface TableCellActionDelete {
           /** @internal */
           get scope(): ScopeModuleStartTable;
@@ -106,7 +119,7 @@ declare module 'zova-module-start-table' {
           get $beanFullName(): 'start-table.tableCell.actionView';
           get $onionName(): 'start-table:actionView';
           get $onionOptions(): ITableCellOptionsActionView;
-        } 
+        }
 }
 /** tableCell: end */
 /** tableCell: begin */
@@ -144,14 +157,14 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'start-table': ScopeModuleStartTable;
   }
-  
-  
+
+
 
   export interface IBeanScopeLocale {
     'start-table': (typeof locales)[TypeLocaleBase];
   }
 
-  
+
 }
 
 export function locale<K extends keyof (typeof locales)[TypeLocaleBase]>(key: K): `start-table::${K}` {

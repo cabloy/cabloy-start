@@ -8,11 +8,11 @@ export * from '../component/blockToolbarBulk/controller.jsx';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-start-page' {
-  
+
         export interface ControllerBlockFilter {
           /** @internal */
           get scope(): ScopeModuleStartPage;
@@ -36,7 +36,7 @@ declare module 'zova-module-start-page' {
         export interface ControllerBlockToolbarBulk {
           /** @internal */
           get scope(): ScopeModuleStartPage;
-        } 
+        }
 }
 /** controller: end */
 /** controller: begin */
@@ -113,14 +113,14 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'start-page': ScopeModuleStartPage;
   }
-  
-  
+
+
 
   export interface IBeanScopeLocale {
     'start-page': (typeof locales)[TypeLocaleBase];
   }
 
-  
+
 }
 
 export function locale<K extends keyof (typeof locales)[TypeLocaleBase]>(key: K): `start-page::${K}` {

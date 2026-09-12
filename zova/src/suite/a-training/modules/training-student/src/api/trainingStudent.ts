@@ -72,11 +72,11 @@ export type ApiApiTrainingStudentdeleteForceResponseBody =
   paths[ApiApiTrainingStudentdeleteForcePath][ApiApiTrainingStudentdeleteForceMethod]['responses']['200']['content']['application/json']['data'];
 
 /** TrainingStudent_deleteBulk */
-export const ApiApiTrainingStudentdeleteBulkPath = '/api/training/student/bulk';
-export type ApiApiTrainingStudentdeleteBulkPath = '/api/training/student/bulk';
-export type ApiApiTrainingStudentdeleteBulkMethod = 'delete';
+export const ApiApiTrainingStudentdeleteBulkPath = '/api/training/student/bulk/delete';
+export type ApiApiTrainingStudentdeleteBulkPath = '/api/training/student/bulk/delete';
+export type ApiApiTrainingStudentdeleteBulkMethod = 'post';
 export type ApiApiTrainingStudentdeleteBulkRequestBody =
-  components['schemas']['training-student.dto.studentBulkDelete'];
+  components['schemas']['training-student.dto.studentDeleteBulk'];
 export type ApiApiTrainingStudentdeleteBulkResponseBody =
   paths[ApiApiTrainingStudentdeleteBulkPath][ApiApiTrainingStudentdeleteBulkMethod]['responses']['200']['content']['application/json']['data'];
 
@@ -167,12 +167,10 @@ export class ApiTrainingStudent extends BeanApiBase {
 
   /** Bulk Delete Students */
   deleteBulk(body: ApiApiTrainingStudentdeleteBulkRequestBody, options?: IApiActionOptions) {
-    return this.$fetch.delete<any, ApiApiTrainingStudentdeleteBulkResponseBody>(
+    return this.$fetch.post<any, ApiApiTrainingStudentdeleteBulkResponseBody>(
       ApiApiTrainingStudentdeleteBulkPath,
-      {
-        ...this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
-        data: body,
-      },
+      body,
+      this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
     );
   }
 }

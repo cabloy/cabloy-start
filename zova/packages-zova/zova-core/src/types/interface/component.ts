@@ -36,6 +36,12 @@ export interface IComponentIntrinsicAttributes {
   nativeOnScroll?: (e: Event) => void;
   nativeOnWheel?: (e: WheelEvent) => void;
   nativeOnContextmenu?: (e: MouseEvent) => void;
+  role?: string;
+  title?: string;
+  'aria-atomic'?: boolean | 'true' | 'false';
+  'aria-describedby'?: string;
+  'aria-label'?: string;
+  'aria-live'?: 'off' | 'assertive' | 'polite';
 }
 
 declare module 'vue/jsx-runtime' {

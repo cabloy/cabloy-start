@@ -45,6 +45,6 @@ export class ApiSchemaTrainingStudent extends BeanBase {
   }
 
   deleteBulk(options?: IApiSchemaOptions) {
-    return this.$sdk.createApiSchemas(ApiApiTrainingStudentdeleteBulkPath, 'delete', options);
+    return this.$sdk.createApiSchemas(ApiApiTrainingStudentdeleteBulkPath, 'post', options);
   }
 }

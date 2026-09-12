@@ -5,6 +5,7 @@ import { describe, it } from 'node:test';
 import { app } from 'vona-mock';
 import {
   DtoStudentCreate,
+  DtoStudentDeleteBulk,
   DtoStudentSelectResItem,
   DtoStudentUpdate,
   DtoStudentView,
@@ -69,6 +70,32 @@ describe('student.test.ts', { concurrency: false }, () => {
           ['trainingRecords'],
         );
       }
+    });
+  });
+
+  it('action:student:bulkDeleteMetadata', async () => {
+    await app.bean.executor.mockCtx(async () => {
+      const dtoApiJson = await app.bean.openapi.generateJsonOfClass(DtoStudentDeleteBulk);
+      const dtoComponent = Object.values(dtoApiJson.components!.schemas as any).find(item => {
+        return (item as any).properties?.ids;
+      }) as any;
+      assert.ok(dtoComponent);
+      assert.equal(dtoComponent.required?.includes('ids'), true);
+      assert.equal(dtoComponent.properties.ids.minItems, 1);
+      assert.equal(dtoComponent.properties.ids.maxItems, 100);
+
+      const apiJson = await app.bean.openapi.generateJsonOfClass(DtoStudentSelectResItem);
+      const component = Object.values(apiJson.components!.schemas as any).find(item => {
+        return (item as any).properties?._operationsRow;
+      }) as any;
+      const actions = component.rest.blocks[0].options.blocks[1].options.actions;
+      assert.equal(actions.length, 2);
+      assert.equal(actions[0].render, 'start-table:actionCreate');
+      assert.equal(actions[1].render, 'start-table:actionDeleteBulk');
+      assert.deepEqual(actions[1].options, {
+        requiresSelection: true,
+        selectedMaxIds: 100,
+      });
     });
   });
 
@@ -545,8 +572,8 @@ The stored value must round-trip exactly through the API, model, and summary res
         assert.ok(await app.bean.scope('training-student').model.student.getById(bulkStudentId));
 
         const bulkDeleteRes = await app.bean.executor.performAction(
-          'delete',
-          '/training/student/bulk',
+          'post',
+          '/training/student/bulk/delete',
           { innerAccess: false, body: { ids: [emptyStudentId, bulkStudentId] } },
         );
         assert.equal(bulkDeleteRes, null);
@@ -566,12 +593,75 @@ The stored value must round-trip exactly through the API, model, and summary res
     });
   });
 
+  it('action:student:bulkDelete rejects invalid selections atomically', async () => {
+    await app.bean.executor.mockCtx(async () => {
+      await app.bean.passport.signinMock();
+      const studentIds: Array<string | number> = [];
+      try {
+        for (const [index, name] of ['__Bulk Atomic A__', '__Bulk Atomic B__'].entries()) {
+          studentIds.push(
+            await app.bean.executor.performAction('post', '/training/student', {
+              innerAccess: false,
+              body: {
+                name,
+                mobile: `13912345${678 + index}`,
+                level: 1,
+              },
+            }),
+          );
+        }
+        for (const ids of [[], [undefined], [''], [1, '1'], ['missing']]) {
+          await assert.rejects(async () => {
+            await app.bean.executor.performAction('post', '/training/student/bulk/delete', {
+              innerAccess: false,
+              body: { ids },
+            });
+          });
+        }
+        await assert.rejects(async () => {
+          await app.bean.executor.performAction('post', '/training/student/bulk/delete', {
+            innerAccess: false,
+            body: { ids: [studentIds[0], 'missing'] },
+          });
+        });
+        for (const studentId of studentIds) {
+          assert.ok(await app.bean.scope('training-student').model.student.getById(studentId));
+        }
+        await assert.rejects(async () => {
+          await app.bean.executor.performAction('post', '/training/student/bulk/delete', {
+            innerAccess: false,
+            body: { ids: Array.from({ length: 101 }, (_, index) => index + 1) },
+          });
+        });
+      } finally {
+        for (const studentId of studentIds.reverse()) {
+          await app
+            .bean.scope('training-student')
+            .model.studentContent.delete({ studentId }, { disableDeleted: true });
+          await app
+            .bean.scope('training-student')
+            .model.student.deleteById(studentId, { disableDeleted: true });
+        }
+        await app.bean.passport.signout();
+      }
+    });
+  });
+
   it('action:student:systemAdmin', async () => {
     await app.bean.executor.mockCtx(async () => {
       await app.bean.passport.signinMock();
       try {
         app.bean.passport.current!.roles = [];
-        const actions = ['create', 'select', 'view', 'update', 'summary', 'delete', 'deleteForce'];
+        const actions = [
+          'create',
+          'select',
+          'view',
+          'update',
+          'summary',
+          'delete',
+          'deleteBulk',
+          'deleteForce',
+        ];
         for (const action of actions) {
           assert.equal(
             await app.bean.permission.checkPermissionAction('training-student:student', action),

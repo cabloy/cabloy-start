@@ -79,6 +79,57 @@ function waitForStudentSelect(page: Page, requireSuccess = true) {
   });
 }
 
+function waitForStudentBulkDelete(page: Page, requireSuccess = true) {
+  return page.waitForResponse(response => {
+    const url = new URL(response.url());
+    return (
+      response.request().method() === 'POST' &&
+      (!requireSuccess || response.ok()) &&
+      url.pathname === '/api/training/student/bulk/delete'
+    );
+  });
+}
+
+function studentRow(page: Page, name: string) {
+  return page.getByRole('row').filter({ has: page.getByText(name, { exact: true }) });
+}
+
+async function createStudentFixture(page: Page, name: string, mobile: string) {
+  const accessToken = (await page.context().cookies()).find(cookie => cookie.name === 'token')?.value;
+  expect(accessToken).toBeTruthy();
+  const result = await page.evaluate(
+    async ({ data, accessToken }) => {
+      const response = await fetch('/api/training/student', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      return { ok: response.ok, data: (await response.json()).data };
+    },
+    { data: { name, mobile, level: 1 }, accessToken },
+  );
+  expect(result.ok).toBeTruthy();
+  return result.data as string | number;
+}
+
+async function deleteStudentFixture(page: Page, id: string | number | undefined) {
+  if (id === undefined) return;
+  const accessToken = (await page.context().cookies()).find(cookie => cookie.name === 'token')?.value;
+  if (!accessToken) return;
+  await page.evaluate(
+    async ({ id, accessToken }) => {
+      await fetch(`/api/training/student/deleteForce/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+    },
+    { id, accessToken },
+  );
+}
+
 async function openStudentCreatePage(page: Page) {
   await openStudentListPage(page);
   await page.getByRole('button', { name: 'Create', exact: true }).click();
@@ -547,6 +598,103 @@ test(
         );
         expect(deleteResult.ok).toBeTruthy();
       }
+    }
+  },
+);
+
+test(
+  'ATP-START-TABLE-02: Student table deletes selected rows through the Resource bulk contract',
+  { tag: ['@admin', '@flow'] },
+  async ({ page }) => {
+    const pageErrors = collectPageErrors(page);
+    await loginAsAdmin(page);
+
+    const suffix = Date.now();
+    const firstName = `Bulk E2E A ${suffix}`;
+    const secondName = `Bulk E2E B ${suffix}`;
+    let firstId: string | number | undefined;
+    let secondId: string | number | undefined;
+    try {
+      firstId = await createStudentFixture(page, firstName, '13812345678');
+      secondId = await createStudentFixture(page, secondName, '13812345679');
+
+      const loaded = waitForStudentSelect(page);
+      await openStudentListPage(page);
+      await loaded;
+
+      const bulkActions = page.locator('[aria-label="Bulk actions"]');
+      const select = bulkActions.getByRole('button', { name: 'Select', exact: true });
+      await expect(select).toBeVisible();
+      const deleteSelected = bulkActions.getByRole('button', {
+        name: 'Delete selected',
+        exact: true,
+      });
+      await expect(deleteSelected).toBeDisabled();
+
+      await select.click();
+      const done = bulkActions.getByRole('button', { name: 'Done', exact: true });
+      const create = bulkActions.getByRole('button', { name: 'Create', exact: true });
+      const selectedCount = bulkActions.locator(':scope > [role="status"].v-btn');
+      const deleteButtonRoot = bulkActions.locator(':scope > button').and(deleteSelected);
+      await expect(done).toBeVisible();
+      await expect(create).toBeVisible();
+      await expect(selectedCount).toHaveText('0 selected');
+      await expect(deleteButtonRoot).toHaveCount(1);
+      await expect
+        .poll(async () => {
+          const [deleteHeight, createHeight, doneHeight] = await Promise.all(
+            [deleteButtonRoot, create, done].map(button =>
+              button.evaluate(element => element.getBoundingClientRect().height),
+            ),
+          );
+          return Math.max(
+            Math.abs(deleteHeight - createHeight),
+            Math.abs(deleteHeight - doneHeight),
+          );
+        })
+        .toBeLessThanOrEqual(1);
+      await expect(page.getByRole('columnheader').filter({ has: page.getByRole('checkbox') })).toHaveCount(
+        1,
+      );
+
+      const firstRow = studentRow(page, firstName);
+      const secondRow = studentRow(page, secondName);
+      await expect(firstRow).toBeVisible();
+      await expect(secondRow).toBeVisible();
+      await firstRow.getByRole('checkbox').check();
+      await secondRow.getByRole('checkbox').check();
+      await expect(bulkActions.getByText('2 selected', { exact: true })).toBeVisible();
+      await expect(deleteSelected).toBeEnabled();
+
+      await deleteSelected.click();
+      const cancelledConfirmation = page.getByRole('dialog');
+      await expect(
+        cancelledConfirmation.getByText('Are you sure you want to delete 2 selected items?', {
+          exact: true,
+        }),
+      ).toBeVisible();
+      await cancelledConfirmation.getByRole('button', { name: 'No', exact: true }).click();
+      await expect(cancelledConfirmation).toBeHidden();
+      await expect(bulkActions.getByText('2 selected', { exact: true })).toBeVisible();
+      await expect(firstRow.getByRole('checkbox')).toBeChecked();
+      await expect(secondRow.getByRole('checkbox')).toBeChecked();
+
+      await deleteSelected.click();
+      const confirmation = page.getByRole('dialog');
+      const deleted = waitForStudentBulkDelete(page);
+      const refetched = waitForStudentSelect(page);
+      await confirmation.getByRole('button', { name: 'Yes', exact: true }).click();
+      const deletedResponse = await deleted;
+      expect(deletedResponse.request().postDataJSON()).toEqual({ ids: [firstId, secondId] });
+      await refetched;
+      await expect(studentRow(page, firstName)).toHaveCount(0);
+      await expect(studentRow(page, secondName)).toHaveCount(0);
+      await expect(bulkActions.getByText('0 selected', { exact: true })).toBeVisible();
+      await expect(deleteSelected).toBeDisabled();
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await deleteStudentFixture(page, firstId);
+      await deleteStudentFixture(page, secondId);
     }
   },
 );

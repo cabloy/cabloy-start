@@ -13,8 +13,8 @@ import { z } from 'zod';
 import type { ModelStudent } from '../model/student.ts';
 
 import { $locale } from '../.metadata/locales.ts';
-import { DtoStudentBulkDelete } from '../dto/studentBulkDelete.ts';
 import { DtoStudentCreate } from '../dto/studentCreate.tsx';
+import { DtoStudentDeleteBulk } from '../dto/studentDeleteBulk.tsx';
 import { DtoStudentSelectReq } from '../dto/studentSelectReq.tsx';
 import { DtoStudentSelectRes } from '../dto/studentSelectRes.tsx';
 import { DtoStudentSummary } from '../dto/studentSummary.tsx';
@@ -126,23 +126,23 @@ export class ControllerStudent extends BeanBase {
     await this.scope.service.student.deleteForce(id);
   }
 
-  @Web.delete('bulk', { summary: $locale('StudentDeleteBulk') })
+  @Web.post('bulk/delete', { summary: $locale('StudentDeleteBulk') })
   @Api.body(z.null())
   @Passport.rbac({ dataScope: true, actionInherit: 'delete' })
   async deleteBulk(
-    @Arg.body() command: DtoStudentBulkDelete,
+    @Arg.body() command: DtoStudentDeleteBulk,
     @Arg.rbacScopeCurrent() rbacScopeCurrent: IRbacScopeAccess,
   ): Promise<void> {
-    const uniqueIds = new Set(command.ids.map(id => String(id)));
-    if (!uniqueIds.size) this.app.throw(422, 'Student identities are required');
-    if (uniqueIds.size !== command.ids.length) {
-      this.app.throw(422, 'Duplicate student identity');
-    }
-
-    const datas = await this.scope.model.student.select({ where: { id: command.ids } });
-    if (datas.length !== uniqueIds.size) this.app.throw(404, 'Student not found');
-    rbacScopeCurrent.checkEntries(datas);
-    await this.scope.service.student.deleteBulk(command.ids);
+    const students = await this.bean.rbacResourceBulk.entries(
+      command.ids,
+      async ids => {
+        return await this.scope.model.student.select({
+          where: rbacScopeCurrent.where({ id: ids }),
+        });
+      },
+      rbacScopeCurrent,
+    );
+    await this.scope.service.student.deleteBulk(students.map(student => student.id));
   }
 
   private _prepareStudentCreateData(student: DtoStudentCreate, rbacScopeCurrent: IRbacScopeAccess) {

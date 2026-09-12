@@ -1,7 +1,7 @@
 import type { IComponentOptions } from 'zova';
 import type {
   IJsxRenderContextPage,
-  IResourceTableActionBulkOptionsBase,
+  IResourceTableActionBulkPropsBase,
 } from 'zova-module-a-openapi';
 
 import { VBtn } from 'vuetify/components';
@@ -14,7 +14,7 @@ declare module 'zova-module-a-openapi' {
   }
 }
 
-export interface ControllerActionCreateProps extends IResourceTableActionBulkOptionsBase {
+export interface ControllerActionCreateProps extends IResourceTableActionBulkPropsBase {
   color?: string;
 }
 
@@ -33,7 +33,9 @@ export class ControllerActionCreate extends BeanControllerBase {
       <VBtn
         class={this.$props.class}
         color={this.$props.color}
+        disabled={this.$props.disabled === true || this.$props.dynamicDisabled === true}
         nativeOnClick={async () => {
+          if (this.$props.disabled === true || this.$props.dynamicDisabled === true) return;
           await this.$performCommand('start-commands:create', this.$props, this.$$renderContext);
         }}
       >

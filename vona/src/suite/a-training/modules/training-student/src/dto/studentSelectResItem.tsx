@@ -41,7 +41,13 @@ export interface IDtoOptionsStudentSelectResItem extends IDecoratorDtoOptions {}
           ],
         }),
         ZovaRender.block('start-page:blockToolbarBulk', {
-          actions: [ZovaRender.tableActionBulk('start-table:actionCreate')],
+          actions: [
+            ZovaRender.tableActionBulk('start-table:actionCreate'),
+            ZovaRender.tableActionBulk('start-table:actionDeleteBulk', {
+              requiresSelection: true,
+              selectedMaxIds: 100,
+            }),
+          ],
         }),
         ZovaRender.block('start-page:blockTable'),
       ],
