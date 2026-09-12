@@ -54,9 +54,16 @@ export class Controller<%=argv.resourceNameCapitalize%> extends BeanBase {
     await this.scope.service.<%=argv.resourceName%>.update(id, <%=argv.resourceName%>);
   }
 
+  @Web.delete(':id', { summary: $locale('<%=argv.resourceNameCapitalize%>Delete') })
+  @Api.body(z.null())
+  @Passport.rbac()
+  async delete(@Arg.param('id', v.tableIdentity()) id: TableIdentity): Promise<void> {
+    await this.scope.service.<%=argv.resourceName%>.delete(id);
+  }
+
   @Web.post('bulk/delete', { summary: $locale('BulkDelete') })
   @Api.body(z.null())
-  @Passport.rbac({ dataScope: true, actionInherit: 'delete' })
+  @Passport.rbac({ actionInherit: 'delete' })
   async deleteBulk(
     @Arg.body() command: Dto<%=argv.resourceNameCapitalize%>DeleteBulk,
     @Arg.rbacScopeCurrent() rbacScopeCurrent: IRbacScopeAccess,
@@ -71,12 +78,5 @@ export class Controller<%=argv.resourceNameCapitalize%> extends BeanBase {
       rbacScopeCurrent,
     );
     await this.scope.service.<%=argv.resourceName%>.deleteBulk(entries.map(entry => entry.id));
-  }
-
-  @Web.delete(':id', { summary: $locale('<%=argv.resourceNameCapitalize%>Delete') })
-  @Api.body(z.null())
-  @Passport.rbac()
-  async delete(@Arg.param('id', v.tableIdentity()) id: TableIdentity): Promise<void> {
-    await this.scope.service.<%=argv.resourceName%>.delete(id);
   }
 }
