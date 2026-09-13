@@ -205,13 +205,14 @@ describe('dataScope.test.ts', { concurrency: false }, () => {
           assert.equal(updateError?.code, 403);
 
           const [bulkResult, bulkError] = await catchError(() =>
-            app.bean.executor.performAction('delete', '/training/student/bulk', {
+            app.bean.executor.performAction('post', '/training/student/bulk/delete', {
               innerAccess: false,
               body: { ids: [scopedStudentId, foreignStudentId] },
             }),
           );
           assert.equal(bulkResult, undefined);
-          assert.equal(bulkError?.code, 403);
+          assert.equal(bulkError?.code, 'a-rbac:1005');
+          assert.equal(bulkError?.status, 404);
         } finally {
           await app.bean.passport.signout();
         }
@@ -261,8 +262,8 @@ describe('dataScope.test.ts', { concurrency: false }, () => {
           assert.equal(String(updated?.userIdOwner), delegatedUserId);
 
           const bulkDeleteResult = await app.bean.executor.performAction(
-            'delete',
-            '/training/student/bulk',
+            'post',
+            '/training/student/bulk/delete',
             { innerAccess: false, body: { ids: [createdId!] } },
           );
           assert.equal(bulkDeleteResult, null);
