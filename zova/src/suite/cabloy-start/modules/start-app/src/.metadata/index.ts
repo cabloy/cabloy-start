@@ -4,15 +4,15 @@ export * from '../service/appModal.js';
 
 import 'zova-module-a-bean';
 declare module 'zova-module-a-bean' {
-  
+
     export interface IServiceRecord {
       'start-app:appModal': never;
     }
 
-  
+
 }
 declare module 'zova-module-start-app' {
-  
+
         export interface ServiceAppModal {
           /** @internal */
           get scope(): ScopeModuleStartApp;
@@ -21,12 +21,12 @@ declare module 'zova-module-start-app' {
         export interface ServiceAppModal {
           get $beanFullName(): 'start-app.service.appModal';
           get $onionName(): 'start-app:appModal';
-          
-        } 
+
+        }
 }
 /** service: end */
 /** service: begin */
-import { ServiceAppModal } from '../service/appModal.js';
+import type { ServiceAppModal } from '../service/appModal.js';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -34,20 +34,62 @@ declare module 'zova' {
   }
 }
 /** service: end */
+/** controller: begin */
+export * from '../component/routedDialog/controller.jsx';
+
+import 'zova';
+declare module 'zova' {
+
+
+}
+declare module 'zova-module-start-app' {
+
+        export interface ControllerRoutedDialog {
+          /** @internal */
+          get scope(): ScopeModuleStartApp;
+        }
+}
+/** controller: end */
+/** controller: begin */
+import type { ControllerRoutedDialog } from '../component/routedDialog/controller.jsx';
+import 'zova';
+declare module 'zova' {
+  export interface IBeanRecordLocal {
+    'start-app.controller.routedDialog': ControllerRoutedDialog;
+  }
+}
+/** controller: end */
+
+/** components: begin */
+export * from './component/routedDialog.js';
+import { ZRoutedDialog } from './component/routedDialog.js';
+export const components = {
+  'routedDialog': ZRoutedDialog,
+};
+import 'zova';
+declare module 'zova' {
+export interface IComponentRecord {
+  'start-app:routedDialog': ControllerRoutedDialog;
+}
+export interface IZovaComponentRecord {
+  'start-app:routedDialog': typeof ZRoutedDialog;
+}
+}
+/** components: end */
 /** behavior: begin */
 export * from '../bean/behavior.appModal.jsx';
 import { IBehaviorOptionsAppModal } from '../bean/behavior.appModal.jsx';
 import 'zova-module-a-behavior';
 declare module 'zova-module-a-behavior' {
-  
+
     export interface IBehaviorRecord {
       'start-app:appModal': IBehaviorOptionsAppModal;
     }
 
-  
+
 }
 declare module 'zova-module-start-app' {
-  
+
         export interface BehaviorAppModal {
           /** @internal */
           get scope(): ScopeModuleStartApp;
@@ -57,11 +99,11 @@ declare module 'zova-module-start-app' {
           get $beanFullName(): 'start-app.behavior.appModal';
           get $onionName(): 'start-app:appModal';
           get $onionOptions(): IBehaviorOptionsAppModal;
-        } 
+        }
 }
 /** behavior: end */
 /** behavior: begin */
-import { BehaviorAppModal } from '../bean/behavior.appModal.jsx';
+import type { BehaviorAppModal } from '../bean/behavior.appModal.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
@@ -119,7 +161,7 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'start-app': ScopeModuleStartApp;
   }
-  
+
   export interface IBeanScopeConfig {
     'start-app': ReturnType<typeof config>;
   }
@@ -128,7 +170,7 @@ declare module 'zova' {
     'start-app': (typeof locales)[TypeLocaleBase];
   }
 
-  
+
 }
 
 export function locale<K extends keyof (typeof locales)[TypeLocaleBase]>(key: K): `start-app::${K}` {

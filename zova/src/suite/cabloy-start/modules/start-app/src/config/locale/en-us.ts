@@ -4,4 +4,5 @@ export default {
   No: 'No',
   Cancel: 'Cancel',
   Ok: 'Ok',
+  Back: 'Back',
 };

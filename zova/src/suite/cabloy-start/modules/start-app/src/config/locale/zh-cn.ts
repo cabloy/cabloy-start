@@ -4,4 +4,5 @@ export default {
   No: '否',
   Cancel: '取消',
   Ok: '确认',
+  Back: '返回',
 };

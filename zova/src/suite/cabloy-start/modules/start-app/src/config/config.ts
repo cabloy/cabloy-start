@@ -31,6 +31,25 @@ export const config = (_sys: ZovaSys) => {
           maxWidth: 360,
         },
       },
+      routedDialog: {
+        default: {
+          maxWidth: {
+            default: 640,
+            md: 768,
+            lg: 1024,
+          },
+          topGutter: {
+            default: 16,
+            md: 32,
+            lg: 48,
+          },
+          maxHeight: 'calc(100vh - 2rem)',
+          closeOnBackdrop: false,
+          closeOnEscape: true,
+          showCloseButton: true,
+          showBackButton: true,
+        },
+      },
       dialog: {
         default: {
           maxWidth: 640,
