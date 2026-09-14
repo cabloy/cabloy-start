@@ -35,7 +35,7 @@ async function openDemo(page: Page) {
 
 async function expectRoutedCardGeometry(
   dialog: ReturnType<typeof dialogByTitle>,
-  expected: { maxWidth: string; top: number },
+  expected: { maxWidth: string; top: number; bottom: number },
 ) {
   const card = dialog.locator('.v-card').first();
   await expect(card).toBeVisible();
@@ -43,13 +43,37 @@ async function expectRoutedCardGeometry(
     .poll(async () => {
       return await card.evaluate(element => {
         const content = element.parentElement!;
+        const overlay = content.closest('.v-overlay')!;
+        const cardRect = element.getBoundingClientRect();
+        const contentRect = content.getBoundingClientRect();
+        const overlayRect = overlay.getBoundingClientRect();
         return {
           maxWidth: getComputedStyle(element).maxWidth,
-          top: Math.round(content.getBoundingClientRect().top),
+          top: Math.round(contentRect.top),
+          bottom: Math.round(overlayRect.bottom - contentRect.bottom),
+          cardCenter: Math.round(cardRect.left + cardRect.width / 2),
+          contentCenter: Math.round(contentRect.left + contentRect.width / 2),
         };
       });
     })
-    .toEqual(expected);
+    .toMatchObject({
+      maxWidth: expected.maxWidth,
+      top: expected.top,
+      bottom: expected.bottom,
+    });
+
+  await expect
+    .poll(async () => {
+      return await card.evaluate(element => {
+        const content = element.parentElement!;
+        const cardRect = element.getBoundingClientRect();
+        const contentRect = content.getBoundingClientRect();
+        return Math.abs(
+          cardRect.left + cardRect.width / 2 - (contentRect.left + contentRect.width / 2),
+        );
+      });
+    })
+    .toBeLessThanOrEqual(1);
 }
 
 test(
@@ -100,20 +124,20 @@ test(
 
     await page.getByRole('button', { name: 'Open A', exact: true }).click();
     const dialogA = dialogByTitle(page, 'A');
-    await expectRoutedCardGeometry(dialogA, { maxWidth: '640px', top: 16 });
+    await expectRoutedCardGeometry(dialogA, { maxWidth: '640px', top: 16, bottom: 16 });
 
     await dialogA.getByRole('button', { name: 'Local push to detail', exact: true }).click();
     await expect(
       dialogA.getByRole('heading', { name: 'Routed Dialog Detail', exact: true }),
     ).toBeVisible();
-    await expectRoutedCardGeometry(dialogA, { maxWidth: '640px', top: 16 });
+    await expectRoutedCardGeometry(dialogA, { maxWidth: '640px', top: 16, bottom: 16 });
     expect(page.url()).toBe(browserUrl);
 
     await page.setViewportSize({ width: 900, height: 900 });
-    await expectRoutedCardGeometry(dialogA, { maxWidth: '768px', top: 32 });
+    await expectRoutedCardGeometry(dialogA, { maxWidth: '768px', top: 32, bottom: 32 });
 
     await page.setViewportSize({ width: 1100, height: 900 });
-    await expectRoutedCardGeometry(dialogA, { maxWidth: '1024px', top: 48 });
+    await expectRoutedCardGeometry(dialogA, { maxWidth: '1024px', top: 48, bottom: 48 });
 
     await page.keyboard.press('Escape');
     await expect(dialogA).toHaveCount(0);

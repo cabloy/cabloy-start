@@ -76,12 +76,17 @@ const responsiveMaxWidthClass = {
 
 const responsiveTopGutterClass = {
   top: 'var(--zova-routed-dialog-top-gutter-default, 0px)',
+  bottom: 'var(--zova-routed-dialog-top-gutter-default, 0px)',
   $nest: {
     '@media (min-width: 48rem)': {
       top: 'var(--zova-routed-dialog-top-gutter-md, var(--zova-routed-dialog-top-gutter-default, 0px))',
+      bottom:
+        'var(--zova-routed-dialog-top-gutter-md, var(--zova-routed-dialog-top-gutter-default, 0px))',
     },
     '@media (min-width: 64rem)': {
       top: 'var(--zova-routed-dialog-top-gutter-lg, var(--zova-routed-dialog-top-gutter-md, var(--zova-routed-dialog-top-gutter-default, 0px)))',
+      bottom:
+        'var(--zova-routed-dialog-top-gutter-lg, var(--zova-routed-dialog-top-gutter-md, var(--zova-routed-dialog-top-gutter-default, 0px)))',
     },
   },
 };
@@ -345,6 +350,7 @@ export class BehaviorAppModal extends BeanBehaviorBase<
     const contentClasses: string[] = [];
     if (isRouted) {
       cardClasses.push('w-100');
+      cardStyle.marginInline = 'auto';
       if (this._isResponsiveLength(dialogOptions.maxWidth)) {
         cardClasses.push(this.$style(responsiveMaxWidthClass));
         this._setResponsiveMaxWidth(cardStyle, 'default', dialogOptions.maxWidth.default);
@@ -363,10 +369,10 @@ export class BehaviorAppModal extends BeanBehaviorBase<
         this._setResponsiveTopGutter(contentStyle, 'md', dialogOptions.topGutter.md);
         this._setResponsiveTopGutter(contentStyle, 'lg', dialogOptions.topGutter.lg);
       } else if (dialogOptions.topGutter !== undefined) {
-        contentStyle.top = this._normalizeWidth(dialogOptions.topGutter);
-        contentStyle['--zova-routed-dialog-top-gutter-current'] = this._normalizeWidth(
-          dialogOptions.topGutter,
-        );
+        const topGutter = this._normalizeWidth(dialogOptions.topGutter);
+        contentStyle.top = topGutter;
+        contentStyle.bottom = topGutter;
+        contentStyle['--zova-routed-dialog-top-gutter-current'] = topGutter;
       }
     } else {
       if (maxWidth !== undefined) cardStyle.maxWidth = this._normalizeWidth(maxWidth);
