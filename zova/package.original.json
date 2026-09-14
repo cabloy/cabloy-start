@@ -56,7 +56,7 @@
     "quasar": "^2.19.3",
     "vue": "^3.5.32",
     "vuetify": "^4.1.10",
-    "vue-router": "npm:@cabloy/vue-router@^4.4.16",
+    "vue-router": "npm:@cabloy/vue-router@^4.4.18",
     "zova": "workspace:^"
   },
   "devDependencies": {
