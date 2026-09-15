@@ -13,7 +13,7 @@ import type {
 
 import { pickObject } from '@cabloy/utils';
 import { classes } from 'typestyle';
-import { VChip, VChipGroup, VSelect, VTextField } from 'vuetify/components';
+import { VBtn, VChip, VChipGroup, VField, VInput, VSelect, VTextField } from 'vuetify/components';
 import z from 'zod';
 import { BeanControllerBase, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
@@ -76,6 +76,7 @@ export class ControllerFormFieldResourcePicker extends BeanControllerBase {
   private _openingDialog = false;
   private _pendingLabelIds = new Set<string>();
   private _labelHydrationAttemptedIds = new Set<string>();
+  private _pickerFocused = false;
 
   @Use({ injectionScope: 'host' })
   $$renderContext: IJsxRenderContextFormField;
@@ -199,24 +200,83 @@ export class ControllerFormFieldResourcePicker extends BeanControllerBase {
       <ZFormField
         {...this.$props}
         slotDefault={({ propsBucket, props }, $$formField) => {
-          const className = classes(props.class, 'text-left');
-          return (
-            <button
-              {...props}
-              type="button"
-              class={className}
-              onBlur={() => $$formField.handleBlur()}
-              onClick={() => {
-                void this._openPicker(propsBucket.value, value => {
-                  $$formField.setValue(value, propsBucket.disableNotifyChanged);
-                }).catch(error => {
-                  this.$errorHandler(error, 'ControllerFormFieldResourcePicker.openPicker');
-                });
-              }}
-            >
-              {this._formatPickerValue(propsBucket.value) || this.scope.locale.PleaseSelect()}
-            </button>
-          );
+          const { field } = $$formField;
+          const error = !field.state.meta.isValid;
+          const errorObj = field.state.meta.errors[0] as z.ZodError | undefined;
+          const label = propsBucket.layout?.label || undefined;
+          const slots = {
+            default: ({ id, isDirty, isDisabled, isReadonly, isValid, hasDetails }: any) => {
+              const propsField: VField['$props'] = {
+                id: id.value,
+                labelId: `${id.value}-label`,
+                label,
+                active: true,
+                dirty: isDirty.value,
+                disabled: isDisabled.value,
+                focused: this._pickerFocused,
+                details: hasDetails.value,
+                error: isValid.value === false,
+                variant: 'filled',
+              };
+              const slotsField = {
+                default: ({ props: propsControl, controlRef, focus, blur }: any) => {
+                  const propsBtn: VBtn['$props'] = {
+                    ...propsControl,
+                    'type': 'button',
+                    'block': true,
+                    'variant': 'text',
+                    'class': classes(propsControl.class, 'justify-start'),
+                    'style': { justifyContent: 'flex-start' },
+                    'disabled': isDisabled.value || isReadonly.value,
+                    'aria-labelledby': `${id.value}-label`,
+                    'aria-haspopup': 'dialog',
+                    'ref': (element: { $el?: HTMLElement } | HTMLElement | null) => {
+                      controlRef.value =
+                        element && typeof element === 'object' && '$el' in element
+                          ? element.$el
+                          : (element ?? undefined);
+                    },
+                    'nativeOnFocus': () => {
+                      this._pickerFocused = true;
+                      focus();
+                    },
+                    'nativeOnBlur': () => {
+                      this._pickerFocused = false;
+                      blur();
+                      $$formField.handleBlur();
+                    },
+                    'nativeOnClick': () => {
+                      void this._openPicker(propsBucket.value, value => {
+                        $$formField.setValue(value, propsBucket.disableNotifyChanged);
+                      }).catch(error => {
+                        this.$errorHandler(error, 'ControllerFormFieldResourcePicker.openPicker');
+                      });
+                    },
+                  };
+                  return (
+                    <VBtn {...propsBtn}>
+                      {this._formatPickerValue(propsBucket.value) ||
+                        this.scope.locale.PleaseSelect()}
+                    </VBtn>
+                  );
+                },
+              };
+              return <VField {...propsField} v-slots={slotsField}></VField>;
+            },
+          };
+          const propsInput: VInput['$props'] = {
+            label,
+            'prependIcon': propsBucket.layout?.iconPrefix,
+            'appendIcon': propsBucket.layout?.iconSuffix,
+            'modelValue': propsBucket.value,
+            'focused': this._pickerFocused,
+            'onUpdate:focused': (focused: boolean) => {
+              this._pickerFocused = focused;
+            },
+            'errorMessages': error ? errorObj?.message : undefined,
+            'class': props.class,
+          };
+          return <VInput {...propsInput} v-slots={slots}></VInput>;
         }}
       ></ZFormField>
     );
