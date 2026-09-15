@@ -204,19 +204,25 @@ export class ControllerFormFieldResourcePicker extends BeanControllerBase {
           const error = !field.state.meta.isValid;
           const errorObj = field.state.meta.errors[0] as z.ZodError | undefined;
           const label = propsBucket.layout?.label || undefined;
+          const propsOptions = { ...propsBucket.options, ...props };
+          const propsInputOptions = VInput.filterProps(propsOptions);
+          const propsFieldOptions = VField.filterProps(propsOptions);
+          const variant = propsFieldOptions.variant ?? 'outlined';
+          const isPlainOrUnderlined = variant === 'plain' || variant === 'underlined';
           const slots = {
             default: ({ id, isDirty, isDisabled, isReadonly, isValid, hasDetails }: any) => {
               const propsField: VField['$props'] = {
+                ...propsFieldOptions,
                 id: id.value,
                 labelId: `${id.value}-label`,
                 label,
                 active: true,
-                dirty: isDirty.value,
+                dirty: isDirty.value || propsFieldOptions.dirty,
                 disabled: isDisabled.value,
                 focused: this._pickerFocused,
                 details: hasDetails.value,
                 error: isValid.value === false,
-                variant: 'filled',
+                variant,
               };
               const slotsField = {
                 default: ({ props: propsControl, controlRef, focus, blur }: any) => {
@@ -225,8 +231,15 @@ export class ControllerFormFieldResourcePicker extends BeanControllerBase {
                     'type': 'button',
                     'block': true,
                     'variant': 'text',
+                    'color': '',
+                    'rounded': false,
                     'class': classes(propsControl.class, 'justify-start'),
-                    'style': { justifyContent: 'flex-start' },
+                    'style': {
+                      justifyContent: 'flex-start',
+                      fontSize: 'inherit',
+                      fontWeight: 'inherit',
+                      letterSpacing: 'inherit',
+                    },
                     'disabled': isDisabled.value || isReadonly.value,
                     'aria-labelledby': `${id.value}-label`,
                     'aria-haspopup': 'dialog',
@@ -265,11 +278,13 @@ export class ControllerFormFieldResourcePicker extends BeanControllerBase {
             },
           };
           const propsInput: VInput['$props'] = {
-            label,
+            ...propsInputOptions,
             'prependIcon': propsBucket.layout?.iconPrefix,
             'appendIcon': propsBucket.layout?.iconSuffix,
             'modelValue': propsBucket.value,
+            'centerAffix': !isPlainOrUnderlined,
             'focused': this._pickerFocused,
+            'indentDetails': propsInputOptions.indentDetails ?? !isPlainOrUnderlined,
             'onUpdate:focused': (focused: boolean) => {
               this._pickerFocused = focused;
             },
