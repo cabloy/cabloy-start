@@ -40,11 +40,11 @@ declare module 'zova-module-start-page' {
 }
 /** controller: end */
 /** controller: begin */
-import { ControllerBlockFilter } from '../component/blockFilter/controller.jsx';
-import { ControllerBlockFilterActions } from '../component/blockFilterActions/controller.jsx';
-import { ControllerBlockPage } from '../component/blockPage/controller.jsx';
-import { ControllerBlockTable } from '../component/blockTable/controller.jsx';
-import { ControllerBlockToolbarBulk } from '../component/blockToolbarBulk/controller.jsx';
+import type { ControllerBlockFilter } from '../component/blockFilter/controller.jsx';
+import type { ControllerBlockFilterActions } from '../component/blockFilterActions/controller.jsx';
+import type { ControllerBlockPage } from '../component/blockPage/controller.jsx';
+import type { ControllerBlockTable } from '../component/blockTable/controller.jsx';
+import type { ControllerBlockToolbarBulk } from '../component/blockToolbarBulk/controller.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {

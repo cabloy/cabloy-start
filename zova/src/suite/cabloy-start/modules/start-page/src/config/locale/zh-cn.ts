@@ -7,6 +7,7 @@ export default {
   Select: '选择',
   Done: '完成',
   SelectedItems: '已选择 %d 项',
+  SelectedItemsWithMax: '已选择 %d / %d 项',
   SelectionActionMaxExceeded: '最多选择 %d 项',
   SelectionActionUnavailable: '所选项目已无法执行此操作',
 };

@@ -95,14 +95,16 @@ function studentRow(page: Page, name: string) {
 }
 
 async function createStudentFixture(page: Page, name: string, mobile: string) {
-  const accessToken = (await page.context().cookies()).find(cookie => cookie.name === 'token')?.value;
+  const accessToken = (await page.context().cookies()).find(
+    cookie => cookie.name === 'token',
+  )?.value;
   expect(accessToken).toBeTruthy();
   const result = await page.evaluate(
     async ({ data, accessToken }) => {
       const response = await fetch('/api/training/student', {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
@@ -117,7 +119,9 @@ async function createStudentFixture(page: Page, name: string, mobile: string) {
 
 async function deleteStudentFixture(page: Page, id: string | number | undefined) {
   if (id === undefined) return;
-  const accessToken = (await page.context().cookies()).find(cookie => cookie.name === 'token')?.value;
+  const accessToken = (await page.context().cookies()).find(
+    cookie => cookie.name === 'token',
+  )?.value;
   if (!accessToken) return;
   await page.evaluate(
     async ({ id, accessToken }) => {
@@ -137,6 +141,17 @@ async function openStudentCreatePage(page: Page) {
     /\/admin\/rest\/resource\/training-student(?:%3A|:|%253A)student\/create(?:[/?#]|$)/,
   );
   await expect(page.getByRole('group', { name: 'Student Profile' })).toBeVisible();
+}
+
+async function openTrainingRecordCreatePage(page: Page) {
+  const response = await page.goto('/admin/rest/resource/training-record%3Arecord/create', {
+    waitUntil: 'load',
+  });
+  expect(response?.ok()).toBeTruthy();
+  await expect(page).toHaveURL(
+    /\/admin\/rest\/resource\/training-record(?:%3A|:|%253A)record\/create(?:[/?#]|$)/,
+  );
+  await expect(page.getByLabel('Training Record Name', { exact: true })).toBeVisible();
 }
 
 async function overrideStudentFilterBlocks(page: Page, mode: 'omit' | 'empty'): Promise<void> {
@@ -653,9 +668,9 @@ test(
           );
         })
         .toBeLessThanOrEqual(1);
-      await expect(page.getByRole('columnheader').filter({ has: page.getByRole('checkbox') })).toHaveCount(
-        1,
-      );
+      await expect(
+        page.getByRole('columnheader').filter({ has: page.getByRole('checkbox') }),
+      ).toHaveCount(1);
 
       const firstRow = studentRow(page, firstName);
       const secondRow = studentRow(page, secondName);
@@ -695,6 +710,60 @@ test(
     } finally {
       await deleteStudentFixture(page, firstId);
       await deleteStudentFixture(page, secondId);
+    }
+  },
+);
+
+test(
+  'ATP-START-RESOURCE-PICKER-01: Training Record selects and retains a Student through a routed dialog',
+  { tag: ['@admin', '@flow'] },
+  async ({ page }) => {
+    const pageErrors = collectPageErrors(page);
+    await loginAsAdmin(page);
+
+    const studentName = `Picker E2E ${Date.now()}`;
+    let studentId: string | number | undefined;
+    try {
+      studentId = await createStudentFixture(page, studentName, '13812345678');
+      await openTrainingRecordCreatePage(page);
+
+      const pickerTrigger = page.getByRole('button', { name: 'Please select...', exact: true });
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+      const browserUrl = page.url();
+      const loaded = waitForStudentSelect(page);
+      await pickerTrigger.click();
+
+      const pickerDialog = page.getByRole('dialog');
+      await expect(pickerDialog).toHaveCount(1);
+      await loaded;
+      const studentPickerRow = pickerDialog.getByRole('row').filter({ hasText: studentName });
+      await expect(studentPickerRow).toBeVisible();
+      await expect(page).toHaveURL(browserUrl);
+
+      const select = pickerDialog.getByRole('button', { name: 'Select', exact: true });
+      await expect(select).toBeDisabled();
+      await studentPickerRow.getByRole('checkbox').check();
+      await expect(pickerDialog.locator('[role="status"]')).toHaveCount(2);
+      await expect(pickerDialog.locator('[role="status"]').last()).toHaveText('Selected one item');
+      await expect(select).toBeEnabled();
+      await select.click();
+
+      await expect(pickerDialog).toBeHidden();
+      await expect(page).toHaveURL(browserUrl);
+      const selectedPickerTrigger = page.getByRole('button', { name: studentName, exact: true });
+      await expect(selectedPickerTrigger).toBeVisible();
+
+      await selectedPickerTrigger.click();
+      await expect(pickerDialog).toBeVisible();
+      await expect(studentPickerRow.getByRole('checkbox')).toBeChecked();
+      await pickerDialog.getByRole('button', { name: 'Cancel', exact: true }).click();
+
+      await expect(pickerDialog).toBeHidden();
+      await expect(page).toHaveURL(browserUrl);
+      await expect(selectedPickerTrigger).toHaveText(studentName);
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await deleteStudentFixture(page, studentId);
     }
   },
 );

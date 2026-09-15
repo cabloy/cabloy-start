@@ -6,11 +6,7 @@ import { Row } from '@tanstack/table-core';
 import { VDataTableRow, VDataTableServer } from 'vuetify/components';
 import { BeanControllerBase, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
-import {
-  BeanControllerTableBase,
-  TableColumnIdSelection,
-  ZTable,
-} from 'zova-module-a-table';
+import { BeanControllerTableBase, TableColumnIdSelection, ZTable } from 'zova-module-a-table';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceBlockRecord {
@@ -61,6 +57,7 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
           sorting={$$page.sorting}
           onSortingChange={updater => $$page.onSortingChange(updater)}
           enableRowSelection={$$page.selectionEnabled}
+          selectionMode={$$page.selectionMode}
           rowSelection={$$page.rowSelection}
           onRowSelectionChange={updater => $$page.onRowSelectionChange(updater)}
           tableScope={$$page.jsxCelScope}
@@ -84,8 +81,7 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
           typeof columnDefHeader === 'function'
             ? columnDefHeader(header.getContext())
             : columnDefHeader,
-        key:
-          header.id === TableColumnIdSelection ? 'data-table-select' : header.id,
+        key: header.id === TableColumnIdSelection ? 'data-table-select' : header.id,
         align: rest?.align === 'left' ? 'start' : rest?.align === 'right' ? 'end' : rest?.align,
         width: rest?.width,
         minWidth: rest?.width,
@@ -138,7 +134,7 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
         $$page.gotoPage(options.page);
       },
       'showSelect': $$page.selectionEnabled,
-      'selectStrategy': 'page',
+      'selectStrategy': $$page.selectionMode === 'single' ? 'single' : 'page',
       'itemValue': (row: Row<TData>) => row.id,
       'itemSelectable': (row: Row<TData>) => row.getCanSelect(),
       'returnObject': false,
@@ -147,9 +143,7 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
         .rows.filter(row => $$page.rowSelection[row.id])
         .map(row => row.id),
       'onUpdate:modelValue': (values: unknown) => {
-        const selected = new Set(
-          Array.isArray(values) ? values.map(value => String(value)) : [],
-        );
+        const selected = new Set(Array.isArray(values) ? values.map(value => String(value)) : []);
         const currentPageSelection = Object.fromEntries(
           table
             .getRowModel()
