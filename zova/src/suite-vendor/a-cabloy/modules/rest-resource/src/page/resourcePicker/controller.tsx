@@ -7,11 +7,11 @@ import { Controller } from 'zova-module-a-bean';
 import { $QueryEnsureLoaded } from 'zova-module-a-model';
 import { ZPage } from 'zova-module-home-base';
 
-import type { ModelResource } from '../../model/resource.js';
 import type {
   IResourcePickerPageContext,
   IResourcePickerPageHost,
 } from '../../lib/resourcePicker.js';
+import type { ModelResource } from '../../model/resource.js';
 
 import { ZResourcePickerContext } from '../../.metadata/component/resourcePickerContext.js';
 import { resourcePickerPageHostKey } from '../../lib/resourcePicker.js';
