@@ -1,4 +1,4 @@
-import type { DtoRecordCreate, DtoRecordUpdate } from 'vona-module-training-record';
+import type { DtoRecordCreate } from 'vona-module-training-record';
 import type { DtoStudentCreate } from 'vona-module-training-student';
 
 import { ZodMetadata } from '@cabloy/zod-openapi';
@@ -13,6 +13,7 @@ import { getTargetDecoratorRules } from 'vona-module-a-openapiutils';
 import { $Dto } from 'vona-module-a-orm';
 
 import { DtoDetailRecordSubjectResItem } from '../src/dto/detailRecordSubjectResItem.tsx';
+import { DtoRecordUpdate } from '../src/dto/recordUpdate.tsx';
 import { DtoRecordSelectReq } from '../src/dto/recordSelectReq.tsx';
 import { DtoRecordSelectResItem } from '../src/dto/recordSelectResItem.tsx';
 import { DtoRecordView } from '../src/dto/recordView.tsx';
@@ -59,6 +60,14 @@ describe('record.test.ts', { concurrency: false }, () => {
       ) as any;
       assert.ok(subjectComponent?.properties?._lineNumber);
       assert.equal(subjectComponent.required?.includes('_lineNumber'), false);
+
+      const updateApiJson = await app.bean.openapi.generateJsonOfClass(DtoRecordUpdate);
+      const updateComponent = Object.values(updateApiJson.components!.schemas as any).find(item => {
+        return (item as any).properties?.studentId;
+      }) as any;
+      assert.ok(updateComponent, JSON.stringify(updateApiJson.components?.schemas));
+      assert.equal(updateComponent.properties.studentId.rest?.readonly, true);
+      assert.equal(updateComponent.required?.includes('studentId'), false);
 
       const selectReqRules = getTargetDecoratorRules(DtoRecordSelectReq.prototype);
       const studentIdMetadata = ZodMetadata.getOpenapiMetadata(selectReqRules.studentId!);
@@ -140,6 +149,9 @@ describe('record.test.ts', { concurrency: false }, () => {
       );
       let dossierFileAttendance: any;
       let dossierFileAssessment: any;
+      let studentId: any;
+      let replacementStudentId: any;
+      let recordId: any;
       await app.bean.passport.signinMock();
       try {
         await fse.writeFile(dossierFilePathAttendance, dossierTextAttendance);
@@ -173,12 +185,20 @@ describe('record.test.ts', { concurrency: false }, () => {
             },
           ],
         } as any as DtoRecordCreate;
-        const studentId = await app.bean.executor.performAction('post', '/training/student', {
+        studentId = await app.bean.executor.performAction('post', '/training/student', {
           innerAccess: false,
           body: studentData,
         });
         recordData.studentId = studentId;
-        const recordId = await app.bean.executor.performAction('post', '/training/record', {
+        replacementStudentId = await app.bean.executor.performAction('post', '/training/student', {
+          innerAccess: false,
+          body: {
+            ...studentData,
+            name: '__ReplacementStudent__',
+            mobile: '13912345678',
+          },
+        });
+        recordId = await app.bean.executor.performAction('post', '/training/record', {
           innerAccess: false,
           body: recordData,
         });
@@ -255,6 +275,13 @@ describe('record.test.ts', { concurrency: false }, () => {
         assert.equal(studentRecord?.dossierFiles?.length, 1);
         assert.equal(studentRecord?.trainingRecordSubjects?.length, 1);
 
+        const recordBeforeUpdate = await app
+          .scope('training-record')
+          .model.record.getById(recordId);
+        assert.ok(recordBeforeUpdate);
+        const departmentId = recordBeforeUpdate.departmentId;
+        const userIdOwner = recordBeforeUpdate.userIdOwner;
+
         await fse.writeFile(dossierFilePathAssessment, dossierTextAssessment);
         dossierFileAssessment = await app.bean.file.upload(
           'file-native:native',
@@ -270,7 +297,7 @@ describe('record.test.ts', { concurrency: false }, () => {
           },
         );
         const dataUpdate = {
-          studentId,
+          studentId: replacementStudentId,
           name: '__RecordNew__',
           subjectCount: 2,
           totalScore: 183,
@@ -304,6 +331,15 @@ describe('record.test.ts', { concurrency: false }, () => {
           params: { id: recordId },
         });
         const [updatedMathSubject, updatedEnglishSubject] = record.trainingRecordSubjects ?? [];
+        const recordAfterUpdate = await app
+          .scope('training-record')
+          .model.record.getById(recordId);
+        assert.ok(recordAfterUpdate);
+        assert.equal(String(record.studentId), String(studentId));
+        assert.equal(String(record.student?.id), String(studentId));
+        assert.equal(record.student?.name, studentData.name);
+        assert.equal(String(recordAfterUpdate.departmentId), String(departmentId));
+        assert.equal(String(recordAfterUpdate.userIdOwner), String(userIdOwner));
         assert.equal(record.name, dataUpdate.name);
         assert.equal(record.subjectCount, dataUpdate.subjectCount);
         assert.equal(record.totalScore, dataUpdate.totalScore);
@@ -366,6 +402,10 @@ describe('record.test.ts', { concurrency: false }, () => {
           innerAccess: false,
           params: { id: studentId },
         });
+        await app.bean.executor.performAction('delete', '/training/student/:id', {
+          innerAccess: false,
+          params: { id: replacementStudentId },
+        });
 
         student = await app.bean.executor.performAction('get', '/training/student/:id', {
           innerAccess: false,
@@ -373,15 +413,32 @@ describe('record.test.ts', { concurrency: false }, () => {
         });
         assert.equal(student, undefined);
       } finally {
-        if (dossierFileAssessment) {
-          await app.bean.file.delete(dossierFileAssessment.id);
+        try {
+          if (recordId && (await app.scope('training-record').model.record.getById(recordId))) {
+            await app.bean.executor.performAction('delete', '/training/record/:id', {
+              innerAccess: false,
+              params: { id: recordId },
+            });
+          }
+          for (const id of [studentId, replacementStudentId]) {
+            if (id && (await app.scope('training-student').model.student.getById(id))) {
+              await app.bean.executor.performAction('delete', '/training/student/:id', {
+                innerAccess: false,
+                params: { id },
+              });
+            }
+          }
+          if (dossierFileAssessment) {
+            await app.bean.file.delete(dossierFileAssessment.id);
+          }
+          if (dossierFileAttendance) {
+            await app.bean.file.delete(dossierFileAttendance.id);
+          }
+        } finally {
+          await fse.remove(dossierFilePathAttendance);
+          await fse.remove(dossierFilePathAssessment);
+          await app.bean.passport.signout();
         }
-        if (dossierFileAttendance) {
-          await app.bean.file.delete(dossierFileAttendance.id);
-        }
-        await fse.remove(dossierFilePathAttendance);
-        await fse.remove(dossierFilePathAssessment);
-        await app.bean.passport.signout();
       }
     });
   });

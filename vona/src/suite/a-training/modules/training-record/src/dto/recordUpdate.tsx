@@ -1,6 +1,6 @@
 import type { IDecoratorDtoOptions } from 'vona-module-a-web';
 
-import { $makeMetadata, Api, v } from 'vona-module-a-openapiutils';
+import { $makeMetadata, $makeSchema, Api, v } from 'vona-module-a-openapiutils';
 import { $Dto } from 'vona-module-a-orm';
 import { Dto } from 'vona-module-a-web';
 import { ZovaRender } from 'zova-rest-cabloy-start-admin';
@@ -31,6 +31,7 @@ export interface IDtoOptionsRecordUpdate extends IDecoratorDtoOptions {}
     }),
   ],
   fields: {
+    studentId: $makeSchema(v.optional(), ZovaRender.readonly(), v.tableIdentity()),
     trainingRecordSubjects: $makeMetadata(
       v.title($locale('TrainingRecordSubjects')),
       ZovaRender.order(8),
@@ -42,6 +43,7 @@ export interface IDtoOptionsRecordUpdate extends IDecoratorDtoOptions {}
 })
 export class DtoRecordUpdate extends $Dto.update(() => ModelRecord, {
   columns: [
+    'studentId',
     'name',
     'subjectCount',
     'totalScore',
