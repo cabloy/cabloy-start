@@ -10,7 +10,6 @@ export interface ICompoundFormFieldState {
 }
 
 export interface ICompoundFormFieldControlContext {
-  props: Record<string, unknown>;
   id: string;
   labelId: string;
   disabled: boolean;
@@ -68,7 +67,6 @@ export function renderCompoundFormField(
       const slotsField = {
         default: ({ props: propsControl, focus, blur }: any) => {
           const context: ICompoundFormFieldControlContext = {
-            props: propsControl,
             id: fieldId,
             labelId: `${fieldId}-label`,
             disabled: isDisabled.value,

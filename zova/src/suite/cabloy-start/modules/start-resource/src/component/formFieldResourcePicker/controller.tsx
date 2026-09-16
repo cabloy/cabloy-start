@@ -21,10 +21,7 @@ import { ZFormField, ZFormFieldPreset } from 'zova-module-a-form';
 import { $QueryEnsureLoaded } from 'zova-module-a-model';
 import { resourcePickerPageHostKey } from 'zova-module-rest-resource';
 import { ModelResource } from 'zova-module-rest-resource';
-import {
-  createCompoundFormFieldState,
-  renderCompoundFormField,
-} from 'zova-module-start-form';
+import { createCompoundFormFieldState, renderCompoundFormField } from 'zova-module-start-form';
 import { resolvePickerSelectionMax } from 'zova-module-start-page';
 
 import type { TypeResourcePickerSelectionMode } from '../../lib/resourcePicker.js';
@@ -207,19 +204,22 @@ export class ControllerFormFieldResourcePicker extends BeanControllerBase {
           const { propsBucket } = renderContext;
           return renderCompoundFormField(renderContext, $$formField, {
             state: this._compoundFormFieldState,
-            renderControl: ({ props, disabled, readonly }) => {
+            renderControl: ({ disabled, readonly }) => {
               const propsBtn: VBtn['$props'] = {
-                ...props,
                 block: true,
                 variant: 'text',
                 color: '',
                 rounded: false,
-                class: classes(props.class as string | undefined, 'justify-start'),
+                class: 'justify-start',
                 style: {
                   justifyContent: 'flex-start',
+                  height: 'auto',
+                  minHeight: 0,
+                  padding: 0,
                   fontSize: 'inherit',
                   fontWeight: 'inherit',
                   letterSpacing: 'inherit',
+                  lineHeight: 'inherit',
                 },
                 disabled: disabled || readonly,
                 nativeOnClick: () => {
