@@ -12,6 +12,10 @@ import { BeanControllerBase, ClientOnly, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { ZFormField } from 'zova-module-a-form';
 import { $QueryEnsureLoaded } from 'zova-module-a-model';
+import {
+  createCompoundFormFieldState,
+  renderCompoundFormField,
+} from 'zova-module-start-form';
 
 import type { IFilePreviewItem } from '../../types/file.js';
 
@@ -68,6 +72,7 @@ export class ControllerFormFieldFile extends BeanControllerBase {
   currentValue?: TableIdentity | TableIdentity[] | string;
   currentOptions: IResourceFormFieldFileOptions = {};
   $$formField?: ControllerFormField;
+  private _compoundFormFieldState = createCompoundFormFieldState();
   uploadedPreviewMap: Record<string, IFilePreviewItem> = {};
 
   @Use()
@@ -79,96 +84,95 @@ export class ControllerFormFieldFile extends BeanControllerBase {
   protected async __init__() {}
 
   protected render() {
-    return this.$props.readonly ? this._renderReadonly() : this._renderEditable();
-  }
-
-  private _renderEditable() {
     return (
       <ZFormField
         {...this.$props}
-        slotDefault={({ propsBucket, props }, $$formField) => {
+        slotDefault={(renderContext, $$formField) => {
+          const { propsBucket } = renderContext;
           this.$$formField = $$formField;
           this.currentValue = propsBucket.value as TableIdentity | TableIdentity[] | string;
           this.currentOptions = (propsBucket.options ?? {}) as IResourceFormFieldFileOptions;
           const policyState = this._getUploadPolicyState(this.currentOptions);
           const items = this._getPreviewItems(this.currentValue);
           const maxCount = this._getMaxCount(this.currentOptions);
-          const disabled = this.isUploading || policyState.pending;
-          return (
-            <VCard variant="outlined" class={props.class}>
-              <VCardText class="d-flex flex-column ga-3">
-                <ClientOnly>
-                  <input
-                    ref={ref => {
-                      this.fileInputRef = ref as HTMLInputElement;
-                    }}
-                    class="d-none"
-                    type="file"
-                    accept={policyState.acceptAttr}
-                    multiple={policyState.multiple}
-                    onChange={event => {
-                      void this._handleFileChange(event, propsBucket.disableNotifyChanged);
-                    }}
-                  />
-                </ClientOnly>
-                <div class="d-flex flex-wrap align-center ga-3">
-                  {items.length < maxCount && (
-                    <VBtn
-                      color="primary"
-                      disabled={disabled}
-                      nativeOnClick={() => {
-                        if (disabled) return;
-                        this._applyInputPolicy(policyState);
-                        this.fileInputRef?.click();
+          const readonly = !!propsBucket.readonly;
+          return renderCompoundFormField(renderContext, $$formField, {
+            state: this._compoundFormFieldState,
+            localErrorMessage: this.errorMessage,
+            renderControl: ({ disabled, readonly: fieldReadonly }) => {
+              if (readonly) {
+                return (
+                  <div class="d-flex flex-column ga-3">
+                    {!items.length ? (
+                      <span class="text-medium-emphasis">{this.scope.locale.NoFileSelected()}</span>
+                    ) : (
+                      items.map((item, index) => this._renderPreview(item, index, true))
+                    )}
+                  </div>
+                );
+              }
+              const uploadDisabled =
+                disabled || fieldReadonly || this.isUploading || policyState.pending;
+              const showChooser = policyState.multiple || items.length < maxCount;
+              return (
+                <div class="d-flex flex-column ga-3">
+                  <ClientOnly>
+                    <input
+                      ref={ref => {
+                        this.fileInputRef = ref as HTMLInputElement;
                       }}
-                    >
-                      {this._getUploadButtonText(items.length, policyState.multiple)}
-                    </VBtn>
-                  )}
-                  {this.isUploading && (
-                    <span class="d-inline-flex align-center ga-2 text-medium-emphasis">
-                      <VProgressCircular
-                        indeterminate
+                      class="d-none"
+                      type="file"
+                      accept={policyState.acceptAttr}
+                      multiple={policyState.multiple}
+                      onChange={event => {
+                        void this._handleFileChange(event, propsBucket.disableNotifyChanged);
+                      }}
+                    />
+                  </ClientOnly>
+                  <div class="d-flex flex-wrap align-center ga-3">
+                    {showChooser && (
+                      <VBtn
                         color="primary"
-                        size={20}
-                      ></VProgressCircular>
-                      {this.scope.locale.Uploading()}
-                    </span>
-                  )}
-                  {!items.length && !this.isUploading && (
-                    <span class="text-medium-emphasis">
-                      {this.currentOptions.placeholder ?? this.scope.locale.NoFileSelected()}
-                    </span>
+                        disabled={uploadDisabled}
+                        nativeOnClick={() => {
+                          if (uploadDisabled) return;
+                          this._applyInputPolicy(policyState);
+                          this.fileInputRef?.click();
+                        }}
+                      >
+                        {this._getUploadButtonText(items.length, policyState.multiple)}
+                      </VBtn>
+                    )}
+                    {this.isUploading && (
+                      <span class="d-inline-flex align-center ga-2 text-medium-emphasis">
+                        <VProgressCircular
+                          indeterminate
+                          color="primary"
+                          size={20}
+                        ></VProgressCircular>
+                        {this.scope.locale.Uploading()}
+                      </span>
+                    )}
+                    {!items.length && !this.isUploading && (
+                      <span class="text-medium-emphasis">
+                        {this.currentOptions.placeholder ?? this.scope.locale.NoFileSelected()}
+                      </span>
+                    )}
+                  </div>
+                  {items.map((item, index) =>
+                    this._renderPreview(
+                      item,
+                      index,
+                      false,
+                      propsBucket.disableNotifyChanged,
+                      uploadDisabled,
+                    ),
                   )}
                 </div>
-                {this.errorMessage && <span class="text-error">{this.errorMessage}</span>}
-                {items.map((item, index) =>
-                  this._renderPreview(item, index, false, propsBucket.disableNotifyChanged),
-                )}
-              </VCardText>
-            </VCard>
-          );
-        }}
-      ></ZFormField>
-    );
-  }
-
-  private _renderReadonly() {
-    return (
-      <ZFormField
-        {...this.$props}
-        slotDefault={({ propsBucket, props }) => {
-          this.currentValue = propsBucket.value as TableIdentity | TableIdentity[] | string;
-          this.currentOptions = (propsBucket.options ?? {}) as IResourceFormFieldFileOptions;
-          const items = this._getPreviewItems(this.currentValue);
-          if (!items.length) {
-            return <span class={props.class}>{this.scope.locale.NoFileSelected()}</span>;
-          }
-          return (
-            <div class={props.class}>
-              {items.map((item, index) => this._renderPreview(item, index, true))}
-            </div>
-          );
+              );
+            },
+          });
         }}
       ></ZFormField>
     );
@@ -179,6 +183,7 @@ export class ControllerFormFieldFile extends BeanControllerBase {
     index: number,
     readonly: boolean,
     disableNotifyChanged?: boolean,
+    disabled = false,
   ) {
     const downloadUrl = item.downloadUrl ? this._resolveDownloadUrl(item.downloadUrl) : undefined;
     return (
@@ -210,6 +215,7 @@ export class ControllerFormFieldFile extends BeanControllerBase {
                 color="error"
                 variant="text"
                 size="small"
+                disabled={disabled}
                 nativeOnClick={() => {
                   this._removeItem(item.id, disableNotifyChanged);
                 }}
@@ -274,7 +280,10 @@ export class ControllerFormFieldFile extends BeanControllerBase {
       const currentIds = this._normalizeFileIds(this.currentValue);
       const filesToUpload = multiple ? files : files.slice(0, 1);
       const maxCount = this._getMaxCount(options, multiple);
-      if (currentIds.length + filesToUpload.length > maxCount) {
+      const nextCountCandidate = multiple
+        ? currentIds.length + filesToUpload.length
+        : filesToUpload.length;
+      if (nextCountCandidate > maxCount) {
         this.errorMessage = this.scope.locale.TooManyFiles(maxCount);
         return;
       }

@@ -1,5 +1,4 @@
 import type { TableIdentity } from 'table-identity';
-import type { VNode } from 'vue';
 import type { IComponentOptions } from 'zova';
 import type { IJsxRenderContextFormField } from 'zova-module-a-form';
 import type { ControllerFormField, IFormFieldComponentOptions } from 'zova-module-a-form';
@@ -9,12 +8,13 @@ import { VBtn, VCard, VCardText, VProgressCircular } from 'vuetify/components';
 import { BeanControllerBase, ClientOnly, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { ZFormField } from 'zova-module-a-form';
+import {
+  createCompoundFormFieldState,
+  renderCompoundFormField,
+} from 'zova-module-start-form';
 
 import type { IImageResizeOptions } from '../../lib/imageTransform.js';
-import type {
-  IImageUploaderRenderState,
-  IImageUploaderResult,
-} from '../imageUploader/controller.jsx';
+import type { IImageUploaderResult } from '../imageUploader/controller.jsx';
 
 import { ZImageUploader } from '../../.metadata/component/imageUploader.js';
 import {
@@ -86,6 +86,7 @@ export class ControllerFormFieldImage extends BeanControllerBase {
   currentValue?: TableIdentity | TableIdentity[] | string;
   currentOptions: IResourceFormFieldImageOptions = {};
   $$formField?: ControllerFormField;
+  private _compoundFormFieldState = createCompoundFormFieldState();
 
   uploadedPreviewMap: Record<string, IImagePreviewItem> = {};
 
@@ -95,153 +96,126 @@ export class ControllerFormFieldImage extends BeanControllerBase {
   protected async __init__() {}
 
   protected render() {
-    if (this.$props.readonly) {
-      return this._renderReadonlyPreset();
-    }
     return (
       <ZFormField
         {...this.$props}
-        slotDefault={({ propsBucket, props }, $$formField) => {
+        slotDefault={(renderContext, $$formField) => {
+          const { propsBucket } = renderContext;
           this.$$formField = $$formField;
           this.currentValue = propsBucket.value as TableIdentity | TableIdentity[] | string;
           this.currentOptions = propsBucket.options ?? {};
-          const hasValidationError = !$$formField.field.state.meta.isValid;
+          const readonly = !!propsBucket.readonly;
           const imageScene = this.currentOptions.imageScene;
-          if (!imageScene) {
-            return this._renderUploadSceneRequired(
-              hasValidationError,
-              props.class,
-              propsBucket.options?.placeholder,
-            );
-          }
-          return (
-            <ZImageUploader
-              imageScene={imageScene}
-              accept={this.currentOptions.accept}
-              mimeTypes={this.currentOptions.mimeTypes}
-              extensions={this.currentOptions.extensions}
-              maxSize={this.currentOptions.maxSize}
-              minSize={this.currentOptions.minSize}
-              multiple={this.currentOptions.multiple !== false}
-              onBeforeUpload={(fileCount, policy) => {
-                return this._validateUploadCount(fileCount, policy.multiple);
-              }}
-              crop={this._getCropOptions(this.currentOptions)}
-              resize={this.currentOptions.resize}
-              onUploadedBatch={(uploaded, policy) => {
-                this._handleUploaded(uploaded, propsBucket.disableNotifyChanged, policy.multiple);
-              }}
-              onError={error => {
-                this.errorMessage = error.message;
-              }}
-              slotDefault={state => {
-                const multiple = state.policy.multiple;
-                this.effectiveMultiple = multiple;
-                const items = this._getPreviewItems(propsBucket.value, multiple);
-                const maxCount = this._getMaxCount(this.currentOptions, multiple);
-                return this._renderUploadContent(
-                  state,
-                  items,
-                  maxCount,
-                  hasValidationError,
-                  props.class,
-                  propsBucket.options?.placeholder,
-                  propsBucket.disableNotifyChanged,
-                );
-              }}
-            ></ZImageUploader>
-          );
-        }}
-      ></ZFormField>
-    );
-  }
-
-  private _renderUploadSceneRequired(
-    hasValidationError: boolean,
-    propsClass: string | undefined,
-    placeholder: string | undefined,
-  ): VNode {
-    const errorClass = hasValidationError || !!this.errorMessage ? 'border-error' : undefined;
-    return (
-      <VCard variant="outlined" class={[propsClass, errorClass]}>
-        <VCardText class="d-flex flex-column ga-3">
-          <span class="text-medium-emphasis">
-            {placeholder ?? this.scope.locale.NoImageSelected()}
-          </span>
-          <span class="text-error">{this.scope.locale.ImageUploadSceneRequired()}</span>
-        </VCardText>
-      </VCard>
-    );
-  }
-
-  private _renderUploadContent(
-    state: IImageUploaderRenderState,
-    items: IImagePreviewItem[],
-    maxCount: number,
-    hasValidationError: boolean,
-    propsClass: string | undefined,
-    placeholder: string | undefined,
-    disableNotifyChanged: boolean | undefined,
-  ): VNode {
-    const errorClass =
-      hasValidationError || !!this.errorMessage || !!state.errorMessage
-        ? 'border-error'
-        : undefined;
-    return (
-      <VCard variant="outlined" class={[propsClass, errorClass]}>
-        <VCardText class="d-flex flex-column ga-3">
-          <div class="d-flex flex-wrap align-center ga-3">
-            {items.length < maxCount && (
-              <VBtn
-                color="primary"
-                disabled={state.isUploading || state.policy.pending}
-                nativeOnClick={state.chooseFiles}
-              >
-                {this._getUploadButtonText(items.length, state.policy.multiple)}
-              </VBtn>
-            )}
-            {state.isUploading && (
-              <span class="d-inline-flex align-center ga-2 text-medium-emphasis">
-                <VProgressCircular indeterminate color="primary" size={20}></VProgressCircular>
-                {this.scope.locale.Uploading()}
-              </span>
-            )}
-            {!items.length && !state.isUploading && (
-              <span class="text-medium-emphasis">
-                {placeholder ?? this.scope.locale.NoImageSelected()}
-              </span>
-            )}
-          </div>
-          {!!(this.errorMessage || state.errorMessage) && (
-            <span class="text-error">{this.errorMessage || state.errorMessage}</span>
-          )}
-          {!!items.length && (
-            <div
-              class="d-grid ga-3"
-              style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}
-            >
-              {items.map((item, index) =>
-                this._renderPreviewCard(item, index, items, false, disableNotifyChanged),
-              )}
-            </div>
-          )}
-        </VCardText>
-      </VCard>
-    );
-  }
-
-  private _renderReadonlyPreset() {
-    return (
-      <ZFormField
-        {...this.$props}
-        slotDefault={({ propsBucket, props }) => {
-          this.currentValue = propsBucket.value as TableIdentity | TableIdentity[] | string;
-          this.currentOptions = propsBucket.options ?? {};
-          const items = this._getPreviewItems(
+          const readonlyItems = this._getPreviewItems(
             propsBucket.value,
             Array.isArray(propsBucket.value) && this.currentOptions.multiple !== false,
           );
-          return <div class={props.class}>{this._renderReadonlyItems(items)}</div>;
+          if (readonly) {
+            return renderCompoundFormField(renderContext, $$formField, {
+              state: this._compoundFormFieldState,
+              renderControl: () => <div>{this._renderReadonlyItems(readonlyItems)}</div>,
+            });
+          }
+          if (!imageScene) {
+            return renderCompoundFormField(renderContext, $$formField, {
+              state: this._compoundFormFieldState,
+              localErrorMessage: this.scope.locale.ImageUploadSceneRequired(),
+              renderControl: () => (
+                <div class="d-flex flex-column ga-3">
+                  <span class="text-medium-emphasis">
+                    {propsBucket.options?.placeholder ?? this.scope.locale.NoImageSelected()}
+                  </span>
+                </div>
+              ),
+            });
+          }
+          return renderCompoundFormField(renderContext, $$formField, {
+            state: this._compoundFormFieldState,
+            localErrorMessage: this.errorMessage,
+            renderControl: ({ disabled, readonly: fieldReadonly }) => (
+              <ZImageUploader
+                  imageScene={imageScene}
+                  accept={this.currentOptions.accept}
+                  mimeTypes={this.currentOptions.mimeTypes}
+                  extensions={this.currentOptions.extensions}
+                  maxSize={this.currentOptions.maxSize}
+                  minSize={this.currentOptions.minSize}
+                  multiple={this.currentOptions.multiple !== false}
+                  onBeforeUpload={(fileCount, policy) => {
+                    return this._validateUploadCount(fileCount, policy.multiple);
+                  }}
+                  crop={this._getCropOptions(this.currentOptions)}
+                  resize={this.currentOptions.resize}
+                  onUploadedBatch={(uploaded, policy) => {
+                    this._handleUploaded(
+                      uploaded,
+                      propsBucket.disableNotifyChanged,
+                      policy.multiple,
+                    );
+                  }}
+                  onError={error => {
+                    this.errorMessage = error.message;
+                  }}
+                  slotDefault={state => {
+                    const multiple = state.policy.multiple;
+                    this.effectiveMultiple = multiple;
+                    const items = this._getPreviewItems(propsBucket.value, multiple);
+                    const maxCount = this._getMaxCount(this.currentOptions, multiple);
+                    const uploadDisabled =
+                      disabled || fieldReadonly || state.isUploading || state.policy.pending;
+                    const showChooser = multiple || items.length < maxCount;
+                    return (
+                      <div class="d-flex flex-column ga-3">
+                        <div class="d-flex flex-wrap align-center ga-3">
+                          {showChooser && (
+                            <VBtn
+                              color="primary"
+                              disabled={uploadDisabled}
+                              nativeOnClick={state.chooseFiles}
+                            >
+                              {this._getUploadButtonText(items.length, state.policy.multiple)}
+                            </VBtn>
+                          )}
+                          {state.isUploading && (
+                            <span class="d-inline-flex align-center ga-2 text-medium-emphasis">
+                              <VProgressCircular
+                                indeterminate
+                                color="primary"
+                                size={20}
+                              ></VProgressCircular>
+                              {this.scope.locale.Uploading()}
+                            </span>
+                          )}
+                          {!items.length && !state.isUploading && (
+                            <span class="text-medium-emphasis">
+                              {propsBucket.options?.placeholder ??
+                                this.scope.locale.NoImageSelected()}
+                            </span>
+                          )}
+                        </div>
+                        {!!items.length && (
+                          <div
+                            class="d-grid ga-3"
+                            style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}
+                          >
+                            {items.map((item, index) =>
+                              this._renderPreviewCard(
+                                item,
+                                index,
+                                items,
+                                false,
+                                propsBucket.disableNotifyChanged,
+                                uploadDisabled,
+                              ),
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }}
+              ></ZImageUploader>
+            ),
+          });
         }}
       ></ZFormField>
     );
@@ -266,6 +240,7 @@ export class ControllerFormFieldImage extends BeanControllerBase {
     items: IImagePreviewItem[],
     readonly: boolean,
     disableNotifyChanged?: boolean,
+    disabled = false,
   ) {
     const previewUrl = item.url ? this._resolvePreviewUrl(item.url) : undefined;
     const passportCode = this._getDeliveryPassportCode();
@@ -311,6 +286,7 @@ export class ControllerFormFieldImage extends BeanControllerBase {
                 color="error"
                 variant="text"
                 size="small"
+                disabled={disabled}
                 nativeOnClick={() => {
                   this._removeItem(item.id, disableNotifyChanged);
                 }}
