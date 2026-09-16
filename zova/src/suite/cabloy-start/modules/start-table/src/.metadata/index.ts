@@ -3,6 +3,7 @@
 export * from '../component/actionColumnConfig/controller.jsx';
 export * from '../component/actionCreate/controller.jsx';
 export * from '../component/actionDeleteBulk/controller.jsx';
+export * from '../component/actionRefresh/controller.jsx';
 
 import 'zova';
 declare module 'zova' {
@@ -25,18 +26,25 @@ declare module 'zova-module-start-table' {
           /** @internal */
           get scope(): ScopeModuleStartTable;
         }
+
+        export interface ControllerActionRefresh {
+          /** @internal */
+          get scope(): ScopeModuleStartTable;
+        }
 }
 /** controller: end */
 /** controller: begin */
 import type { ControllerActionColumnConfig } from '../component/actionColumnConfig/controller.jsx';
 import type { ControllerActionCreate } from '../component/actionCreate/controller.jsx';
 import type { ControllerActionDeleteBulk } from '../component/actionDeleteBulk/controller.jsx';
+import type { ControllerActionRefresh } from '../component/actionRefresh/controller.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
     'start-table.controller.actionColumnConfig': ControllerActionColumnConfig;
 'start-table.controller.actionCreate': ControllerActionCreate;
 'start-table.controller.actionDeleteBulk': ControllerActionDeleteBulk;
+'start-table.controller.actionRefresh': ControllerActionRefresh;
   }
 }
 /** controller: end */
@@ -48,10 +56,13 @@ export * from './component/actionCreate.js';
 import { ZActionCreate } from './component/actionCreate.js';
 export * from './component/actionDeleteBulk.js';
 import { ZActionDeleteBulk } from './component/actionDeleteBulk.js';
+export * from './component/actionRefresh.js';
+import { ZActionRefresh } from './component/actionRefresh.js';
 export const components = {
   'actionColumnConfig': ZActionColumnConfig,
 'actionCreate': ZActionCreate,
 'actionDeleteBulk': ZActionDeleteBulk,
+'actionRefresh': ZActionRefresh,
 };
 import 'zova';
 declare module 'zova' {
@@ -59,11 +70,13 @@ export interface IComponentRecord {
   'start-table:actionColumnConfig': ControllerActionColumnConfig;
 'start-table:actionCreate': ControllerActionCreate;
 'start-table:actionDeleteBulk': ControllerActionDeleteBulk;
+'start-table:actionRefresh': ControllerActionRefresh;
 }
 export interface IZovaComponentRecord {
   'start-table:actionColumnConfig': typeof ZActionColumnConfig;
 'start-table:actionCreate': typeof ZActionCreate;
 'start-table:actionDeleteBulk': typeof ZActionDeleteBulk;
+'start-table:actionRefresh': typeof ZActionRefresh;
 }
 }
 /** components: end */

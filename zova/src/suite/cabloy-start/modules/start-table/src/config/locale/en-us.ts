@@ -3,6 +3,7 @@ export default {
   DeleteConfirm: 'Are you sure you want to delete this item?',
   DeleteBulk: 'Bulk Delete',
   DeleteBulkConfirm: 'Are you sure you want to delete %d selected items?',
+  Refresh: 'Refresh',
   ColumnConfiguration: 'Column Configuration',
   Columns: 'Columns',
   Visible: 'Visible',

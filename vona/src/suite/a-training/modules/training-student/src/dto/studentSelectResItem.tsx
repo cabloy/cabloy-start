@@ -47,6 +47,10 @@ export interface IDtoOptionsStudentSelectResItem extends IDecoratorDtoOptions {}
               requiresSelection: true,
               selectedMaxIds: 100,
             }),
+            ZovaRender.tableActionBulk('start-table:actionRefresh', {
+              permission: { public: true },
+              placement: 'end',
+            }),
             ZovaRender.tableActionBulk('start-table:actionColumnConfig', {
               permission: { public: true },
               placement: 'end',

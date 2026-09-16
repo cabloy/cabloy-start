@@ -89,15 +89,22 @@ describe('student.test.ts', { concurrency: false }, () => {
         return (item as any).properties?._operationsRow;
       }) as any;
       const actions = component.rest.blocks[0].options.blocks[1].options.actions;
-      assert.equal(actions.length, 3);
+      assert.equal(actions.length, 4);
       assert.equal(actions[0].render, 'start-table:actionCreate');
       assert.equal(actions[1].render, 'start-table:actionDeleteBulk');
       assert.deepEqual(actions[1].options, {
         requiresSelection: true,
         selectedMaxIds: 100,
       });
-      assert.equal(actions[2].render, 'start-table:actionColumnConfig');
+      assert.equal(actions[2].render, 'start-table:actionRefresh');
       assert.deepEqual(actions[2].options, {
+        permission: { public: true },
+        placement: 'end',
+      });
+      assert.equal(actions[2].options.requiresSelection, undefined);
+      assert.equal(actions[2].options.selectedMaxIds, undefined);
+      assert.equal(actions[3].render, 'start-table:actionColumnConfig');
+      assert.deepEqual(actions[3].options, {
         permission: { public: true },
         placement: 'end',
       });

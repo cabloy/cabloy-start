@@ -3,6 +3,7 @@ export default {
   DeleteConfirm: '您确认要删除本数据吗？',
   DeleteBulk: '批量删除',
   DeleteBulkConfirm: '您确认要删除所选的 %d 项数据吗？',
+  Refresh: '刷新',
   ColumnConfiguration: '列配置',
   Columns: '列',
   Visible: '显示',
