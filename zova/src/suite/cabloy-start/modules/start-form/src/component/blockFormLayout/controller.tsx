@@ -113,7 +113,7 @@ export class ControllerBlockFormLayout extends BeanControllerBase {
 
   private _renderGroup(node: IResolvedFormLayoutGroup) {
     return (
-      <fieldset class="mb-6 rounded border pa-4">
+      <fieldset class="mb-2 rounded border pa-4">
         {!!node.title && <legend class="px-2 text-h6">{node.title}</legend>}
         {!!node.description && (
           <p class="mb-4 text-body-2 text-medium-emphasis">{node.description}</p>
@@ -125,8 +125,11 @@ export class ControllerBlockFormLayout extends BeanControllerBase {
 
   private _renderSection(node: IResolvedFormLayoutSection) {
     const layout = node.layout ?? 'grid';
+    const compact =
+      this.$$renderContext.$$form.$props.schemaScene === 'filter' &&
+      this.$$renderContext.$$form.$props.formFieldLayout?.compact;
     return (
-      <section class="mb-6">
+      <section class={compact ? 'mb-2' : 'mb-2'}>
         {!!node.title && <h3 class="mb-1 text-h6">{node.title}</h3>}
         {!!node.description && (
           <p class="mb-4 text-body-2 text-medium-emphasis">{node.description}</p>
@@ -159,7 +162,7 @@ export class ControllerBlockFormLayout extends BeanControllerBase {
     const activeTabId = this.getActiveTabId(node);
     const domIdBase = `${this.formLayoutDomIdPrefix}-${node.id}`;
     return (
-      <div class="mb-6">
+      <div class="mb-2">
         <VTabs
           modelValue={activeTabId}
           onUpdate:modelValue={value => {

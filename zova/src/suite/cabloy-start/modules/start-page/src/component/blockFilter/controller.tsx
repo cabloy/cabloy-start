@@ -102,7 +102,9 @@ export class ControllerBlockFilter extends BeanControllerBase {
         formScope={this.formScope}
         onSubmitData={data => this.submitData(data as never)}
         slotWrapper={children => {
-          return <VContainer>{hasBlocks ? children : <VRow>{children}</VRow>}</VContainer>;
+          return (
+            <VContainer class="py-0">{hasBlocks ? children : <VRow>{children}</VRow>}</VContainer>
+          );
         }}
         slotFooter={hasBlocks ? undefined : $$form => this._renderActions($$form)}
       ></ZForm>
