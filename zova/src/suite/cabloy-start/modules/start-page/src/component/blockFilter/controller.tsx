@@ -30,7 +30,7 @@ export interface ControllerBlockFilterProps extends IResourceBlockOptionsBase {
 @Controller()
 export class ControllerBlockFilter extends BeanControllerBase {
   static $propsDefault = {
-    formFieldLayout: { inline: true },
+    formFieldLayout: { inline: true, compact: true },
   };
 
   static $componentOptions: IComponentOptions = { inheritAttrs: false, deepExtendDefault: true };

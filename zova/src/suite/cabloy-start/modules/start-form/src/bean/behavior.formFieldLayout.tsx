@@ -13,6 +13,7 @@ declare module 'zova-module-a-openapi' {
 export interface IBehaviorResourceFormFieldLayoutOptions {
   label?: string | false;
   inline?: boolean;
+  compact?: boolean;
   iconPrefix?: keyof IIconRecord;
   iconSuffix?: keyof IIconRecord;
 }
@@ -52,6 +53,14 @@ export class BehaviorFormFieldLayout extends BeanBehaviorBase<
     const { propsBucket, props } = renderContext;
     if (propsBucket.required) {
       props.class = classes(props.class, this.cFieldRequired);
+    }
+    if (propsBucket.layout?.compact) {
+      const options = propsBucket.options ?? {};
+      propsBucket.options = {
+        ...options,
+        hideDetails: options.hideDetails === undefined ? 'auto' : options.hideDetails,
+        density: options.density === undefined ? 'compact' : options.density,
+      };
     }
     return next();
   }
