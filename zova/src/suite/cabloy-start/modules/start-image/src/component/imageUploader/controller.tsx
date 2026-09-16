@@ -105,6 +105,9 @@ export class ControllerImageUploader extends BeanControllerBase {
             accept={policy.acceptAttr}
             multiple={policy.multiple}
             disabled={this.isUploading || policy.pending}
+            onClick={event => {
+              event.stopPropagation();
+            }}
             onChange={event => void this._handleFileChange(event, props)}
           />
         </ClientOnly>

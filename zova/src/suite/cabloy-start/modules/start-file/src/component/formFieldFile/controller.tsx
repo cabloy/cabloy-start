@@ -12,10 +12,7 @@ import { BeanControllerBase, ClientOnly, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { ZFormField } from 'zova-module-a-form';
 import { $QueryEnsureLoaded } from 'zova-module-a-model';
-import {
-  createCompoundFormFieldState,
-  renderCompoundFormField,
-} from 'zova-module-start-form';
+import { createCompoundFormFieldState, renderCompoundFormField } from 'zova-module-start-form';
 
 import type { IFilePreviewItem } from '../../types/file.js';
 
@@ -125,6 +122,9 @@ export class ControllerFormFieldFile extends BeanControllerBase {
                       type="file"
                       accept={policyState.acceptAttr}
                       multiple={policyState.multiple}
+                      onClick={event => {
+                        event.stopPropagation();
+                      }}
                       onChange={event => {
                         void this._handleFileChange(event, propsBucket.disableNotifyChanged);
                       }}
