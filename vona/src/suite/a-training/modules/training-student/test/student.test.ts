@@ -89,12 +89,17 @@ describe('student.test.ts', { concurrency: false }, () => {
         return (item as any).properties?._operationsRow;
       }) as any;
       const actions = component.rest.blocks[0].options.blocks[1].options.actions;
-      assert.equal(actions.length, 2);
+      assert.equal(actions.length, 3);
       assert.equal(actions[0].render, 'start-table:actionCreate');
       assert.equal(actions[1].render, 'start-table:actionDeleteBulk');
       assert.deepEqual(actions[1].options, {
         requiresSelection: true,
         selectedMaxIds: 100,
+      });
+      assert.equal(actions[2].render, 'start-table:actionColumnConfig');
+      assert.deepEqual(actions[2].options, {
+        permission: { public: true },
+        placement: 'end',
       });
     });
   });
@@ -635,11 +640,11 @@ The stored value must round-trip exactly through the API, model, and summary res
         });
       } finally {
         for (const studentId of studentIds.reverse()) {
-          await app
-            .bean.scope('training-student')
+          await app.bean
+            .scope('training-student')
             .model.studentContent.delete({ studentId }, { disableDeleted: true });
-          await app
-            .bean.scope('training-student')
+          await app.bean
+            .scope('training-student')
             .model.student.deleteById(studentId, { disableDeleted: true });
         }
         await app.bean.passport.signout();

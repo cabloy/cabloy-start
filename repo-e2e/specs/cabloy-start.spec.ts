@@ -2,6 +2,8 @@ import type { Locator, Page } from '@playwright/test';
 
 import { expect, test } from '@playwright/test';
 
+import { loginAsAdmin as loginAsAdminApi, requestApiOk } from './helpers/cabloy-admin-api.ts';
+
 function collectPageErrors(page: Page) {
   const errors: Error[] = [];
   page.on('pageerror', error => {
@@ -79,6 +81,11 @@ function waitForStudentSelect(page: Page, requireSuccess = true) {
   });
 }
 
+async function reloadStudentListPage(page: Page) {
+  await page.reload({ waitUntil: 'load' });
+  await expect(page.getByLabel('Student Name', { exact: true })).toBeVisible();
+}
+
 function waitForStudentBulkDelete(page: Page, requireSuccess = true) {
   return page.waitForResponse(response => {
     const url = new URL(response.url());
@@ -90,8 +97,25 @@ function waitForStudentBulkDelete(page: Page, requireSuccess = true) {
   });
 }
 
+function waitForLayoutProfileSave(page: Page) {
+  return page.waitForResponse(response => {
+    const url = new URL(response.url());
+    return (
+      response.request().method() === 'POST' &&
+      response.ok() &&
+      url.pathname === '/api/layoutprofile/save'
+    );
+  });
+}
+
 function studentRow(page: Page, name: string) {
   return page.getByRole('row').filter({ has: page.getByText(name, { exact: true }) });
+}
+
+async function headerIndex(header: Locator) {
+  return await header.evaluate(element =>
+    Array.from(element.parentElement!.children).indexOf(element),
+  );
 }
 
 async function createStudentFixture(page: Page, name: string, mobile: string) {
@@ -641,7 +665,7 @@ test(
       const select = bulkActions.getByRole('button', { name: 'Select', exact: true });
       await expect(select).toBeVisible();
       const deleteSelected = bulkActions.getByRole('button', {
-        name: 'Delete selected',
+        name: 'Bulk Delete',
         exact: true,
       });
       await expect(deleteSelected).toBeDisabled();
@@ -649,8 +673,8 @@ test(
       await select.click();
       const done = bulkActions.getByRole('button', { name: 'Done', exact: true });
       const create = bulkActions.getByRole('button', { name: 'Create', exact: true });
-      const selectedCount = bulkActions.locator(':scope > [role="status"].v-btn');
-      const deleteButtonRoot = bulkActions.locator(':scope > button').and(deleteSelected);
+      const selectedCount = bulkActions.getByRole('status');
+      const deleteButtonRoot = deleteSelected;
       await expect(done).toBeVisible();
       await expect(create).toBeVisible();
       await expect(selectedCount).toHaveText('0 selected');
@@ -710,6 +734,127 @@ test(
     } finally {
       await deleteStudentFixture(page, firstId);
       await deleteStudentFixture(page, secondId);
+    }
+  },
+);
+
+test(
+  'ATP-START-TABLE-03: Student column configuration persists for the authenticated user across reload',
+  { tag: ['@admin', '@flow', '@layout'] },
+  async ({ page, request }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    const pageErrors = collectPageErrors(page);
+    const admin = await loginAsAdminApi(request);
+    await loginAsAdmin(page);
+
+    await page.getByRole('link', { name: 'Student', exact: true }).waitFor();
+    let layoutKey: string | undefined;
+    try {
+      const loaded = waitForStudentSelect(page);
+      await openStudentListPage(page);
+      await loaded;
+      layoutKey = new URL(page.url()).pathname.replace(/^\/admin/, '');
+
+      const toolbar = page.getByRole('toolbar', { name: 'Bulk actions' });
+      await toolbar.getByRole('button', { name: 'Column Configuration', exact: true }).click();
+      const dialog = page.getByRole('dialog').filter({
+        hasText: 'Column Configuration',
+      });
+      await expect(dialog).toBeVisible();
+      await dialog.getByLabel('Visible Student Image', { exact: true }).uncheck();
+      await dialog.getByLabel('Width Student Name', { exact: true }).fill('320');
+      const levelRow = dialog.getByRole('group', { name: 'Training Stage', exact: true });
+      const mobileRow = dialog.getByRole('group', { name: 'Mobile', exact: true });
+      await expect(levelRow).toBeVisible();
+      await expect(mobileRow).toBeVisible();
+      await levelRow.getByRole('button', { name: 'Move up', exact: true }).click();
+      await levelRow.getByRole('button', { name: 'Move up', exact: true }).click();
+
+      const saved = waitForLayoutProfileSave(page);
+      await dialog.getByRole('button', { name: 'Save', exact: true }).click();
+      const savedResponse = await saved;
+      const savedProfile = savedResponse.request().postDataJSON() as {
+        layoutKey: string;
+        profile: {
+          version: number;
+          columns: Array<{ key: string; visible: boolean; width: number | 'auto' }>;
+        };
+      };
+      expect(savedProfile.layoutKey).toBe(layoutKey);
+      expect(savedProfile.profile.version).toBe(1);
+      expect(savedProfile.profile.columns).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ key: 'imageId', visible: false }),
+          expect.objectContaining({ key: 'name', width: 320 }),
+        ]),
+      );
+      const savedColumns = savedProfile.profile.columns;
+      expect(savedColumns.findIndex(column => column.key === 'level')).toBeLessThan(
+        savedColumns.findIndex(column => column.key === 'mobile'),
+      );
+      await expect(dialog).toBeHidden();
+
+      const imageHeader = page.getByRole('columnheader', { name: 'Student Image', exact: true });
+      const nameHeader = page.getByRole('columnheader', { name: 'Student Name', exact: true });
+      const levelHeader = page.getByRole('columnheader', { name: 'Training Stage', exact: true });
+      const mobileHeader = page.getByRole('columnheader', { name: 'Mobile', exact: true });
+      await expect(imageHeader).toHaveCount(0);
+      await expect(nameHeader).toHaveCSS('min-width', '320px');
+      expect(await headerIndex(levelHeader)).toBeLessThan(await headerIndex(mobileHeader));
+
+      await toolbar.getByRole('button', { name: 'Column Configuration', exact: true }).click();
+      const resetDialog = page.getByRole('dialog').filter({
+        hasText: 'Column Configuration',
+      });
+      const reset = page.waitForResponse(response => {
+        const url = new URL(response.url());
+        return (
+          response.request().method() === 'DELETE' &&
+          response.ok() &&
+          url.pathname === '/api/layoutprofile/reset'
+        );
+      });
+      await resetDialog.getByRole('button', { name: 'Reset', exact: true }).click();
+      await resetDialog.getByRole('button', { name: 'Save', exact: true }).click();
+      await reset;
+      await expect(resetDialog).toBeHidden();
+      await expect(
+        page.getByRole('columnheader', { name: 'Student Image', exact: true }),
+      ).toBeVisible();
+      await expect(page.getByRole('columnheader', { name: 'Student Name', exact: true })).toHaveCSS(
+        'min-width',
+        '240px',
+      );
+
+      await toolbar.getByRole('button', { name: 'Column Configuration', exact: true }).click();
+      const persistedDialog = page.getByRole('dialog').filter({
+        hasText: 'Column Configuration',
+      });
+      await persistedDialog.getByLabel('Visible Student Image', { exact: true }).uncheck();
+      await persistedDialog.getByLabel('Width Student Name', { exact: true }).fill('320');
+      const persistedLevelRow = persistedDialog.getByRole('group', {
+        name: 'Training Stage',
+        exact: true,
+      });
+      await persistedLevelRow.getByRole('button', { name: 'Move up', exact: true }).click();
+      await persistedLevelRow.getByRole('button', { name: 'Move up', exact: true }).click();
+      const savedAgain = waitForLayoutProfileSave(page);
+      await persistedDialog.getByRole('button', { name: 'Save', exact: true }).click();
+      await savedAgain;
+      await expect(persistedDialog).toBeHidden();
+
+      await reloadStudentListPage(page);
+      await expect(imageHeader).toHaveCount(0);
+      await expect(nameHeader).toHaveCSS('min-width', '320px');
+      expect(await headerIndex(levelHeader)).toBeLessThan(await headerIndex(mobileHeader));
+      expect(pageErrors).toEqual([]);
+    } finally {
+      if (layoutKey) {
+        await requestApiOk<null>(request, 'DELETE', '/api/layoutprofile/reset', {
+          accessToken: admin.accessToken,
+          params: { layoutKey },
+        });
+      }
     }
   },
 );

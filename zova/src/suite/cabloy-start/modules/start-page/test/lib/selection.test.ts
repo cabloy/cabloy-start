@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  groupTableActionBulkActions,
   limitPickerRowSelection,
   reconcileSelection,
   resolvePickerSelectionMax,
@@ -12,6 +13,28 @@ import {
   selectionKey,
   selectionRowIds,
 } from '../../src/lib/selection.js';
+
+test('Bulk actions group by placement without changing declaration order', () => {
+  const items = [
+    { item: 'create' },
+    { item: 'columnConfig', placement: 'end' },
+    { item: 'delete' },
+    { item: 'export', placement: 'end' },
+    { item: 'unknown', placement: 'other' },
+  ];
+
+  assert.deepEqual(groupTableActionBulkActions(items), {
+    start: ['create', 'delete', 'unknown'],
+    end: ['columnConfig', 'export'],
+  });
+  assert.deepEqual(items, [
+    { item: 'create' },
+    { item: 'columnConfig', placement: 'end' },
+    { item: 'delete' },
+    { item: 'export', placement: 'end' },
+    { item: 'unknown', placement: 'other' },
+  ]);
+});
 
 test('Selection keys normalize numeric and string identities', () => {
   assert.equal(selectionKey(1), '1');

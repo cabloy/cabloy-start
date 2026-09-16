@@ -54,6 +54,7 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
           data={$$page.data as unknown as TData[]}
           schema={$$page.schemaRow}
           schemaOrder={$$page.schemaOrder}
+          layout={$$page.tableLayout}
           sorting={$$page.sorting}
           onSortingChange={updater => $$page.onSortingChange(updater)}
           enableRowSelection={$$page.selectionEnabled}
@@ -72,23 +73,26 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
   public _renderTable($$table: BeanControllerTableBase<TData>) {
     const { $$page } = this.$$renderContext;
     const table = $$table.table;
-    const headers: DataTableHeader[] = table.getFlatHeaders().map(header => {
-      const column = header.column;
-      const columnDefHeader = column.columnDef.header;
-      const rest = (column.columnDef.meta as any)?.rest;
-      return {
-        title:
-          typeof columnDefHeader === 'function'
-            ? columnDefHeader(header.getContext())
-            : columnDefHeader,
-        key: header.id === TableColumnIdSelection ? 'data-table-select' : header.id,
-        align: rest?.align === 'left' ? 'start' : rest?.align === 'right' ? 'end' : rest?.align,
-        width: rest?.width,
-        minWidth: rest?.width,
-        fixed: rest?.fixed === 'left' ? 'start' : rest?.fixed === 'right' ? 'end' : undefined,
-        sortable: column.getCanSort(),
-      };
-    });
+    const headers: DataTableHeader[] = table
+      .getFlatHeaders()
+      .filter(header => header.column.getIsVisible())
+      .map(header => {
+        const column = header.column;
+        const columnDefHeader = column.columnDef.header;
+        const rest = (column.columnDef.meta as any)?.rest;
+        return {
+          title:
+            typeof columnDefHeader === 'function'
+              ? columnDefHeader(header.getContext())
+              : columnDefHeader,
+          key: header.id === TableColumnIdSelection ? 'data-table-select' : header.id,
+          align: rest?.align === 'left' ? 'start' : rest?.align === 'right' ? 'end' : rest?.align,
+          width: rest?.width,
+          minWidth: rest?.width,
+          fixed: rest?.fixed === 'left' ? 'start' : rest?.fixed === 'right' ? 'end' : undefined,
+          sortable: column.getCanSort(),
+        };
+      });
     const sortableKeys = new Set(
       headers.filter(header => header.sortable).map(header => header.key),
     );

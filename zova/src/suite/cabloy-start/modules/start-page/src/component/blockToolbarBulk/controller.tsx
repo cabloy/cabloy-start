@@ -10,7 +10,10 @@ import { VBtn, VBtnGroup } from 'vuetify/components';
 import { BeanControllerBase, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 
-import { resolveTableActionBulkDynamicProps } from '../../lib/selection.js';
+import {
+  groupTableActionBulkActions,
+  resolveTableActionBulkDynamicProps,
+} from '../../lib/selection.js';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceBlockRecord {
@@ -66,38 +69,49 @@ export class ControllerBlockToolbarBulk extends BeanControllerBase {
     const { $$page } = this.$$renderContext;
     const domActions = this._renderActions();
     const selectionAvailable = $$page.selectionAvailable;
-    if ((!domActions || domActions.length === 0) && !selectionAvailable) return;
+    if (domActions.start.length === 0 && domActions.end.length === 0 && !selectionAvailable) return;
     return (
-      <div class={this.$props.class}>
-        <VBtnGroup variant="outlined" divided aria-label={this.scope.locale.BulkActions()}>
-          {$$page.selectionToggleAvailable && (
-            <VBtn nativeOnClick={() => $$page.toggleSelection()}>
-              {$$page.selectionVisible ? this.scope.locale.Done() : this.scope.locale.Select()}
-            </VBtn>
-          )}
-          {$$page.selectionEnabled && (
-            <VBtn
-              tag="span"
-              readonly={true}
-              class="d-flex align-center px-3"
-              role="status"
-              aria-live="polite"
-              aria-atomic="true"
-            >
-              {this.scope.locale.SelectedItems($$page.selection.count)}
-            </VBtn>
-          )}
-          {domActions}
-        </VBtnGroup>
+      <div
+        class={[this.$props.class, 'd-flex flex-wrap align-center ga-3']}
+        role="toolbar"
+        aria-label={this.scope.locale.BulkActions()}
+      >
+        {(selectionAvailable || domActions.start.length > 0) && (
+          <VBtnGroup variant="outlined" divided>
+            {$$page.selectionToggleAvailable && (
+              <VBtn nativeOnClick={() => $$page.toggleSelection()}>
+                {$$page.selectionVisible ? this.scope.locale.Done() : this.scope.locale.Select()}
+              </VBtn>
+            )}
+            {$$page.selectionEnabled && (
+              <VBtn
+                tag="span"
+                readonly={true}
+                class="d-flex align-center px-3"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                {this.scope.locale.SelectedItems($$page.selection.count)}
+              </VBtn>
+            )}
+            {domActions.start}
+          </VBtnGroup>
+        )}
+        {domActions.end.length > 0 && (
+          <VBtnGroup class="ms-auto" variant="outlined" divided>
+            {domActions.end}
+          </VBtnGroup>
+        )}
       </div>
     );
   }
 
-  private _renderActions() {
+  private _renderActions(): Record<'start' | 'end', VNode[]> {
     const { $jsx, $celScope } = this.$$renderContext;
     const actions = this.$props.actions;
-    if (!actions || actions.length === 0) return;
-    const domActions: VNode[] = [];
+    if (!actions || actions.length === 0) return { start: [], end: [] };
+    const items: { item: VNode; placement?: unknown }[] = [];
     actions.forEach((action, index) => {
       const actionName = action.name;
       const permissionHint = action.options?.permission;
@@ -107,7 +121,12 @@ export class ControllerBlockToolbarBulk extends BeanControllerBase {
       const selectionAllowed =
         selection.count > 0 &&
         completeSelection &&
-        this.$passport.checkPermission(this.permissions, actionName, permissionHint, selection.rows);
+        this.$passport.checkPermission(
+          this.permissions,
+          actionName,
+          permissionHint,
+          selection.rows,
+        );
       const dynamicProps = resolveTableActionBulkDynamicProps(
         action.options,
         selection,
@@ -126,12 +145,10 @@ export class ControllerBlockToolbarBulk extends BeanControllerBase {
       });
       const domAction = $jsx.render(action.render!, options, $celScope, this.$$renderContext);
       if (!domAction) return;
-      if (Array.isArray(domAction)) {
-        domActions.push(...domAction);
-      } else {
-        domActions.push(domAction);
+      for (const item of Array.isArray(domAction) ? domAction : [domAction]) {
+        items.push({ item, placement: action.options?.placement });
       }
     });
-    return domActions;
+    return groupTableActionBulkActions(items);
   }
 }
