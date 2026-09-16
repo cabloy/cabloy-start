@@ -1,12 +1,11 @@
-import type { Ref, VNode } from 'vue';
+import type { VNode } from 'vue';
 import type { ControllerFormField, IFormFieldRenderContext } from 'zova-module-a-form';
 
-import { ref } from 'vue';
 import { VField, VInput } from 'vuetify/components';
 import z from 'zod';
 
 export interface ICompoundFormFieldState {
-  focused: Ref<boolean>;
+  focused: boolean;
   blurTimeout?: ReturnType<typeof setTimeout>;
 }
 
@@ -27,7 +26,7 @@ export interface IRenderCompoundFormFieldOptions {
 }
 
 export function createCompoundFormFieldState(): ICompoundFormFieldState {
-  return { focused: ref(false) };
+  return { focused: false };
 }
 
 export function renderCompoundFormField(
@@ -61,7 +60,7 @@ export function renderCompoundFormField(
         active: true,
         dirty: isDirty.value || propsFieldOptions.dirty,
         disabled: isDisabled.value,
-        focused: options.state.focused.value,
+        focused: options.state.focused,
         details: hasDetails.value,
         error: isValid.value === false || error || !!options.localErrorMessage,
         variant,
@@ -76,13 +75,13 @@ export function renderCompoundFormField(
             readonly: isReadonly.value,
             onFocus: () => {
               clearBlurTimeout();
-              options.state.focused.value = true;
+              options.state.focused = true;
               focus();
             },
             onBlur: () => {
               clearBlurTimeout();
               options.state.blurTimeout = setTimeout(() => {
-                options.state.focused.value = false;
+                options.state.focused = false;
                 blur();
                 $$formField.handleBlur();
               });
@@ -115,7 +114,7 @@ export function renderCompoundFormField(
     appendIcon: propsBucket.layout?.iconSuffix,
     modelValue: propsBucket.value,
     centerAffix: !isPlainOrUnderlined,
-    focused: options.state.focused.value,
+    focused: options.state.focused,
     indentDetails: propsInputOptions.indentDetails ?? !isPlainOrUnderlined,
     error: error || !!options.localErrorMessage,
     errorMessages: [errorMessage, options.localErrorMessage].filter(
