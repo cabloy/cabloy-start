@@ -4,10 +4,10 @@ import type {
   IResourceTableActionBulkPropsBase,
 } from 'zova-module-a-openapi';
 
-import { VBtn } from 'vuetify/components';
 import { BeanControllerBase, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { $iconName } from 'zova-module-a-icon';
+import { ZButton } from 'zova-module-start-button';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceTableActionBulkRecord {
@@ -30,7 +30,7 @@ export class ControllerActionRefresh extends BeanControllerBase {
     const queryData = this.$$renderContext.$$page.queryData;
     const label = this.scope.locale.Refresh() as string;
     return (
-      <VBtn
+      <ZButton
         class={this.$props.class}
         icon={$iconName('::arrow-repeat')}
         variant="text"
@@ -38,11 +38,10 @@ export class ControllerActionRefresh extends BeanControllerBase {
         loading={queryData.isFetching}
         aria-label={label}
         title={label}
-        nativeOnClick={async () => {
-          if (disabled) return;
-          await queryData.refetch();
+        onPerform={async () => {
+          await queryData.refetch({ throwOnError: true });
         }}
-      ></VBtn>
+      ></ZButton>
     );
   }
 }
