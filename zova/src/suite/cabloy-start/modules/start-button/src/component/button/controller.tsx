@@ -1,11 +1,13 @@
+import type { IComponentOptions } from 'zova';
+
 import { VBtn } from 'vuetify/components';
-import { BeanControllerBase, IComponentOptions } from 'zova';
+import { BeanControllerBase } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 
-import { IBehaviorOptionsPerform } from '../../bean/behavior.perform.js';
+import type { IBehaviorOptionsPerform } from '../../bean/behavior.perform.js';
 
 export interface ControllerButtonProps extends Omit<VBtn['$props'], ''> {
-  onPerform?: (e: MouseEvent) => Promise<void>;
+  onPerform?: (e: MouseEvent) => Promise<void> | void;
 }
 
 @Controller()
@@ -16,22 +18,15 @@ export class ControllerButton extends BeanControllerBase {
   protected async __init__() {}
 
   protected render() {
+    const { loading, onPerform, ...props } = this.$props as ControllerButtonProps;
     const behaviorPerformOptions: IBehaviorOptionsPerform = {
-      isLoading: this.$props.loading as boolean,
-      onPerform: this.$props.onPerform,
+      isLoading: loading,
+      onPerform,
     };
-    const props: ControllerButtonProps = {
-      ...this.$props,
-      loading: undefined,
-      onPerform: undefined,
-    };
-    if (this.$slotDefault) {
-      return (
-        <VBtn {...props} bs-start-button-perform={behaviorPerformOptions}>
-          {this.$slotDefault()}
-        </VBtn>
-      );
-    }
-    return <VBtn {...props} bs-start-button-perform={behaviorPerformOptions}></VBtn>;
+    return (
+      <VBtn {...props} bs-start-button-perform={behaviorPerformOptions}>
+        {this.$slotDefault?.()}
+      </VBtn>
+    );
   }
 }

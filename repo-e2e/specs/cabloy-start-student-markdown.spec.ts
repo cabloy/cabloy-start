@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import type { Page, Route } from '@playwright/test';
 
 import { expect, test } from '@playwright/test';
 
@@ -122,16 +122,41 @@ test(
       await expect(updatedRow).toBeVisible();
 
       const summaryPath = `/api/training/student/summary/${studentId}`;
-      const summaryResponsePromise = waitForApiResponse(page, 'GET', summaryPath);
-      await updatedRow.getByRole('button', { name: 'Summary', exact: true }).click();
-      const summaryResponse = await summaryResponsePromise;
-      const summary = (await summaryResponse.json()).data as {
-        descriptionMarkdown?: string;
-        descriptionHtml?: string;
+      const summaryButton = updatedRow.getByRole('button', { name: 'Summary', exact: true });
+      let summaryRequestCount = 0;
+      let releaseSummaryRequest: (() => void) | undefined;
+      const summaryRequestHeld = new Promise<void>(resolve => {
+        releaseSummaryRequest = resolve;
+      });
+      const summaryRoute = async (route: Route) => {
+        summaryRequestCount++;
+        await summaryRequestHeld;
+        await route.continue();
       };
-      expect(summary.descriptionMarkdown).toBe('2');
-      expect(summary.descriptionHtml).toContain('2');
+      await page.route(summaryPath, summaryRoute);
+      try {
+        const summaryResponsePromise = waitForApiResponse(page, 'GET', summaryPath);
+        await summaryButton.click();
+        await expect.poll(() => summaryRequestCount).toBe(1);
+        await expect(summaryButton).toBeDisabled();
+        await expect(summaryButton).toHaveAttribute('aria-busy', 'true');
+        await expect(summaryButton.locator('.v-btn__loader')).toHaveCount(1);
+        await summaryButton.click({ force: true });
+        await expect.poll(() => summaryRequestCount).toBe(1);
 
+        releaseSummaryRequest?.();
+        const summaryResponse = await summaryResponsePromise;
+        const summary = (await summaryResponse.json()).data as {
+          descriptionMarkdown?: string;
+          descriptionHtml?: string;
+        };
+        expect(summary.descriptionMarkdown).toBe('2');
+        expect(summary.descriptionHtml).toContain('2');
+      } finally {
+        releaseSummaryRequest?.();
+        await page.unroute(summaryPath, summaryRoute);
+      }
+      await expect(summaryButton).toBeEnabled();
       const dialog = page.getByRole('dialog').filter({
         has: page.getByText('Summary', { exact: true }),
       });

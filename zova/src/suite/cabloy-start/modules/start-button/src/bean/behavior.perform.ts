@@ -1,19 +1,26 @@
 import type { VNode } from 'vue';
 import type { IDecoratorBehaviorOptions, NextBehavior } from 'zova-module-a-behavior';
 
+import { isNavigationFailure } from '@cabloy/vue-router';
 import { BeanBehaviorBase, Behavior } from 'zova-module-a-behavior';
 
-export interface IBehaviorPropsInputPerform {}
+export interface IBehaviorPropsInputPerform {
+  'disabled'?: boolean | '' | 'true' | 'false';
+  'loading'?: boolean | string;
+  'onClick'?: (e: MouseEvent) => unknown;
+  'nativeOnClick'?: (e: MouseEvent) => unknown;
+  ['aria-busy']?: boolean | 'true' | 'false';
+}
 
 export interface IBehaviorPropsOutputPerform extends IBehaviorPropsInputPerform {
-  loading?: boolean;
-  onClick?: (e: MouseEvent) => void;
-  nativeOnClick?: (e: MouseEvent) => void;
+  disabled?: boolean;
+  onClick?: (e: MouseEvent) => unknown;
+  nativeOnClick?: (e: MouseEvent) => unknown;
 }
 
 export interface IBehaviorOptionsPerform extends IDecoratorBehaviorOptions {
-  isLoading?: boolean;
-  onPerform?: (e: MouseEvent) => Promise<void>;
+  isLoading?: boolean | string;
+  onPerform?: (e: MouseEvent) => Promise<void> | void;
 }
 
 @Behavior<IBehaviorOptionsPerform>()
@@ -22,40 +29,58 @@ export class BehaviorPerform extends BeanBehaviorBase<
   IBehaviorPropsInputPerform,
   IBehaviorPropsOutputPerform
 > {
-  private _isLoading: boolean = false;
+  private _isLoading = false;
 
   protected render(
     props: IBehaviorPropsInputPerform,
     next: NextBehavior<IBehaviorPropsOutputPerform>,
   ): VNode {
-    const propsPatch: IBehaviorPropsOutputPerform = { ...props };
-    // loading
-    propsPatch.loading = this.$options.isLoading || this._isLoading;
-    // click
+    const isLoading = this._isLoading || Boolean(this.$options.isLoading);
+    const propsPatch: IBehaviorPropsOutputPerform = {
+      ...props,
+      'loading': this._isLoading ? true : this.$options.isLoading,
+      'disabled':
+        props.disabled === true || props.disabled === '' || props.disabled === 'true' || isLoading,
+      'aria-busy': isLoading || props['aria-busy'],
+    };
     if (this.$$behaviorTag.name) {
-      // native element
-      propsPatch.onClick = e => {
-        this._handleClick(e);
-      };
+      propsPatch.onClick = e => this._handleClick(e, props.onClick);
     } else {
-      // vue element
-      propsPatch.nativeOnClick = e => {
-        this._handleClick(e);
-      };
+      propsPatch.nativeOnClick = e => this._handleClick(e, props.nativeOnClick);
     }
     return next(propsPatch);
   }
 
-  private async _handleClick(e: MouseEvent) {
-    if (this._isLoading) return;
+  private _handleClick(e: MouseEvent, onClick?: (e: MouseEvent) => unknown) {
+    if (this._isLoading || Boolean(this.$options.isLoading)) return;
+    return this._perform(e, onClick);
+  }
+
+  private async _perform(e: MouseEvent, onClick?: (e: MouseEvent) => unknown) {
     try {
       this._isLoading = true;
+      await onClick?.(e);
       await this.$options.onPerform?.(e);
-    } catch (err: any) {
-      if (err.code === 401) throw err;
-      this.$performCommand('start-commands:alert', { type: 'error', text: err.message });
+    } catch (error) {
+      if (isActionControlFlowError(error)) throw error;
+      await this.$performCommand('start-commands:alert', {
+        type: 'error',
+        text: getActionErrorMessage(error),
+      });
     } finally {
       this._isLoading = false;
     }
   }
+}
+
+export function isActionControlFlowError(error: unknown) {
+  return isNavigationFailure(error) || [301, 302, 401, 600].includes(Number((error as any)?.code));
+}
+
+export function getActionErrorMessage(error: unknown) {
+  if (error && (typeof error === 'object' || typeof error === 'function')) {
+    const message = (error as { message?: unknown }).message;
+    if (message !== undefined && message !== null) return String(message);
+  }
+  return String(error);
 }

@@ -4,19 +4,19 @@ export * from '../component/button/controller.jsx';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-start-button' {
-  
+
         export interface ControllerButton {
           /** @internal */
           get scope(): ScopeModuleStartButton;
-        } 
+        }
 }
 /** controller: end */
 /** controller: begin */
-import { ControllerButton } from '../component/button/controller.jsx';
+import type { ControllerButton } from '../component/button/controller.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
@@ -46,15 +46,15 @@ export * from '../bean/behavior.perform.js';
 import { IBehaviorOptionsPerform } from '../bean/behavior.perform.js';
 import 'zova-module-a-behavior';
 declare module 'zova-module-a-behavior' {
-  
+
     export interface IBehaviorRecord {
       'start-button:perform': IBehaviorOptionsPerform;
     }
 
-  
+
 }
 declare module 'zova-module-start-button' {
-  
+
         export interface BehaviorPerform {
           /** @internal */
           get scope(): ScopeModuleStartButton;
@@ -64,11 +64,11 @@ declare module 'zova-module-start-button' {
           get $beanFullName(): 'start-button.behavior.perform';
           get $onionName(): 'start-button:perform';
           get $onionOptions(): IBehaviorOptionsPerform;
-        } 
+        }
 }
 /** behavior: end */
 /** behavior: begin */
-import { BehaviorPerform } from '../bean/behavior.perform.js';
+import type { BehaviorPerform } from '../bean/behavior.perform.js';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
@@ -111,12 +111,12 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'start-button': ScopeModuleStartButton;
   }
-  
-  
 
-  
 
-  
+
+
+
+
 }
 
 /** scope: end */
