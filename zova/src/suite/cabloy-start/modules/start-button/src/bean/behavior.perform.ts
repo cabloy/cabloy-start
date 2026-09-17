@@ -18,9 +18,15 @@ export interface IBehaviorPropsOutputPerform extends IBehaviorPropsInputPerform 
   nativeOnClick?: (e: MouseEvent) => unknown;
 }
 
+export type TypeBehaviorOnError = (
+  error: unknown,
+  e: MouseEvent,
+) => boolean | void | Promise<boolean | void>;
+
 export interface IBehaviorOptionsPerform extends IDecoratorBehaviorOptions {
   isLoading?: boolean | string;
   onPerform?: (e: MouseEvent) => Promise<void> | void;
+  onError?: TypeBehaviorOnError;
 }
 
 @Behavior<IBehaviorOptionsPerform>()
@@ -63,6 +69,8 @@ export class BehaviorPerform extends BeanBehaviorBase<
       await this.$options.onPerform?.(e);
     } catch (error) {
       if (isActionControlFlowError(error)) throw error;
+      const handled = await this.$options.onError?.(error, e);
+      if (handled === true) return;
       await this.$performCommand('start-commands:alert', {
         type: 'error',
         text: getActionErrorMessage(error),
