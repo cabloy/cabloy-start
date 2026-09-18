@@ -42,6 +42,9 @@ export function renderError(
   const retryLabel = ctx.app.meta.locale.getText(false, 'home-base', undefined, 'Retry');
   const retryButton = retry && (
     <VBtn
+      color="error"
+      size="small"
+      variant="text"
       nativeOnClick={() => {
         void retry();
       }}
@@ -51,16 +54,18 @@ export function renderError(
   );
   if (renderMode === 'inline') {
     return (
-      <span class="text-error d-inline-block" role="alert">
-        {message}
+      <span class="text-error d-inline-flex align-center ga-1">
+        <span role="alert">{message}</span>
         {retryButton}
       </span>
     );
   }
   return (
     <VAlert type="error" variant="tonal">
-      {message}
-      {retryButton}
+      <div class="d-flex flex-wrap align-center justify-space-between ga-3">
+        <span role="alert">{message}</span>
+        {retryButton}
+      </div>
     </VAlert>
   );
 }
