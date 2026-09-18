@@ -28,14 +28,13 @@ export class ControllerActionRefresh extends BeanControllerBase {
   protected render() {
     const disabled = this.$props.disabled === true || this.$props.dynamicDisabled === true;
     const queryData = this.$$renderContext.$$page.queryData;
-    const label = this.scope.locale.Refresh() as string;
+    const label = this.scope.locale.Refresh();
     return (
       <ZButton
         class={this.$props.class}
         icon={$iconName('::arrow-repeat')}
         variant="text"
         disabled={disabled}
-        loading={queryData.isFetching}
         aria-label={label}
         title={label}
         onPerform={async () => {
