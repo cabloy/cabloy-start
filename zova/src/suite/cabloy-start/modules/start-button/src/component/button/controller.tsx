@@ -25,10 +25,13 @@ export class ControllerButton extends BeanControllerBase {
       onError,
       onPerform,
     };
-    return (
-      <VBtn {...props} bs-start-button-perform={behaviorPerformOptions}>
-        {this.$slotDefault?.()}
-      </VBtn>
-    );
+    if (this.$slotDefault) {
+      return (
+        <VBtn {...props} bs-start-button-perform={behaviorPerformOptions}>
+          {this.$slotDefault()}
+        </VBtn>
+      );
+    }
+    return <VBtn {...props} bs-start-button-perform={behaviorPerformOptions}></VBtn>;
   }
 }

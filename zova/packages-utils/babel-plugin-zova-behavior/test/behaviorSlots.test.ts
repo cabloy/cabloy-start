@@ -98,6 +98,11 @@ test('component behavior target keeps dynamic children as a default slot', () =>
   assert.ok(t.isOptionalCallExpression(defaultSlot.body.elements[0]));
 });
 
+test('icon-only component behavior target preserves absent default slot', () => {
+  const ast = transform('const dom = <VBtn icon="::delete" bs-start-button-perform={options} />;');
+  assert.ok(t.isNullLiteral(getBehaviorVNodeChildren(ast)));
+});
+
 test('native targets render a default slot that returns an array', async () => {
   const fragment = createVNode(Fragment, null, ['Delete']);
   const html = await renderToString(createVNode('button', null, { default: () => [fragment] }));
