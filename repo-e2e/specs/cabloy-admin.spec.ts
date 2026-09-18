@@ -1271,7 +1271,7 @@ test(
         const updatedHeldRole = waitForApiResponse(
           subjectPage,
           'PUT',
-          new RegExp(`/api/admin/menu/roleMenu/batch$`),
+          new RegExp('/api/admin/menu/roleMenu/batch$'),
         );
         const reloadedSubject = subjectPage.waitForEvent(
           'framenavigated',
@@ -1434,7 +1434,7 @@ test(
           const updatedUnrelatedRole = waitForApiResponse(
             subjectPage,
             'PUT',
-            new RegExp(`/api/admin/menu/roleMenu/batch$`),
+            new RegExp('/api/admin/menu/roleMenu/batch$'),
           );
           await unrelatedCheckbox.click();
           expect((await updatedUnrelatedRole).ok()).toBeTruthy();
