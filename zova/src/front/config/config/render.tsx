@@ -1,7 +1,11 @@
 import type { VNodeChild } from 'vue';
-import type { TypeComponentBoundaryRenderMode, ZovaContext } from 'zova';
+import type {
+  TypeComponentBoundaryRenderMode,
+  TypeComponentBoundaryRetry,
+  ZovaContext,
+} from 'zova';
 
-import { VAlert, VProgressCircular } from 'vuetify/components';
+import { VAlert, VBtn, VProgressCircular } from 'vuetify/components';
 
 function getErrorMessage(error: unknown) {
   if (error instanceof Error) {
@@ -29,17 +33,34 @@ export function renderLoading(
 }
 
 export function renderError(
-  _ctx: ZovaContext,
+  ctx: ZovaContext,
   error: unknown,
   renderMode: TypeComponentBoundaryRenderMode,
+  retry?: TypeComponentBoundaryRetry,
 ): VNodeChild {
   const message = getErrorMessage(error);
+  const retryLabel = ctx.app.meta.locale.getText(false, 'home-base', undefined, 'Retry');
+  const retryButton = retry && (
+    <VBtn
+      nativeOnClick={() => {
+        void retry();
+      }}
+    >
+      {retryLabel}
+    </VBtn>
+  );
   if (renderMode === 'inline') {
     return (
       <span class="text-error d-inline-block" role="alert">
         {message}
+        {retryButton}
       </span>
     );
   }
-  return <VAlert type="error" variant="tonal">{message}</VAlert>;
+  return (
+    <VAlert type="error" variant="tonal">
+      {message}
+      {retryButton}
+    </VAlert>
+  );
 }
