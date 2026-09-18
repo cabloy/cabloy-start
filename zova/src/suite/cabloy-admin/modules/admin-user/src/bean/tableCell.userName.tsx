@@ -6,9 +6,10 @@ import type {
   NextTableCellRender,
 } from 'zova-module-a-table';
 
-import { VAvatar, VBtn } from 'vuetify/components';
+import { VAvatar } from 'vuetify/components';
 import { BeanBase } from 'zova';
 import { TableCell } from 'zova-module-a-table';
+import { ZButton } from 'zova-module-start-button';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceTableCellRecord {
@@ -45,7 +46,7 @@ export class TableCellUserName extends BeanBase implements ITableCellRender {
     const avatar = relation?.avatar ?? cellContext.row.original.avatar;
     const commandOptions = relation ? { ...options, id: relation.id } : options;
     return (
-      <VBtn
+      <ZButton
         class={options.class}
         color={options.color}
         variant={options.variant}
@@ -54,14 +55,14 @@ export class TableCellUserName extends BeanBase implements ITableCellRender {
             <VAvatar image={avatar || this.$scopeBase.config.avatar.empty} size={24} />
           ),
         }}
-        nativeOnClick={async event => {
+        onPerform={async event => {
           event.preventDefault();
           event.stopPropagation();
           await $host.$performCommand('start-commands:view', commandOptions, renderContext);
         }}
       >
         {name}
-      </VBtn>
+      </ZButton>
     );
   }
 

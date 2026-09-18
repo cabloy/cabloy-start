@@ -5,10 +5,10 @@ import type {
   NextTableCellRender,
 } from 'zova-module-a-table';
 
-import { VBtn } from 'vuetify/components';
 import { BeanBase } from 'zova';
 import { IIconRecord } from 'zova-module-a-icon';
 import { TableCell } from 'zova-module-a-table';
+import { ZButton } from 'zova-module-start-button';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceTableActionRowRecord {
@@ -33,14 +33,14 @@ export class TableCellActionUpdate extends BeanBase implements ITableCellRender 
   ) {
     const { $host } = renderContext;
     return (
-      <VBtn
+      <ZButton
         class={options.class}
         color={options.color}
         icon={options.icon}
-        nativeOnClick={async () => {
+        onPerform={async () => {
           await $host.$performCommand('start-commands:edit', options, renderContext);
         }}
-      ></VBtn>
+      ></ZButton>
     );
   }
 }

@@ -5,9 +5,10 @@ import type {
   NextTableCellRender,
 } from 'zova-module-a-table';
 
-import { VBtn, VChip } from 'vuetify/components';
+import { VChip } from 'vuetify/components';
 import { BeanBase, ClientOnly } from 'zova';
 import { TableCell } from 'zova-module-a-table';
+import { ZButton } from 'zova-module-start-button';
 
 import type { IImagePreviewItem } from '../lib/index.js';
 
@@ -60,14 +61,14 @@ export class TableCellImage extends BeanBase implements ITableCellRender {
       () => this.scope.locale.PreviewImage(),
     );
     return (
-      <VBtn
+      <ZButton
         variant="text"
         density="compact"
         class="pa-0"
-        nativeOnClick={event => {
+        onPerform={async event => {
           event.preventDefault();
           event.stopPropagation();
-          void this._openPreviewDialog(preview, title);
+          await this._openPreviewDialog(preview, title);
         }}
       >
         <div class="d-flex align-center ga-2">
@@ -88,7 +89,7 @@ export class TableCellImage extends BeanBase implements ITableCellRender {
           </div>
           {preview.count > 1 && <VChip size="x-small">+{preview.count - 1}</VChip>}
         </div>
-      </VBtn>
+      </ZButton>
     );
   }
 

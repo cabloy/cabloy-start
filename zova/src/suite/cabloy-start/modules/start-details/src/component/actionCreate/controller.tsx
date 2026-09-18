@@ -5,11 +5,11 @@ import type {
 } from 'zova-module-a-openapi';
 import type { AppModalItem, IModalDialogOptions } from 'zova-module-start-app';
 
-import { VBtn } from 'vuetify/components';
 import { BeanControllerBase, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { TypeFormOnSubmitData } from 'zova-module-a-form';
 import { IIconRecord } from 'zova-module-a-icon';
+import { ZButton } from 'zova-module-start-button';
 
 import { ServiceDetail } from '../../service/detail.jsx';
 import { IDialogFormOptions } from '../../types/dialogForm.js';
@@ -35,10 +35,10 @@ export class ControllerActionCreate extends BeanControllerBase {
 
   protected render() {
     return (
-      <VBtn
+      <ZButton
         class={this.$props.class}
         color={this.$props.color}
-        nativeOnClick={async () => {
+        onPerform={async () => {
           const { $$details } = this.$$renderContext;
           const detailService = await this.bean._newBean(ServiceDetail, true, {
             locale: this.scope.locale,
@@ -62,7 +62,7 @@ export class ControllerActionCreate extends BeanControllerBase {
         }}
       >
         {this.scope.locale.AddDetail()}
-      </VBtn>
+      </ZButton>
     );
   }
 }

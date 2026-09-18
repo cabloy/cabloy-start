@@ -49,5 +49,10 @@
       "exports.\\..import"
     ]
   },
-  "title": "admin-user"
+  "title": "admin-user",
+  "zovaModule": {
+    "dependencies": {
+      "start-button": "5.0.0"
+    }
+  }
 }

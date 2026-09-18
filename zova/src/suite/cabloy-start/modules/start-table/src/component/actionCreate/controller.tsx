@@ -4,9 +4,9 @@ import type {
   IResourceTableActionBulkPropsBase,
 } from 'zova-module-a-openapi';
 
-import { VBtn } from 'vuetify/components';
 import { BeanControllerBase, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
+import { ZButton } from 'zova-module-start-button';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceTableActionBulkRecord {
@@ -30,17 +30,17 @@ export class ControllerActionCreate extends BeanControllerBase {
 
   protected render() {
     return (
-      <VBtn
+      <ZButton
         class={this.$props.class}
         color={this.$props.color}
         disabled={this.$props.disabled === true || this.$props.dynamicDisabled === true}
-        nativeOnClick={async () => {
+        onPerform={async () => {
           if (this.$props.disabled === true || this.$props.dynamicDisabled === true) return;
           await this.$performCommand('start-commands:create', this.$props, this.$$renderContext);
         }}
       >
         {this.scope.locale.Create()}
-      </VBtn>
+      </ZButton>
     );
   }
 }

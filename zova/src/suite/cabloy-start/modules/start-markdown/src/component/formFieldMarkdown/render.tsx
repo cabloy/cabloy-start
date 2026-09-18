@@ -7,6 +7,7 @@ import { BeanRenderBase, ClientOnly } from 'zova';
 import { Render } from 'zova-module-a-bean';
 import { ZFormField } from 'zova-module-a-form';
 import { $iconName } from 'zova-module-a-icon';
+import { ZButton } from 'zova-module-start-button';
 import { ZImageUploader } from 'zova-module-start-image';
 
 import { codeBlockLanguages, getCodeBlockLanguage } from '../../lib/codeBlockLanguages.js';
@@ -19,33 +20,76 @@ export class RenderFormFieldMarkdown extends BeanRenderBase {
     action: () => void,
     options: { active?: boolean; disabled?: boolean } = {},
   ) {
+    return this._renderToolbarButton(
+      name,
+      label,
+      options,
+      (props: Record<string, unknown>, buttonProps: Record<string, unknown>) => (
+        <VBtn
+          {...props}
+          {...buttonProps}
+          nativeOnClick={(event: MouseEvent) => {
+            event.stopPropagation();
+            action();
+          }}
+        ></VBtn>
+      ),
+    );
+  }
+
+  private _toolbarPerformButton(
+    name: keyof IIconRecord,
+    label: string,
+    action: () => Promise<void>,
+    options: { active?: boolean; disabled?: boolean } = {},
+  ) {
+    return this._renderToolbarButton(
+      name,
+      label,
+      options,
+      (props: Record<string, unknown>, buttonProps: Record<string, unknown>) => (
+        <ZButton
+          {...props}
+          {...buttonProps}
+          onPerform={async event => {
+            event.stopPropagation();
+            await action();
+          }}
+        ></ZButton>
+      ),
+    );
+  }
+
+  private _renderToolbarButton(
+    name: keyof IIconRecord,
+    label: string,
+    options: { active?: boolean; disabled?: boolean },
+    renderButton: (
+      props: Record<string, unknown>,
+      buttonProps: Record<string, unknown>,
+    ) => JSX.Element,
+  ) {
+    const buttonProps = {
+      'icon': $iconName(name),
+      'variant': options.active ? 'tonal' : 'text',
+      'color': options.active ? 'primary' : undefined,
+      'size': 'small',
+      'density': 'compact',
+      'minHeight': '1.75rem',
+      'minWidth': '1.75rem',
+      'aria-label': label,
+      'aria-pressed': options.active,
+      'disabled': options.disabled,
+      'nativeOnMousedown': (event: MouseEvent) => {
+        event.preventDefault();
+      },
+    };
     return (
       <VTooltip
         text={label}
         location="bottom"
         v-slots={{
-          activator: ({ props }) => (
-            <VBtn
-              {...props}
-              icon={$iconName(name)}
-              variant={options.active ? 'tonal' : 'text'}
-              color={options.active ? 'primary' : undefined}
-              size="small"
-              density="compact"
-              minHeight="1.75rem"
-              minWidth="1.75rem"
-              aria-label={label}
-              aria-pressed={options.active}
-              disabled={options.disabled}
-              nativeOnMousedown={(event: MouseEvent) => {
-                event.preventDefault();
-              }}
-              nativeOnClick={(event: MouseEvent) => {
-                event.stopPropagation();
-                action();
-              }}
-            ></VBtn>
-          ),
+          activator: ({ props }) => renderButton(props, buttonProps),
         }}
       ></VTooltip>
     );
@@ -273,12 +317,10 @@ export class RenderFormFieldMarkdown extends BeanRenderBase {
           () => this.toggleCode(),
           { active: state.code, disabled: !state.canCode },
         )}
-        {this._toolbarButton(
+        {this._toolbarPerformButton(
           ':editor:insert-link-outline',
           this.scope.locale.Link(),
-          () => {
-            void this.editLink();
-          },
+          () => this.editLink(),
           { active: state.link, disabled: !state.canLink },
         )}
         {this._toolbarButton(

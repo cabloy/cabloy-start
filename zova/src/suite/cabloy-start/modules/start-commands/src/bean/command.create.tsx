@@ -15,7 +15,7 @@ export interface ICommandOptionsCreate extends ICommandBulkOptionsBase<TypeComma
 
 @Command<ICommandOptionsCreate>()
 export class CommandCreate extends BeanCommandBulkBase implements ICommandExecute {
-  execute(
+  async execute(
     options: ICommandOptionsCreate,
     renderContext: IJsxRenderContextBase,
     next: NextCommandExecute,
@@ -26,9 +26,9 @@ export class CommandCreate extends BeanCommandBulkBase implements ICommandExecut
       params: { resource },
     });
     if (options.replace) {
-      $host.$router.replace(url);
+      await $host.$router.replace(url);
     } else {
-      $host.$router.push(url);
+      await $host.$router.push(url);
     }
     return next();
   }

@@ -5,9 +5,9 @@ import type {
 } from 'zova-module-a-openapi';
 
 import { useId } from 'vue';
-import { VBtn } from 'vuetify/components';
 import { BeanControllerBase, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
+import { ZButton } from 'zova-module-start-button';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceTableActionBulkRecord {
@@ -38,13 +38,13 @@ export class ControllerActionDeleteBulk extends BeanControllerBase {
     const disabled = this.$props.disabled === true || this.$props.dynamicDisabled === true;
     const label = this.scope.locale.DeleteBulk() as string;
     return (
-      <VBtn
+      <ZButton
         class={this.$props.class}
         color={this.$props.color}
         disabled={disabled}
         aria-label={label}
         aria-describedby={dynamicDisabledReason ? this.disabledReasonDomId : undefined}
-        nativeOnClick={async () => {
+        onPerform={async () => {
           if (disabled) return;
           const confirmed = await this.$performCommand(
             'start-commands:confirm',
@@ -67,7 +67,7 @@ export class ControllerActionDeleteBulk extends BeanControllerBase {
             {dynamicDisabledReason}
           </span>
         )}
-      </VBtn>
+      </ZButton>
     );
   }
 }

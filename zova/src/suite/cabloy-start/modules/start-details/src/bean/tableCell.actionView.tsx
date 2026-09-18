@@ -5,11 +5,11 @@ import type {
   NextTableCellRender,
 } from 'zova-module-a-table';
 
-import { VBtn } from 'vuetify/components';
 import { BeanBase } from 'zova';
 import { IIconRecord } from 'zova-module-a-icon';
 import { TableCell } from 'zova-module-a-table';
 import { IModalDialogOptions } from 'zova-module-start-app';
+import { ZButton } from 'zova-module-start-button';
 
 import { ServiceDetail } from '../service/detail.jsx';
 import { IDialogFormOptions } from '../types/dialogForm.js';
@@ -39,13 +39,13 @@ export class TableCellActionView extends BeanBase implements ITableCellRender {
     const { ctx, $celScope, cellContext } = renderContext;
     const value = next();
     return (
-      <VBtn
+      <ZButton
         class={options.class}
         color={options.color}
         variant={options.variant}
-        nativeOnClick={async e => {
-          e.preventDefault();
-          e.stopPropagation();
+        onPerform={async event => {
+          event.preventDefault();
+          event.stopPropagation();
           const $$details = $celScope.$$details;
           if (!$$details) throw new Error('should provide $$details in cell scope');
           const detailItem = cellContext.row.original as Record<string, any>;
@@ -63,7 +63,7 @@ export class TableCellActionView extends BeanBase implements ITableCellRender {
         }}
       >
         {value}
-      </VBtn>
+      </ZButton>
     );
   }
 }

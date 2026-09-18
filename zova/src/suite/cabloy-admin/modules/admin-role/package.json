@@ -48,5 +48,10 @@
       "exports.\\..import"
     ]
   },
-  "title": "admin-role"
+  "title": "admin-role",
+  "zovaModule": {
+    "dependencies": {
+      "start-button": "5.0.0"
+    }
+  }
 }

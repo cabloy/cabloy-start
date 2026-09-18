@@ -8,6 +8,7 @@ import type {
 import { VBtn, VMenu } from 'vuetify/components';
 import { BeanBase } from 'zova';
 import { TableCell } from 'zova-module-a-table';
+import { ZButton } from 'zova-module-start-button';
 
 import type { IFilePreviewItem } from '../types/file.js';
 
@@ -49,17 +50,17 @@ export class TableCellFile extends BeanBase implements ITableCellRender {
     const { downloadUrl } = item;
     if (!downloadUrl) return label;
     return (
-      <VBtn
+      <ZButton
         variant="text"
         density="compact"
         class="text-none"
-        nativeOnClick={event => {
+        onPerform={async event => {
           event.stopPropagation();
-          void this._openDownloadUrl(downloadUrl);
+          await this._openDownloadUrl(downloadUrl);
         }}
       >
         {label}
-      </VBtn>
+      </ZButton>
     );
   }
 
@@ -83,17 +84,17 @@ export class TableCellFile extends BeanBase implements ITableCellRender {
           default: () => (
             <div class="d-flex flex-column pa-1 bg-surface">
               {items.map(item => (
-                <VBtn
+                <ZButton
                   key={String(item.id)}
                   variant="text"
                   density="compact"
                   disabled={!item.downloadUrl}
-                  nativeOnClick={() => {
-                    if (item.downloadUrl) void this._openDownloadUrl(item.downloadUrl);
+                  onPerform={async () => {
+                    if (item.downloadUrl) await this._openDownloadUrl(item.downloadUrl);
                   }}
                 >
                   {this._label(item)}
-                </VBtn>
+                </ZButton>
               ))}
             </div>
           ),

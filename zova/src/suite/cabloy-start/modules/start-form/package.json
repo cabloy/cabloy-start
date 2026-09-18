@@ -45,5 +45,10 @@
       "exports.\\..import"
     ]
   },
-  "title": "start-form"
+  "title": "start-form",
+  "zovaModule": {
+    "dependencies": {
+      "start-button": "5.0.0"
+    }
+  }
 }

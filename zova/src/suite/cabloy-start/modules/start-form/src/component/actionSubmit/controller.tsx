@@ -5,10 +5,10 @@ import type {
 } from 'zova-module-a-openapi';
 
 import { isNil } from '@cabloy/utils';
-import { VBtn } from 'vuetify/components';
 import { BeanControllerBase, cast, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { BeanControllerFormBase } from 'zova-module-a-form';
+import { ZButton } from 'zova-module-start-button';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceFormActionRowRecord {
@@ -35,19 +35,19 @@ export class ControllerActionSubmit extends BeanControllerBase {
     const formRef: BeanControllerFormBase = $$pageEntry.formRef;
     const isSubmitting = formRef?.formState.isSubmitting;
     return (
-      <VBtn
+      <ZButton
         class={this.$props.class}
         color={this.$props.color}
         type="submit"
         loading={isSubmitting}
-        nativeOnClick={(e: Event) => {
-          e.preventDefault();
-          e.stopPropagation();
-          this.onClick(e);
+        onPerform={async event => {
+          event.preventDefault();
+          event.stopPropagation();
+          await this.onClick(event);
         }}
       >
         {this.scope.locale.Submit()}
-      </VBtn>
+      </ZButton>
     );
   }
 

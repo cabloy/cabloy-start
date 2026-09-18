@@ -25,13 +25,17 @@ export class ControllerButton extends BeanControllerBase {
       onError,
       onPerform,
     };
+    const slots = this.$slots as Record<string, () => unknown>;
+    const { default: _slotDefault, ...slotsNamed } = slots;
     if (this.$slotDefault) {
       return (
-        <VBtn {...props} bs-start-button-perform={behaviorPerformOptions}>
+        <VBtn {...props} bs-start-button-perform={behaviorPerformOptions} v-slots={slotsNamed}>
           {this.$slotDefault()}
         </VBtn>
       );
     }
-    return <VBtn {...props} bs-start-button-perform={behaviorPerformOptions}></VBtn>;
+    return (
+      <VBtn {...props} bs-start-button-perform={behaviorPerformOptions} v-slots={slotsNamed}></VBtn>
+    );
   }
 }

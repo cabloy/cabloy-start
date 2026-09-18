@@ -8,6 +8,7 @@ import { VBtn, VCard, VCardText, VCol, VProgressCircular, VRow } from 'vuetify/c
 import { BeanControllerBase, ClientOnly, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { ZFormField } from 'zova-module-a-form';
+import { ZButton } from 'zova-module-start-button';
 import { createCompoundFormFieldState, renderCompoundFormField } from 'zova-module-start-form';
 
 import type { IImageResizeOptions } from '../../lib/imageTransform.js';
@@ -269,15 +270,15 @@ export class ControllerFormFieldImage extends BeanControllerBase {
           )}
           <div class="d-flex flex-wrap ga-2">
             {previewUrl && (
-              <VBtn
+              <ZButton
                 variant="text"
                 size="small"
-                nativeOnClick={() => {
-                  void this._openPreviewDialog(items, index);
+                onPerform={async () => {
+                  await this._openPreviewDialog(items, index);
                 }}
               >
                 {this.scope.locale.PreviewImage()}
-              </VBtn>
+              </ZButton>
             )}
             {!readonly && (
               <VBtn

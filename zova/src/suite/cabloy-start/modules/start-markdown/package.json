@@ -63,6 +63,7 @@
   "zovaModule": {
     "dependencies": {
       "start-app": "5.0.0",
+      "start-button": "5.0.0",
       "start-image": "5.0.0"
     }
   }

@@ -5,9 +5,9 @@ import type {
   NextTableCellRender,
 } from 'zova-module-a-table';
 
-import { VBtn } from 'vuetify/components';
 import { BeanBase } from 'zova';
 import { TableCell } from 'zova-module-a-table';
+import { ZButton } from 'zova-module-start-button';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceTableActionRowRecord {
@@ -34,18 +34,18 @@ export class TableCellActionView extends BeanBase implements ITableCellRender {
     const { $host } = renderContext;
     const value = next();
     return (
-      <VBtn
+      <ZButton
         class={options.class}
         color={options.color}
         variant={options.variant}
-        nativeOnClick={async e => {
-          e.preventDefault();
-          e.stopPropagation();
+        onPerform={async event => {
+          event.preventDefault();
+          event.stopPropagation();
           await $host.$performCommand('start-commands:view', options, renderContext);
         }}
       >
         {value}
-      </VBtn>
+      </ZButton>
     );
   }
 }

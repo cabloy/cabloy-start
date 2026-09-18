@@ -12,6 +12,7 @@ import { BeanControllerBase, ClientOnly, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { ZFormField } from 'zova-module-a-form';
 import { $QueryEnsureLoaded } from 'zova-module-a-model';
+import { ZButton } from 'zova-module-start-button';
 import { createCompoundFormFieldState, renderCompoundFormField } from 'zova-module-start-form';
 
 import type { IFilePreviewItem } from '../../types/file.js';
@@ -200,15 +201,15 @@ export class ControllerFormFieldFile extends BeanControllerBase {
           </div>
           <div class="d-flex flex-wrap ga-2">
             {downloadUrl && (
-              <VBtn
+              <ZButton
                 variant="text"
                 size="small"
-                nativeOnClick={() => {
-                  void this._openDownloadUrl(downloadUrl);
+                onPerform={async () => {
+                  await this._openDownloadUrl(downloadUrl);
                 }}
               >
                 {this.scope.locale.DownloadFile()}
-              </VBtn>
+              </ZButton>
             )}
             {!readonly && (
               <VBtn

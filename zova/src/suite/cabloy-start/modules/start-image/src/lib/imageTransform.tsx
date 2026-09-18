@@ -4,6 +4,7 @@ import { nextTick, reactive } from 'vue';
 import { CircleStencil, Cropper, RectangleStencil } from 'vue-advanced-cropper';
 import { VBtn } from 'vuetify/components';
 import { ClientOnly } from 'zova';
+import { ZButton } from 'zova-module-start-button';
 
 import type { IImageTransformOptions } from '../types/image.js';
 
@@ -63,7 +64,7 @@ export async function openImageCropDialog(
 ): Promise<HTMLCanvasElement | undefined> {
   const src = URL.createObjectURL(file);
   try {
-    return await new Promise<HTMLCanvasElement | undefined>(resolve => {
+    return await new Promise<HTMLCanvasElement | undefined>((resolve, reject) => {
       let settled = false;
       let cropperResult: CropperResult | undefined;
       let cropperRef: { getResult?: () => CropperResult } | undefined;
@@ -112,29 +113,34 @@ export async function openImageCropDialog(
               >
                 {options.labels.cancel}
               </VBtn>
-              <VBtn
+              <ZButton
                 color="primary"
                 disabled={dialogState.applying}
-                nativeOnClick={() => {
+                onPerform={async () => {
                   if (settled || dialogState.applying) return;
                   dialogState.applying = true;
-                  void nextTick(async () => {
+                  try {
+                    await nextTick();
                     if (settled) return;
                     const canvas = await waitForCropCanvas(
                       () => cropperResult?.canvas ?? cropperRef?.getResult?.()?.canvas,
                     );
-                    if (!canvas || settled) {
-                      dialogState.applying = false;
-                      return;
-                    }
+                    if (!canvas || settled) return;
                     settled = true;
                     modal.close();
                     resolve(canvas);
-                  });
+                  } catch (error) {
+                    if (settled) return;
+                    settled = true;
+                    modal.close();
+                    reject(error);
+                  } finally {
+                    dialogState.applying = false;
+                  }
                 }}
               >
                 {options.labels.apply}
-              </VBtn>
+              </ZButton>
             </>
           ),
           onClose: () => {

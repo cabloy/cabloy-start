@@ -45,5 +45,10 @@
       "exports.\\..import"
     ]
   },
-  "title": "start-table"
+  "title": "start-table",
+  "zovaModule": {
+    "dependencies": {
+      "start-button": "5.0.0"
+    }
+  }
 }

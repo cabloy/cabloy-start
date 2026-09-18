@@ -6,11 +6,11 @@ import type {
 } from 'zova-module-a-table';
 import type { AppModalItem, IModalDialogOptions } from 'zova-module-start-app';
 
-import { VBtn } from 'vuetify/components';
 import { BeanBase, deepExtend } from 'zova';
 import { TypeFormOnSubmitData } from 'zova-module-a-form';
 import { IIconRecord } from 'zova-module-a-icon';
 import { TableCell } from 'zova-module-a-table';
+import { ZButton } from 'zova-module-start-button';
 
 import { ServiceDetail } from '../service/detail.jsx';
 import { IDialogFormOptions } from '../types/dialogForm.js';
@@ -39,11 +39,11 @@ export class TableCellActionUpdate extends BeanBase implements ITableCellRender 
   ) {
     const { ctx, $celScope, cellContext } = renderContext;
     return (
-      <VBtn
+      <ZButton
         class={options.class}
         color={options.color}
         icon={options.icon}
-        nativeOnClick={async () => {
+        onPerform={async () => {
           const $$details = $celScope.$$details;
           if (!$$details) throw new Error('should provide $$details in cell scope');
           const detailItem = cellContext.row.original as Record<string, any>;
@@ -71,7 +71,7 @@ export class TableCellActionUpdate extends BeanBase implements ITableCellRender 
           } satisfies IDialogFormOptions);
           detailService.openDialogForm();
         }}
-      ></VBtn>
+      ></ZButton>
     );
   }
 }

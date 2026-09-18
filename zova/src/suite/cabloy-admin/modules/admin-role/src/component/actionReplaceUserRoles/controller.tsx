@@ -11,6 +11,7 @@ import { VBtn } from 'vuetify/components';
 import { BeanControllerBase, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { formMetaFromFormScene, ZForm } from 'zova-module-a-form';
+import { ZButton } from 'zova-module-start-button';
 
 import type { ApiSchemaAdminRoleDtoUserRoleReplace } from '../../api/openapi/schemas.ts';
 import type { ModelRole } from '../../model/role.ts';
@@ -39,16 +40,16 @@ export class ControllerActionReplaceUserRoles extends BeanControllerBase {
   protected render() {
     const props = this.$props as { class?: string };
     return (
-      <VBtn
+      <ZButton
         class={props.class}
         color="primary"
         variant="outlined"
-        nativeOnClick={async () => {
+        onPerform={async () => {
           await this._openDialog();
         }}
       >
         {this._getLocale().ReplaceUserRoles()}
-      </VBtn>
+      </ZButton>
     );
   }
 

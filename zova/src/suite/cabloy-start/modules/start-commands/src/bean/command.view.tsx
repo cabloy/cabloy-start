@@ -15,7 +15,7 @@ export interface ICommandOptionsView extends ICommandRowOptionsBase<TypeCommandV
 
 @Command<ICommandOptionsView>()
 export class CommandView extends BeanCommandRowBase implements ICommandExecute {
-  execute(
+  async execute(
     options: ICommandOptionsView,
     renderContext: IJsxRenderContextBase,
     next: NextCommandExecute,
@@ -26,9 +26,9 @@ export class CommandView extends BeanCommandRowBase implements ICommandExecute {
       params: { resource, id: id.toString() },
     });
     if (options.replace) {
-      $host.$router.replace(url);
+      await $host.$router.replace(url);
     } else {
-      $host.$router.push(url);
+      await $host.$router.push(url);
     }
     return next();
   }

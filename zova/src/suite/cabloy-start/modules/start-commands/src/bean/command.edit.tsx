@@ -15,7 +15,7 @@ export interface ICommandOptionsEdit extends ICommandRowOptionsBase<TypeCommandE
 
 @Command<ICommandOptionsEdit>()
 export class CommandEdit extends BeanCommandRowBase implements ICommandExecute {
-  execute(
+  async execute(
     options: ICommandOptionsEdit,
     renderContext: IJsxRenderContextBase,
     next: NextCommandExecute,
@@ -26,9 +26,9 @@ export class CommandEdit extends BeanCommandRowBase implements ICommandExecute {
       params: { resource, id: id.toString(), formScene: 'edit' },
     });
     if (options.replace) {
-      $host.$router.replace(url);
+      await $host.$router.replace(url);
     } else {
-      $host.$router.push(url);
+      await $host.$router.push(url);
     }
     return next();
   }
