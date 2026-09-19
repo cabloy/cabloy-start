@@ -503,6 +503,7 @@ export default defineConfig({
             { text: 'A-Router Guide', link: '/frontend/a-router-guide' },
             { text: 'Zova Router Under the Hood', link: '/frontend/zova-router-under-the-hood' },
             { text: 'Router View Hosts Guide', link: '/frontend/router-view-hosts-guide' },
+            { text: 'Routed Dialog Guide', link: '/frontend/routed-dialog-guide' },
             { text: 'Router Tabs Introduction', link: '/frontend/router-tabs-introduction' },
             { text: 'Router Tabs Overview', link: '/frontend/router-tabs-overview' },
             { text: 'Router Tabs Mechanism', link: '/frontend/router-tabs-mechanism' },
@@ -529,7 +530,12 @@ export default defineConfig({
           text: 'Components & UI',
           items: [
             { text: 'Component Guide', link: '/frontend/component-guide' },
+            {
+              text: 'Controller Load Boundary Guide',
+              link: '/frontend/controller-boundary-guide',
+            },
             { text: 'Form Guide', link: '/frontend/form-guide' },
+            { text: 'Resource Picker Guide', link: '/frontend/resource-picker-guide' },
             { text: 'Form Layout Guide', link: '/frontend/form-layout-guide' },
             { text: 'Image Guide', link: '/frontend/image-guide' },
             { text: 'File Guide', link: '/frontend/file-guide' },
@@ -555,6 +561,7 @@ export default defineConfig({
               link: '/frontend/permission-formscene-action-visibility-guide',
             },
             { text: 'Table Guide', link: '/frontend/table-guide' },
+            { text: 'Column Configuration Guide', link: '/frontend/column-configuration-guide' },
             { text: 'TableCell Authoring Cookbook', link: '/frontend/table-cell-cookbook' },
             {
               text: 'Table + Resource CRUD Cookbook',

@@ -1,6 +1,6 @@
 import { BeanControllerBase, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
-import { ZButton } from 'zova-module-start-button';
+import { ZButton } from 'zova-module-basic-button';
 
 import type { TypePaymentNextAction } from '../../types/payment.js';
 

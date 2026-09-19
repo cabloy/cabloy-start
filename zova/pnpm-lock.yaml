@@ -144,9 +144,6 @@ importers:
       zova-module-a-behaviors:
         specifier: workspace:^
         version: link:src/suite-vendor/a-zova/modules/a-behaviors
-      zova-module-a-boundary:
-        specifier: workspace:^
-        version: link:src/suite-vendor/a-zova/modules/a-boundary
       zova-module-a-command:
         specifier: workspace:^
         version: link:src/suite-vendor/a-zova/modules/a-command
@@ -362,8 +359,8 @@ importers:
         specifier: ^3.1.29
         version: 3.1.29(vue@3.5.42(typescript@5.9.3))
       '@cabloy/lint':
-        specifier: ^5.1.31
-        version: 5.1.32(@typescript-eslint/eslint-plugin@8.70.0(@typescript-eslint/parser@8.70.0(eslint@10.10.0)(supports-color@10.2.2)(typescript@5.9.3))(eslint@10.10.0)(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.70.0(typescript@5.9.3))(@typescript-eslint/utils@8.70.0(eslint@10.10.0)(typescript@5.9.3))(eslint@10.10.0)(oxfmt@0.62.0)(oxlint@1.82.0)(supports-color@10.2.2)(typescript@5.9.3)(vue-eslint-parser@10.4.1(eslint@10.10.0))
+        specifier: ^5.1.35
+        version: 5.1.35(@typescript-eslint/eslint-plugin@8.70.0(@typescript-eslint/parser@8.70.0(eslint@10.10.0)(supports-color@10.2.2)(typescript@5.9.3))(eslint@10.10.0)(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.70.0(typescript@5.9.3))(@typescript-eslint/utils@8.70.0(eslint@10.10.0)(typescript@5.9.3))(eslint@10.10.0)(oxfmt@0.62.0)(oxlint@1.82.0)(supports-color@10.2.2)(typescript@5.9.3)(vue-eslint-parser@10.4.1(eslint@10.10.0))
       '@cabloy/openapi-typescript':
         specifier: ^7.9.2
         version: 7.9.2(typescript@5.9.3)
@@ -864,7 +861,7 @@ importers:
         specifier: ^5.1.90
         version: link:../zova-core
       zova-suite-a-zova:
-        specifier: ^5.1.162
+        specifier: ^5.1.163
         version: link:../../src/suite-vendor/a-zova
     devDependencies:
       clean-package:
@@ -1007,7 +1004,7 @@ importers:
   src/suite-vendor/a-pay:
     dependencies:
       zova-module-a-pay:
-        specifier: ^5.0.7
+        specifier: ^5.0.8
         version: link:modules/a-pay
       zova-module-pay-mock:
         specifier: ^5.0.5
@@ -1072,9 +1069,6 @@ importers:
       zova-module-a-behaviors:
         specifier: ^5.1.22
         version: link:modules/a-behaviors
-      zova-module-a-boundary:
-        specifier: ^5.1.22
-        version: link:modules/a-boundary
       zova-module-a-command:
         specifier: ^5.1.35
         version: link:modules/a-command
@@ -1103,7 +1097,7 @@ importers:
         specifier: ^5.1.54
         version: link:modules/a-openapi
       zova-module-a-router:
-        specifier: ^5.1.38
+        specifier: ^5.1.39
         version: link:modules/a-router
       zova-module-a-routerstack:
         specifier: ^5.1.29
@@ -1130,7 +1124,7 @@ importers:
         specifier: ^5.1.37
         version: link:modules/a-zod
       zova-module-a-zova:
-        specifier: ^5.1.105
+        specifier: ^5.1.106
         version: link:modules/a-zova
 
   src/suite-vendor/a-zova/modules/a-api:
@@ -1174,15 +1168,6 @@ importers:
         version: 6.1.3
 
   src/suite-vendor/a-zova/modules/a-behaviors:
-    devDependencies:
-      clean-package:
-        specifier: ^2.2.0
-        version: 2.2.0
-      rimraf:
-        specifier: ^6.1.3
-        version: 6.1.3
-
-  src/suite-vendor/a-zova/modules/a-boundary:
     devDependencies:
       clean-package:
         specifier: ^2.2.0
@@ -2333,8 +2318,8 @@ packages:
   '@cabloy/json5@1.1.9':
     resolution: {integrity: sha512-jV0WqPaTuLOw5UvFWOVD/1HNaWHKABs8Xd652C7jq7vhKPZsKzBy5de+Az4kd3jgn4JxaPLJgVTID/svynAzFA==}
 
-  '@cabloy/lint@5.1.32':
-    resolution: {integrity: sha512-CgIheBgpXahfKixVLDweSoEki6jUjVAPE/8Rdj3OdtAAHSvxPA4keoPBB8oeUmZNrTVzZF+iC6FqB37n1fqpRg==}
+  '@cabloy/lint@5.1.35':
+    resolution: {integrity: sha512-aWrGyzwYI3ZFgIxuilA0pov18cKcyAmIe3slTgokrNfv8I4xTl2JXxcEPoR+/gk1/qB3N+ESA8199LR6wBBAMA==}
     peerDependencies:
       oxfmt: '>=0.62.0'
       oxlint: '>=1.77.0'
@@ -8466,7 +8451,7 @@ snapshots:
     dependencies:
       json5: 2.2.3
 
-  '@cabloy/lint@5.1.32(@typescript-eslint/eslint-plugin@8.70.0(@typescript-eslint/parser@8.70.0(eslint@10.10.0)(supports-color@10.2.2)(typescript@5.9.3))(eslint@10.10.0)(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.70.0(typescript@5.9.3))(@typescript-eslint/utils@8.70.0(eslint@10.10.0)(typescript@5.9.3))(eslint@10.10.0)(oxfmt@0.62.0)(oxlint@1.82.0)(supports-color@10.2.2)(typescript@5.9.3)(vue-eslint-parser@10.4.1(eslint@10.10.0))':
+  '@cabloy/lint@5.1.35(@typescript-eslint/eslint-plugin@8.70.0(@typescript-eslint/parser@8.70.0(eslint@10.10.0)(supports-color@10.2.2)(typescript@5.9.3))(eslint@10.10.0)(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.70.0(typescript@5.9.3))(@typescript-eslint/utils@8.70.0(eslint@10.10.0)(typescript@5.9.3))(eslint@10.10.0)(oxfmt@0.62.0)(oxlint@1.82.0)(supports-color@10.2.2)(typescript@5.9.3)(vue-eslint-parser@10.4.1(eslint@10.10.0))':
     dependencies:
       '@e18e/eslint-plugin': 0.2.0(eslint@10.10.0)(oxlint@1.82.0)
       '@eslint/json': 1.2.0
