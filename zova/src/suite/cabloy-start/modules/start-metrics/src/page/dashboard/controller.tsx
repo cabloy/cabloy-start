@@ -83,7 +83,7 @@ export class ControllerPageDashboard extends BeanControllerPageBase {
   }
 
   refresh = async () => {
-    await this.querySnapshot.refetch();
+    await this.querySnapshot.refetch({ throwOnError: true });
   };
 }
 
