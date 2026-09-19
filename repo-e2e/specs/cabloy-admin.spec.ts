@@ -1,4 +1,4 @@
-import type { Frame, Page, Request, Response } from '@playwright/test';
+import type { Frame, Locator, Page, Request, Response } from '@playwright/test';
 
 import { expect, test } from '@playwright/test';
 
@@ -69,6 +69,12 @@ function waitForApiResponse(page: Page, method: string, pathname: RegExp, requir
       pathname.test(url.pathname)
     );
   });
+}
+
+async function closeRolePicker(rolePicker: Locator, options: Locator, dialog: Locator) {
+  await rolePicker.click();
+  await expect(options).toBeHidden();
+  await expect(dialog).toBeVisible();
 }
 
 async function requestApiResponse(
@@ -629,7 +635,7 @@ test(
       await expect(options.getByText('Registered User', { exact: true })).toBeVisible();
       await expect(options.getByText('System Administrator', { exact: true })).toHaveCount(0);
       await options.getByText(roleName, { exact: true }).click();
-      await rolePicker.press('Escape');
+      await closeRolePicker(rolePicker, options, dialog);
 
       let genericUserPatchRequests = 0;
       page.on('request', request => {
@@ -1333,7 +1339,7 @@ test(
         ).toHaveCount(0);
         await currentReplacementOptions.getByText(heldRoleName, { exact: true }).click();
         await currentReplacementOptions.getByText(replacementRoleName, { exact: true }).click();
-        await currentRolePicker.press('Escape');
+        await closeRolePicker(currentRolePicker, currentReplacementOptions, replacementDialog);
         const reloadedForReplacement = subjectPage.waitForEvent(
           'framenavigated',
           frame => frame === subjectPage.mainFrame(),
@@ -1392,7 +1398,7 @@ test(
           has: subjectPage.locator('.v-list-item-title'),
         });
         await unrelatedUserOptions.getByText(unrelatedRoleName, { exact: true }).click();
-        await unrelatedUserRolePicker.press('Escape');
+        await closeRolePicker(unrelatedUserRolePicker, unrelatedUserOptions, unrelatedUserDialog);
         let unrelatedUserReloads = 0;
         const countUnrelatedUserReload = (frame: Frame) => {
           if (frame === subjectPage.mainFrame()) unrelatedUserReloads += 1;

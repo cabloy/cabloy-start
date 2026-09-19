@@ -872,12 +872,10 @@ test(
       studentId = await createStudentFixture(page, studentName, '13812345678');
       await openTrainingRecordCreatePage(page);
 
-      const pickerInput = page.locator('.v-input').filter({
-        has: page.getByText('Student', { exact: true }),
-      });
-      const pickerTrigger = pickerInput.getByRole('button', { name: 'Student', exact: true });
+      const pickerField = page.getByRole('group', { name: 'Student', exact: true });
+      const pickerTrigger = pickerField.getByRole('button');
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
-      await expect(pickerInput.locator('.v-field-label')).toHaveText('Student');
+      await expect(pickerField).toBeVisible();
       await expect(pickerTrigger).toHaveText('Please select...');
       const browserUrl = page.url();
       const loaded = waitForStudentSelect(page);
