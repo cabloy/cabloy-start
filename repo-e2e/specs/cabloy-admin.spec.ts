@@ -848,8 +848,8 @@ test(
         .locator('xpath=ancestor::div[contains(@class, "v-treeview-item")][1]');
       await expect(firstDepartmentTreeItem).toBeVisible();
       await expect(secondDepartmentTreeItem).toBeVisible();
-      await firstDepartmentTreeItem.getByRole('checkbox').click();
-      await secondDepartmentTreeItem.getByRole('checkbox').click();
+      await firstDepartmentTreeItem.locator('input[type="checkbox"]').click({ timeout: 5000 });
+      await secondDepartmentTreeItem.locator('input[type="checkbox"]').click({ timeout: 5000 });
       await expect(
         departmentDialog.getByRole('button', { name: 'Save', exact: true }),
       ).toBeEnabled();
@@ -946,8 +946,10 @@ test(
         .locator('xpath=ancestor::div[contains(@class, "v-treeview-item")][1]');
       await expect(reloadedFirstDepartmentTreeItem).toBeVisible();
       await expect(reloadedSecondDepartmentTreeItem).toBeVisible();
-      await expect(reloadedFirstDepartmentTreeItem.getByRole('checkbox')).toBeChecked();
-      await expect(reloadedSecondDepartmentTreeItem.getByRole('checkbox')).toBeChecked();
+      await expect(reloadedFirstDepartmentTreeItem.locator('input[type="checkbox"]')).toBeChecked();
+      await expect(
+        reloadedSecondDepartmentTreeItem.locator('input[type="checkbox"]'),
+      ).toBeChecked();
       await reloadedDepartmentDialog.getByRole('button', { name: 'Cancel', exact: true }).click();
       await expect(reloadedDepartmentDialog).toBeHidden();
 
