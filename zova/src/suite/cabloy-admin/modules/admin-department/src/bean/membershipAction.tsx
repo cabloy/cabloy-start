@@ -93,7 +93,6 @@ export async function openMembershipUpdateDialog(
       ></ZForm>
     ),
     slotActions: modal => {
-      const isSubmitting = formRef?.formState.isSubmitting ?? false;
       return (
         <>
           <ZButton variant="text" onPerform={async () => modal.close()}>
@@ -101,8 +100,6 @@ export async function openMembershipUpdateDialog(
           </ZButton>
           <ZButton
             color="primary"
-            loading={isSubmitting}
-            disabled={isSubmitting}
             onPerform={async () => {
               await formRef?.submit();
             }}

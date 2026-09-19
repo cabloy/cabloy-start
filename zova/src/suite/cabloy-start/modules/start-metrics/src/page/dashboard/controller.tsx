@@ -1,7 +1,8 @@
-import { VBtn, VCard, VCardText, VCol, VContainer, VDataTable, VRow } from 'vuetify/components';
+import { VCard, VCardText, VCol, VContainer, VDataTable, VRow } from 'vuetify/components';
 import { BeanControllerPageBase, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { $QueryEnsureLoaded } from 'zova-module-a-model';
+import { ZButton } from 'zova-module-start-button';
 
 import type { ApiApiStartMetricssnapshotResponseBody } from '../../api/startMetrics.js';
 
@@ -41,14 +42,9 @@ export class ControllerPageDashboard extends BeanControllerPageBase {
             <div class="text-h4 font-weight-bold">Metrics</div>
             <div class="text-body-2 text-medium-emphasis mt-1">Current worker runtime snapshot</div>
           </div>
-          <VBtn
-            color="primary"
-            variant="outlined"
-            loading={querySnapshot.isFetching}
-            nativeOnClick={this.refresh}
-          >
+          <ZButton color="primary" variant="outlined" onPerform={() => this.refresh()}>
             Refresh
-          </VBtn>
+          </ZButton>
         </div>
         {!snapshot.enabled ? (
           <VCard class="mt-6" variant="tonal" color="warning">
@@ -86,7 +82,9 @@ export class ControllerPageDashboard extends BeanControllerPageBase {
     );
   }
 
-  refresh = () => this.querySnapshot.refetch();
+  refresh = async () => {
+    await this.querySnapshot.refetch();
+  };
 }
 
 function getRuntimeMetrics(runtime: MetricsRuntime): RuntimeMetric[] {

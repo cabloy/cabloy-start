@@ -96,7 +96,6 @@ export class TableCellActionMove extends BeanBase implements ITableCellRender {
         </ZForm>
       ),
       slotActions: modal => {
-        const isSubmitting = formRef?.formState.isSubmitting ?? false;
         return (
           <>
             <ZButton
@@ -109,8 +108,6 @@ export class TableCellActionMove extends BeanBase implements ITableCellRender {
             </ZButton>
             <ZButton
               color="primary"
-              loading={isSubmitting}
-              disabled={isSubmitting}
               onPerform={async () => {
                 await formRef?.submit();
               }}
