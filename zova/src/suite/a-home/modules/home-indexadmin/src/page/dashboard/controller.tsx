@@ -1,4 +1,4 @@
-import { VContainer, VIcon } from 'vuetify/components';
+import { VContainer } from 'vuetify/components';
 import { BeanControllerPageBase } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { ZPage, ZSiteEntryTables } from 'zova-module-home-base';
@@ -27,7 +27,11 @@ export class ControllerPageDashboard extends BeanControllerPageBase {
               boxShadow: '0 2px 8px rgba(0, 0, 0, 0.12)',
             }}
           >
-            <VIcon icon="::fiber_manual_record" size="10" class="pulse-dot"></VIcon>
+            <span
+              class="pulse-dot rounded-circle bg-primary"
+              aria-hidden="true"
+              style={{ width: '8px', height: '8px' }}
+            ></span>
             <span
               class="font-weight-semibold text-body-1"
               style={{ fontVariantNumeric: 'tabular-nums' }}
