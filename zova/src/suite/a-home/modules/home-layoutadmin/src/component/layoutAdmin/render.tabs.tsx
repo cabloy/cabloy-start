@@ -75,13 +75,29 @@ export class RenderTabs extends BeanRenderBase {
     const tabCurrent = $$modelTabs.tabCurrent;
     if (!tabCurrent || !tabCurrent.items) return;
     const tabKey = tabCurrent.tabKey;
+    const tabItemAnchor = tabCurrent.items.find(item => item.componentKey === tabKey);
+    const onCustomRenderIsolate = tabItemAnchor?.pageMeta?.onCustomRenderIsolate;
+    if (onCustomRenderIsolate) {
+      const domContent = onCustomRenderIsolate(tabCurrent);
+      if (!this.$$modelTabs.cache) return domContent;
+      return <ClientOnly>{domContent}</ClientOnly>;
+    }
+    const pageTitleAnchor = tabItemAnchor?.pageMeta?.pageTitle;
+    if (pageTitleAnchor) {
+      const domWrapper = <div class="d-flex align-center justify-center">{pageTitleAnchor}</div>;
+      if (!this.$$modelTabs.cache) return domWrapper;
+      return <ClientOnly>{domWrapper}</ClientOnly>;
+    }
+
     const domTabs: VNode[] = [];
     for (const tabItem of tabCurrent.items) {
       // ignore first
       if (tabItem.componentKey === tabKey) continue;
       const { componentKey, pageMeta } = tabItem;
       const className = componentKey === $$modelTabs.componentKeyCurrent ? 'text-secondary' : '';
-      const pageTitle = pageMeta?.pageTitle || '';
+      const pageContent = pageMeta?.onCustomRender
+        ? pageMeta.onCustomRender(tabItem)
+        : pageMeta?.pageTitle || '';
       const tabItemIcon = this.getTabItemIcon(tabItem);
       const slots = {
         append: () => {
@@ -110,7 +126,7 @@ export class RenderTabs extends BeanRenderBase {
           v-slots={slots}
         >
           <div class="text-truncate" style={{ maxWidth: this.scope.config.tabItem.maxWidth }}>
-            {pageTitle}
+            {pageContent}
           </div>
         </VTab>
       );
