@@ -27,11 +27,22 @@ export class ControllerPageDashboard extends BeanControllerPageBase {
               boxShadow: '0 2px 8px rgba(0, 0, 0, 0.12)',
             }}
           >
-            <span
-              class="pulse-dot rounded-circle bg-primary"
-              aria-hidden="true"
-              style={{ width: '8px', height: '8px' }}
-            ></span>
+            <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true" class="text-primary">
+              <circle cx="5" cy="5" r="3" fill="currentColor">
+                <animate
+                  attributeName="r"
+                  values="3;4;3"
+                  dur="1.5s"
+                  repeatCount="indefinite"
+                ></animate>
+                <animate
+                  attributeName="opacity"
+                  values="1;0.5;1"
+                  dur="1.5s"
+                  repeatCount="indefinite"
+                ></animate>
+              </circle>
+            </svg>
             <span
               class="font-weight-semibold text-body-1"
               style={{ fontVariantNumeric: 'tabular-nums' }}
