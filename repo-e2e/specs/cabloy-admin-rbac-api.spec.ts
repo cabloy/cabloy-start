@@ -1015,41 +1015,41 @@ test(
       const retainedStudent = async () => {
         expect((await getStudent(request, subject, bulkStudentAId)).id).toEqual(bulkStudentAId);
       };
-      await expectStatus(request, 'DELETE', '/api/training/student/bulk', 422, {
+      await expectStatus(request, 'POST', '/api/training/student/bulk/delete', 422, {
         accessToken: subject.accessToken,
         data: { ids: [] },
       });
       await retainedStudent();
-      await expectStatus(request, 'DELETE', '/api/training/student/bulk', 422, {
+      await expectStatus(request, 'POST', '/api/training/student/bulk/delete', 422, {
         accessToken: subject.accessToken,
         data: { ids: [apiId(bulkStudentAId), apiId(bulkStudentAId)] },
       });
       await retainedStudent();
-      await expectStatus(request, 'DELETE', '/api/training/student/bulk', 404, {
+      await expectStatus(request, 'POST', '/api/training/student/bulk/delete', 404, {
         accessToken: subject.accessToken,
         data: { ids: [apiId(bulkStudentAId), '999999999'] },
       });
       await retainedStudent();
-      await expectStatus(request, 'DELETE', '/api/training/student/bulk', 403, {
+      await expectStatus(request, 'POST', '/api/training/student/bulk/delete', 404, {
         accessToken: subject.accessToken,
         data: { ids: [apiId(foreignStudentId)] },
       });
       await retainedStudent();
-      await expectStatus(request, 'DELETE', '/api/training/student/bulk', 403, {
+      await expectStatus(request, 'POST', '/api/training/student/bulk/delete', 404, {
         accessToken: subject.accessToken,
         data: { ids: [apiId(bulkStudentAId), apiId(foreignStudentId)] },
       });
       await retainedStudent();
       const successfulStudentBulk = await requestApi(
         request,
-        'DELETE',
-        '/api/training/student/bulk',
+        'POST',
+        '/api/training/student/bulk/delete',
         {
           accessToken: subject.accessToken,
           data: { ids: [apiId(bulkStudentBId)] },
         },
       );
-      expect([200, 204], 'DELETE /api/training/student/bulk').toContain(
+      expect([200, 204], 'POST /api/training/student/bulk/delete').toContain(
         successfulStudentBulk.status(),
       );
       const deletedStudent = await requestApi(

@@ -113,7 +113,7 @@ export class BehaviorAppModal extends BeanBehaviorBase<
       const dialogOptions = this._prepareDialogOptions(modalItem.type, modalItem.dialogOptions);
       if (!dialogOptions.closeOnEscape) return;
       event.preventDefault();
-      event.stopPropagation();
+      event.stopImmediatePropagation();
       this._closeModalByEscape(modalItem);
     };
     window.addEventListener('keydown', this._windowKeydownHandler);
@@ -393,9 +393,6 @@ export class BehaviorAppModal extends BeanBehaviorBase<
         {...{
           'onClick:outside': () => {
             if (dialogOptions.closeOnBackdrop) onClose();
-          },
-          'onKeydown': (event: KeyboardEvent) => {
-            if (event.key === 'Escape' && dialogOptions.closeOnEscape) onClose();
           },
         }}
         onUpdate:modelValue={value => {
