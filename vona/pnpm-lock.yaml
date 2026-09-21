@@ -358,6 +358,9 @@ importers:
       vona-module-demo-basic:
         specifier: workspace:^
         version: link:src/suite/a-demo/modules/demo-basic
+      vona-module-demo-demonstration:
+        specifier: workspace:^
+        version: link:src/suite/a-demo/modules/demo-demonstration
       vona-module-file-cloudflare:
         specifier: workspace:^
         version: link:src/suite-vendor/a-file/modules/file-cloudflare
@@ -3077,8 +3080,27 @@ importers:
       vona-module-demo-basic:
         specifier: ^5.0.0
         version: link:modules/demo-basic
+      vona-module-demo-demonstration:
+        specifier: ^5.0.0
+        version: link:modules/demo-demonstration
 
   src/suite/a-demo/modules/demo-basic:
+    devDependencies:
+      clean-package:
+        specifier: ^2.2.0
+        version: 2.2.0
+      rimraf:
+        specifier: ^6.1.3
+        version: 6.1.3
+
+  src/suite/a-demo/modules/demo-demonstration:
+    dependencies:
+      vona-module-a-aspect:
+        specifier: workspace:^
+        version: link:../../../../suite-vendor/a-vona/modules/a-aspect
+      vona-module-a-user:
+        specifier: workspace:^
+        version: link:../../../../suite-vendor/a-vona/modules/a-user
     devDependencies:
       clean-package:
         specifier: ^2.2.0
