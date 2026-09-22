@@ -1,7 +1,7 @@
 import type { Next } from 'vona';
 import type { IDecoratorGuardOptionsGlobal, IGuardExecute } from 'vona-module-a-aspect';
 
-import { BeanBase, Global, useApp } from 'vona';
+import { $protocolKey, BeanBase, Global, useApp } from 'vona';
 import { Guard } from 'vona-module-a-aspect';
 
 const app = useApp();
@@ -40,12 +40,19 @@ export interface IGuardOptionsDemonstration extends IDecoratorGuardOptionsGlobal
     '/home/user/passport/createPassportJwtFromOauthCode',
     '/home/user/passport/createTempAuthToken',
     '/auth/passport/callback',
+    '/auth/mock/authorize',
+    '/captcha/create',
+    '/image/upload-policy',
+    '/file/upload-policy',
   ],
   dependencies: 'a-user:passport',
 })
 @Global()
 export class GuardDemonstration extends BeanBase implements IGuardExecute {
   async execute(options: IGuardOptionsDemonstration, next: Next): Promise<boolean> {
+    const headerOpenapiSchema = this.ctx.headers[$protocolKey('x-vona-openapi-schema')];
+    if (headerOpenapiSchema?.toString() === 'true') return next();
+
     const method = this.ctx.method.toUpperCase();
     if (!options.methodsForWrite.some(item => item.toUpperCase() === method)) {
       return next();
