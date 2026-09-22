@@ -1,0 +1,15 @@
+.cabloy-admin {
+  .cabloy-page {
+    padding: var(--cabloy-space-page);
+  }
+
+  .cabloy-section {
+    margin-bottom: var(--cabloy-space-section);
+  }
+
+  .cabloy-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cabloy-space-form);
+  }
+}

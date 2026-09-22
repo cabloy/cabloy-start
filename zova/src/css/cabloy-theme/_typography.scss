@@ -1,0 +1,15 @@
+.cabloy-admin {
+  .cabloy-text {
+    font-size: var(--cabloy-font-size-body);
+    line-height: var(--cabloy-line-height-body);
+  }
+
+  .cabloy-text-secondary {
+    font-size: var(--cabloy-font-size-secondary);
+  }
+
+  .cabloy-text-caption {
+    font-size: var(--cabloy-font-size-caption);
+    line-height: var(--cabloy-line-height-tight);
+  }
+}

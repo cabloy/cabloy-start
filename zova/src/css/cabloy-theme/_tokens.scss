@@ -1,0 +1,28 @@
+:root {
+  --cabloy-font-size-body: 14px;
+  --cabloy-font-size-secondary: 13px;
+  --cabloy-font-size-caption: 12px;
+  --cabloy-font-size-title: 16px;
+
+  --cabloy-line-height-body: 1.5;
+  --cabloy-line-height-tight: 1.4;
+
+  --cabloy-space-page: 16px;
+  --cabloy-space-card: 16px;
+  --cabloy-space-form: 12px;
+  --cabloy-space-section: 16px;
+}
+
+[data-cabloy-density='compact'] {
+  --cabloy-space-page: 16px;
+  --cabloy-space-card: 12px;
+  --cabloy-space-form: 8px;
+  --cabloy-space-section: 12px;
+}
+
+[data-cabloy-density='comfortable'] {
+  --cabloy-space-page: 20px;
+  --cabloy-space-card: 20px;
+  --cabloy-space-form: 16px;
+  --cabloy-space-section: 24px;
+}

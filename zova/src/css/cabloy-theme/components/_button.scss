@@ -1,0 +1,8 @@
+@layer vuetify-overrides {
+  .cabloy-admin {
+    .v-btn {
+      letter-spacing: normal;
+      text-transform: none;
+    }
+  }
+}

@@ -1,0 +1,11 @@
+@layer vuetify-overrides {
+  .cabloy-admin {
+    .v-card-title {
+      font-size: var(--cabloy-font-size-title);
+    }
+
+    .v-card-subtitle {
+      font-size: var(--cabloy-font-size-secondary);
+    }
+  }
+}

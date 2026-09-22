@@ -1,8 +1,8 @@
-import { VApp } from 'vuetify/components';
-import { VMain } from 'vuetify/components';
+import { VApp, VDefaultsProvider, VMain } from 'vuetify/components';
 import { BeanRenderBase, Use } from 'zova';
 import { Render } from 'zova-module-a-bean';
 
+import { cabloyAdminDefaults } from '../../../../../../../boot/vuetify-defaults.js';
 import { RenderContent } from './render.content.jsx';
 import { RenderHeader } from './render.header.jsx';
 import { RenderLocale } from './render.locale.jsx';
@@ -40,11 +40,13 @@ export class RenderLayoutAdmin extends BeanRenderBase {
 
   render() {
     return (
-      <VApp>
-        {this.$$renderSidebar.render()}
-        {this.$$renderHeader.render()}
-        <VMain style={{ transition: 'none' }}>{this.$$renderContent.render()}</VMain>
-      </VApp>
+      <VDefaultsProvider defaults={cabloyAdminDefaults}>
+        <VApp class="cabloy-admin">
+          {this.$$renderSidebar.render()}
+          {this.$$renderHeader.render()}
+          <VMain style={{ transition: 'none' }}>{this.$$renderContent.render()}</VMain>
+        </VApp>
+      </VDefaultsProvider>
     );
   }
 }
