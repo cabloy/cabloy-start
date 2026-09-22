@@ -4,10 +4,14 @@ export const config = (_sys: ZovaSys) => {
   return {
     layout: {
       sidebar: {
+        width: 360,
         bodyReadyObserver: true,
         breakpoint: 1023,
         leftOpenPCCapability: true,
         leftOpenPCFallback: true,
+      },
+      navbar: {
+        height: 112,
       },
     },
     tabs: {

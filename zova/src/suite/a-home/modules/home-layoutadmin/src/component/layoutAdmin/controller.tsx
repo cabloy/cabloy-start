@@ -30,6 +30,8 @@ export class ControllerLayoutAdmin extends BeanControllerBase {
     return usePrepareArg({
       bodyReadyObserver: sidebar.bodyReadyObserver,
       sidebarBreakpoint: sidebar.breakpoint,
+      sidebarWidth: sidebar.width,
+      navbarHeight: this.scope.config.layout.navbar.height,
       sidebarLeftOpenPCCapability: sidebar.leftOpenPCCapability,
       sidebarLeftOpenPCFallback: sidebar.leftOpenPCFallback,
     } satisfies IServiceSsrLayoutOptions);
@@ -138,7 +140,7 @@ export class ControllerLayoutAdmin extends BeanControllerBase {
   }
 
   private __initLayoutConfig() {
-    this.layoutConfig = this.$scopeBase.config.layout;
+    this.layoutConfig = this.scope.config.layout;
     this.layoutConfig.leftDrawerOpen = this.leftDrawerOpen;
     if (process.env.SSR) {
       const layoutConfigRef = ref<ILayoutConfig | undefined>(this.layoutConfig);

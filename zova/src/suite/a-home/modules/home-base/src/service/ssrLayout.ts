@@ -5,6 +5,8 @@ import { getBodyReadyObserverScript } from 'zova-module-a-ssr';
 export interface IServiceSsrLayoutOptions {
   bodyReadyObserver?: boolean;
   sidebarBreakpoint?: number;
+  sidebarWidth?: number;
+  navbarHeight?: number;
   sidebarLeftOpenPCCapability?: boolean;
   sidebarLeftOpenPCFallback?: boolean;
 }
@@ -72,8 +74,8 @@ export class ServiceSsrLayout extends BeanBase {
       const __domHeader=document.querySelector('#q-app>.v-application>.v-application__wrap>header.v-toolbar');
       const __domDrawer=document.querySelector('#q-app>.v-application>.v-application__wrap>.v-navigation-drawer--left');
       const __domPageContainer=document.querySelector('#q-app>.v-application>.v-application__wrap>main.v-main');
-      const sidebarWidth = '${this.scope.config.layout.sidebar.width}px';
-      const navbarHeight = '${this.scope.config.layout.navbar.height}px';
+      const sidebarWidth = '${this.options?.sidebarWidth}px';
+      const navbarHeight = '${this.options?.navbarHeight}px';
       if(__leftDrawerOpen){
         __domHeader.style.left=sidebarWidth;
         __domHeader.style.width=\`calc(100% - \${sidebarWidth})\`;

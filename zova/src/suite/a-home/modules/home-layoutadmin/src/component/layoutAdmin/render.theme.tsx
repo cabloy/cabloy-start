@@ -24,7 +24,9 @@ export class RenderTheme extends BeanRenderBase {
     ];
     const slots = {
       activator: ({ props }) => {
-        return <VBtn icon={$iconName('::dark-theme')} variant="text" {...props}></VBtn>;
+        return (
+          <VBtn icon={$iconName('::dark-theme')} density="default" variant="text" {...props}></VBtn>
+        );
       },
     };
     return (
@@ -55,7 +57,14 @@ export class RenderTheme extends BeanRenderBase {
     const themes = this.getThemeNames();
     const slots = {
       activator: ({ props }) => {
-        return <VBtn icon={$iconName(':outline:theme-outline')} variant="text" {...props}></VBtn>;
+        return (
+          <VBtn
+            icon={$iconName(':outline:theme-outline')}
+            density="default"
+            variant="text"
+            {...props}
+          ></VBtn>
+        );
       },
     };
     return (

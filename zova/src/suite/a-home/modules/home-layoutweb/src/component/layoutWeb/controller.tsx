@@ -29,6 +29,8 @@ export class ControllerLayoutWeb extends BeanControllerBase {
     return usePrepareArg({
       bodyReadyObserver: sidebar.bodyReadyObserver,
       sidebarBreakpoint: sidebar.breakpoint,
+      sidebarWidth: sidebar.width,
+      navbarHeight: this.scope.config.layout.navbar.height,
       sidebarLeftOpenPCCapability: sidebar.leftOpenPCCapability,
       sidebarLeftOpenPCFallback: sidebar.leftOpenPCFallback,
     } satisfies IServiceSsrLayoutOptions);

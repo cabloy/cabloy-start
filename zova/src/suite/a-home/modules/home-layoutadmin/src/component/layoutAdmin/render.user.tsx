@@ -11,6 +11,7 @@ export class RenderUser extends BeanRenderBase {
         return (
           <VBtn
             {...props}
+            density="default"
             variant="text"
             v-slots={{
               prepend: () => (
