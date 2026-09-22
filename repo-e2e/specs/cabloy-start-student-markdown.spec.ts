@@ -1,4 +1,4 @@
-import type { Page, Route } from '@playwright/test';
+import type { Locator, Page, Route } from '@playwright/test';
 
 import { expect, test } from '@playwright/test';
 
@@ -68,6 +68,69 @@ function descriptionEditor(page: Page) {
   return page.getByRole('group', { name: 'Description', exact: true }).locator('.ProseMirror');
 }
 
+function taskCheckboxes(root: Locator) {
+  return root.locator(
+    'ul[data-type="taskList"] li > label > input[type="checkbox"]',
+  );
+}
+
+async function expectTaskCheckboxLayout(root: Locator) {
+  const layout = await root.locator('ul[data-type="taskList"] li').evaluateAll(
+    taskItems =>
+      taskItems.map(taskItem => {
+        const checkbox = taskItem.querySelector<HTMLInputElement>(
+          'label > input[type="checkbox"]',
+        );
+        const label = taskItem.querySelector<HTMLElement>('label');
+        const text = taskItem.querySelector<HTMLElement>('div > p');
+        if (!checkbox || !label || !text) return null;
+
+        const checkboxRect = checkbox.getBoundingClientRect();
+        const textRect = text.getBoundingClientRect();
+        const checkboxStyle = getComputedStyle(checkbox);
+        const labelStyle = getComputedStyle(label);
+        const itemStyle = getComputedStyle(taskItem);
+        return {
+          checkboxHeight: checkboxRect.height,
+          checkboxWidth: checkboxRect.width,
+          checkboxCenter: checkboxRect.top + checkboxRect.height / 2,
+          checkboxMarginBlockEnd: checkboxStyle.marginBlockEnd,
+          checkboxMarginBlockStart: checkboxStyle.marginBlockStart,
+          checkboxMarginInlineEnd: checkboxStyle.marginInlineEnd,
+          checkboxMarginInlineStart: checkboxStyle.marginInlineStart,
+          itemDisplay: itemStyle.display,
+          labelDisplay: labelStyle.display,
+          textCenter: textRect.top + parseFloat(getComputedStyle(text).lineHeight) / 2,
+        };
+      }),
+  );
+
+  expect(layout).toHaveLength(2);
+  for (const task of layout) {
+    expect(task).not.toBeNull();
+    expect(task?.itemDisplay).toBe('flex');
+    expect(task?.labelDisplay).toBe('flex');
+    expect(task?.checkboxWidth).toBeGreaterThan(0);
+    expect(task?.checkboxHeight).toBe(task?.checkboxWidth);
+    expect(task?.checkboxMarginBlockStart).toBe('0px');
+    expect(task?.checkboxMarginBlockEnd).toBe('0px');
+    expect(task?.checkboxMarginInlineStart).toBe('0px');
+    expect(task?.checkboxMarginInlineEnd).toBe('0px');
+    expect(Math.abs((task?.checkboxCenter ?? 0) - (task?.textCenter ?? 0))).toBeLessThanOrEqual(2);
+  }
+}
+
+async function setDescriptionTasks(page: Page) {
+  const editor = descriptionEditor(page);
+  await editor.fill('Completed task\nOpen task');
+  await editor.press('ControlOrMeta+A');
+  await page.getByRole('button', { name: 'Task list', exact: true }).click();
+  const checkboxes = taskCheckboxes(editor);
+  await expect(checkboxes).toHaveCount(2);
+  await checkboxes.nth(0).check();
+  return checkboxes;
+}
+
 test(
   'ATP-START-STUDENT-01: Summary renders the updated Markdown after a reopened Student edit',
   { tag: '@admin' },
@@ -88,7 +151,10 @@ test(
       );
       await page.getByLabel('Student Name', { exact: true }).fill(studentName);
       await page.getByLabel('Mobile', { exact: true }).fill(mobile);
-      await descriptionEditor(page).fill('1');
+      const createCheckboxes = await setDescriptionTasks(page);
+      await expectTaskCheckboxLayout(descriptionEditor(page));
+      await expect(createCheckboxes.nth(0)).toBeChecked();
+      await expect(createCheckboxes.nth(1)).not.toBeChecked();
       await page.getByRole('tab', { name: 'Student Training Records', exact: true }).click();
       await page.getByText('Foundation Track', { exact: true }).click();
 
@@ -106,16 +172,24 @@ test(
       // The row name is the first button; Operations then declares Summary, Update, Delete, and Force Delete.
       await row.getByRole('button').nth(2).click();
       await expect(page).toHaveURL(new RegExp(`${studentId}/edit(?:[/?#]|$)`));
-      await expect(descriptionEditor(page)).toHaveText('1');
-      await descriptionEditor(page).fill('2');
+      const reopenedEditor = descriptionEditor(page);
+      const reopenedCheckboxes = taskCheckboxes(reopenedEditor);
+      await expect(reopenedCheckboxes).toHaveCount(2);
+      await expect(reopenedCheckboxes.nth(0)).toBeChecked();
+      await expect(reopenedCheckboxes.nth(1)).not.toBeChecked();
+      await expect(reopenedCheckboxes.nth(0)).toBeEnabled();
+      await expect(reopenedCheckboxes.nth(1)).toBeEnabled();
+      await expectTaskCheckboxLayout(reopenedEditor);
 
       const updatePath = `/api/training/student/${studentId}`;
       const updateResponsePromise = waitForApiResponse(page, 'PATCH', updatePath);
       await page.getByRole('button', { name: 'Submit', exact: true }).click();
       const updateResponse = await updateResponsePromise;
-      expect(updateResponse.request().postDataJSON()).toMatchObject({
-        content: { descriptionMarkdown: '2' },
-      });
+      const updatedMarkdown = (
+        updateResponse.request().postDataJSON() as { content?: { descriptionMarkdown?: string } }
+      ).content?.descriptionMarkdown;
+      expect(updatedMarkdown).toContain('- [x] Completed task');
+      expect(updatedMarkdown).toContain('- [ ] Open task');
 
       await expectStudentListPage(page);
       const updatedRow = page.getByRole('row').filter({ hasText: studentName });
@@ -150,8 +224,10 @@ test(
           descriptionMarkdown?: string;
           descriptionHtml?: string;
         };
-        expect(summary.descriptionMarkdown).toBe('2');
-        expect(summary.descriptionHtml).toContain('2');
+        expect(summary.descriptionMarkdown).toContain('- [x] Completed task');
+        expect(summary.descriptionMarkdown).toContain('- [ ] Open task');
+        expect(summary.descriptionHtml).toContain('Completed task');
+        expect(summary.descriptionHtml).toContain('Open task');
       } finally {
         releaseSummaryRequest?.();
         await page.unroute(summaryPath, summaryRoute);
@@ -160,9 +236,15 @@ test(
       const dialog = page.getByRole('dialog').filter({
         has: page.getByText('Summary', { exact: true }),
       });
-      const renderedDescription = dialog.locator('p');
-      await expect(renderedDescription).toHaveCount(1);
-      await expect(renderedDescription).toHaveText('2');
+      const renderedDescription = dialog.locator('ul[data-type="taskList"]');
+      const renderedCheckboxes = renderedDescription.locator('input[type="checkbox"]');
+      await expect(renderedCheckboxes).toHaveCount(2);
+      await expect(renderedCheckboxes.nth(0)).toBeDisabled();
+      await expect(renderedCheckboxes.nth(1)).toBeDisabled();
+      await expect(renderedCheckboxes.nth(0)).toBeChecked();
+      await expect(renderedCheckboxes.nth(1)).not.toBeChecked();
+      await expect(renderedDescription).toContainText('Completed task');
+      await expect(renderedDescription).toContainText('Open task');
     } finally {
       if (studentId !== undefined) {
         const cleanupResponse = await requestApi(
