@@ -16,7 +16,7 @@ export class RenderHeader extends BeanRenderBase {
       },
     };
     return (
-      <VAppBar style={{ transition: 'none' }} extended={true} v-slots={slots}>
+      <VAppBar style={{ transition: 'none' }} density="compact" extended={true} v-slots={slots}>
         <VAppBarNavIcon
           icon="::menu"
           variant="text"

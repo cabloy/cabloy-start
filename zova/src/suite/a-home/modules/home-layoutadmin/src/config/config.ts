@@ -11,7 +11,7 @@ export const config = (_sys: ZovaSys) => {
         leftOpenPCFallback: true,
       },
       navbar: {
-        height: 112,
+        height: 88,
       },
     },
     tabs: {
