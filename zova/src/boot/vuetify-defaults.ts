@@ -1,4 +1,19 @@
 export const cabloyAdminDefaults = {
+  VList: {
+    density: 'compact',
+  },
+  VTabs: {
+    density: 'compact',
+  },
+  VTab: {
+    density: 'compact',
+  },
+  VAlert: {
+    density: 'compact',
+  },
+  VChip: {
+    density: 'compact',
+  },
   VBtn: {
     density: 'compact',
   },
