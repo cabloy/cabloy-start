@@ -9,7 +9,9 @@ export class RenderLocale extends BeanRenderBase {
     const locales = this.sys.config.locale.items;
     const slots = {
       activator: ({ props }) => {
-        return <VBtn icon={$iconName('::language')} variant="text" {...props}></VBtn>;
+        return (
+          <VBtn icon={$iconName('::language')} density="default" variant="text" {...props}></VBtn>
+        );
       },
     };
     return (
