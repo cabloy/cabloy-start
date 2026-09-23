@@ -133,7 +133,7 @@ export class StyleFormFieldMarkdown extends BeanStyleBase {
       margin: '0.75rem 1rem 0',
     });
     this.cPlaceholder = this.$style({
-      minHeight: 'var(--cabloy-markdown-height)',
+      minHeight: 'calc(var(--cabloy-markdown-height) + var(--cabloy-markdown-toolbar-height, 0px))',
       padding: '1rem',
     });
   }

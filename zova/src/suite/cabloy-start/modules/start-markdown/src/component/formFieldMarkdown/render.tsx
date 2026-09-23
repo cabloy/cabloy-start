@@ -522,7 +522,10 @@ export class RenderFormFieldMarkdown extends BeanRenderBase {
                   this.cContainer,
                   !$$formField.field.state.meta.isValid && this.cContainerError,
                 ]}
-                style={{ '--cabloy-markdown-height': convertToUnit(this.height) }}
+                style={{
+                  '--cabloy-markdown-height': convertToUnit(this.height),
+                  '--cabloy-markdown-toolbar-height': this.readonly ? '0px' : '3.5rem',
+                }}
                 onClick={() => {
                   if (!this.readonly) {
                     this.editor?.commands.focus();
