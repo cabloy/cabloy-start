@@ -25,7 +25,7 @@ export const cabloyAdminDefaults = {
     density: 'compact',
   },
   VChip: {
-    density: 'compact',
+    density: 'default',
   },
   VBtn: {
     density: 'compact',

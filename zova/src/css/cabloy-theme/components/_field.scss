@@ -1,7 +1,17 @@
 @layer vuetify-overrides {
   .cabloy-admin {
-    .v-field {
+    .v-field,
+    .v-field__input,
+    .v-field__input input,
+    textarea.v-field__input,
+    .v-select__selection,
+    .v-date-input__format-hint {
       font-size: var(--cabloy-font-size-body);
+    }
+
+    .v-field__input input::placeholder,
+    textarea.v-field__input::placeholder {
+      font-size: inherit;
     }
 
     .v-input__details {
