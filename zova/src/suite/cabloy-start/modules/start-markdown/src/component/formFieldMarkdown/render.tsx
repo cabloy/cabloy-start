@@ -509,6 +509,10 @@ export class RenderFormFieldMarkdown extends BeanRenderBase {
     );
   }
 
+  private _renderPlaceholder() {
+    return <div class={this.cPlaceholder} aria-hidden="true"></div>;
+  }
+
   public render() {
     return (
       <ZFormField
@@ -534,32 +538,39 @@ export class RenderFormFieldMarkdown extends BeanRenderBase {
               >
                 <ClientOnly
                   v-slots={{
-                    default: () => (
-                      <>
-                        {!this.readonly && (
-                          <ZImageUploader
-                            imageScene={this.imageScene}
-                            multiple={false}
-                            onUploaded={result => {
-                              this.handleImageUploaded(result);
-                            }}
-                            onError={error => {
-                              this.handleImageUploadError(error);
-                            }}
-                            slotDefault={state => this._renderToolbar(state)}
-                          ></ZImageUploader>
-                        )}
-                        {!this.readonly && this.editor && this._renderTableToolbar()}
-                        {!this.readonly && this.editor && this._renderCodeBlockToolbar()}
-                        {this.imageUploadError && (
-                          <p class={this.cUploadError} role="alert" aria-live="polite">
-                            {this.imageUploadError}
-                          </p>
-                        )}
-                        <EditorContent editor={this.editor} class={this.cMarkdown} />
-                      </>
-                    ),
-                    placeholder: () => <div class={this.cPlaceholder} aria-hidden="true"></div>,
+                    default: () => {
+                      if (!this.editor) {
+                        return this._renderPlaceholder();
+                      }
+                      return (
+                        <>
+                          {!this.readonly && (
+                            <div class={this.cToolbarShell}>
+                              <ZImageUploader
+                                imageScene={this.imageScene}
+                                multiple={false}
+                                onUploaded={result => {
+                                  this.handleImageUploaded(result);
+                                }}
+                                onError={error => {
+                                  this.handleImageUploadError(error);
+                                }}
+                                slotDefault={state => this._renderToolbar(state)}
+                              ></ZImageUploader>
+                            </div>
+                          )}
+                          {!this.readonly && this._renderTableToolbar()}
+                          {!this.readonly && this._renderCodeBlockToolbar()}
+                          {this.imageUploadError && (
+                            <p class={this.cUploadError} role="alert" aria-live="polite">
+                              {this.imageUploadError}
+                            </p>
+                          )}
+                          <EditorContent editor={this.editor} class={this.cMarkdown} />
+                        </>
+                      );
+                    },
+                    placeholder: () => this._renderPlaceholder(),
                   }}
                 ></ClientOnly>
               </div>

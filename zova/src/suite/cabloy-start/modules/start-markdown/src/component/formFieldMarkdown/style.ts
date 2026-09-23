@@ -9,6 +9,7 @@ export class StyleFormFieldMarkdown extends BeanStyleBase {
   cContainer: string;
   cContainerError: string;
   cToolbar: string;
+  cToolbarShell: string;
   cBlockStyleSelect: string;
   cLanguageSelect: string;
   cTablePickerTrigger: string;
@@ -41,6 +42,7 @@ export class StyleFormFieldMarkdown extends BeanStyleBase {
       backgroundColor: 'rgb(var(--v-theme-surface))',
       border: '1px solid rgb(var(--v-theme-outline))',
       borderRadius: '4px',
+      minHeight: 'calc(var(--cabloy-markdown-height) + var(--cabloy-markdown-toolbar-height, 0px))',
       position: 'relative',
     });
     this.cContainerError = this.$style({
@@ -53,6 +55,9 @@ export class StyleFormFieldMarkdown extends BeanStyleBase {
       flexWrap: 'wrap',
       gap: '0.25rem',
       padding: '0.5rem',
+    });
+    this.cToolbarShell = this.$style({
+      minHeight: 'var(--cabloy-markdown-toolbar-height, 0px)',
     });
     this.cBlockStyleSelect = this.$style({
       flex: '0 1 10rem',
