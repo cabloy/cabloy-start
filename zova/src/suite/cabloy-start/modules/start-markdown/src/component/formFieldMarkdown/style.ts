@@ -31,7 +31,7 @@ export class StyleFormFieldMarkdown extends BeanStyleBase {
       $nest: {
         ...markdownStyle.$nest,
         '& > .ProseMirror': {
-          minHeight: '32rem',
+          minHeight: 'var(--cabloy-markdown-height)',
           outline: 'none',
           padding: '1rem',
         },
@@ -133,7 +133,7 @@ export class StyleFormFieldMarkdown extends BeanStyleBase {
       margin: '0.75rem 1rem 0',
     });
     this.cPlaceholder = this.$style({
-      minHeight: '32rem',
+      minHeight: 'var(--cabloy-markdown-height)',
       padding: '1rem',
     });
   }

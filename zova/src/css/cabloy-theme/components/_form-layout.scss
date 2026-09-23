@@ -1,0 +1,34 @@
+@layer vuetify-final {
+  .cabloy-admin {
+    .cabloy-form-layout__tabs {
+      margin-bottom: 4px;
+    }
+
+    .cabloy-form-layout__tabs .v-tabs {
+      --v-tabs-height: 36px;
+    }
+
+    .cabloy-form-layout__group,
+    .cabloy-form-layout__panel {
+      padding: 12px;
+    }
+
+    .cabloy-form-layout__group,
+    .cabloy-form-layout__section {
+      margin-bottom: 4px;
+    }
+
+    .cabloy-form-layout__description {
+      margin-bottom: 8px;
+    }
+
+    .cabloy-form-layout__flow {
+      gap: 12px;
+    }
+
+    .cabloy-form-layout__grid {
+      --v-col-gap-x: 16px;
+      --v-col-gap-y: 16px;
+    }
+  }
+}

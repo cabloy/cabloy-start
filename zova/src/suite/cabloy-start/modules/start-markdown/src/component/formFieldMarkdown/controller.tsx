@@ -34,6 +34,7 @@ declare module 'zova-module-a-openapi' {
 
 export interface IResourceFormFieldMarkdownOptions extends IResourceFormFieldOptionsBase {
   imageScene?: keyof IImageSceneRecord | string;
+  height?: string | number;
 }
 
 export interface ControllerFormFieldMarkdownProps extends IFormFieldComponentOptions {
@@ -119,6 +120,7 @@ export class ControllerFormFieldMarkdown extends BeanControllerBase {
   tablePickerPreview: IMarkdownTableDimensions = { rows: 1, cols: 1 };
   tablePickerActive: IMarkdownTableDimensions = { rows: 1, cols: 1 };
   imageScene = markdownImageScene;
+  height: string | number = '24rem';
   imageUploadError?: string;
   private _imageUploadSelection?: IMarkdownImageUploadSelection;
   private _imageUploadTransactionMappings: IMarkdownImageUploadMapping[] = [];
@@ -858,9 +860,11 @@ export class ControllerFormFieldMarkdown extends BeanControllerBase {
     const readonly = propsBucket.readonly ?? false;
     const options = propsBucket.options ?? {};
     const imageScene = options.imageScene ?? markdownImageScene;
+    const height = options.height ?? '24rem';
     if (this.value !== value) this.value = value;
     if (this.readonly !== readonly) this.readonly = readonly;
     if (this.imageScene !== imageScene) this.imageScene = imageScene;
+    if (this.height !== height) this.height = height;
     if (this._setValue && this._handleBlur) return;
     this._setValue = (value, disableNotifyChanged) => {
       if (this.readonly) return;

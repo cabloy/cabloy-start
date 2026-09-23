@@ -3,7 +3,7 @@ import type { IImageUploaderRenderState } from 'zova-module-start-image';
 
 import { EditorContent } from '@tiptap/vue-3';
 import { VBtn, VSelect, VTooltip } from 'vuetify/components';
-import { BeanRenderBase, ClientOnly } from 'zova';
+import { BeanRenderBase, ClientOnly, convertToUnit } from 'zova';
 import { Render } from 'zova-module-a-bean';
 import { ZFormField } from 'zova-module-a-form';
 import { $iconName } from 'zova-module-a-icon';
@@ -522,6 +522,7 @@ export class RenderFormFieldMarkdown extends BeanRenderBase {
                   this.cContainer,
                   !$$formField.field.state.meta.isValid && this.cContainerError,
                 ]}
+                style={{ '--cabloy-markdown-height': convertToUnit(this.height) }}
                 onClick={() => {
                   if (!this.readonly) {
                     this.editor?.commands.focus();
