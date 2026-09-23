@@ -3,10 +3,10 @@ export const cabloyAdminDefaults = {
     density: 'compact',
   },
   VTabs: {
-    density: 'compact',
+    density: 'default',
   },
   VTab: {
-    density: 'compact',
+    density: 'default',
   },
   VAlert: {
     density: 'compact',

@@ -8,6 +8,7 @@
 @use 'vuetify/settings' with (
   $color-pack: false
 );
+@use './vuetify-layer-order';
 @use './cabloy-theme';
 
 :root {

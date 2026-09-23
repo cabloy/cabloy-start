@@ -1,0 +1,7 @@
+@layer vuetify-overrides {
+  .cabloy-admin {
+    .v-tab.v-btn {
+      --v-btn-height: var(--v-tabs-height);
+    }
+  }
+}
