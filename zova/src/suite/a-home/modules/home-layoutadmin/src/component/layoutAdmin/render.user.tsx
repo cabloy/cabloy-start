@@ -22,7 +22,7 @@ export class RenderUser extends BeanRenderBase {
                       this.sys.config.api.baseURL,
                     ) || this.$scopeBase.config.avatar.empty
                   }
-                  size={24}
+                  size={20}
                 />
               ),
             }}

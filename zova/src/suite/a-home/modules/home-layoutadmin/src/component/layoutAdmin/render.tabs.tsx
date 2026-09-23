@@ -44,8 +44,8 @@ export class RenderTabs extends BeanRenderBase {
           <ZIcon
             class="close"
             name="::close"
-            width="16"
-            height="16"
+            width="20"
+            height="20"
             nativeOnClick={withModifiers(() => {
               $$modelTabs.deleteTab(tabKey);
             }, ['stop'])}

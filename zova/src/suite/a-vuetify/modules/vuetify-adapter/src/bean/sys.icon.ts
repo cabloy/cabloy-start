@@ -10,6 +10,7 @@ import {
 import { useTheme } from 'vuetify';
 import { VIcon } from 'vuetify/components';
 import { useTextColor } from 'vuetify/lib/composables/color.js';
+import { useDefaults } from 'vuetify/lib/composables/defaults.js';
 import { useIcon } from 'vuetify/lib/composables/icons.js';
 import { useSize } from 'vuetify/lib/composables/size.js';
 import { convertToUnit, flattenFragments, useRender } from 'vuetify/lib/util/index.js';
@@ -28,9 +29,10 @@ export class SysIcon extends BeanBase {
   private _patchSetup() {
     const self = this;
     VIcon.setup = function (props, { attrs, slots }) {
+      const propsWithDefaults = useDefaults(props);
       onServerPrefetch(async () => {
         let [iconName] = self._parseNameFromSlotDefault(slots);
-        iconName = iconName || props.icon;
+        iconName = iconName || propsWithDefaults.icon;
         if (!iconName || isHttpUrl(iconName)) {
           return;
         }
@@ -41,14 +43,14 @@ export class SysIcon extends BeanBase {
 
       const slotIcon = shallowRef();
       const { themeClasses } = useTheme();
-      const { sizeClasses } = useSize(props);
-      const { textColorClasses, textColorStyles } = useTextColor(() => props.color);
-      const iconDefault = useIcon(() => slotIcon.value || props.icon);
+      const { sizeClasses } = useSize(propsWithDefaults);
+      const { textColorClasses, textColorStyles } = useTextColor(() => propsWithDefaults.color);
+      const iconDefault = useIcon(() => slotIcon.value || propsWithDefaults.icon);
       const iconV = computed(() => {
-        return self._getIconData(slotIcon.value || props.icon) ?? iconDefault;
+        return self._getIconData(slotIcon.value || propsWithDefaults.icon) ?? iconDefault;
       });
       useRender(() => {
-        if (!slotIcon.value && !props.icon) return createCommentVNode();
+        if (!slotIcon.value && !propsWithDefaults.icon) return createCommentVNode();
         const { iconData } = iconV.value;
         const slotValue = slots.default?.();
         if (slotValue) {
@@ -60,7 +62,7 @@ export class SysIcon extends BeanBase {
         return createVNode(
           iconData.value.component,
           {
-            'tag': props.tag,
+            'tag': propsWithDefaults.tag,
             'icon': iconData.value.icon,
             'class': normalizeClass([
               'v-icon',
@@ -70,29 +72,29 @@ export class SysIcon extends BeanBase {
               textColorClasses.value,
               {
                 'v-icon--clickable': hasClick,
-                'v-icon--disabled': props.disabled,
-                'v-icon--start': props.start,
-                'v-icon--end': props.end,
+                'v-icon--disabled': propsWithDefaults.disabled,
+                'v-icon--start': propsWithDefaults.start,
+                'v-icon--end': propsWithDefaults.end,
               },
-              props.class,
+              propsWithDefaults.class,
             ]),
             'style': normalizeStyle([
               {
-                '--v-icon-opacity': props.opacity,
+                '--v-icon-opacity': propsWithDefaults.opacity,
               },
               !sizeClasses.value
                 ? {
-                    fontSize: convertToUnit(props.size),
-                    height: convertToUnit(props.size),
-                    width: convertToUnit(props.size),
+                    fontSize: convertToUnit(propsWithDefaults.size),
+                    height: convertToUnit(propsWithDefaults.size),
+                    width: convertToUnit(propsWithDefaults.size),
                   }
                 : undefined,
               textColorStyles.value,
-              props.style,
+              propsWithDefaults.style,
             ]),
             'role': hasClick ? 'button' : undefined,
             'aria-hidden': !hasClick,
-            'tabindex': hasClick ? (props.disabled ? -1 : 0) : undefined,
+            'tabindex': hasClick ? (propsWithDefaults.disabled ? -1 : 0) : undefined,
           },
           {
             default: () => [slotValue],
