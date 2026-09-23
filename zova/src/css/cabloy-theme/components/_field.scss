@@ -18,5 +18,10 @@
       font-size: var(--cabloy-font-size-caption);
       line-height: var(--cabloy-line-height-tight);
     }
+
+    .v-input__details:not(.v-input__details--hidden) {
+      align-items: flex-start;
+      padding-top: 2px;
+    }
   }
 }
