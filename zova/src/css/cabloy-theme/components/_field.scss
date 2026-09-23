@@ -1,5 +1,9 @@
 @layer vuetify-overrides {
   .cabloy-admin {
+    .v-field {
+      font-size: var(--cabloy-font-size-body);
+    }
+
     .v-input__details {
       font-size: var(--cabloy-font-size-caption);
       line-height: var(--cabloy-line-height-tight);
