@@ -9,11 +9,8 @@ import LuxonAdapter from '@date-io/luxon';
 import { createVuetify } from 'vuetify';
 import { md3 } from 'vuetify/blueprints';
 import { aliases } from 'vuetify/iconsets/mdi-svg';
-
 // Styles
-import '../css/settings.scss';
-import 'vuetify/lib/styles/main.sass';
-// import 'vuetify/styles';
+import 'vuetify/styles';
 // import 'unfonts.css';
 
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides

@@ -9,6 +9,8 @@ import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify';
 
 export default configure(_ctx => {
   return {
+    css: ['settings.scss'],
+
     build: {
       extendViteConf(viteConf) {
         // Ensure Vuetify is bundled for SSR so Node doesn't try to import raw CSS
@@ -21,9 +23,6 @@ export default configure(_ctx => {
           // https://github.com/vuetifyjs/vuetify-loader/tree/master/packages/vite-plugin#readme
           <any>Vuetify({
             autoImport: false,
-            // styles: {
-            //   configFile: 'src/css/settings.scss',
-            // },
           }),
           // Fonts({
           //   fontsource: {
