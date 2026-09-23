@@ -4,14 +4,14 @@
     .v-field__input,
     .v-field__input input,
     textarea.v-field__input,
-    .v-select__selection,
-    .v-date-input__format-hint {
+    .v-select__selection {
       font-size: var(--cabloy-font-size-body);
     }
 
     .v-field__input input::placeholder,
-    textarea.v-field__input::placeholder {
-      font-size: inherit;
+    textarea.v-field__input::placeholder,
+    .v-date-input__format-hint {
+      font-size: var(--cabloy-font-size-secondary);
     }
 
     .v-input__details {
