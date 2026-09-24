@@ -27,15 +27,17 @@ export class ControllerPageDashboard extends BeanControllerPageBase {
       onCustomRenderIsolate: () => (
         <div class="d-flex flex-grow-1 align-center justify-center">
           <div
-            class="d-flex align-center ga-2 rounded-pill px-4 py-2 text-primary"
+            class="d-flex align-center ga-1 rounded-pill px-3 py-1 text-primary"
             style={{
-              backgroundColor: 'rgba(var(--v-theme-primary), 0.1)',
-              border: '1px solid rgba(var(--v-theme-primary), 0.3)',
-              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.12)',
+              minHeight: '28px',
+              alignSelf: 'center',
+              whiteSpace: 'nowrap',
+              backgroundColor: 'rgba(var(--v-theme-primary), 0.06)',
+              border: '1px solid rgba(var(--v-theme-primary), 0.18)',
             }}
           >
-            <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true" class="text-primary">
-              <circle cx="5" cy="5" r="3" fill="currentColor">
+            <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden="true" class="text-primary">
+              <circle cx="4" cy="4" r="2.5" fill="currentColor">
                 <animate
                   attributeName="r"
                   values="3;4;3"
@@ -51,8 +53,8 @@ export class ControllerPageDashboard extends BeanControllerPageBase {
               </circle>
             </svg>
             <span
-              class="font-weight-semibold text-body-1"
-              style={{ fontVariantNumeric: 'tabular-nums' }}
+              class="font-weight-medium text-body-2"
+              style={{ fontVariantNumeric: 'tabular-nums', lineHeight: 1.25 }}
             >
               {this.currentTime || '--:--:--'}
             </span>
