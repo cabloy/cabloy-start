@@ -8,10 +8,12 @@
       font-size: var(--cabloy-font-size-body);
     }
 
-    .v-field__input input::placeholder,
+    input.v-field__input::placeholder,
     textarea.v-field__input::placeholder,
+    .v-field__input input::placeholder,
     .v-date-input__format-hint {
       font-size: var(--cabloy-font-size-secondary);
+      font-weight: 400;
     }
 
     .v-field:not(.v-field--focused):not(.v-field--error) .v-field__outline {
