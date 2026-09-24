@@ -7,6 +7,7 @@ export class MonkeySys extends BeanSimple implements IMonkeySysInitialize {
   async sysInitialize() {
     // config custom
     const configCustom: IBehaviorItem = {
+      'start-app:overlay': {},
       'start-app:appModal': {},
     };
     // rest

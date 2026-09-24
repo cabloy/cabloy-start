@@ -78,12 +78,15 @@ export interface IZovaComponentRecord {
 /** components: end */
 /** behavior: begin */
 export * from '../bean/behavior.appModal.jsx';
+export * from '../bean/behavior.overlay.jsx';
 import { IBehaviorOptionsAppModal } from '../bean/behavior.appModal.jsx';
+import { IBehaviorOptionsOverlay } from '../bean/behavior.overlay.jsx';
 import 'zova-module-a-behavior';
 declare module 'zova-module-a-behavior' {
 
     export interface IBehaviorRecord {
       'start-app:appModal': IBehaviorOptionsAppModal;
+'start-app:overlay': IBehaviorOptionsOverlay;
     }
 
 
@@ -100,14 +103,27 @@ declare module 'zova-module-start-app' {
           get $onionName(): 'start-app:appModal';
           get $onionOptions(): IBehaviorOptionsAppModal;
         }
+
+        export interface BehaviorOverlay {
+          /** @internal */
+          get scope(): ScopeModuleStartApp;
+        }
+
+        export interface BehaviorOverlay {
+          get $beanFullName(): 'start-app.behavior.overlay';
+          get $onionName(): 'start-app:overlay';
+          get $onionOptions(): IBehaviorOptionsOverlay;
+        }
 }
 /** behavior: end */
 /** behavior: begin */
 import type { BehaviorAppModal } from '../bean/behavior.appModal.jsx';
+import type { BehaviorOverlay } from '../bean/behavior.overlay.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
     'start-app.behavior.appModal': BehaviorAppModal;
+'start-app.behavior.overlay': BehaviorOverlay;
   }
 }
 /** behavior: end */
@@ -118,6 +134,7 @@ import 'vue/jsx-runtime';
 declare module 'vue' {
   export interface InputHTMLAttributes {
     'bs-start-app-appModal'?: IBehaviorOptionsAppModal | '' | boolean;
+'bs-start-app-overlay'?: IBehaviorOptionsOverlay | '' | boolean;
   }
 }
 
@@ -126,6 +143,7 @@ declare module 'vue/jsx-runtime' {
     // need define class/style in IntrinsicAttributes
     export interface IntrinsicAttributes {
       'bs-start-app-appModal'?: IBehaviorOptionsAppModal | '' | boolean;
+'bs-start-app-overlay'?: IBehaviorOptionsOverlay | '' | boolean;
     }
   }
 }
