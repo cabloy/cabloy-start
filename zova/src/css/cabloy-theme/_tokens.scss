@@ -11,6 +11,9 @@
   --cabloy-space-card: 16px;
   --cabloy-space-form: 12px;
   --cabloy-space-section: 16px;
+
+  font-size: var(--cabloy-font-size-body);
+  line-height: var(--cabloy-line-height-body);
 }
 
 [data-cabloy-density='compact'] .cabloy-admin,
