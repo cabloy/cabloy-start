@@ -5,6 +5,26 @@
       text-transform: none;
     }
 
+    .v-btn--size-x-small {
+      --v-btn-size: 10px;
+    }
+
+    .v-btn--size-small {
+      --v-btn-size: 11px;
+    }
+
+    .v-btn--size-default {
+      --v-btn-size: 13px;
+    }
+
+    .v-btn--size-large {
+      --v-btn-size: 15px;
+    }
+
+    .v-btn--size-x-large {
+      --v-btn-size: 17px;
+    }
+
     .v-btn--icon.v-btn--density-compact {
       width: var(--v-btn-height);
       height: var(--v-btn-height);
