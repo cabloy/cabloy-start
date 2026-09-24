@@ -1,8 +1,8 @@
-:root {
-  --cabloy-font-size-body: 14px;
-  --cabloy-font-size-secondary: 13px;
+.cabloy-admin {
+  --cabloy-font-size-body: 13px;
+  --cabloy-font-size-secondary: 12px;
   --cabloy-font-size-caption: 12px;
-  --cabloy-font-size-title: 16px;
+  --cabloy-font-size-title: 15px;
 
   --cabloy-line-height-body: 1.5;
   --cabloy-line-height-tight: 1.4;
@@ -13,21 +13,16 @@
   --cabloy-space-section: 16px;
 }
 
-.cabloy-admin {
-  --cabloy-font-size-body: 13px;
-  --cabloy-font-size-secondary: 12px;
-  --cabloy-font-size-caption: 12px;
-  --cabloy-font-size-title: 15px;
-}
-
-[data-cabloy-density='compact'] {
+[data-cabloy-density='compact'] .cabloy-admin,
+.cabloy-admin[data-cabloy-density='compact'] {
   --cabloy-space-page: 16px;
   --cabloy-space-card: 12px;
   --cabloy-space-form: 8px;
   --cabloy-space-section: 12px;
 }
 
-[data-cabloy-density='comfortable'] {
+[data-cabloy-density='comfortable'] .cabloy-admin,
+.cabloy-admin[data-cabloy-density='comfortable'] {
   --cabloy-space-page: 20px;
   --cabloy-space-card: 20px;
   --cabloy-space-form: 16px;
