@@ -13,6 +13,13 @@
   --cabloy-space-section: 16px;
 }
 
+.cabloy-admin {
+  --cabloy-font-size-body: 13px;
+  --cabloy-font-size-secondary: 12px;
+  --cabloy-font-size-caption: 12px;
+  --cabloy-font-size-title: 15px;
+}
+
 [data-cabloy-density='compact'] {
   --cabloy-space-page: 16px;
   --cabloy-space-card: 12px;
