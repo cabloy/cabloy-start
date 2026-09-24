@@ -4,5 +4,10 @@
       letter-spacing: normal;
       text-transform: none;
     }
+
+    .v-btn--icon.v-btn--density-compact {
+      width: var(--v-btn-height);
+      height: var(--v-btn-height);
+    }
   }
 }

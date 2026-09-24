@@ -573,6 +573,22 @@ test(
       await expect(operationsHeader).toHaveCSS('text-align', 'center');
       await expect(operationsHeader.locator('.v-data-table-header__sort-icon')).toHaveCount(0);
 
+      const bulkToolbar = page.getByRole('toolbar', { name: 'Bulk Actions' });
+      await expect(bulkToolbar).toBeVisible();
+      const bulkToolbarIconActionSizes = await bulkToolbar
+        .locator(':scope > .v-btn-group--horizontal.v-btn-group--density-compact > .v-btn--icon')
+        .evaluateAll(buttons => {
+          return buttons.map(button => {
+            const { width, height } = button.getBoundingClientRect();
+            return { width, height };
+          });
+        });
+      expect(bulkToolbarIconActionSizes).toHaveLength(2);
+      for (const { width, height } of bulkToolbarIconActionSizes) {
+        expect(width).toBeCloseTo(36);
+        expect(height).toBeCloseTo(36);
+      }
+
       const studentRow = page.getByRole('row').filter({ hasText: studentName });
       await expect(studentRow).toBeVisible();
       const iconActionSizes = await studentRow

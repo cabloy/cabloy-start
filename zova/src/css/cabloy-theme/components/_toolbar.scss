@@ -1,5 +1,9 @@
 @layer vuetify-overrides {
   .cabloy-admin {
+    [role='toolbar'] > .v-btn-group--horizontal.v-btn-group--density-compact > .v-btn--icon {
+      width: var(--v-btn-height);
+    }
+
     .v-toolbar-title {
       font-size: 1.125rem;
     }
