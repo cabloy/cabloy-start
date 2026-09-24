@@ -7,7 +7,8 @@
 
       .v-data-table-footer {
         column-gap: 8px;
-        padding: 4px 8px;
+        padding-block: 0;
+        padding-inline: 8px;
         row-gap: 4px;
 
         &__items-per-page {
@@ -17,6 +18,12 @@
 
           > .v-select {
             width: 88px;
+
+            .v-field {
+              --v-input-control-height: 36px;
+              --v-field-input-padding-top: 0px;
+              --v-field-input-padding-bottom: 0px;
+            }
           }
         }
 
@@ -36,7 +43,8 @@
           .v-pagination__prev,
           .v-pagination__next,
           .v-pagination__last {
-            margin: 2px;
+            margin-block: 0;
+            margin-inline: 2px;
           }
 
           .v-pagination .v-btn {

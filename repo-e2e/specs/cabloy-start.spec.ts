@@ -229,6 +229,7 @@ interface ITableFooterGeometry {
     right: number;
     top: number;
     bottom: number;
+    height: number;
     clientWidth: number;
     scrollWidth: number;
   };
@@ -238,6 +239,7 @@ interface ITableFooterGeometry {
   pagination: {
     display: string;
     alignItems: string;
+    height: number;
     clientWidth: number;
     scrollWidth: number;
   };
@@ -322,6 +324,7 @@ async function getTableFooterGeometry(footer: Locator): Promise<ITableFooterGeom
         right: footerRect.right,
         top: footerRect.top,
         bottom: footerRect.bottom,
+        height: footerRect.height,
         clientWidth: element.clientWidth,
         scrollWidth: element.scrollWidth,
       },
@@ -334,6 +337,7 @@ async function getTableFooterGeometry(footer: Locator): Promise<ITableFooterGeom
       pagination: {
         display: paginationStyle.display,
         alignItems: paginationStyle.alignItems,
+        height: pagination.getBoundingClientRect().height,
         clientWidth: pagination.clientWidth,
         scrollWidth: pagination.scrollWidth,
       },
@@ -343,6 +347,19 @@ async function getTableFooterGeometry(footer: Locator): Promise<ITableFooterGeom
       }),
     };
   });
+}
+
+function getVerticalBands(regions: ITableFooterGeometry['regions']) {
+  const bands: Array<{ top: number; bottom: number }> = [];
+  for (const region of [...regions].sort((left, right) => left.top - right.top)) {
+    const band = bands.at(-1);
+    if (band && region.top <= band.bottom + 1) {
+      band.bottom = Math.max(band.bottom, region.bottom);
+    } else {
+      bands.push({ top: region.top, bottom: region.bottom });
+    }
+  }
+  return bands;
 }
 
 async function getFlowGeometry(flow: Locator): Promise<IFlowGeometry> {
@@ -642,15 +659,18 @@ test(
       const footerGeometry = await getTableFooterGeometry(footer);
       expect(footerGeometry.footer.display).toBe('flex');
       expect(footerGeometry.footer.flexWrap).toBe('wrap');
-      expect(footerGeometry.select.width).toBeCloseTo(72);
-      expect(footerGeometry.select.height).toBeCloseTo(40);
+      expect(footerGeometry.footer.height).toBeCloseTo(36);
+      expect(getVerticalBands(footerGeometry.regions)).toHaveLength(1);
+      expect(footerGeometry.select.width).toBeCloseTo(88);
+      expect(footerGeometry.select.height).toBeCloseTo(36);
       expect(footerGeometry.info.width).toBeGreaterThanOrEqual(96);
       expect(footerGeometry.pagination.display).toBe('flex');
       expect(footerGeometry.pagination.alignItems).toBe('center');
+      expect(footerGeometry.pagination.height).toBeCloseTo(36);
       expect(footerGeometry.buttons.length).toBeGreaterThanOrEqual(4);
       for (const { width, height } of footerGeometry.buttons) {
         expect(width).toBeGreaterThanOrEqual(36);
-        expect(height).toBeGreaterThanOrEqual(36);
+        expect(height).toBeCloseTo(36);
       }
 
       const bulkToolbar = page.getByRole('toolbar', { name: 'Bulk Actions' });
@@ -737,14 +757,18 @@ test(
 
       await page.setViewportSize({ width: 390, height: 900 });
       await expect
-        .poll(() => getTableFooterGeometry(footer))
-        .toMatchObject({
-          footer: { flexWrap: 'wrap' },
-        });
+        .poll(async () => {
+          const geometry = await getTableFooterGeometry(footer);
+          return (
+            geometry.footer.flexWrap === 'wrap' &&
+            geometry.footer.height > 36 &&
+            getVerticalBands(geometry.regions).length > 1
+          );
+        })
+        .toBe(true);
       const narrowFooterGeometry = await getTableFooterGeometry(footer);
-      expect(new Set(narrowFooterGeometry.regions.map(region => region.top)).size).toBeGreaterThan(
-        1,
-      );
+      expect(narrowFooterGeometry.footer.height).toBeGreaterThan(36);
+      expect(getVerticalBands(narrowFooterGeometry.regions).length).toBeGreaterThan(1);
       expect(narrowFooterGeometry.footer.scrollWidth).toBeLessThanOrEqual(
         narrowFooterGeometry.footer.clientWidth + 1,
       );
@@ -755,9 +779,11 @@ test(
         expect(region.left).toBeGreaterThanOrEqual(narrowFooterGeometry.footer.left - 1);
         expect(region.right).toBeLessThanOrEqual(narrowFooterGeometry.footer.right + 1);
       }
+      expect(narrowFooterGeometry.select.width).toBeCloseTo(88);
+      expect(narrowFooterGeometry.select.height).toBeCloseTo(36);
       for (const { width, height } of narrowFooterGeometry.buttons) {
         expect(width).toBeGreaterThanOrEqual(36);
-        expect(height).toBeGreaterThanOrEqual(36);
+        expect(height).toBeCloseTo(36);
       }
 
       expect(pageErrors).toEqual([]);
