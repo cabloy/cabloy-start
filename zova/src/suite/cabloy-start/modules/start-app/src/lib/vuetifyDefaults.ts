@@ -1,13 +1,8 @@
-export const cabloyAdminDefaults = {
+const cabloyAdminContentDefaults = {
   VIcon: {
     size: 18,
   },
   VMenu: {
-    VIcon: {
-      size: 18,
-    },
-  },
-  VDialog: {
     VIcon: {
       size: 18,
     },
@@ -54,4 +49,9 @@ export const cabloyAdminDefaults = {
   VDataTableServer: {
     density: 'compact',
   },
+};
+
+export const cabloyAdminDefaults = {
+  ...cabloyAdminContentDefaults,
+  VDialog: cabloyAdminContentDefaults,
 };
