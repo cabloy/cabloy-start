@@ -1,6 +1,10 @@
 @layer vuetify-overrides {
   .cabloy-admin {
     .v-data-table {
+      .v-btn-group--horizontal.v-btn-group--density-compact > .v-btn--icon {
+        width: var(--v-btn-height);
+      }
+
       .v-data-table-header__content,
       .v-data-table__td {
         font-size: var(--cabloy-font-size-body);

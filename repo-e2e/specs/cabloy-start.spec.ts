@@ -573,6 +573,22 @@ test(
       await expect(operationsHeader).toHaveCSS('text-align', 'center');
       await expect(operationsHeader.locator('.v-data-table-header__sort-icon')).toHaveCount(0);
 
+      const studentRow = page.getByRole('row').filter({ hasText: studentName });
+      await expect(studentRow).toBeVisible();
+      const iconActionSizes = await studentRow
+        .locator('.v-btn-group--horizontal.v-btn-group--density-compact > .v-btn--icon')
+        .evaluateAll(buttons => {
+          return buttons.map(button => {
+            const { width, height } = button.getBoundingClientRect();
+            return { width, height };
+          });
+        });
+      expect(iconActionSizes.length).toBeGreaterThanOrEqual(2);
+      for (const { width, height } of iconActionSizes) {
+        expect(width).toBeCloseTo(36);
+        expect(height).toBeCloseTo(36);
+      }
+
       const descendingResponse = waitForStudentSelect(page, false);
       await nameHeader.click();
       const descending = await descendingResponse;
