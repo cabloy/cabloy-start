@@ -1,15 +1,15 @@
 export const cabloyAdminDefaults = {
   VIcon: {
-    size: 20,
+    size: 18,
   },
   VMenu: {
     VIcon: {
-      size: 20,
+      size: 18,
     },
   },
   VDialog: {
     VIcon: {
-      size: 20,
+      size: 18,
     },
   },
   VList: {
