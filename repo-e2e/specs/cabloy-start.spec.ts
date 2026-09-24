@@ -221,6 +221,29 @@ interface IGridGeometry {
   document: { clientWidth: number; scrollWidth: number };
 }
 
+interface ITableFooterGeometry {
+  footer: {
+    display: string;
+    flexWrap: string;
+    left: number;
+    right: number;
+    top: number;
+    bottom: number;
+    clientWidth: number;
+    scrollWidth: number;
+  };
+  regions: Array<{ left: number; right: number; top: number; bottom: number }>;
+  select: { width: number; height: number };
+  info: { width: number };
+  pagination: {
+    display: string;
+    alignItems: string;
+    clientWidth: number;
+    scrollWidth: number;
+  };
+  buttons: Array<{ width: number; height: number }>;
+}
+
 interface IFlowGeometry {
   container: {
     left: number;
@@ -277,6 +300,47 @@ async function getGridGeometry(row: Locator): Promise<IGridGeometry> {
         clientWidth: documentElement.clientWidth,
         scrollWidth: documentElement.scrollWidth,
       },
+    };
+  });
+}
+
+async function getTableFooterGeometry(footer: Locator): Promise<ITableFooterGeometry> {
+  return await footer.evaluate(element => {
+    const footerRect = element.getBoundingClientRect();
+    const style = getComputedStyle(element);
+    const select = element.querySelector('.v-data-table-footer__items-per-page > .v-select')!;
+    const info = element.querySelector('.v-data-table-footer__info')!;
+    const pagination = element.querySelector('.v-data-table-footer__pagination')!;
+    const paginationStyle = getComputedStyle(pagination);
+    const selectRect = select.getBoundingClientRect();
+    const infoRect = info.getBoundingClientRect();
+    return {
+      footer: {
+        display: style.display,
+        flexWrap: style.flexWrap,
+        left: footerRect.left,
+        right: footerRect.right,
+        top: footerRect.top,
+        bottom: footerRect.bottom,
+        clientWidth: element.clientWidth,
+        scrollWidth: element.scrollWidth,
+      },
+      regions: Array.from(element.children).map(region => {
+        const rect = region.getBoundingClientRect();
+        return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom };
+      }),
+      select: { width: selectRect.width, height: selectRect.height },
+      info: { width: infoRect.width },
+      pagination: {
+        display: paginationStyle.display,
+        alignItems: paginationStyle.alignItems,
+        clientWidth: pagination.clientWidth,
+        scrollWidth: pagination.scrollWidth,
+      },
+      buttons: Array.from(pagination.querySelectorAll('.v-pagination .v-btn')).map(button => {
+        const rect = button.getBoundingClientRect();
+        return { width: rect.width, height: rect.height };
+      }),
     };
   });
 }
@@ -573,6 +637,22 @@ test(
       await expect(operationsHeader).toHaveCSS('text-align', 'center');
       await expect(operationsHeader.locator('.v-data-table-header__sort-icon')).toHaveCount(0);
 
+      const footer = page.locator('.v-data-table-footer').first();
+      await expect(footer).toBeVisible();
+      const footerGeometry = await getTableFooterGeometry(footer);
+      expect(footerGeometry.footer.display).toBe('flex');
+      expect(footerGeometry.footer.flexWrap).toBe('wrap');
+      expect(footerGeometry.select.width).toBeCloseTo(72);
+      expect(footerGeometry.select.height).toBeCloseTo(40);
+      expect(footerGeometry.info.width).toBeGreaterThanOrEqual(96);
+      expect(footerGeometry.pagination.display).toBe('flex');
+      expect(footerGeometry.pagination.alignItems).toBe('center');
+      expect(footerGeometry.buttons.length).toBeGreaterThanOrEqual(4);
+      for (const { width, height } of footerGeometry.buttons) {
+        expect(width).toBeGreaterThanOrEqual(36);
+        expect(height).toBeGreaterThanOrEqual(36);
+      }
+
       const bulkToolbar = page.getByRole('toolbar', { name: 'Bulk Actions' });
       await expect(bulkToolbar).toBeVisible();
       const bulkToolbarIconActionSizes = await bulkToolbar
@@ -654,6 +734,32 @@ test(
         element.scrollLeft = element.scrollWidth;
       });
       await expect(operationsHeader).toHaveCSS('position', 'sticky');
+
+      await page.setViewportSize({ width: 390, height: 900 });
+      await expect
+        .poll(() => getTableFooterGeometry(footer))
+        .toMatchObject({
+          footer: { flexWrap: 'wrap' },
+        });
+      const narrowFooterGeometry = await getTableFooterGeometry(footer);
+      expect(new Set(narrowFooterGeometry.regions.map(region => region.top)).size).toBeGreaterThan(
+        1,
+      );
+      expect(narrowFooterGeometry.footer.scrollWidth).toBeLessThanOrEqual(
+        narrowFooterGeometry.footer.clientWidth + 1,
+      );
+      expect(narrowFooterGeometry.pagination.scrollWidth).toBeLessThanOrEqual(
+        narrowFooterGeometry.pagination.clientWidth + 1,
+      );
+      for (const region of narrowFooterGeometry.regions) {
+        expect(region.left).toBeGreaterThanOrEqual(narrowFooterGeometry.footer.left - 1);
+        expect(region.right).toBeLessThanOrEqual(narrowFooterGeometry.footer.right + 1);
+      }
+      for (const { width, height } of narrowFooterGeometry.buttons) {
+        expect(width).toBeGreaterThanOrEqual(36);
+        expect(height).toBeGreaterThanOrEqual(36);
+      }
+
       expect(pageErrors).toEqual([]);
     } finally {
       if (studentId !== undefined) {

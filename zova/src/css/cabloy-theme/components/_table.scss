@@ -5,6 +5,47 @@
         width: var(--v-btn-height);
       }
 
+      .v-data-table-footer {
+        column-gap: 8px;
+        padding: 4px 8px;
+        row-gap: 4px;
+
+        &__items-per-page {
+          > span {
+            padding-inline-end: 4px;
+          }
+
+          > .v-select {
+            width: 88px;
+          }
+        }
+
+        &__info {
+          min-width: 96px;
+          padding-inline: 8px;
+        }
+
+        &__pagination {
+          align-items: center;
+          display: flex;
+          margin-inline-start: 4px;
+          min-width: 0;
+
+          .v-pagination__item,
+          .v-pagination__first,
+          .v-pagination__prev,
+          .v-pagination__next,
+          .v-pagination__last {
+            margin: 2px;
+          }
+
+          .v-pagination .v-btn {
+            height: 36px;
+            min-width: 36px;
+          }
+        }
+      }
+
       .v-data-table-header__content,
       .v-data-table__td {
         font-size: var(--cabloy-font-size-body);
