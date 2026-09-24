@@ -1,10 +1,6 @@
 @layer vuetify-overrides {
   .cabloy-admin {
-    .v-field,
-    .v-field__input,
-    .v-field__input input,
-    textarea.v-field__input,
-    .v-select__selection {
+    .v-field {
       font-size: var(--cabloy-font-size-body);
     }
 
@@ -14,16 +10,14 @@
       font-size: var(--cabloy-font-size-secondary);
     }
 
-    .cabloy-form-layout__flow {
-      .v-field__input,
-      .v-field__input input,
-      textarea.v-field__input,
-      .v-field-label:not(.v-field-label--floating),
-      .v-select__selection,
-      .v-chip {
-        font-size: var(--cabloy-font-size-secondary);
-        font-weight: 400;
-      }
+    .v-field__input,
+    .v-field__input input,
+    textarea.v-field__input,
+    .v-field-label:not(.v-field-label--floating),
+    .v-select__selection,
+    .v-chip {
+      font-size: var(--cabloy-font-size-secondary);
+      font-weight: 400;
     }
 
     .v-field:not(.v-field--focused):not(.v-field--error) .v-field__outline {
