@@ -23,13 +23,24 @@ export class RenderTabs extends BeanRenderBase {
         domTabs.push(domTab);
       }
     }
+    const tabKeyCurrent = this._getTabKeyCurrent();
     const domWrapper = (
-      <VTabs centerActive modelValue={$$modelTabs.tabKeyCurrent} mandatory={false}>
+      <VTabs centerActive modelValue={tabKeyCurrent} mandatory={false} style={{ marginInlineStart: '24px' }}>
         {domTabs}
       </VTabs>
     );
     if (!this.$$modelTabs.cache) return domWrapper;
     return <ClientOnly>{domWrapper}</ClientOnly>;
+  }
+
+  private _getTabKeyCurrent() {
+    const $$modelTabs = this.$$modelTabs;
+    if (!$$modelTabs) return;
+    for (const tab of $$modelTabs.tabs) {
+      const item = tab.info as TypeMenuItem;
+      if (!item.folder && this._isMenuLeafCurrent(item)) return tab.tabKey;
+    }
+    return $$modelTabs.tabKeyCurrent;
   }
 
   private _renderTab(item: TypeMenuItem, topLevel: boolean = false, tabKey?: string) {

@@ -18,7 +18,7 @@ export class RenderHeader extends BeanRenderBase {
           variant="text"
           nativeOnClick={() => this.app.$gotoHome()}
         ></VAppBarNavIcon>
-        <VToolbarTitle>{this.sys.env.APP_TITLE}</VToolbarTitle>
+        <VToolbarTitle style={{ flex: 'none' }}>{this.sys.env.APP_TITLE}</VToolbarTitle>
         {this.$$r.$$renderTabs.renderTabs()}
         <VSpacer></VSpacer>
         {this.$$r.$$renderLocale.render()}
