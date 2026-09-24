@@ -6,6 +6,9 @@ const cabloyAdminContentDefaults = {
     VIcon: {
       size: 18,
     },
+    VList: {
+      density: 'compact',
+    },
   },
   VList: {
     density: 'compact',
