@@ -151,6 +151,7 @@ export class ControllerFormFieldCaptcha extends BeanControllerBase {
         {this.captchaData?.payload && (
           <img
             class="cursor-pointer"
+            style={{ height: '36px' }}
             src={this.captchaData!.payload as string}
             onClick={() => {
               this.refreshCaptchaData();
