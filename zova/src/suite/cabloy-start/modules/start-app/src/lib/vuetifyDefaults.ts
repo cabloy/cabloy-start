@@ -27,6 +27,7 @@ const cabloyAdminContentDefaults = {
   },
   VBtn: {
     density: 'compact',
+    height: 36,
   },
   VBtnGroup: {
     density: 'compact',
