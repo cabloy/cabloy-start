@@ -38,16 +38,24 @@ export class ServiceSsrLayout extends BeanBase {
             `<script id="__leftDrawerOpenJS">
   ${this.options?.sidebarLeftOpenPCCapability ? this._getJsHandlerSidebar() : ''}
   ${this._getJsHandlerPageContainer()}
-  window.ssr_body_ready_handler=()=>{
-    ${this.options?.sidebarLeftOpenPCCapability ? 'window.ssr_body_ready_handler_sidebar();' : ''}
-    window.ssr_body_ready_handler_pageContainer();
+  window.ssr_get_layout_elements=()=>{
+    const __domLayout=document.querySelector('#q-app .v-application');
+    const __domLayoutWrap=__domLayout?.querySelector(':scope>.v-application__wrap');
+    const __domHeader=__domLayoutWrap?.querySelector(':scope>header.v-toolbar');
+    const __domDrawer=__domLayoutWrap?.querySelector(':scope>.v-navigation-drawer--left');
+    const __domPageContainer=__domLayoutWrap?.querySelector(':scope>main.v-main');
+    if(!__domHeader||!__domDrawer||!__domPageContainer) return;
+    return {__domHeader,__domDrawer,__domPageContainer};
+  };
+  window.ssr_body_ready_handler=(__layoutElements)=>{
+    ${this.options?.sidebarLeftOpenPCCapability ? 'window.ssr_body_ready_handler_sidebar(__layoutElements);' : ''}
+    window.ssr_body_ready_handler_pageContainer(__layoutElements);
   };
   window.ssr_body_ready_condition=()=>{
-    const __domPageContainer=document.querySelector('#q-app>.v-application>.v-application__wrap>main.v-main');
-    return __domPageContainer;
+    return window.ssr_get_layout_elements();
   };
-  window.ssr_body_ready_callback=()=>{
-    window.ssr_body_ready_handler();
+  window.ssr_body_ready_callback=(__layoutElements)=>{
+    window.ssr_body_ready_handler(__layoutElements);
     document.querySelector('#__leftDrawerOpenJS').remove();
   };
 </script>`.replaceAll('\n', '') + getBodyReadyObserverScript();
@@ -57,12 +65,12 @@ export class ServiceSsrLayout extends BeanBase {
   }
 
   private _getJsHandlerPageContainer() {
-    return `window.ssr_body_ready_handler_pageContainer=()=>{
+    return `window.ssr_body_ready_handler_pageContainer=(_layoutElements)=>{
   };`;
   }
 
   private _getJsHandlerSidebar() {
-    return `window.ssr_body_ready_handler_sidebar=()=>{
+    return `window.ssr_body_ready_handler_sidebar=({__domHeader,__domDrawer,__domPageContainer})=>{
       const __belowBreakpoint=document.documentElement.clientWidth <= ${this.options?.sidebarBreakpoint};
       let __leftDrawerOpen;
       if(__belowBreakpoint){
@@ -71,9 +79,6 @@ export class ServiceSsrLayout extends BeanBase {
         const __leftDrawerOpenPC=window.ssr_load_local('sidebarLeftOpenPC');
         __leftDrawerOpen=__leftDrawerOpenPC!==undefined?__leftDrawerOpenPC:${this.options?.sidebarLeftOpenPCFallback ?? false};
       }
-      const __domHeader=document.querySelector('#q-app>.v-application>.v-application__wrap>header.v-toolbar');
-      const __domDrawer=document.querySelector('#q-app>.v-application>.v-application__wrap>.v-navigation-drawer--left');
-      const __domPageContainer=document.querySelector('#q-app>.v-application>.v-application__wrap>main.v-main');
       const sidebarWidth = '${this.options?.sidebarWidth}px';
       const navbarHeight = '${this.options?.navbarHeight}px';
       if(__leftDrawerOpen){
