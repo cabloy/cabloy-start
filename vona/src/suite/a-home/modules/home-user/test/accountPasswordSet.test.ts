@@ -473,7 +473,7 @@ describe('accountPasswordSet.test.ts', { concurrency: false, sequential: true },
 
       await clearPasswordSetState(fixture.userId);
       const requestOriginConsumerUrl = await app.bean.executor.mockCtx(async () => {
-        return `${app.ctx.protocol}://${app.ctx.host}/home/user/password-set`;
+        return `${app.ctx.protocol}://origin.internal.test/home/user/password-set`;
       });
       await issuePasswordSetLinkRejected(fixture, requestOriginConsumerUrl);
       await assertNoPasswordSetState(fixture.userId);
@@ -795,9 +795,11 @@ async function getCacheTtl(cacheName: 'passwordSet' | 'passwordSetCurrent', key:
 }
 
 async function clearPasswordSetState(userId: string): Promise<void> {
-  const digest = await app.scope('home-user').cacheRedis.passwordSetCurrent.get(userId);
-  if (digest) await app.scope('home-user').cacheRedis.passwordSet.del(digest);
-  await app.scope('home-user').cacheRedis.passwordSetCurrent.del(userId);
+  await app.bean.executor.mockCtx(async () => {
+    const digest = await app.scope('home-user').cacheRedis.passwordSetCurrent.get(userId);
+    if (digest) await app.scope('home-user').cacheRedis.passwordSet.del(digest);
+    await app.scope('home-user').cacheRedis.passwordSetCurrent.del(userId);
+  });
 }
 
 async function assertNoPasswordSetState(userId: string, digest?: string): Promise<void> {

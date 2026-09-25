@@ -269,7 +269,7 @@ describe('accountPasswordReset.test.ts', { concurrency: false }, () => {
       await clearPasswordResetState(fixture.userId);
       await clearPasswordResetRecipientCooldown(fixture.email);
       const requestOriginConsumerUrl = await app.bean.executor.mockCtx(async () => {
-        return `${app.ctx.protocol}://${app.ctx.host}/home/user/password-reset`;
+        return `${app.ctx.protocol}://origin.internal.test/home/user/password-reset`;
       });
       await requestPasswordReset(fixture.email, requestOriginConsumerUrl);
       await assertNoPasswordResetState(fixture.userId);
@@ -719,9 +719,11 @@ async function assertNoPasswordResetRecipientCooldown(email: string) {
 }
 
 async function clearPasswordResetState(userId: string): Promise<void> {
-  const digest = await app.scope('home-user').cacheRedis.passwordResetCurrent.get(userId as any);
-  if (digest) await app.scope('home-user').cacheRedis.passwordReset.del(digest);
-  await app.scope('home-user').cacheRedis.passwordResetCurrent.del(userId as any);
+  await app.bean.executor.mockCtx(async () => {
+    const digest = await app.scope('home-user').cacheRedis.passwordResetCurrent.get(userId as any);
+    if (digest) await app.scope('home-user').cacheRedis.passwordReset.del(digest);
+    await app.scope('home-user').cacheRedis.passwordResetCurrent.del(userId as any);
+  });
 }
 
 async function assertNoPasswordResetState(userId: string, digest?: string): Promise<void> {
