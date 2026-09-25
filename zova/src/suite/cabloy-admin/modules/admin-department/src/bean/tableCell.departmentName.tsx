@@ -31,7 +31,7 @@ interface IDepartmentRelation {
   class: 'pa-0',
   color: '',
   resource: 'admin-department:department',
-  variant: 'text',
+  variant: 'plain',
 })
 export class TableCellDepartmentName extends BeanBase implements ITableCellRender {
   render(
@@ -47,7 +47,13 @@ export class TableCellDepartmentName extends BeanBase implements ITableCellRende
       params: { resource: 'admin-department:department', id: id.toString() },
     });
     return (
-      <VBtn class={options.class} color={options.color} to={pagePath} variant={options.variant}>
+      <VBtn
+        class={options.class}
+        color={options.color}
+        to={pagePath}
+        variant={options.variant}
+        slim
+      >
         {name}
       </VBtn>
     );

@@ -23,7 +23,7 @@ export interface ITableCellOptionsActionView extends IResourceTableActionRowOpti
 @TableCell<ITableCellOptionsActionView>({
   class: 'pa-0',
   color: '',
-  variant: 'text',
+  variant: 'plain',
 })
 export class TableCellActionView extends BeanBase implements ITableCellRender {
   render(
@@ -38,6 +38,7 @@ export class TableCellActionView extends BeanBase implements ITableCellRender {
         class={options.class}
         color={options.color}
         variant={options.variant}
+        slim
         onPerform={async event => {
           event.preventDefault();
           event.stopPropagation();

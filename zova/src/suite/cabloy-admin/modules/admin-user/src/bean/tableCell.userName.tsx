@@ -32,7 +32,7 @@ interface IUserRelation {
 @TableCell<ITableCellOptionsUserName>({
   class: 'pa-0',
   color: '',
-  variant: 'text',
+  variant: 'plain',
 })
 export class TableCellUserName extends BeanBase implements ITableCellRender {
   render(
@@ -50,6 +50,7 @@ export class TableCellUserName extends BeanBase implements ITableCellRender {
         class={options.class}
         color={options.color}
         variant={options.variant}
+        slim
         v-slots={{
           prepend: () => (
             <VAvatar image={avatar || this.$scopeBase.config.avatar.empty} size={24} />
