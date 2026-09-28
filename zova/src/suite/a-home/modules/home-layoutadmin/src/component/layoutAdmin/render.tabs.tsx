@@ -58,6 +58,7 @@ export class RenderTabs extends BeanRenderBase {
         key={tabKey}
         value={tabKey}
         class={`${className} ${this.cTab}`}
+        height={40}
         nativeOnClick={() => {
           $$modelTabs.activeTab(tabKey);
         }}
@@ -119,6 +120,7 @@ export class RenderTabs extends BeanRenderBase {
           key={componentKey}
           value={componentKey}
           class={`${className} ${this.cTab}`}
+          height={48}
           nativeOnClick={() => {
             $$modelTabs.activeTabItem(tabKey, componentKey);
           }}
