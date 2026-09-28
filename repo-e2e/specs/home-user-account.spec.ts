@@ -1,6 +1,15 @@
-import type { APIRequestContext, Page, TestInfo } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
 import { expect, test } from '@playwright/test';
+
+import type { RegisteredAccount } from './helpers/cabloy-admin-api.ts';
+
+import {
+  activateAccountFixture,
+  registerAccountUser,
+  removeAccountFixture,
+  runCleanup,
+} from './helpers/cabloy-admin-api.ts';
 
 const accountPath = '/home/user/account';
 const passwordSetPath = '/home/user/password-set';
@@ -8,7 +17,6 @@ const passwordResetPath = '/home/user/password-reset';
 const passportLoginApiPath = '/api/home/user/passport/login';
 const passportRegisterApiPath = '/api/home/user/passport/register';
 const passportCurrentApiPath = '/api/home/user/passport/current';
-const passportActivateCurrentApiPath = '/api/home/user/passportTest/activateCurrent';
 const accountProfileApiPath = '/api/home/user/account/profile';
 
 function waitForApiResponse(page: Page, method: string, pathname: string, requireOk = true) {
@@ -69,40 +77,6 @@ async function loginAsAdmin(page: Page) {
   await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
 }
 
-async function registerAccountUser(request: APIRequestContext, testInfo: TestInfo) {
-  const suffix = `${testInfo.workerIndex}-${testInfo.parallelIndex ?? testInfo.retry}-${Date.now()}`;
-  const username = `e2e-account-${suffix}`;
-  const password = 'account-e2e-password';
-  const captchaResponse = await request.post('/api/captcha/create', {
-    data: { scene: 'captcha-simple:simple' },
-  });
-  expect(captchaResponse.ok()).toBeTruthy();
-  const captcha = (await captchaResponse.json()).data;
-  expect(captcha?.id).toEqual(expect.any(String));
-  expect(captcha?.token).toEqual(expect.any(String));
-
-  const baseURL = testInfo.project.use.baseURL;
-  if (!baseURL) throw new Error('account E2E base URL is unavailable');
-  const registerResponse = await request.post(passportRegisterApiPath, {
-    data: {
-      username,
-      email: `${username}@example.test`,
-      password,
-      passwordConfirm: password,
-      consumerUrl: new URL('/home/user/activation', baseURL).toString(),
-      captcha: { id: captcha.id, token: captcha.token },
-    },
-  });
-  expect(registerResponse.ok()).toBeTruthy();
-  const registration = (await registerResponse.json()).data;
-  expect(registration?.jwt?.accessToken).toEqual(expect.any(String));
-  const activateResponse = await request.post(passportActivateCurrentApiPath, {
-    headers: { Authorization: `Bearer ${registration.jwt.accessToken}` },
-  });
-  expect(activateResponse.ok()).toBeTruthy();
-  return { username, password };
-}
-
 async function loginAsAccountUser(page: Page, username: string, password: string) {
   await page.getByLabel('Your Username').fill(username);
   await page.getByLabel('Your Password').fill(password);
@@ -148,33 +122,57 @@ test(
 test(
   'ATP-HUA-REG-01: registration defers site admission until activation',
   { tag: ['@account', '@web', '@flow'] },
-  async ({ page }, testInfo) => {
-    const suffix = `${testInfo.workerIndex}-${testInfo.parallelIndex ?? testInfo.retry}-${Date.now()}`;
-    const username = `e2e-register-${suffix}`;
+  async ({ page, request }, testInfo) => {
+    const suffix = `${testInfo.workerIndex}-${testInfo.parallelIndex ?? testInfo.retry}-${crypto.randomUUID()}`;
+    const username = `e2e-fixture-home-account-register-${suffix}`;
     const password = 'account-e2e-password';
-    await page.goto(`${accountPath}`, { waitUntil: 'load' });
-    await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
-    await expect(page).toHaveURL(/\/login(?:\?|$)/);
-    await page.getByRole('button', { name: 'Register', exact: true }).click();
-    await expect(page).toHaveURL(/\/home\/login\/register(?:\?|$)/);
-    await expect(page.getByText('Create an account to continue.', { exact: true })).toBeVisible();
+    let account: RegisteredAccount | undefined;
+    try {
+      await page.goto(`${accountPath}`, { waitUntil: 'load' });
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
+      await expect(page).toHaveURL(/\/login(?:\?|$)/);
+      await page.getByRole('button', { name: 'Register', exact: true }).click();
+      await expect(page).toHaveURL(/\/home\/login\/register(?:\?|$)/);
+      await expect(page.getByText('Create an account to continue.', { exact: true })).toBeVisible();
 
-    await page.getByRole('textbox', { name: 'User Name *' }).fill(username);
-    await page.getByRole('textbox', { name: 'Email *' }).fill(`${username}@example.test`);
-    await page.getByRole('textbox', { name: 'Password *', exact: true }).fill(password);
-    await page.getByRole('textbox', { name: 'Confirm Password *', exact: true }).fill(password);
-    await expect(page.getByLabel('Please input captcha')).not.toHaveValue('');
-    const registerResponse = waitForApiResponse(page, 'POST', passportRegisterApiPath);
-    await page.getByRole('button', { name: 'Register', exact: true }).click();
-    expect((await registerResponse).ok()).toBeTruthy();
-    await expect(
-      page.getByText('Check your email to activate your account before signing in.', {
-        exact: true,
-      }),
-    ).toBeVisible();
-    await page.getByRole('button', { name: 'Back to login', exact: true }).click();
-    await expect(page).toHaveURL(/\/login(?:\?|$)/);
-    expect(new URL(page.url()).searchParams.get('returnTo')).toBe(accountPath);
+      await page.getByRole('textbox', { name: 'User Name *' }).fill(username);
+      await page.getByRole('textbox', { name: 'Email *' }).fill(`${username}@example.test`);
+      await page.getByRole('textbox', { name: 'Password *', exact: true }).fill(password);
+      await page.getByRole('textbox', { name: 'Confirm Password *', exact: true }).fill(password);
+      await expect(page.getByLabel('Please input captcha')).not.toHaveValue('');
+      const registerResponse = waitForApiResponse(page, 'POST', passportRegisterApiPath);
+      await page.getByRole('button', { name: 'Register', exact: true }).click();
+      const registrationResponse = await registerResponse;
+      expect(registrationResponse.ok()).toBeTruthy();
+      const registration = (await registrationResponse.json()).data as {
+        passport: { user: { id: RegisteredAccount['id'] } };
+        jwt: { accessToken: string };
+      };
+      expect(registration.passport.user.id).toEqual(expect.anything());
+      expect(registration.jwt.accessToken).toEqual(expect.any(String));
+      account = {
+        id: registration.passport.user.id,
+        username,
+        password,
+        accessToken: registration.jwt.accessToken,
+      };
+
+      await expect(
+        page.getByText('Check your email to activate your account before signing in.', {
+          exact: true,
+        }),
+      ).toBeVisible();
+      await page.getByRole('button', { name: 'Back to login', exact: true }).click();
+      await expect(page).toHaveURL(/\/login(?:\?|$)/);
+      expect(new URL(page.url()).searchParams.get('returnTo')).toBe(accountPath);
+    } finally {
+      if (account) {
+        await runCleanup([
+          () => activateAccountFixture(request, account.accessToken),
+          () => removeAccountFixture(request, account),
+        ]);
+      }
+    }
   },
 );
 
@@ -269,34 +267,40 @@ test(
   'ATP-ACCOUNT-WEB-01: profile save refreshes the authenticated Web user menu',
   { tag: ['@account', '@web', '@flow'] },
   async ({ page, request }, testInfo) => {
-    const account = await registerAccountUser(request, testInfo);
-    const pageErrors = collectPageErrors(page);
-    const consoleErrors = collectConsoleErrors(page);
-    await page.goto('/login?returnTo=%2Fhome%2Fuser%2Faccount', { waitUntil: 'load' });
-    await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
-    await loginAsAccountUser(page, account.username, account.password);
-    await expect(page).toHaveURL(accountPath);
-    await expect(page.getByRole('heading', { name: 'Account Settings' })).toBeVisible();
+    let account: RegisteredAccount | undefined;
+    try {
+      account = await registerAccountUser(request, testInfo, 'e2e-fixture-home-account');
+      const pageErrors = collectPageErrors(page);
+      const consoleErrors = collectConsoleErrors(page);
+      await page.goto('/login?returnTo=%2Fhome%2Fuser%2Faccount', { waitUntil: 'load' });
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
+      await loginAsAccountUser(page, account.username, account.password);
+      await expect(page).toHaveURL(accountPath);
+      await expect(page.getByRole('heading', { name: 'Account Settings' })).toBeVisible();
 
-    const profileName = `E2E Account ${testInfo.workerIndex}-${Date.now()}`;
-    await page.getByLabel('Display name').fill(profileName);
-    await page.getByLabel('Time zone').fill('UTC');
-    const profileResponse = waitForApiResponse(page, 'PATCH', accountProfileApiPath);
-    const passportResponse = waitForApiResponse(page, 'GET', passportCurrentApiPath);
-    await page.getByRole('button', { name: 'Save profile', exact: true }).click();
-    expect((await profileResponse).ok()).toBeTruthy();
-    expect((await passportResponse).ok()).toBeTruthy();
-    await expect(page.getByText('Profile saved.', { exact: true })).toBeVisible();
+      const profileName = `e2e-fixture-home-account-profile-${testInfo.workerIndex}-${crypto.randomUUID()}`;
+      await page.getByLabel('Display name').fill(profileName);
+      await page.getByLabel('Time zone').fill('UTC');
+      const profileResponse = waitForApiResponse(page, 'PATCH', accountProfileApiPath);
+      const passportResponse = waitForApiResponse(page, 'GET', passportCurrentApiPath);
+      await page.getByRole('button', { name: 'Save profile', exact: true }).click();
+      expect((await profileResponse).ok()).toBeTruthy();
+      account.username = profileName;
+      expect((await passportResponse).ok()).toBeTruthy();
+      await expect(page.getByText('Profile saved.', { exact: true })).toBeVisible();
 
-    await page.goto('/', { waitUntil: 'load' });
-    await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
-    const list = await openUserMenu(page, profileName);
-    await expect(list.getByRole('listitem')).toHaveText(['Account Settings', 'Logout']);
-    await list.getByRole('listitem').filter({ hasText: 'Account Settings' }).click();
-    await expect(page).toHaveURL(/\/home\/user\/account$/);
-    await expect(page.getByRole('heading', { name: 'Account Settings' })).toBeVisible();
-    expect(pageErrors).toEqual([]);
-    expect(consoleErrors).toEqual([]);
+      await page.goto('/', { waitUntil: 'load' });
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
+      const list = await openUserMenu(page, profileName);
+      await expect(list.getByRole('listitem')).toHaveText(['Account Settings', 'Logout']);
+      await list.getByRole('listitem').filter({ hasText: 'Account Settings' }).click();
+      await expect(page).toHaveURL(/\/home\/user\/account$/);
+      await expect(page.getByRole('heading', { name: 'Account Settings' })).toBeVisible();
+      expect(pageErrors).toEqual([]);
+      expect(consoleErrors).toEqual([]);
+    } finally {
+      if (account) await removeAccountFixture(request, account);
+    }
   },
 );
 
@@ -304,20 +308,25 @@ test(
   'ATP-ACCOUNT-SSR-02: signed-in Account session SSR hydrates without mismatch',
   { tag: ['@account', '@web', '@ssr'] },
   async ({ page, request }, testInfo) => {
-    const account = await registerAccountUser(request, testInfo);
-    const pageErrors = collectPageErrors(page);
-    const consoleErrors = collectConsoleErrors(page);
-    await page.goto('/login?returnTo=%2Fhome%2Fuser%2Faccount', { waitUntil: 'load' });
-    await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
-    await loginAsAccountUser(page, account.username, account.password);
-    await expect(page).toHaveURL(accountPath);
-    const response = await page.reload({ waitUntil: 'load' });
-    expect(response?.ok()).toBeTruthy();
-    expect(await response!.text()).toContain('Account Settings');
-    await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
-    await expect(page.getByRole('heading', { name: 'Account Settings' })).toBeVisible();
-    expect(pageErrors).toEqual([]);
-    expect(consoleErrors).toEqual([]);
+    let account: RegisteredAccount | undefined;
+    try {
+      account = await registerAccountUser(request, testInfo, 'e2e-fixture-home-account');
+      const pageErrors = collectPageErrors(page);
+      const consoleErrors = collectConsoleErrors(page);
+      await page.goto('/login?returnTo=%2Fhome%2Fuser%2Faccount', { waitUntil: 'load' });
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
+      await loginAsAccountUser(page, account.username, account.password);
+      await expect(page).toHaveURL(accountPath);
+      const response = await page.reload({ waitUntil: 'load' });
+      expect(response?.ok()).toBeTruthy();
+      expect(await response!.text()).toContain('Account Settings');
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
+      await expect(page.getByRole('heading', { name: 'Account Settings' })).toBeVisible();
+      expect(pageErrors).toEqual([]);
+      expect(consoleErrors).toEqual([]);
+    } finally {
+      if (account) await removeAccountFixture(request, account);
+    }
   },
 );
 

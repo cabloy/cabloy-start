@@ -33,7 +33,9 @@
     "prepack": "clean-package",
     "postpack": "clean-package restore"
   },
-  "dependencies": {},
+  "dependencies": {
+    "zova-module-admin-role": "workspace:^"
+  },
   "devDependencies": {
     "clean-package": "^2.2.0",
     "rimraf": "^6.1.3"
@@ -52,6 +54,7 @@
   "title": "admin-user",
   "zovaModule": {
     "dependencies": {
+      "admin-role": "5.0.0",
       "start-button": "5.0.0"
     }
   }

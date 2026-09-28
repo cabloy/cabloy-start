@@ -1,5 +1,6 @@
 import type { TableIdentity } from 'table-identity';
 import type { IDecoratorDtoOptions } from 'vona-module-a-web';
+import type { IPermissionHintDetailsActionBulk } from 'zova-rest-cabloy-start-admin';
 
 import { Api, v } from 'vona-module-a-openapiutils';
 import { Dto } from 'vona-module-a-web';
@@ -9,14 +10,32 @@ import { $locale } from '../.metadata/locales.ts';
 
 export interface IDtoOptionsUserRoleSummary extends IDecoratorDtoOptions {}
 
+const permissionReplaceUserRoles: IPermissionHintDetailsActionBulk = {
+  formScene: ['view'],
+};
+
+const permissionGrantSystemAdmin: IPermissionHintDetailsActionBulk = {
+  formScene: ['view'],
+};
+
+const permissionRevokeSystemAdmin: IPermissionHintDetailsActionBulk = {
+  formScene: ['view'],
+};
+
 @Dto<IDtoOptionsUserRoleSummary>({
   blocks: [
     ZovaRender.block('start-details:blockDetails', {
       blocks: [
         ZovaRender.block('start-details:blockToolbarBulk', {
           actions: [
-            ZovaRender.detailsActionBulk('admin-role:actionReplaceUserRoles', {
-              permission: { formScene: ['view'] },
+            ZovaRender.detailsActionBulk('admin-user:actionReplaceUserRoles', {
+              permission: permissionReplaceUserRoles,
+            }),
+            ZovaRender.detailsActionBulk('admin-user:actionGrantSystemAdmin', {
+              permission: permissionGrantSystemAdmin,
+            }),
+            ZovaRender.detailsActionBulk('admin-user:actionRevokeSystemAdmin', {
+              permission: permissionRevokeSystemAdmin,
             }),
           ],
         }),

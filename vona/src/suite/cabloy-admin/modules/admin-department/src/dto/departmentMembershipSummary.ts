@@ -42,10 +42,10 @@ export class DtoDepartmentMembershipSummary extends $Dto.get(() => ModelDepartme
           permission: { formScene: ['view'] },
         }),
         ZovaRender.detailsActionRow('admin-department:actionToggleMembershipPrimary', {
-          permission: { formScene: ['view'] },
+          permission: { actionInherit: 'updateMembershipPrimary', formScene: ['view'] },
         }),
         ZovaRender.detailsActionRow('admin-department:actionUpdateMembershipManager', {
-          permission: { formScene: ['view'] },
+          permission: { actionInherit: 'updateManager', formScene: ['view'] },
         }),
         ZovaRender.detailsActionRow('admin-department:actionDeleteMembership', {
           permission: { formScene: ['view'] },

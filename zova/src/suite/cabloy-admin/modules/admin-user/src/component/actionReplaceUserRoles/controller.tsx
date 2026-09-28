@@ -13,12 +13,12 @@ import { Controller } from 'zova-module-a-bean';
 import { formMetaFromFormScene, ZForm } from 'zova-module-a-form';
 import { ZButton } from 'zova-module-start-button';
 
-import type { ApiSchemaAdminRoleDtoUserRoleReplace } from '../../api/openapi/schemas.ts';
-import type { ModelRole } from '../../model/role.ts';
+import type { ApiSchemaAdminRoleDtoUserRoleReplace } from '../../api/openapi/schemas.js';
+import type { ModelUser } from '../../model/user.js';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceDetailsActionBulkRecord {
-    'admin-role:actionReplaceUserRoles'?: ControllerActionReplaceUserRolesProps;
+    'admin-user:actionReplaceUserRoles'?: ControllerActionReplaceUserRolesProps;
   }
 }
 
@@ -63,8 +63,8 @@ export class ControllerActionReplaceUserRoles extends BeanControllerBase {
     const id = $host.$currentRoute?.params.id;
     if (id === undefined) throw new Error('should provide User id in route params');
     const userId = id as TableIdentity;
-    const modelRole = (await ctx.bean._getBean('admin-role.model.role', true)) as ModelRole;
-    const apiSchemas = modelRole.scope.apiSchema.adminRole.replaceUserRoles();
+    const modelUser = (await ctx.bean._getBean('admin-user.model.user', true)) as ModelUser;
+    const apiSchemas = modelUser.scope.apiSchema.adminUser.replaceUserRoles();
     await apiSchemas.sdk.suspense();
     type Data = ApiSchemaAdminRoleDtoUserRoleReplace;
     const roles = (Array.isArray($$details.data) ? $$details.data : []) as UserRoleSummary[];
@@ -82,7 +82,7 @@ export class ControllerActionReplaceUserRoles extends BeanControllerBase {
           schema={apiSchemas.requestBody as SchemaObject}
           formMeta={formMetaFromFormScene('edit')}
           onSubmitData={async data => {
-            await modelRole.replaceUserRoles(userId).mutateAsync(data.value.roleIds);
+            await modelUser.replaceUserRoles(userId).mutateAsync(data.value.roleIds);
             dialog.close();
           }}
           onShowError={async ({ error }) => {

@@ -1,5 +1,6 @@
 import { catchError } from '@cabloy/utils';
 import assert from 'node:assert';
+import { createHash } from 'node:crypto';
 import { describe, it } from 'node:test';
 import { app } from 'vona-mock';
 
@@ -45,12 +46,26 @@ async function assertRejected(
   });
 }
 
+async function issueFreshProof(proofHashes: string[]) {
+  const result = await app.bean.executor.performAction(
+    'post',
+    '/admin/role/system-admin/fresh-proof',
+    {
+      innerAccess: false,
+      body: { password: '123456' },
+    },
+  );
+  proofHashes.push(createHash('sha256').update(result.proof).digest('hex'));
+  return result;
+}
+
 describe('authorization.test.ts', { concurrency: false }, () => {
   it('ATP-ADM-AUT-01:user actions admit only system administrators externally', async () => {
     const userIds: string[] = [];
     let targetId!: string;
     let inactiveName!: string;
     let ordinaryName!: string;
+    const proofHashes: string[] = [];
     try {
       await app.bean.executor.mockCtx(async () => {
         const inactive = await app.bean.user.register({
@@ -115,6 +130,54 @@ describe('authorization.test.ts', { concurrency: false }, () => {
             }),
           assertSuccess: result => assert.equal(result, null),
         },
+        {
+          name: 'PUT /admin/user/:userId/roles',
+          invoke: async _caller =>
+            await app.bean.executor.performAction('put', '/admin/user/:userId/roles', {
+              innerAccess: false,
+              params: { userId: targetId },
+              body: { roleIds: [] },
+            }),
+          assertSuccess: result => assert.equal(result, null),
+        },
+        {
+          name: 'POST /admin/user/system-admin/grant/:userId',
+          invoke: async caller => {
+            const proof =
+              caller === 'systemAdmin'
+                ? await issueFreshProof(proofHashes)
+                : { proof: 'authorization-rejection' };
+            return await app.bean.executor.performAction(
+              'post',
+              '/admin/user/system-admin/grant/:userId',
+              {
+                innerAccess: false,
+                params: { userId: targetId },
+                body: { freshProof: proof.proof, reason: 'Authorization acceptance grant' },
+              },
+            );
+          },
+          assertSuccess: result => assert.equal(result, null),
+        },
+        {
+          name: 'POST /admin/user/system-admin/revoke/:userId',
+          invoke: async caller => {
+            const proof =
+              caller === 'systemAdmin'
+                ? await issueFreshProof(proofHashes)
+                : { proof: 'authorization-rejection' };
+            return await app.bean.executor.performAction(
+              'post',
+              '/admin/user/system-admin/revoke/:userId',
+              {
+                innerAccess: false,
+                params: { userId: targetId },
+                body: { freshProof: proof.proof, reason: 'Authorization acceptance revoke' },
+              },
+            );
+          },
+          assertSuccess: result => assert.equal(result, null),
+        },
       ];
 
       for (const testCase of cases) {
@@ -131,8 +194,14 @@ describe('authorization.test.ts', { concurrency: false }, () => {
     } finally {
       if (userIds.length) {
         await app.bean.executor.mockCtx(async () => {
+          const adminRole = app.scope('admin-role');
           const homeUser = app.scope('home-user');
+          await adminRole.model.systemAdminSessionEviction.delete({ targetId: { _in_: userIds } });
+          await adminRole.model.systemAdminAudit.delete({ targetId: { _in_: userIds } });
           await homeUser.model.roleUser.delete({ userId: { _in_: userIds } });
+          if (proofHashes.length) {
+            await adminRole.model.systemAdminFreshProof.delete({ proofHash: { _in_: proofHashes } });
+          }
           for (const userId of userIds.toReversed()) {
             await app.bean.user.removeById(userId);
           }

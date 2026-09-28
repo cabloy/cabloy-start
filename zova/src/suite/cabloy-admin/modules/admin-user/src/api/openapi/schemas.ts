@@ -149,10 +149,10 @@ export type ApiSchemaAImageDtoImageView = components['schemas']['a-image.dto.ima
 export type ApiSchemaAImageDtoImageViewPartial = Partial<ApiSchemaAImageDtoImageView>;
 export type ApiSchemaAFileDtoFileView = components['schemas']['a-file.dto.fileView'];
 export type ApiSchemaAFileDtoFileViewPartial = Partial<ApiSchemaAFileDtoFileView>;
-export type ApiSchemaTrainingRecordDtoRecordView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_88947ca8c18d5d4ad1f377d379e77df5fe5c0ce5 =
-  components['schemas']['training-record.dto.recordView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_88947ca8c18d5d4ad1f377d379e77df5fe5c0ce5'];
-export type ApiSchemaTrainingRecordDtoRecordView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_88947ca8c18d5d4ad1f377d379e77df5fe5c0ce5Partial =
-  Partial<ApiSchemaTrainingRecordDtoRecordView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_88947ca8c18d5d4ad1f377d379e77df5fe5c0ce5>;
+export type ApiSchemaTrainingRecordDtoRecordView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_79ca06e0fa89c8f250537d4a0b8a8cc1e39df05a =
+  components['schemas']['training-record.dto.recordView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_79ca06e0fa89c8f250537d4a0b8a8cc1e39df05a'];
+export type ApiSchemaTrainingRecordDtoRecordView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_79ca06e0fa89c8f250537d4a0b8a8cc1e39df05aPartial =
+  Partial<ApiSchemaTrainingRecordDtoRecordView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_79ca06e0fa89c8f250537d4a0b8a8cc1e39df05a>;
 export type ApiSchemaTrainingRecordDtoRecordUpdate =
   components['schemas']['training-record.dto.recordUpdate'];
 export type ApiSchemaTrainingRecordDtoRecordUpdatePartial =
@@ -181,10 +181,10 @@ export type ApiSchemaAImageDtoImageView_a83c3e638bca4b30ec8675860cdc52d66f6a16d1
   components['schemas']['a-image.dto.imageView_a83c3e638bca4b30ec8675860cdc52d66f6a16d1_2d063d28bc7243bed02ebd8bddf1212a93c6305b_efb37794d7c03c65122279f90d79919f009c34e5_1816ff740d81c738ec055c7038bbd93beb9405a7_537cd6552a384183a9457fb6a920bbae337277f6'];
 export type ApiSchemaAImageDtoImageView_a83c3e638bca4b30ec8675860cdc52d66f6a16d1_2d063d28bc7243bed02ebd8bddf1212a93c6305b_efb37794d7c03c65122279f90d79919f009c34e5_1816ff740d81c738ec055c7038bbd93beb9405a7_537cd6552a384183a9457fb6a920bbae337277f6Partial =
   Partial<ApiSchemaAImageDtoImageView_a83c3e638bca4b30ec8675860cdc52d66f6a16d1_2d063d28bc7243bed02ebd8bddf1212a93c6305b_efb37794d7c03c65122279f90d79919f009c34e5_1816ff740d81c738ec055c7038bbd93beb9405a7_537cd6552a384183a9457fb6a920bbae337277f6>;
-export type ApiSchemaTrainingStudentDtoStudentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_8752bd7d3491e7061a679318d3adb0c202acec11 =
-  components['schemas']['training-student.dto.studentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_8752bd7d3491e7061a679318d3adb0c202acec11'];
-export type ApiSchemaTrainingStudentDtoStudentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_8752bd7d3491e7061a679318d3adb0c202acec11Partial =
-  Partial<ApiSchemaTrainingStudentDtoStudentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_8752bd7d3491e7061a679318d3adb0c202acec11>;
+export type ApiSchemaTrainingStudentDtoStudentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_1587266c819c8b70731e8ba64e7460d7f2809951 =
+  components['schemas']['training-student.dto.studentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_1587266c819c8b70731e8ba64e7460d7f2809951'];
+export type ApiSchemaTrainingStudentDtoStudentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_1587266c819c8b70731e8ba64e7460d7f2809951Partial =
+  Partial<ApiSchemaTrainingStudentDtoStudentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_1587266c819c8b70731e8ba64e7460d7f2809951>;
 export type ApiSchemaTrainingStudentDtoStudentUpdate =
   components['schemas']['training-student.dto.studentUpdate'];
 export type ApiSchemaTrainingStudentDtoStudentUpdatePartial =
@@ -193,10 +193,10 @@ export type ApiSchemaTrainingStudentDtoStudentSummary_2d063d28bc7243bed02ebd8bdd
   components['schemas']['training-student.dto.studentSummary_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
 export type ApiSchemaTrainingStudentDtoStudentSummary_2d063d28bc7243bed02ebd8bddf1212a93c6305bPartial =
   Partial<ApiSchemaTrainingStudentDtoStudentSummary_2d063d28bc7243bed02ebd8bddf1212a93c6305b>;
-export type ApiSchemaTrainingStudentDtoStudentBulkDelete =
-  components['schemas']['training-student.dto.studentBulkDelete'];
-export type ApiSchemaTrainingStudentDtoStudentBulkDeletePartial =
-  Partial<ApiSchemaTrainingStudentDtoStudentBulkDelete>;
+export type ApiSchemaTrainingStudentDtoStudentDeleteBulk =
+  components['schemas']['training-student.dto.studentDeleteBulk'];
+export type ApiSchemaTrainingStudentDtoStudentDeleteBulkPartial =
+  Partial<ApiSchemaTrainingStudentDtoStudentDeleteBulk>;
 export type ApiSchemaAdminDepartmentDtoDepartmentCreate =
   components['schemas']['admin-department.dto.departmentCreate'];
 export type ApiSchemaAdminDepartmentDtoDepartmentCreatePartial =
@@ -381,10 +381,6 @@ export type ApiSchemaAdminRoleDtoRoleView_2d063d28bc7243bed02ebd8bddf1212a93c630
   Partial<ApiSchemaAdminRoleDtoRoleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_dfa5393c924ec7673aadfc44138eb510ba67ff8c>;
 export type ApiSchemaAdminRoleDtoRoleUpdate = components['schemas']['admin-role.dto.roleUpdate'];
 export type ApiSchemaAdminRoleDtoRoleUpdatePartial = Partial<ApiSchemaAdminRoleDtoRoleUpdate>;
-export type ApiSchemaAdminRoleDtoUserRoleReplace =
-  components['schemas']['admin-role.dto.userRoleReplace'];
-export type ApiSchemaAdminRoleDtoUserRoleReplacePartial =
-  Partial<ApiSchemaAdminRoleDtoUserRoleReplace>;
 export type ApiSchemaAdminRoleDtoSystemAdminFreshProofIssueRes =
   components['schemas']['admin-role.dto.systemAdminFreshProofIssueRes'];
 export type ApiSchemaAdminRoleDtoSystemAdminFreshProofIssueResPartial =
@@ -393,14 +389,6 @@ export type ApiSchemaAdminRoleDtoSystemAdminFreshProofIssue =
   components['schemas']['admin-role.dto.systemAdminFreshProofIssue'];
 export type ApiSchemaAdminRoleDtoSystemAdminFreshProofIssuePartial =
   Partial<ApiSchemaAdminRoleDtoSystemAdminFreshProofIssue>;
-export type ApiSchemaAdminRoleDtoSystemAdminGrant =
-  components['schemas']['admin-role.dto.systemAdminGrant'];
-export type ApiSchemaAdminRoleDtoSystemAdminGrantPartial =
-  Partial<ApiSchemaAdminRoleDtoSystemAdminGrant>;
-export type ApiSchemaAdminRoleDtoSystemAdminRevoke =
-  components['schemas']['admin-role.dto.systemAdminRevoke'];
-export type ApiSchemaAdminRoleDtoSystemAdminRevokePartial =
-  Partial<ApiSchemaAdminRoleDtoSystemAdminRevoke>;
 export type ApiSchemaAdminRoleDtoSystemAdminAccountStatus =
   components['schemas']['admin-role.dto.systemAdminAccountStatus'];
 export type ApiSchemaAdminRoleDtoSystemAdminAccountStatusPartial =
@@ -434,6 +422,18 @@ export type ApiSchemaAdminUserDtoUserAccountStatusUpdate =
   components['schemas']['admin-user.dto.userAccountStatusUpdate'];
 export type ApiSchemaAdminUserDtoUserAccountStatusUpdatePartial =
   Partial<ApiSchemaAdminUserDtoUserAccountStatusUpdate>;
+export type ApiSchemaAdminRoleDtoUserRoleReplace =
+  components['schemas']['admin-role.dto.userRoleReplace'];
+export type ApiSchemaAdminRoleDtoUserRoleReplacePartial =
+  Partial<ApiSchemaAdminRoleDtoUserRoleReplace>;
+export type ApiSchemaAdminRoleDtoSystemAdminGrant =
+  components['schemas']['admin-role.dto.systemAdminGrant'];
+export type ApiSchemaAdminRoleDtoSystemAdminGrantPartial =
+  Partial<ApiSchemaAdminRoleDtoSystemAdminGrant>;
+export type ApiSchemaAdminRoleDtoSystemAdminRevoke =
+  components['schemas']['admin-role.dto.systemAdminRevoke'];
+export type ApiSchemaAdminRoleDtoSystemAdminRevokePartial =
+  Partial<ApiSchemaAdminRoleDtoSystemAdminRevoke>;
 export type ApiSchemaStartMetricsDtoMetricsSnapshot =
   components['schemas']['start-metrics.dto.metricsSnapshot'];
 export type ApiSchemaStartMetricsDtoMetricsSnapshotPartial =
@@ -446,6 +446,18 @@ export type ApiSchemaStartMetricsDtoMetricsQueue =
   components['schemas']['start-metrics.dto.metricsQueue'];
 export type ApiSchemaStartMetricsDtoMetricsQueuePartial =
   Partial<ApiSchemaStartMetricsDtoMetricsQueue>;
+export type ApiSchemaALayoutprofileDtoLayoutProfile_2d063d28bc7243bed02ebd8bddf1212a93c6305b =
+  components['schemas']['a-layoutprofile.dto.layoutProfile_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
+export type ApiSchemaALayoutprofileDtoLayoutProfile_2d063d28bc7243bed02ebd8bddf1212a93c6305bPartial =
+  Partial<ApiSchemaALayoutprofileDtoLayoutProfile_2d063d28bc7243bed02ebd8bddf1212a93c6305b>;
+export type ApiSchemaALayoutprofileDtoLayoutProfile =
+  components['schemas']['a-layoutprofile.dto.layoutProfile'];
+export type ApiSchemaALayoutprofileDtoLayoutProfilePartial =
+  Partial<ApiSchemaALayoutprofileDtoLayoutProfile>;
+export type ApiSchemaALayoutprofileDtoLayoutProfileSave =
+  components['schemas']['a-layoutprofile.dto.layoutProfileSave'];
+export type ApiSchemaALayoutprofileDtoLayoutProfileSavePartial =
+  Partial<ApiSchemaALayoutprofileDtoLayoutProfileSave>;
 export type ApiSchemaAFileDtoFileUploadPolicyResponse =
   components['schemas']['a-file.dto.fileUploadPolicyResponse'];
 export type ApiSchemaAFileDtoFileUploadPolicyResponsePartial =

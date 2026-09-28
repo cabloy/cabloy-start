@@ -4,15 +4,15 @@ export * from '../model/file.js';
 import { IModelOptionsFile } from '../model/file.js';
 import 'zova-module-a-model';
 declare module 'zova-module-a-model' {
-  
+
     export interface IModelRecord {
       'start-file:file': IModelOptionsFile;
     }
 
-  
+
 }
 declare module 'zova-module-start-file' {
-  
+
         export interface ModelFile {
           /** @internal */
           get scope(): ScopeModuleStartFile;
@@ -22,11 +22,11 @@ declare module 'zova-module-start-file' {
           get $beanFullName(): 'start-file.model.file';
           get $onionName(): 'start-file:file';
           get $onionOptions(): IModelOptionsFile;
-        } 
+        }
 }
 /** model: end */
 /** model: begin */
-import { ModelFile } from '../model/file.js';
+import type { ModelFile } from '../model/file.js';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -39,11 +39,11 @@ export * from '../api/file.js';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-start-file' {
-  
+
         export interface ApiFile {
           /** @internal */
           get scope(): ScopeModuleStartFile;
@@ -52,12 +52,12 @@ declare module 'zova-module-start-file' {
         export interface ApiFile {
           get $beanFullName(): 'start-file.api.file';
           get $onionName(): 'start-file:file';
-          
-        } 
+
+        }
 }
 /** api: end */
 /** api: begin */
-import { ApiFile } from '../api/file.js';
+import type { ApiFile } from '../api/file.js';
 export interface IModuleApi {
   'file': ApiFile;
 }
@@ -79,11 +79,11 @@ export * from '../apiSchema/file.js';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-start-file' {
-  
+
         export interface ApiSchemaFile {
           /** @internal */
           get scope(): ScopeModuleStartFile;
@@ -92,12 +92,12 @@ declare module 'zova-module-start-file' {
         export interface ApiSchemaFile {
           get $beanFullName(): 'start-file.apiSchema.file';
           get $onionName(): 'start-file:file';
-          
-        } 
+
+        }
 }
 /** apiSchema: end */
 /** apiSchema: begin */
-import { ApiSchemaFile } from '../apiSchema/file.js';
+import type { ApiSchemaFile } from '../apiSchema/file.js';
 export interface IModuleApiSchema {
   'file': ApiSchemaFile;
 }
@@ -116,19 +116,19 @@ export * from '../component/formFieldFile/controller.jsx';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-start-file' {
-  
+
         export interface ControllerFormFieldFile {
           /** @internal */
           get scope(): ScopeModuleStartFile;
-        } 
+        }
 }
 /** controller: end */
 /** controller: begin */
-import { ControllerFormFieldFile } from '../component/formFieldFile/controller.jsx';
+import type { ControllerFormFieldFile } from '../component/formFieldFile/controller.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
@@ -158,15 +158,15 @@ export * from '../bean/tableCell.file.jsx';
 import { ITableCellOptionsFile } from '../bean/tableCell.file.jsx';
 import 'zova-module-a-table';
 declare module 'zova-module-a-table' {
-  
+
     export interface ITableCellRecord {
       'start-file:file': ITableCellOptionsFile;
     }
 
-  
+
 }
 declare module 'zova-module-start-file' {
-  
+
         export interface TableCellFile {
           /** @internal */
           get scope(): ScopeModuleStartFile;
@@ -176,11 +176,11 @@ declare module 'zova-module-start-file' {
           get $beanFullName(): 'start-file.tableCell.file';
           get $onionName(): 'start-file:file';
           get $onionOptions(): ITableCellOptionsFile;
-        } 
+        }
 }
 /** tableCell: end */
 /** tableCell: begin */
-import { TableCellFile } from '../bean/tableCell.file.jsx';
+import type { TableCellFile } from '../bean/tableCell.file.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -210,14 +210,14 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'start-file': ScopeModuleStartFile;
   }
-  
-  
+
+
 
   export interface IBeanScopeLocale {
     'start-file': (typeof locales)[TypeLocaleBase];
   }
 
-  
+
 }
 
 export function locale<K extends keyof (typeof locales)[TypeLocaleBase]>(key: K): `start-file::${K}` {

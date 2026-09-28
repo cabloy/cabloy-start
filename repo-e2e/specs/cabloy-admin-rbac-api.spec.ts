@@ -61,13 +61,17 @@ interface MembershipFixture {
   membershipId: TableIdentity;
 }
 
+interface GrantFixture {
+  id: TableIdentity;
+  departmentIds: TableIdentity[];
+}
+
 interface ApiFixtureLedger {
   accounts: RegisteredAccount[];
   roles: TableIdentity[];
   departments: TableIdentity[];
   memberships: MembershipFixture[];
-  grants: TableIdentity[];
-  grantDepartments: TableIdentity[];
+  grants: GrantFixture[];
   students: TableIdentity[];
   records: TableIdentity[];
 }
@@ -96,7 +100,6 @@ function createLedger(): ApiFixtureLedger {
     departments: [],
     memberships: [],
     grants: [],
-    grantDepartments: [],
     students: [],
     records: [],
   };
@@ -113,6 +116,17 @@ function apiId(id: TableIdentity): string {
 function removeFixtureId(ids: TableIdentity[], id: TableIdentity) {
   const index = ids.findIndex(item => idMatches(item, id));
   if (index >= 0) ids.splice(index, 1);
+}
+
+function findGrantFixture(ledger: ApiFixtureLedger, grantId: TableIdentity): GrantFixture {
+  const grant = ledger.grants.find(item => idMatches(item.id, grantId));
+  if (!grant) throw new Error('RBAC grant fixture is unavailable');
+  return grant;
+}
+
+function removeGrantFixture(ledger: ApiFixtureLedger, grantId: TableIdentity) {
+  const index = ledger.grants.findIndex(item => idMatches(item.id, grantId));
+  if (index >= 0) ledger.grants.splice(index, 1);
 }
 
 function testSuffix(testInfo: TestInfo): string {
@@ -155,7 +169,7 @@ async function assignRole(
   account: RegisteredAccount,
   roleId: TableIdentity,
 ): Promise<void> {
-  await requestApiOk<null>(request, 'PUT', `/api/admin/role/user/${account.id}/roles`, {
+  await requestApiOk<null>(request, 'PUT', `/api/admin/user/${account.id}/roles`, {
     accessToken: admin.accessToken,
     data: { roleIds: [roleId] },
   });
@@ -209,7 +223,7 @@ async function createGrant(
     accessToken: admin.accessToken,
     data: { roleId, actionKey, dataScope, enabled },
   });
-  ledger.grants.push(id);
+  ledger.grants.push({ id, departmentIds: [] });
   return id;
 }
 
@@ -229,7 +243,7 @@ async function mapGrantDepartment(
       data: { rbacGrantId, departmentId },
     },
   );
-  ledger.grantDepartments.push(id);
+  findGrantFixture(ledger, rbacGrantId).departmentIds.push(id);
   return id;
 }
 
@@ -242,22 +256,7 @@ async function deleteGrant(
   await requestApiOk<null>(request, 'DELETE', `/api/admin/rbac/rbacGrant/${grantId}`, {
     accessToken: admin.accessToken,
   });
-  removeFixtureId(ledger.grants, grantId);
-}
-
-async function deleteGrantDepartment(
-  request: APIRequestContext,
-  admin: RegisteredAccount,
-  ledger: ApiFixtureLedger,
-  grantDepartmentId: TableIdentity,
-): Promise<void> {
-  await requestApiOk<null>(
-    request,
-    'DELETE',
-    `/api/admin/rbac/rbacGrantDepartment/${grantDepartmentId}`,
-    { accessToken: admin.accessToken },
-  );
-  removeFixtureId(ledger.grantDepartments, grantDepartmentId);
+  removeGrantFixture(ledger, grantId);
 }
 
 async function createStudent(
@@ -361,14 +360,7 @@ async function cleanupFixtures(
     ...ledger.students.toReversed().map(id => async () => {
       await deleteIfPresent(request, `/api/training/student/deleteForce/${id}`, admin.accessToken);
     }),
-    ...ledger.grantDepartments.toReversed().map(id => async () => {
-      await deleteIfPresent(
-        request,
-        `/api/admin/rbac/rbacGrantDepartment/${id}`,
-        admin.accessToken,
-      );
-    }),
-    ...ledger.grants.toReversed().map(id => async () => {
+    ...ledger.grants.toReversed().map(({ id }) => async () => {
       await deleteIfPresent(request, `/api/admin/rbac/rbacGrant/${id}`, admin.accessToken);
     }),
     ...ledger.memberships.toReversed().map(({ departmentId, membershipId }) => async () => {
@@ -425,33 +417,154 @@ async function grantReadScope(
   roleId: TableIdentity,
   dataScope: DataScope,
   departmentIds: TableIdentity[] = [],
-): Promise<{ grants: TableIdentity[]; grantDepartments: TableIdentity[] }> {
+  actionKeysToGrant: Array<typeof actionKeys.student.select | typeof actionKeys.student.view> = [
+    actionKeys.student.select,
+    actionKeys.student.view,
+  ],
+): Promise<TableIdentity[]> {
   const grants: TableIdentity[] = [];
-  const grantDepartments: TableIdentity[] = [];
-  for (const actionKey of [actionKeys.student.select, actionKeys.student.view]) {
+  for (const actionKey of actionKeysToGrant) {
     const grantId = await createGrant(request, admin, ledger, roleId, actionKey, dataScope);
     grants.push(grantId);
     for (const departmentId of departmentIds) {
-      grantDepartments.push(
-        await mapGrantDepartment(request, admin, ledger, grantId, departmentId),
-      );
+      await mapGrantDepartment(request, admin, ledger, grantId, departmentId);
     }
   }
-  return { grants, grantDepartments };
+  return grants;
 }
 
 async function revokeReadScope(
   request: APIRequestContext,
   admin: RegisteredAccount,
   ledger: ApiFixtureLedger,
-  scope: { grants: TableIdentity[]; grantDepartments: TableIdentity[] },
+  grantIds: TableIdentity[],
 ): Promise<void> {
-  for (const id of scope.grantDepartments.toReversed()) {
-    await deleteGrantDepartment(request, admin, ledger, id);
-  }
-  for (const id of scope.grants.toReversed()) {
+  for (const id of grantIds.toReversed()) {
     await deleteGrant(request, admin, ledger, id);
   }
+}
+
+interface ScopeTopology {
+  subject: RegisteredAccount;
+  rootOther: RegisteredAccount;
+  childOwner: RegisteredAccount;
+  siblingOwner: RegisteredAccount;
+  subjectRoleId: TableIdentity;
+  rootDepartmentId: TableIdentity;
+  childDepartmentId: TableIdentity;
+  siblingDepartmentId: TableIdentity;
+  names: {
+    mine: string;
+    rootOther: string;
+    child: string;
+    sibling: string;
+  };
+  studentIds: {
+    mine: TableIdentity;
+    rootOther: TableIdentity;
+    child: TableIdentity;
+    sibling: TableIdentity;
+  };
+}
+
+async function createScopeTopology(
+  request: APIRequestContext,
+  admin: RegisteredAccount,
+  ledger: ApiFixtureLedger,
+  testInfo: TestInfo,
+  suffix: string,
+): Promise<ScopeTopology> {
+  const subject = await createAccount(request, ledger, testInfo);
+  const rootOther = await createAccount(request, ledger, testInfo);
+  const childOwner = await createAccount(request, ledger, testInfo);
+  const siblingOwner = await createAccount(request, ledger, testInfo);
+  const rootDepartmentId = await createDepartment(
+    request,
+    admin,
+    ledger,
+    `ATP Scope Root ${suffix}`,
+  );
+  const childDepartmentId = await createDepartment(
+    request,
+    admin,
+    ledger,
+    `ATP Scope Child ${suffix}`,
+    rootDepartmentId,
+  );
+  const siblingDepartmentId = await createDepartment(
+    request,
+    admin,
+    ledger,
+    `ATP Scope Sibling ${suffix}`,
+  );
+  await createMembership(request, admin, ledger, rootDepartmentId, subject);
+  await createMembership(request, admin, ledger, rootDepartmentId, rootOther);
+  await createMembership(request, admin, ledger, childDepartmentId, childOwner);
+  await createMembership(request, admin, ledger, siblingDepartmentId, siblingOwner);
+
+  const subjectRoleId = await createRole(request, admin, ledger, `ATP Scope Subject ${suffix}`);
+  const creatorRoleId = await createRole(request, admin, ledger, `ATP Scope Creator ${suffix}`);
+  await assignRole(request, admin, subject, subjectRoleId);
+  for (const account of [rootOther, childOwner, siblingOwner]) {
+    await assignRole(request, admin, account, creatorRoleId);
+  }
+  await createGrant(
+    request,
+    admin,
+    ledger,
+    subjectRoleId,
+    actionKeys.student.create,
+    'ownDepartment',
+  );
+  await createGrant(
+    request,
+    admin,
+    ledger,
+    creatorRoleId,
+    actionKeys.student.create,
+    'ownDepartment',
+  );
+
+  const names = {
+    mine: `ATP Scope Mine ${suffix}`,
+    rootOther: `ATP Scope Root Other ${suffix}`,
+    child: `ATP Scope Child ${suffix}`,
+    sibling: `ATP Scope Sibling ${suffix}`,
+  };
+  const studentIds = {
+    mine: await createStudent(request, subject, ledger, {
+      name: names.mine,
+      mobile: mobile(101),
+      level: 1,
+    }),
+    rootOther: await createStudent(request, rootOther, ledger, {
+      name: names.rootOther,
+      mobile: mobile(102),
+      level: 1,
+    }),
+    child: await createStudent(request, childOwner, ledger, {
+      name: names.child,
+      mobile: mobile(103),
+      level: 2,
+    }),
+    sibling: await createStudent(request, siblingOwner, ledger, {
+      name: names.sibling,
+      mobile: mobile(104),
+      level: 3,
+    }),
+  };
+  return {
+    subject,
+    rootOther,
+    childOwner,
+    siblingOwner,
+    subjectRoleId,
+    rootDepartmentId,
+    childDepartmentId,
+    siblingDepartmentId,
+    names,
+    studentIds,
+  };
 }
 
 test(
@@ -580,106 +693,17 @@ test(
 );
 
 test(
-  'ATP-ADM-SCP-01: direct five-scope union and structural-filter matrix',
+  'ATP-ADM-SCP-01: direct all, custom-department, and own-department scopes',
   { tag: ['@admin', '@cabloy-admin', '@admin-rbac-api'] },
   async ({ request }, testInfo) => {
     const suffix = testSuffix(testInfo);
     const ledger = createLedger();
     const admin = await loginAsAdmin(request);
-    const subject = await createAccount(request, ledger, testInfo);
-    const rootOther = await createAccount(request, ledger, testInfo);
-    const childOwner = await createAccount(request, ledger, testInfo);
-    const siblingOwner = await createAccount(request, ledger, testInfo);
     let testFailure: unknown;
 
     try {
-      const rootDepartmentId = await createDepartment(
-        request,
-        admin,
-        ledger,
-        `ATP Scope Root ${suffix}`,
-      );
-      const childDepartmentId = await createDepartment(
-        request,
-        admin,
-        ledger,
-        `ATP Scope Child ${suffix}`,
-        rootDepartmentId,
-      );
-      const siblingDepartmentId = await createDepartment(
-        request,
-        admin,
-        ledger,
-        `ATP Scope Sibling ${suffix}`,
-      );
-      await createMembership(request, admin, ledger, rootDepartmentId, subject);
-      await createMembership(request, admin, ledger, rootDepartmentId, rootOther);
-      await createMembership(request, admin, ledger, childDepartmentId, childOwner);
-      await createMembership(request, admin, ledger, siblingDepartmentId, siblingOwner);
-
-      const subjectRoleId = await createRole(request, admin, ledger, `ATP Scope Subject ${suffix}`);
-      const rootRoleId = await createRole(request, admin, ledger, `ATP Scope Root Owner ${suffix}`);
-      const childRoleId = await createRole(
-        request,
-        admin,
-        ledger,
-        `ATP Scope Child Owner ${suffix}`,
-      );
-      const siblingRoleId = await createRole(
-        request,
-        admin,
-        ledger,
-        `ATP Scope Sibling Owner ${suffix}`,
-      );
-      await assignRole(request, admin, subject, subjectRoleId);
-      await assignRole(request, admin, rootOther, rootRoleId);
-      await assignRole(request, admin, childOwner, childRoleId);
-      await assignRole(request, admin, siblingOwner, siblingRoleId);
-
-      for (const [roleId] of [
-        [subjectRoleId],
-        [rootRoleId],
-        [childRoleId],
-        [siblingRoleId],
-      ] as const) {
-        await createGrant(
-          request,
-          admin,
-          ledger,
-          roleId,
-          actionKeys.student.create,
-          'ownDepartment',
-        );
-      }
-
-      const names = {
-        mine: `ATP Scope Mine ${suffix}`,
-        rootOther: `ATP Scope Root Other ${suffix}`,
-        child: `ATP Scope Child ${suffix}`,
-        sibling: `ATP Scope Sibling ${suffix}`,
-      };
-      const mineId = await createStudent(request, subject, ledger, {
-        name: names.mine,
-        mobile: mobile(101),
-        level: 1,
-      });
-      const rootOtherId = await createStudent(request, rootOther, ledger, {
-        name: names.rootOther,
-        mobile: mobile(102),
-        level: 1,
-      });
-      const childId = await createStudent(request, childOwner, ledger, {
-        name: names.child,
-        mobile: mobile(103),
-        level: 2,
-      });
-      const siblingId = await createStudent(request, siblingOwner, ledger, {
-        name: names.sibling,
-        mobile: mobile(104),
-        level: 3,
-      });
-      const allNames = Object.values(names);
-
+      const topology = await createScopeTopology(request, admin, ledger, testInfo, suffix);
+      const allNames = Object.values(topology.names);
       const assertScope = async (
         dataScope: DataScope,
         departmentIds: TableIdentity[],
@@ -687,114 +711,268 @@ test(
         admittedId: TableIdentity,
         forbiddenId?: TableIdentity,
       ) => {
-        const scope = await grantReadScope(
+        const grantIds = await grantReadScope(
           request,
           admin,
           ledger,
-          subjectRoleId,
+          topology.subjectRoleId,
           dataScope,
           departmentIds,
         );
         try {
-          const list = await listStudents(request, subject, allNames);
+          const list = await listStudents(request, topology.subject, allNames);
           expect(list.map(item => item.name).sort()).toEqual(expectedNames.toSorted());
-          expect((await getStudent(request, subject, admittedId)).id).toEqual(admittedId);
+          expect((await getStudent(request, topology.subject, admittedId)).id).toEqual(admittedId);
           if (forbiddenId !== undefined) {
             await expectStatus(request, 'GET', `/api/training/student/${forbiddenId}`, 403, {
-              accessToken: subject.accessToken,
+              accessToken: topology.subject.accessToken,
             });
           }
         } finally {
-          await revokeReadScope(request, admin, ledger, scope);
+          await revokeReadScope(request, admin, ledger, grantIds);
         }
       };
 
-      await assertScope('all', [], allNames, siblingId);
+      await assertScope('all', [], allNames, topology.studentIds.sibling);
       await assertScope(
         'customDepartments',
-        [rootDepartmentId],
-        [names.mine, names.rootOther],
-        mineId,
-        childId,
+        [topology.rootDepartmentId],
+        [topology.names.mine, topology.names.rootOther],
+        topology.studentIds.mine,
+        topology.studentIds.child,
       );
-      await assertScope('ownDepartment', [], [names.mine, names.rootOther], rootOtherId, childId);
       await assertScope(
-        'ownDepartmentAndDescendants',
+        'ownDepartment',
         [],
-        [names.mine, names.rootOther, names.child],
-        childId,
-        siblingId,
+        [topology.names.mine, topology.names.rootOther],
+        topology.studentIds.rootOther,
+        topology.studentIds.child,
       );
-      await assertScope('mine', [], [names.mine], mineId, rootOtherId);
+    } catch (error) {
+      testFailure = error;
+      throw error;
+    } finally {
+      await cleanupWithoutMaskingFailure(request, admin, ledger, testInfo, testFailure);
+    }
+  },
+);
 
-      const unionMine = await grantReadScope(request, admin, ledger, subjectRoleId, 'mine');
-      const unionCustom = await grantReadScope(
+test(
+  'ATP-ADM-SCP-01: direct descendant and owner scopes',
+  { tag: ['@admin', '@cabloy-admin', '@admin-rbac-api'] },
+  async ({ request }, testInfo) => {
+    const suffix = testSuffix(testInfo);
+    const ledger = createLedger();
+    const admin = await loginAsAdmin(request);
+    let testFailure: unknown;
+
+    try {
+      const topology = await createScopeTopology(request, admin, ledger, testInfo, suffix);
+      const allNames = Object.values(topology.names);
+      const descendantsGrantIds = await grantReadScope(
         request,
         admin,
         ledger,
-        subjectRoleId,
-        'customDepartments',
-        [siblingDepartmentId],
+        topology.subjectRoleId,
+        'ownDepartmentAndDescendants',
       );
       try {
-        const list = await listStudents(request, subject, allNames);
-        expect(list.map(item => item.name).sort()).toEqual([names.mine, names.sibling].toSorted());
+        const list = await listStudents(request, topology.subject, allNames);
+        expect(list.map(item => item.name).sort()).toEqual(
+          [topology.names.mine, topology.names.rootOther, topology.names.child].toSorted(),
+        );
+        expect((await getStudent(request, topology.subject, topology.studentIds.child)).id).toEqual(
+          topology.studentIds.child,
+        );
+        await expectStatus(
+          request,
+          'GET',
+          `/api/training/student/${topology.studentIds.sibling}`,
+          403,
+          {
+            accessToken: topology.subject.accessToken,
+          },
+        );
       } finally {
-        await revokeReadScope(request, admin, ledger, unionCustom);
-        await revokeReadScope(request, admin, ledger, unionMine);
+        await revokeReadScope(request, admin, ledger, descendantsGrantIds);
       }
 
-      const allScope = await grantReadScope(request, admin, ledger, subjectRoleId, 'all');
-      const narrowerScope = await grantReadScope(
+      const mineGrantIds = await grantReadScope(
         request,
         admin,
         ledger,
-        subjectRoleId,
-        'customDepartments',
-        [rootDepartmentId],
+        topology.subjectRoleId,
+        'mine',
       );
       try {
-        const list = await listStudents(request, subject, allNames);
-        expect(list.map(item => item.name).sort()).toEqual(allNames.toSorted());
+        const list = await listStudents(request, topology.subject, allNames);
+        expect(list.map(item => item.name)).toEqual([topology.names.mine]);
+        expect((await getStudent(request, topology.subject, topology.studentIds.mine)).id).toEqual(
+          topology.studentIds.mine,
+        );
+        await expectStatus(
+          request,
+          'GET',
+          `/api/training/student/${topology.studentIds.rootOther}`,
+          403,
+          {
+            accessToken: topology.subject.accessToken,
+          },
+        );
       } finally {
-        await revokeReadScope(request, admin, ledger, narrowerScope);
-        await revokeReadScope(request, admin, ledger, allScope);
+        await revokeReadScope(request, admin, ledger, mineGrantIds);
       }
+    } catch (error) {
+      testFailure = error;
+      throw error;
+    } finally {
+      await cleanupWithoutMaskingFailure(request, admin, ledger, testInfo, testFailure);
+    }
+  },
+);
 
-      const customRootScope = await grantReadScope(
+test(
+  'ATP-ADM-SCP-01: direct scope union and all dominance',
+  { tag: ['@admin', '@cabloy-admin', '@admin-rbac-api'] },
+  async ({ request }, testInfo) => {
+    const suffix = testSuffix(testInfo);
+    const ledger = createLedger();
+    const admin = await loginAsAdmin(request);
+    let testFailure: unknown;
+
+    try {
+      const topology = await createScopeTopology(request, admin, ledger, testInfo, suffix);
+      const allNames = Object.values(topology.names);
+      const unionMineGrantIds = await grantReadScope(
         request,
         admin,
         ledger,
-        subjectRoleId,
+        topology.subjectRoleId,
+        'mine',
+        [],
+        [actionKeys.student.select],
+      );
+      const unionCustomGrantIds = await grantReadScope(
+        request,
+        admin,
+        ledger,
+        topology.subjectRoleId,
         'customDepartments',
-        [rootDepartmentId],
+        [topology.siblingDepartmentId],
+        [actionKeys.student.select],
       );
       try {
-        const constrained = await listStudents(request, subject, allNames, {
-          name: { _in_: [names.mine, names.child] },
-        });
-        expect(constrained.map(item => item.name)).toEqual([names.mine]);
-        const blockedByCallerFilter = await listStudents(request, subject, allNames, {
-          name: { _in_: [names.child] },
-        });
+        const unionList = await listStudents(request, topology.subject, allNames);
+        expect(unionList.map(item => item.name).sort()).toEqual(
+          [topology.names.mine, topology.names.sibling].toSorted(),
+        );
+
+        const allGrantIds = await grantReadScope(
+          request,
+          admin,
+          ledger,
+          topology.subjectRoleId,
+          'all',
+          [],
+          [actionKeys.student.select],
+        );
+        try {
+          const dominantList = await listStudents(request, topology.subject, allNames);
+          expect(dominantList.map(item => item.name).sort()).toEqual(allNames.toSorted());
+        } finally {
+          await revokeReadScope(request, admin, ledger, allGrantIds);
+        }
+      } finally {
+        await revokeReadScope(request, admin, ledger, unionCustomGrantIds);
+        await revokeReadScope(request, admin, ledger, unionMineGrantIds);
+      }
+    } catch (error) {
+      testFailure = error;
+      throw error;
+    } finally {
+      await cleanupWithoutMaskingFailure(request, admin, ledger, testInfo, testFailure);
+    }
+  },
+);
+
+test(
+  'ATP-ADM-SCP-01: direct structural caller-filter composition',
+  { tag: ['@admin', '@cabloy-admin', '@admin-rbac-api'] },
+  async ({ request }, testInfo) => {
+    const suffix = testSuffix(testInfo);
+    const ledger = createLedger();
+    const admin = await loginAsAdmin(request);
+    let testFailure: unknown;
+
+    try {
+      const topology = await createScopeTopology(request, admin, ledger, testInfo, suffix);
+      const grantIds = await grantReadScope(
+        request,
+        admin,
+        ledger,
+        topology.subjectRoleId,
+        'customDepartments',
+        [topology.rootDepartmentId],
+        [actionKeys.student.select],
+      );
+      try {
+        const constrained = await listStudents(
+          request,
+          topology.subject,
+          Object.values(topology.names),
+          {
+            name: { _in_: [topology.names.mine, topology.names.child] },
+          },
+        );
+        expect(constrained.map(item => item.name)).toEqual([topology.names.mine]);
+        const blockedByCallerFilter = await listStudents(
+          request,
+          topology.subject,
+          Object.values(topology.names),
+          { name: { _in_: [topology.names.child] } },
+        );
         expect(blockedByCallerFilter).toEqual([]);
       } finally {
-        await revokeReadScope(request, admin, ledger, customRootScope);
+        await revokeReadScope(request, admin, ledger, grantIds);
       }
+    } catch (error) {
+      testFailure = error;
+      throw error;
+    } finally {
+      await cleanupWithoutMaskingFailure(request, admin, ledger, testInfo, testFailure);
+    }
+  },
+);
 
-      const unmappedScope = await grantReadScope(
+test(
+  'ATP-ADM-SCP-01: direct unmapped and disabled scope denial',
+  { tag: ['@admin', '@cabloy-admin', '@admin-rbac-api'] },
+  async ({ request }, testInfo) => {
+    const suffix = testSuffix(testInfo);
+    const ledger = createLedger();
+    const admin = await loginAsAdmin(request);
+    let testFailure: unknown;
+
+    try {
+      const subject = await createAccount(request, ledger, testInfo);
+      const subjectRoleId = await createRole(request, admin, ledger, `ATP Scope Subject ${suffix}`);
+      await assignRole(request, admin, subject, subjectRoleId);
+
+      const unmappedGrantIds = await grantReadScope(
         request,
         admin,
         ledger,
         subjectRoleId,
         'customDepartments',
+        [],
+        [actionKeys.student.select],
       );
       try {
         await expectStatus(request, 'GET', '/api/training/student', 403, {
           accessToken: subject.accessToken,
         });
       } finally {
-        await revokeReadScope(request, admin, ledger, unmappedScope);
+        await revokeReadScope(request, admin, ledger, unmappedGrantIds);
       }
 
       await createGrant(

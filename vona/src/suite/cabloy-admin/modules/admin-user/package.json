@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "vona-module-admin-department": "workspace:^",
+    "vona-module-admin-role": "workspace:^",
     "vona-module-home-user": "workspace:^"
   },
   "devDependencies": {
@@ -51,6 +52,7 @@
     "dependencies": {
       "a-vona": "5.0.0",
       "admin-department": "5.0.0",
+      "admin-role": "5.0.0",
       "home-user": "5.0.0"
     }
   }

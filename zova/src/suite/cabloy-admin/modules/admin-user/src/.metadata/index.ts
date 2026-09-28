@@ -26,7 +26,7 @@ declare module 'zova-module-admin-user' {
 }
 /** model: end */
 /** model: begin */
-import { ModelUser } from '../model/user.js';
+import type { ModelUser } from '../model/user.js';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -57,7 +57,7 @@ declare module 'zova-module-admin-user' {
 }
 /** api: end */
 /** api: begin */
-import { ApiAdminUser } from '../api/adminUser.js';
+import type { ApiAdminUser } from '../api/adminUser.js';
 export interface IModuleApi {
   'adminUser': ApiAdminUser;
 }
@@ -97,7 +97,7 @@ declare module 'zova-module-admin-user' {
 }
 /** apiSchema: end */
 /** apiSchema: begin */
-import { ApiSchemaAdminUser } from '../apiSchema/adminUser.js';
+import type { ApiSchemaAdminUser } from '../apiSchema/adminUser.js';
 export interface IModuleApiSchema {
   'adminUser': ApiSchemaAdminUser;
 }
@@ -112,6 +112,9 @@ declare module 'zova' {
 }
 /** apiSchema: end */
 /** controller: begin */
+export * from '../component/actionGrantSystemAdmin/controller.jsx';
+export * from '../component/actionReplaceUserRoles/controller.jsx';
+export * from '../component/actionRevokeSystemAdmin/controller.jsx';
 export * from '../component/formFieldAvatar/controller.jsx';
 
 import 'zova';
@@ -121,6 +124,21 @@ declare module 'zova' {
 }
 declare module 'zova-module-admin-user' {
 
+        export interface ControllerActionGrantSystemAdmin {
+          /** @internal */
+          get scope(): ScopeModuleAdminUser;
+        }
+
+        export interface ControllerActionReplaceUserRoles {
+          /** @internal */
+          get scope(): ScopeModuleAdminUser;
+        }
+
+        export interface ControllerActionRevokeSystemAdmin {
+          /** @internal */
+          get scope(): ScopeModuleAdminUser;
+        }
+
         export interface ControllerFormFieldAvatar {
           /** @internal */
           get scope(): ScopeModuleAdminUser;
@@ -128,28 +146,49 @@ declare module 'zova-module-admin-user' {
 }
 /** controller: end */
 /** controller: begin */
-import { ControllerFormFieldAvatar } from '../component/formFieldAvatar/controller.jsx';
+import type { ControllerActionGrantSystemAdmin } from '../component/actionGrantSystemAdmin/controller.jsx';
+import type { ControllerActionReplaceUserRoles } from '../component/actionReplaceUserRoles/controller.jsx';
+import type { ControllerActionRevokeSystemAdmin } from '../component/actionRevokeSystemAdmin/controller.jsx';
+import type { ControllerFormFieldAvatar } from '../component/formFieldAvatar/controller.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
-    'admin-user.controller.formFieldAvatar': ControllerFormFieldAvatar;
+    'admin-user.controller.actionGrantSystemAdmin': ControllerActionGrantSystemAdmin;
+'admin-user.controller.actionReplaceUserRoles': ControllerActionReplaceUserRoles;
+'admin-user.controller.actionRevokeSystemAdmin': ControllerActionRevokeSystemAdmin;
+'admin-user.controller.formFieldAvatar': ControllerFormFieldAvatar;
   }
 }
 /** controller: end */
 
 /** components: begin */
+export * from './component/actionGrantSystemAdmin.js';
+import { ZActionGrantSystemAdmin } from './component/actionGrantSystemAdmin.js';
+export * from './component/actionReplaceUserRoles.js';
+import { ZActionReplaceUserRoles } from './component/actionReplaceUserRoles.js';
+export * from './component/actionRevokeSystemAdmin.js';
+import { ZActionRevokeSystemAdmin } from './component/actionRevokeSystemAdmin.js';
 export * from './component/formFieldAvatar.js';
 import { ZFormFieldAvatar } from './component/formFieldAvatar.js';
 export const components = {
-  'formFieldAvatar': ZFormFieldAvatar,
+  'actionGrantSystemAdmin': ZActionGrantSystemAdmin,
+'actionReplaceUserRoles': ZActionReplaceUserRoles,
+'actionRevokeSystemAdmin': ZActionRevokeSystemAdmin,
+'formFieldAvatar': ZFormFieldAvatar,
 };
 import 'zova';
 declare module 'zova' {
 export interface IComponentRecord {
-  'admin-user:formFieldAvatar': ControllerFormFieldAvatar;
+  'admin-user:actionGrantSystemAdmin': ControllerActionGrantSystemAdmin;
+'admin-user:actionReplaceUserRoles': ControllerActionReplaceUserRoles;
+'admin-user:actionRevokeSystemAdmin': ControllerActionRevokeSystemAdmin;
+'admin-user:formFieldAvatar': ControllerFormFieldAvatar;
 }
 export interface IZovaComponentRecord {
-  'admin-user:formFieldAvatar': typeof ZFormFieldAvatar;
+  'admin-user:actionGrantSystemAdmin': typeof ZActionGrantSystemAdmin;
+'admin-user:actionReplaceUserRoles': typeof ZActionReplaceUserRoles;
+'admin-user:actionRevokeSystemAdmin': typeof ZActionRevokeSystemAdmin;
+'admin-user:formFieldAvatar': typeof ZFormFieldAvatar;
 }
 }
 /** components: end */
@@ -208,9 +247,9 @@ declare module 'zova-module-admin-user' {
 }
 /** tableCell: end */
 /** tableCell: begin */
-import { TableCellActionDisable } from '../bean/tableCell.actionDisable.jsx';
-import { TableCellRoleTitle } from '../bean/tableCell.roleTitle.jsx';
-import { TableCellUserName } from '../bean/tableCell.userName.jsx';
+import type { TableCellActionDisable } from '../bean/tableCell.actionDisable.jsx';
+import type { TableCellRoleTitle } from '../bean/tableCell.roleTitle.jsx';
+import type { TableCellUserName } from '../bean/tableCell.userName.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {

@@ -4,15 +4,15 @@ export * from '../model/metrics.js';
 import { IModelOptionsMetrics } from '../model/metrics.js';
 import 'zova-module-a-model';
 declare module 'zova-module-a-model' {
-  
+
     export interface IModelRecord {
       'start-metrics:metrics': IModelOptionsMetrics;
     }
 
-  
+
 }
 declare module 'zova-module-start-metrics' {
-  
+
         export interface ModelMetrics {
           /** @internal */
           get scope(): ScopeModuleStartMetrics;
@@ -22,11 +22,11 @@ declare module 'zova-module-start-metrics' {
           get $beanFullName(): 'start-metrics.model.metrics';
           get $onionName(): 'start-metrics:metrics';
           get $onionOptions(): IModelOptionsMetrics;
-        } 
+        }
 }
 /** model: end */
 /** model: begin */
-import { ModelMetrics } from '../model/metrics.js';
+import type { ModelMetrics } from '../model/metrics.js';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -39,11 +39,11 @@ export * from '../api/startMetrics.js';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-start-metrics' {
-  
+
         export interface ApiStartMetrics {
           /** @internal */
           get scope(): ScopeModuleStartMetrics;
@@ -52,12 +52,12 @@ declare module 'zova-module-start-metrics' {
         export interface ApiStartMetrics {
           get $beanFullName(): 'start-metrics.api.startMetrics';
           get $onionName(): 'start-metrics:startMetrics';
-          
-        } 
+
+        }
 }
 /** api: end */
 /** api: begin */
-import { ApiStartMetrics } from '../api/startMetrics.js';
+import type { ApiStartMetrics } from '../api/startMetrics.js';
 export interface IModuleApi {
   'startMetrics': ApiStartMetrics;
 }
@@ -79,11 +79,11 @@ export * from '../apiSchema/startMetrics.js';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-start-metrics' {
-  
+
         export interface ApiSchemaStartMetrics {
           /** @internal */
           get scope(): ScopeModuleStartMetrics;
@@ -92,12 +92,12 @@ declare module 'zova-module-start-metrics' {
         export interface ApiSchemaStartMetrics {
           get $beanFullName(): 'start-metrics.apiSchema.startMetrics';
           get $onionName(): 'start-metrics:startMetrics';
-          
-        } 
+
+        }
 }
 /** apiSchema: end */
 /** apiSchema: begin */
-import { ApiSchemaStartMetrics } from '../apiSchema/startMetrics.js';
+import type { ApiSchemaStartMetrics } from '../apiSchema/startMetrics.js';
 export interface IModuleApiSchema {
   'startMetrics': ApiSchemaStartMetrics;
 }
@@ -116,19 +116,19 @@ export * from '../page/dashboard/controller.jsx';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-start-metrics' {
-  
+
         export interface ControllerPageDashboard {
           /** @internal */
           get scope(): ScopeModuleStartMetrics;
-        } 
+        }
 }
 /** controller: end */
 /** controller: begin */
-import { ControllerPageDashboard } from '../page/dashboard/controller.jsx';
+import type { ControllerPageDashboard } from '../page/dashboard/controller.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
@@ -146,7 +146,7 @@ export interface IPagePathRecord {
   '/start/metrics/dashboard': TypePagePathSchema<undefined,undefined>;
 }
 export interface IPageNameRecord {
-  
+
 }
 }
 export const pagePathSchemas = {
@@ -156,7 +156,7 @@ export const pageNameSchemas = {
 
 };
 declare module 'zova-module-start-metrics' {
-  
+
 }
 /** pages: end */
 
@@ -178,12 +178,12 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'start-metrics': ScopeModuleStartMetrics;
   }
-  
-  
 
-  
 
-  
+
+
+
+
 }
 
 /** scope: end */

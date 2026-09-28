@@ -612,8 +612,6 @@ declare module 'vona-module-a-web' {
   export interface IApiPathPostRecord{
         '/admin/role': undefined;
 '/admin/role/system-admin/fresh-proof': undefined;
-'/admin/role/system-admin/grant/:userId': undefined;
-'/admin/role/system-admin/revoke/:userId': undefined;
     }
 export interface IApiPathGetRecord{
         '/admin/role': undefined;
@@ -627,8 +625,7 @@ export interface IApiPathDeleteRecord{
         '/admin/role/:id': undefined;
     }
 export interface IApiPathPutRecord{
-        '/admin/role/user/:userId/roles': undefined;
-'/admin/role/system-admin/account-status/:userId': undefined;
+        '/admin/role/system-admin/account-status/:userId': undefined;
 '/admin/role/system-admin/activation/:userId': undefined;
     }
 

@@ -19,9 +19,6 @@ import { DtoSystemAdminAccountStatus } from '../dto/systemAdminAccountStatus.ts'
 import { DtoSystemAdminActivation } from '../dto/systemAdminActivation.ts';
 import { DtoSystemAdminFreshProofIssue } from '../dto/systemAdminFreshProofIssue.ts';
 import { DtoSystemAdminFreshProofIssueRes } from '../dto/systemAdminFreshProofIssueRes.ts';
-import { DtoSystemAdminGrant } from '../dto/systemAdminGrant.ts';
-import { DtoSystemAdminRevoke } from '../dto/systemAdminRevoke.ts';
-import { DtoUserRoleReplace } from '../dto/userRoleReplace.ts';
 
 export interface IControllerOptionsRole extends IDecoratorControllerOptions {}
 
@@ -83,16 +80,6 @@ export class ControllerRole extends BeanBase {
     await this.scope.service.role.delete(id);
   }
 
-  @Web.put('user/:userId/roles')
-  @Api.body(z.null())
-  @Passport.systemAdmin()
-  async replaceUserRoles(
-    @Arg.param('userId', v.tableIdentity()) userId: TableIdentity,
-    @Arg.body() command: DtoUserRoleReplace,
-  ): Promise<void> {
-    await this.scope.service.role.replaceUserRoles(userId, command);
-  }
-
   @Web.post('system-admin/fresh-proof')
   @Api.body(DtoSystemAdminFreshProofIssueRes)
   @Core.serializer()
@@ -101,26 +88,6 @@ export class ControllerRole extends BeanBase {
     @Arg.body() command: DtoSystemAdminFreshProofIssue,
   ): Promise<DtoSystemAdminFreshProofIssueRes> {
     return await this.scope.service.systemAdmin.issueFreshProof(command.password);
-  }
-
-  @Web.post('system-admin/grant/:userId')
-  @Api.body(z.null())
-  @Passport.systemAdmin()
-  async grantSystemAdmin(
-    @Arg.param('userId', v.tableIdentity()) userId: TableIdentity,
-    @Arg.body() command: DtoSystemAdminGrant,
-  ): Promise<void> {
-    await this.scope.service.systemAdmin.grant(userId, command);
-  }
-
-  @Web.post('system-admin/revoke/:userId')
-  @Api.body(z.null())
-  @Passport.systemAdmin()
-  async revokeSystemAdmin(
-    @Arg.param('userId', v.tableIdentity()) userId: TableIdentity,
-    @Arg.body() command: DtoSystemAdminRevoke,
-  ): Promise<void> {
-    await this.scope.service.systemAdmin.revoke(userId, command);
   }
 
   @Web.put('system-admin/account-status/:userId')

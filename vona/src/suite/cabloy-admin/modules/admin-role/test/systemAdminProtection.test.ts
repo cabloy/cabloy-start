@@ -52,7 +52,7 @@ describe('systemAdminProtection.test.ts', { concurrency: false }, () => {
         try {
           const [missingProofResult, missingProofError] = await catchError(() => {
             return protectedCommand(
-              '/admin/role/system-admin/grant/:userId',
+              '/admin/user/system-admin/grant/:userId',
               target.id as string,
               'missing',
             );
@@ -66,7 +66,7 @@ describe('systemAdminProtection.test.ts', { concurrency: false }, () => {
 
           assert.equal(
             await protectedCommand(
-              '/admin/role/system-admin/grant/:userId',
+              '/admin/user/system-admin/grant/:userId',
               target.id as string,
               freshProof.proof,
             ),
@@ -79,7 +79,7 @@ describe('systemAdminProtection.test.ts', { concurrency: false }, () => {
 
           const [replayedProofResult, replayedProofError] = await catchError(() => {
             return protectedCommand(
-              '/admin/role/system-admin/revoke/:userId',
+              '/admin/user/system-admin/revoke/:userId',
               target.id as string,
               freshProof.proof,
             );
@@ -107,7 +107,7 @@ describe('systemAdminProtection.test.ts', { concurrency: false }, () => {
           const invalidReasonProof = await issueFreshProof();
           const [invalidReasonResult, invalidReasonError] = await catchError(() => {
             return protectedCommand(
-              '/admin/role/system-admin/revoke/:userId',
+              '/admin/user/system-admin/revoke/:userId',
               target.id as string,
               invalidReasonProof.proof,
               '   ',
@@ -150,7 +150,7 @@ describe('systemAdminProtection.test.ts', { concurrency: false }, () => {
         try {
           const proof = await issueFreshProof();
           await protectedCommand(
-            '/admin/role/system-admin/grant/:userId',
+            '/admin/user/system-admin/grant/:userId',
             target.id as string,
             proof.proof,
             'Create durable eviction work',
@@ -246,7 +246,7 @@ describe('systemAdminProtection.test.ts', { concurrency: false }, () => {
           let proof = await issueFreshProof();
           assert.equal(
             await protectedCommand(
-              '/admin/role/system-admin/grant/:userId',
+              '/admin/user/system-admin/grant/:userId',
               target.id as string,
               proof.proof,
             ),
@@ -427,7 +427,7 @@ describe('systemAdminProtection.test.ts', { concurrency: false }, () => {
         try {
           const proof = await issueFreshProof();
           await protectedCommand(
-            '/admin/role/system-admin/grant/:userId',
+            '/admin/user/system-admin/grant/:userId',
             targetId,
             proof.proof,
             'Create scoped accepted audit',
@@ -474,7 +474,7 @@ describe('systemAdminProtection.test.ts', { concurrency: false }, () => {
             shareTestProofHashes.push(createHash('sha256').update(proof.proof).digest('hex'));
             const [result, error] = await catchError(() => {
               return protectedCommand(
-                '/admin/role/system-admin/grant/:userId',
+                '/admin/user/system-admin/grant/:userId',
                 targetId!,
                 proof.proof,
                 'Reject foreign protected target',
@@ -597,7 +597,7 @@ describe('systemAdminProtection.test.ts', { concurrency: false }, () => {
             await start();
             return await catchError(() => {
               return protectedCommand(
-                '/admin/role/system-admin/revoke/:userId',
+                '/admin/user/system-admin/revoke/:userId',
                 userIds[0],
                 proof.proof,
                 'Competing PostgreSQL authority reduction',
@@ -679,7 +679,7 @@ describe('systemAdminProtection.test.ts', { concurrency: false }, () => {
         const freshProof = await issueFreshProof();
         const [result, error] = await catchError(() => {
           return protectedCommand(
-            '/admin/role/system-admin/revoke/:userId',
+            '/admin/user/system-admin/revoke/:userId',
             admin.id as string,
             freshProof.proof,
           );

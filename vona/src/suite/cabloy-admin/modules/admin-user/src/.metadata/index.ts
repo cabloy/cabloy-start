@@ -175,9 +175,12 @@ export interface IApiPathPatchRecord{
     }
 export interface IApiPathPostRecord{
         '/admin/user/activate/:id': undefined;
+'/admin/user/system-admin/grant/:userId': undefined;
+'/admin/user/system-admin/revoke/:userId': undefined;
     }
 export interface IApiPathPutRecord{
         '/admin/user/account-status/:id': undefined;
+'/admin/user/:userId/roles': undefined;
     }
 
 }

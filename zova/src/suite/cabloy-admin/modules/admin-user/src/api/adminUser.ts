@@ -54,6 +54,39 @@ export type ApiApiAdminUserupdateAccountStatusRequestBody =
 export type ApiApiAdminUserupdateAccountStatusResponseBody =
   paths[ApiApiAdminUserupdateAccountStatusPath][ApiApiAdminUserupdateAccountStatusMethod]['responses']['200']['content']['application/json']['data'];
 
+/** AdminUser_replaceUserRoles */
+export const ApiApiAdminUserreplaceUserRolesPath = '/api/admin/user/{userId}/roles';
+export type ApiApiAdminUserreplaceUserRolesPath = '/api/admin/user/{userId}/roles';
+export type ApiApiAdminUserreplaceUserRolesMethod = 'put';
+export type ApiApiAdminUserreplaceUserRolesRequestParams =
+  paths[ApiApiAdminUserreplaceUserRolesPath][ApiApiAdminUserreplaceUserRolesMethod]['parameters']['path'];
+export type ApiApiAdminUserreplaceUserRolesRequestBody =
+  components['schemas']['admin-role.dto.userRoleReplace'];
+export type ApiApiAdminUserreplaceUserRolesResponseBody =
+  paths[ApiApiAdminUserreplaceUserRolesPath][ApiApiAdminUserreplaceUserRolesMethod]['responses']['200']['content']['application/json']['data'];
+
+/** AdminUser_grantSystemAdmin */
+export const ApiApiAdminUsergrantSystemAdminPath = '/api/admin/user/system-admin/grant/{userId}';
+export type ApiApiAdminUsergrantSystemAdminPath = '/api/admin/user/system-admin/grant/{userId}';
+export type ApiApiAdminUsergrantSystemAdminMethod = 'post';
+export type ApiApiAdminUsergrantSystemAdminRequestParams =
+  paths[ApiApiAdminUsergrantSystemAdminPath][ApiApiAdminUsergrantSystemAdminMethod]['parameters']['path'];
+export type ApiApiAdminUsergrantSystemAdminRequestBody =
+  components['schemas']['admin-role.dto.systemAdminGrant'];
+export type ApiApiAdminUsergrantSystemAdminResponseBody =
+  paths[ApiApiAdminUsergrantSystemAdminPath][ApiApiAdminUsergrantSystemAdminMethod]['responses']['200']['content']['application/json']['data'];
+
+/** AdminUser_revokeSystemAdmin */
+export const ApiApiAdminUserrevokeSystemAdminPath = '/api/admin/user/system-admin/revoke/{userId}';
+export type ApiApiAdminUserrevokeSystemAdminPath = '/api/admin/user/system-admin/revoke/{userId}';
+export type ApiApiAdminUserrevokeSystemAdminMethod = 'post';
+export type ApiApiAdminUserrevokeSystemAdminRequestParams =
+  paths[ApiApiAdminUserrevokeSystemAdminPath][ApiApiAdminUserrevokeSystemAdminMethod]['parameters']['path'];
+export type ApiApiAdminUserrevokeSystemAdminRequestBody =
+  components['schemas']['admin-role.dto.systemAdminRevoke'];
+export type ApiApiAdminUserrevokeSystemAdminResponseBody =
+  paths[ApiApiAdminUserrevokeSystemAdminPath][ApiApiAdminUserrevokeSystemAdminMethod]['responses']['200']['content']['application/json']['data'];
+
 @Api()
 export class ApiAdminUser extends BeanApiBase {
   select(
@@ -112,6 +145,45 @@ export class ApiAdminUser extends BeanApiBase {
   ) {
     return this.$fetch.put<any, ApiApiAdminUserupdateAccountStatusResponseBody>(
       this.$pathTranslate(ApiApiAdminUserupdateAccountStatusPath, options.params),
+      body,
+      this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
+    );
+  }
+
+  replaceUserRoles(
+    body: ApiApiAdminUserreplaceUserRolesRequestBody,
+    options: {
+      params: ApiApiAdminUserreplaceUserRolesRequestParams;
+    } & IApiActionOptions,
+  ) {
+    return this.$fetch.put<any, ApiApiAdminUserreplaceUserRolesResponseBody>(
+      this.$pathTranslate(ApiApiAdminUserreplaceUserRolesPath, options.params),
+      body,
+      this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
+    );
+  }
+
+  grantSystemAdmin(
+    body: ApiApiAdminUsergrantSystemAdminRequestBody,
+    options: {
+      params: ApiApiAdminUsergrantSystemAdminRequestParams;
+    } & IApiActionOptions,
+  ) {
+    return this.$fetch.post<any, ApiApiAdminUsergrantSystemAdminResponseBody>(
+      this.$pathTranslate(ApiApiAdminUsergrantSystemAdminPath, options.params),
+      body,
+      this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
+    );
+  }
+
+  revokeSystemAdmin(
+    body: ApiApiAdminUserrevokeSystemAdminRequestBody,
+    options: {
+      params: ApiApiAdminUserrevokeSystemAdminRequestParams;
+    } & IApiActionOptions,
+  ) {
+    return this.$fetch.post<any, ApiApiAdminUserrevokeSystemAdminResponseBody>(
+      this.$pathTranslate(ApiApiAdminUserrevokeSystemAdminPath, options.params),
       body,
       this.$configPrepare(OpenApiBaseURL(this.sys), options, true),
     );

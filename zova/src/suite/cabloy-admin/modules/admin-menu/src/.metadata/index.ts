@@ -26,7 +26,7 @@ declare module 'zova-module-admin-menu' {
 }
 /** model: end */
 /** model: begin */
-import { ModelRoleMenu } from '../model/roleMenu.js';
+import type { ModelRoleMenu } from '../model/roleMenu.js';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -57,7 +57,7 @@ declare module 'zova-module-admin-menu' {
 }
 /** api: end */
 /** api: begin */
-import { ApiAdminMenuRoleMenu } from '../api/adminMenuRoleMenu.js';
+import type { ApiAdminMenuRoleMenu } from '../api/adminMenuRoleMenu.js';
 export interface IModuleApi {
   'adminMenuRoleMenu': ApiAdminMenuRoleMenu;
 }
@@ -97,7 +97,7 @@ declare module 'zova-module-admin-menu' {
 }
 /** apiSchema: end */
 /** apiSchema: begin */
-import { ApiSchemaAdminMenuRoleMenu } from '../apiSchema/adminMenuRoleMenu.js';
+import type { ApiSchemaAdminMenuRoleMenu } from '../apiSchema/adminMenuRoleMenu.js';
 export interface IModuleApiSchema {
   'adminMenuRoleMenu': ApiSchemaAdminMenuRoleMenu;
 }
@@ -128,7 +128,7 @@ declare module 'zova-module-admin-menu' {
 }
 /** controller: end */
 /** controller: begin */
-import { ControllerBlockRoleMenuEditor } from '../component/blockRoleMenuEditor/controller.jsx';
+import type { ControllerBlockRoleMenuEditor } from '../component/blockRoleMenuEditor/controller.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {

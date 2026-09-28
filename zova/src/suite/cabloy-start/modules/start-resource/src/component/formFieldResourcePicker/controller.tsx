@@ -13,7 +13,7 @@ import type {
 
 import { pickObject } from '@cabloy/utils';
 import { classes } from 'typestyle';
-import { VBtn, VChip, VChipGroup, VSelect, VTextField } from 'vuetify/components';
+import { VBtn, VChip, VChipGroup, VIcon, VListItem, VSelect, VTextField } from 'vuetify/components';
 import z from 'zod';
 import { BeanControllerBase, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
@@ -190,7 +190,23 @@ export class ControllerFormFieldResourcePicker extends BeanControllerBase {
             ...propsBucket.options?.selectOptions,
             ...props,
           };
-          return <VSelect {...propsNew}></VSelect>;
+          const slots =
+            propsNew.multiple && !propsNew.hideSelected
+              ? {
+                  item: ({ props: itemProps }) => (
+                    <VListItem
+                      {...itemProps}
+                      role="option"
+                      v-slots={{
+                        prepend: ({ isSelected }) => (
+                          <VIcon icon={isSelected ? '$checkboxOn' : '$checkboxOff'}></VIcon>
+                        ),
+                      }}
+                    ></VListItem>
+                  ),
+                }
+              : undefined;
+          return <VSelect {...propsNew} v-slots={slots}></VSelect>;
         }}
       ></ZFormField>
     );

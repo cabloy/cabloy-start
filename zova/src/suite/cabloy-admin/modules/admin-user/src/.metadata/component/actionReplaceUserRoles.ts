@@ -14,7 +14,7 @@ type ControllerInnerProps = TypeControllerInnerProps<
   ControllerActionReplaceUserRolesProps,
   keyof typeof ControllerActionReplaceUserRoles.$propsDefault
 >;
-declare module 'zova-module-admin-role' {
+declare module 'zova-module-admin-user' {
   export interface ControllerActionReplaceUserRoles {
     $props: ControllerInnerProps;
   }
@@ -26,6 +26,6 @@ export const ZActionReplaceUserRoles = defineComponent((_props: ZActionReplaceUs
 }, prepareComponentOptions(ControllerActionReplaceUserRoles.$componentOptions));
 declare module 'zova-module-a-bean' {
   export interface IVonaComponentRecord {
-    'admin-role:actionReplaceUserRoles': ControllerActionReplaceUserRolesProps;
+    'admin-user:actionReplaceUserRoles': ControllerActionReplaceUserRolesProps;
   }
 }

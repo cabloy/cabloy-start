@@ -26,7 +26,7 @@ declare module 'zova-module-admin-department' {
 }
 /** model: end */
 /** model: begin */
-import { ModelDepartment } from '../model/department.js';
+import type { ModelDepartment } from '../model/department.js';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -57,7 +57,7 @@ declare module 'zova-module-admin-department' {
 }
 /** api: end */
 /** api: begin */
-import { ApiAdminDepartment } from '../api/adminDepartment.js';
+import type { ApiAdminDepartment } from '../api/adminDepartment.js';
 export interface IModuleApi {
   'adminDepartment': ApiAdminDepartment;
 }
@@ -97,7 +97,7 @@ declare module 'zova-module-admin-department' {
 }
 /** apiSchema: end */
 /** apiSchema: begin */
-import { ApiSchemaAdminDepartment } from '../apiSchema/adminDepartment.js';
+import type { ApiSchemaAdminDepartment } from '../apiSchema/adminDepartment.js';
 export interface IModuleApiSchema {
   'adminDepartment': ApiSchemaAdminDepartment;
 }
@@ -152,11 +152,11 @@ declare module 'zova-module-admin-department' {
 }
 /** controller: end */
 /** controller: begin */
-import { ControllerActionCreateMembership } from '../component/actionCreateMembership/controller.jsx';
-import { ControllerActionEditDepartment } from '../component/actionEditDepartment/controller.jsx';
-import { ControllerBlockDepartmentMemberships } from '../component/blockDepartmentMemberships/controller.jsx';
-import { ControllerBlockPageDepartments } from '../component/blockPageDepartments/controller.jsx';
-import { ControllerFormFieldDepartmentTree } from '../component/formFieldDepartmentTree/controller.jsx';
+import type { ControllerActionCreateMembership } from '../component/actionCreateMembership/controller.jsx';
+import type { ControllerActionEditDepartment } from '../component/actionEditDepartment/controller.jsx';
+import type { ControllerBlockDepartmentMemberships } from '../component/blockDepartmentMemberships/controller.jsx';
+import type { ControllerBlockPageDepartments } from '../component/blockPageDepartments/controller.jsx';
+import type { ControllerFormFieldDepartmentTree } from '../component/formFieldDepartmentTree/controller.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
@@ -330,14 +330,14 @@ declare module 'zova-module-admin-department' {
 }
 /** tableCell: end */
 /** tableCell: begin */
-import { TableCellActionActivation } from '../bean/tableCell.actionActivation.jsx';
-import { TableCellActionDeleteMembership } from '../bean/tableCell.actionDeleteMembership.jsx';
-import { TableCellActionMove } from '../bean/tableCell.actionMove.jsx';
-import { TableCellActionReorder } from '../bean/tableCell.actionReorder.jsx';
-import { TableCellActionToggleMembershipPrimary } from '../bean/tableCell.actionToggleMembershipPrimary.jsx';
-import { TableCellActionUpdateMembership } from '../bean/tableCell.actionUpdateMembership.jsx';
-import { TableCellActionUpdateMembershipManager } from '../bean/tableCell.actionUpdateMembershipManager.jsx';
-import { TableCellDepartmentName } from '../bean/tableCell.departmentName.jsx';
+import type { TableCellActionActivation } from '../bean/tableCell.actionActivation.jsx';
+import type { TableCellActionDeleteMembership } from '../bean/tableCell.actionDeleteMembership.jsx';
+import type { TableCellActionMove } from '../bean/tableCell.actionMove.jsx';
+import type { TableCellActionReorder } from '../bean/tableCell.actionReorder.jsx';
+import type { TableCellActionToggleMembershipPrimary } from '../bean/tableCell.actionToggleMembershipPrimary.jsx';
+import type { TableCellActionUpdateMembership } from '../bean/tableCell.actionUpdateMembership.jsx';
+import type { TableCellActionUpdateMembershipManager } from '../bean/tableCell.actionUpdateMembershipManager.jsx';
+import type { TableCellDepartmentName } from '../bean/tableCell.departmentName.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {

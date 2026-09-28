@@ -86,6 +86,9 @@ describe('authorization.test.ts', { concurrency: false }, () => {
         targetId = String(target.id);
         await app.bean.user.activate(ordinary);
         await app.bean.user.activate(target);
+        const systemAdminRole = await app.scope('home-user').model.role.getByName('systemAdmin');
+        assert.ok(systemAdminRole);
+        await app.bean.role.addUserId(systemAdminRole.id, target.id);
         const fixtureRole = await app.scope('admin-role').service.role.create({
           name: `admin-auth-fixture-${crypto.randomUUID()}`,
           title: 'Authorization fixture',
@@ -165,16 +168,6 @@ describe('authorization.test.ts', { concurrency: false }, () => {
           },
         },
         {
-          name: 'PUT /admin/role/user/:userId/roles',
-          invoke: async _caller =>
-            await app.bean.executor.performAction('put', '/admin/role/user/:userId/roles', {
-              innerAccess: false,
-              params: { userId: targetId },
-              body: { roleIds: [fixtureRoleId] },
-            }),
-          assertSuccess: result => assert.equal(result, null),
-        },
-        {
           name: 'POST /admin/role/system-admin/fresh-proof',
           invoke: async caller =>
             caller === 'systemAdmin'
@@ -188,25 +181,6 @@ describe('authorization.test.ts', { concurrency: false }, () => {
                   },
                 ),
           assertSuccess: result => assert.equal(typeof result.proof, 'string'),
-        },
-        {
-          name: 'POST /admin/role/system-admin/grant/:userId',
-          invoke: async caller => {
-            const proof =
-              caller === 'systemAdmin'
-                ? await issueFreshProof(proofHashes)
-                : { proof: 'authorization-rejection' };
-            return await app.bean.executor.performAction(
-              'post',
-              '/admin/role/system-admin/grant/:userId',
-              {
-                innerAccess: false,
-                params: { userId: targetId },
-                body: { freshProof: proof.proof, reason: 'Authorization acceptance grant' },
-              },
-            );
-          },
-          assertSuccess: result => assert.equal(result, null),
         },
         {
           name: 'PUT /admin/role/system-admin/account-status/:userId',
@@ -249,25 +223,6 @@ describe('authorization.test.ts', { concurrency: false }, () => {
                   freshProof: proof.proof,
                   reason: 'Authorization acceptance activation',
                 },
-              },
-            );
-          },
-          assertSuccess: result => assert.equal(result, null),
-        },
-        {
-          name: 'POST /admin/role/system-admin/revoke/:userId',
-          invoke: async caller => {
-            const proof =
-              caller === 'systemAdmin'
-                ? await issueFreshProof(proofHashes)
-                : { proof: 'authorization-rejection' };
-            return await app.bean.executor.performAction(
-              'post',
-              '/admin/role/system-admin/revoke/:userId',
-              {
-                innerAccess: false,
-                params: { userId: targetId },
-                body: { freshProof: proof.proof, reason: 'Authorization acceptance revoke' },
               },
             );
           },

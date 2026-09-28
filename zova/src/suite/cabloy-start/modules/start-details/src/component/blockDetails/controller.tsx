@@ -10,9 +10,10 @@ import {
   IResourceBlockOptionsBase,
   IResourceRenderBlockOptionsBlock,
   ISchemaObjectExtensionField,
-  TypeOpenapiPermissions,
 } from 'zova-module-a-openapi';
 import { BeanControllerTableBase } from 'zova-module-a-table';
+
+import type { TypeDetailsCheckPermission } from '../../types/details.js';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceBlockRecord {
@@ -27,7 +28,15 @@ export interface ControllerBlockDetailsProps<
   formMeta?: IFormMeta;
   schemaRow?: ISchemaObjectExtensionField;
   schemaForm?: ISchemaObjectExtensionField;
-  permissions?: TypeOpenapiPermissions;
+  /**
+   * Bound by the enclosing detail host at render time. It cannot be declared
+   * in serializable schema block metadata because it closes over that host's
+   * current Resource permission projection.
+   *
+   * Optional only because schema DTO metadata is constructed before its render
+   * host supplies the callback; every rendered detail block requires it.
+   */
+  checkPermission?: TypeDetailsCheckPermission;
   getDetailItems?: () => TData[] | undefined;
   setDetailItems?: (detailItems: TData[]) => void;
 }
@@ -71,8 +80,12 @@ export class ControllerBlockDetails<TData extends {} = {}> extends BeanControlle
     return this.$props.schemaForm!;
   }
 
-  get permissions() {
-    return this.$props.permissions;
+  checkPermission(...args: Parameters<TypeDetailsCheckPermission>) {
+    const checkPermission = this.$props.checkPermission;
+    if (!checkPermission) {
+      throw new Error('should provide enclosing Resource permission checker for details');
+    }
+    return checkPermission(...args);
   }
 
   public async setTableRef(tableRef: BeanControllerTableBase<TData> | undefined) {
@@ -107,7 +120,6 @@ export class ControllerBlockDetails<TData extends {} = {}> extends BeanControlle
     }) as any;
     return {
       formMeta: this.formMeta,
-      permissions: this.permissions,
       $$details,
     };
   }

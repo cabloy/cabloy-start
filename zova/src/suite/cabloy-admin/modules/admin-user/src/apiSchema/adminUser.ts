@@ -9,6 +9,9 @@ import {
   ApiApiAdminUserupdatePath,
   ApiApiAdminUseractivatePath,
   ApiApiAdminUserupdateAccountStatusPath,
+  ApiApiAdminUserreplaceUserRolesPath,
+  ApiApiAdminUsergrantSystemAdminPath,
+  ApiApiAdminUserrevokeSystemAdminPath,
 } from '../api/adminUser.js';
 
 @ApiSchema()
@@ -31,5 +34,17 @@ export class ApiSchemaAdminUser extends BeanBase {
 
   updateAccountStatus(options?: IApiSchemaOptions) {
     return this.$sdk.createApiSchemas(ApiApiAdminUserupdateAccountStatusPath, 'put', options);
+  }
+
+  replaceUserRoles(options?: IApiSchemaOptions) {
+    return this.$sdk.createApiSchemas(ApiApiAdminUserreplaceUserRolesPath, 'put', options);
+  }
+
+  grantSystemAdmin(options?: IApiSchemaOptions) {
+    return this.$sdk.createApiSchemas(ApiApiAdminUsergrantSystemAdminPath, 'post', options);
+  }
+
+  revokeSystemAdmin(options?: IApiSchemaOptions) {
+    return this.$sdk.createApiSchemas(ApiApiAdminUserrevokeSystemAdminPath, 'post', options);
   }
 }

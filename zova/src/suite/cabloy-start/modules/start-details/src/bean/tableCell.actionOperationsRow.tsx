@@ -15,7 +15,8 @@ import { VBtnGroup } from 'vuetify/components';
 import { BeanBase } from 'zova';
 import { TableCell } from 'zova-module-a-table';
 
-import { checkPermission } from '../lib/utils.js';
+import { filterDetailsRowActions } from '../lib/detailsPermissions.js';
+import { checkFormScene } from '../lib/utils.js';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceDetailsActionRowRecord {
@@ -36,16 +37,16 @@ export class TableCellActionOperationsRow extends BeanBase implements ITableCell
     const { $celScope, $$table } = renderContext;
     const actions = options.actions;
     if (!actions || actions.length === 0) return false;
+    const $$details = $celScope.$$details!;
+    const actionsVisible = actions.filter(action => {
+      return checkFormScene($$details.formScene, action.options?.permission);
+    });
     const renders: TypeTableCellRenderComponent[] = [];
-    for (const action of actions) {
+    for (const action of actionsVisible) {
       const actionName = action.name;
       const actionRender = action.render;
-      const permissionHint = action.options?.permission;
-      const $$details = $celScope.$$details;
-      if (checkPermission($$details!.formScene, permissionHint)) {
-        if (!actionRender) throw new Error(`should specify action render: ${actionName}`);
-        renders.push(actionRender);
-      }
+      if (!actionRender) throw new Error(`should specify action render: ${actionName}`);
+      renders.push(actionRender);
     }
     await $$table.cellRenderPrepare(renders);
     return renders.length > 0;
@@ -59,14 +60,18 @@ export class TableCellActionOperationsRow extends BeanBase implements ITableCell
     const { $celScope, $$table } = renderContext;
     const actions = options.actions;
     if (!actions || actions.length === 0) return;
+    const $$details = $celScope.$$details!;
+    const actionsAllowed = filterDetailsRowActions(
+      $$details.formScene,
+      $$details.checkPermission.bind($$details),
+      actions,
+    );
     const domActions: VNode[] = [];
-    actions.forEach((action, index) => {
-      const permissionHint = action.options?.permission;
-      const $$details = $celScope.$$details;
-      if (!checkPermission($$details!.formScene, permissionHint)) return;
+    actionsAllowed.forEach((action, index) => {
       const actionOptions = Object.assign({ key: index }, action.options);
       domActions.push($$table.cellRender(action.render!, actionOptions, renderContext));
     });
+    if (domActions.length === 0) return;
     return (
       <VBtnGroup class={options.class} variant="outlined" divided>
         {domActions}

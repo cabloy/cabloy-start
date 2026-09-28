@@ -63,38 +63,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/mailconfirm/mail/emailConfirmCallback': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['MailconfirmMail_emailConfirmCallback'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/mailconfirm/mail/passwordResetCallback': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['MailconfirmMail_passwordResetCallback'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   '/api/home/base/menu/{publicPath?}': {
     parameters: {
       query?: never;
@@ -154,6 +122,230 @@ export interface paths {
     get: operations['Home_index'];
     put?: never;
     post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/image/upload-policy': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['Image_getUploadPolicy'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/image/upload': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['Image_upload'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/image/direct-upload': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['Image_createDirectUpload'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/image/direct-upload/finalize': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['Image_finalizeDirectUpload'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/image/upload-url': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['Image_uploadUrl'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/image/delivery': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['Image_delivery'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/home/user/account/current': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['HomeUserAccount_current'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/home/user/account/profile': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch: operations['HomeUserAccount_updateProfile'];
+    trace?: never;
+  };
+  '/api/home/user/account/activation/consume': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['HomeUserAccount_consumeActivation'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/home/user/account/password/change': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['HomeUserAccount_changePassword'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/home/user/account/password-set/issue': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['HomeUserAccount_issuePasswordSetLink'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/home/user/account/password-set/consume': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['HomeUserAccount_consumePasswordSet'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/home/user/account/password-reset/request': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['HomeUserAccount_requestPasswordReset'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/home/user/account/password-reset/consume': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['HomeUserAccount_consumePasswordReset'];
     delete?: never;
     options?: never;
     head?: never;
@@ -327,8 +519,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
+    /** List Student Training Records */
     get: operations['TrainingRecord_select'];
     put?: never;
+    /** Create Student Training Record */
     post: operations['TrainingRecord_create'];
     delete?: never;
     options?: never;
@@ -343,13 +537,33 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
+    /** View Student Training Record */
     get: operations['TrainingRecord_view'];
     put?: never;
     post?: never;
+    /** Delete Student Training Record */
     delete: operations['TrainingRecord_delete'];
     options?: never;
     head?: never;
+    /** Update Student Training Record */
     patch: operations['TrainingRecord_update'];
+    trace?: never;
+  };
+  '/api/training/record/bulk': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** Bulk Delete Student Training Records */
+    delete: operations['TrainingRecord_deleteBulk'];
+    options?: never;
+    head?: never;
+    patch?: never;
     trace?: never;
   };
   '/api/training/student': {
@@ -359,8 +573,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
+    /** List Students */
     get: operations['TrainingStudent_select'];
     put?: never;
+    /** Create Student */
     post: operations['TrainingStudent_create'];
     delete?: never;
     options?: never;
@@ -375,12 +591,15 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
+    /** View Student */
     get: operations['TrainingStudent_view'];
     put?: never;
     post?: never;
+    /** Delete Student */
     delete: operations['TrainingStudent_delete'];
     options?: never;
     head?: never;
+    /** Update Student */
     patch: operations['TrainingStudent_update'];
     trace?: never;
   };
@@ -391,6 +610,7 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
+    /** View Student Summary */
     get: operations['TrainingStudent_summary'];
     put?: never;
     post?: never;
@@ -410,7 +630,25 @@ export interface paths {
     get?: never;
     put?: never;
     post?: never;
+    /** Permanently Delete Student */
     delete: operations['TrainingStudent_deleteForce'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/training/student/bulk/delete': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Bulk Delete Students */
+    post: operations['TrainingStudent_deleteBulk'];
+    delete?: never;
     options?: never;
     head?: never;
     patch?: never;
@@ -576,6 +814,166 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/admin/menu/roleMenu/catalog': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['AdminMenuRoleMenu_catalog'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/menu/roleMenu/roles/{roleId}/configuration': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['AdminMenuRoleMenu_roleConfiguration'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/menu/roleMenu': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['AdminMenuRoleMenu_create'];
+    delete: operations['AdminMenuRoleMenu_delete'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/menu/roleMenu/batch': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put: operations['AdminMenuRoleMenu_batch'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/rbac/rbacGrant': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['AdminRbacRbacGrant_select'];
+    put?: never;
+    post: operations['AdminRbacRbacGrant_create'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/rbac/rbacGrant/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['AdminRbacRbacGrant_view'];
+    put?: never;
+    post?: never;
+    delete: operations['AdminRbacRbacGrant_delete'];
+    options?: never;
+    head?: never;
+    patch: operations['AdminRbacRbacGrant_update'];
+    trace?: never;
+  };
+  '/api/admin/rbac/rbacGrantDepartment': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['AdminRbacRbacGrantDepartment_select'];
+    put?: never;
+    post: operations['AdminRbacRbacGrantDepartment_create'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/rbac/rbacGrantDepartment/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['AdminRbacRbacGrantDepartment_view'];
+    put?: never;
+    post?: never;
+    delete: operations['AdminRbacRbacGrantDepartment_delete'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/rbac/rbacPolicy/catalog': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['AdminRbacRbacPolicy_catalog'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/rbac/rbacPolicy/roles/{roleId}/configuration': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['AdminRbacRbacPolicy_roleConfiguration'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/admin/role': {
     parameters: {
       query?: never;
@@ -586,6 +984,22 @@ export interface paths {
     get: operations['AdminRole_select'];
     put?: never;
     post: operations['AdminRole_create'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/role/membership-select': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['AdminRole_selectMembershipCandidates'];
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -608,22 +1022,6 @@ export interface paths {
     patch: operations['AdminRole_update'];
     trace?: never;
   };
-  '/api/admin/role/user/{userId}/roles': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put: operations['AdminRole_replaceUserRoles'];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   '/api/admin/role/system-admin/fresh-proof': {
     parameters: {
       query?: never;
@@ -634,22 +1032,6 @@ export interface paths {
     get?: never;
     put?: never;
     post: operations['AdminRole_issueSystemAdminFreshProof'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/role/system-admin/grant/{userId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: operations['AdminRole_grantSystemAdmin'];
     delete?: never;
     options?: never;
     head?: never;
@@ -768,6 +1150,38 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/admin/user/{userId}/roles': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put: operations['AdminUser_replaceUserRoles'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/user/system-admin/grant/{userId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['AdminUser_grantSystemAdmin'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/start/metrics/snapshot': {
     parameters: {
       query?: never;
@@ -779,6 +1193,54 @@ export interface paths {
     put?: never;
     post?: never;
     delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/layoutprofile/load': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['Layoutprofile_load'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/layoutprofile/save': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['Layoutprofile_save'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/layoutprofile/reset': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete: operations['Layoutprofile_reset'];
     options?: never;
     head?: never;
     patch?: never;
@@ -872,102 +1334,6 @@ export interface paths {
       cookie?: never;
     };
     get: operations['File_download'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/image/upload-policy': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: operations['Image_getUploadPolicy'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/image/upload': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: operations['Image_upload'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/image/direct-upload': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: operations['Image_createDirectUpload'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/image/direct-upload/finalize': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: operations['Image_finalizeDirectUpload'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/image/upload-url': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: operations['Image_uploadUrl'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/image/delivery': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['Image_delivery'];
     put?: never;
     post?: never;
     delete?: never;
@@ -1088,54 +1454,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/paypal/getRecord/{recordId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['Paypal_getRecord'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/paypal/captureOrder/{recordId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: operations['Paypal_captureOrder'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/paypal/cancelOrder/{recordId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: operations['Paypal_cancelOrder'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1181,7 +1499,29 @@ export interface components {
     'a-permission.dto.permissions': {
       roleIds?: (number | string)[] | undefined;
       roleNames?: string[] | undefined;
-      actions?: unknown;
+      actions?:
+        | {
+            [key: string]:
+              | boolean
+              | {
+                  key: string;
+                  allowed: boolean;
+                  matcher:
+                    | {
+                        /** @enum {string} */
+                        mode: 'all';
+                      }
+                    | {
+                        /** @enum {string} */
+                        mode: 'any';
+                        rules: {
+                          field: string;
+                          values: string[];
+                        }[];
+                      };
+                };
+          }
+        | undefined;
     };
     'home-base.dto.siteCatalogSelectRes': {
       list: components['schemas']['home-base.dto.siteCatalogSelectResItem'][];
@@ -1194,59 +1534,174 @@ export interface components {
       siteId: string;
       title: string;
     };
+    'a-image.dto.imageUploadPolicyResponse': {
+      imageScene: string;
+      maxSize?: number | undefined;
+      mimeTypes?: string[] | undefined;
+      extensions?: string[] | undefined;
+      multiple?: boolean | undefined;
+      public?: boolean | undefined;
+      directUpload?: boolean | undefined;
+    };
+    'a-image.dto.imageUploadPolicyRequest': {
+      imageScene: string;
+    };
+    'a-image.dto.imageUploadResponse': {
+      id: number | string;
+      filename?: string | undefined;
+      contentType?: string | undefined;
+      size?: number | undefined;
+      width?: number | undefined;
+      height?: number | undefined;
+      public?: boolean | undefined;
+      url?: string | undefined;
+      signed?: boolean | undefined;
+    };
+    'a-image.dto.imageDirectUploadResponse': {
+      id: number | string;
+      uploadUrl: string;
+      filename?: string | undefined;
+      public?: boolean | undefined;
+    };
+    'a-image.dto.imageDirectUploadRequest': {
+      imageScene: string;
+      filename?: string | undefined;
+      size: number;
+      mimeType: string;
+      contentType?: string | undefined;
+      expiry?: string | undefined;
+      customId?: string | undefined;
+    };
+    'a-image.dto.imageDirectUploadFinalizeResponse': {
+      id: number | string;
+      filename?: string | undefined;
+      contentType?: string | undefined;
+      size?: number | undefined;
+      width?: number | undefined;
+      height?: number | undefined;
+      public?: boolean | undefined;
+      url?: string | undefined;
+      signed?: boolean | undefined;
+    };
+    'a-image.dto.imageDirectUploadFinalizeRequest': {
+      imageId: number | string;
+    };
+    'a-image.dto.imageUploadUrlRequest': {
+      imageScene: string;
+      /** Format: uri */
+      url: string;
+      size: number;
+      mimeType: string;
+      filename?: string | undefined;
+      contentType?: string | undefined;
+    };
+    'a-image.dto.imageTransformOptions_2d063d28bc7243bed02ebd8bddf1212a93c6305b':
+      | {
+          width?: number | undefined;
+          height?: number | undefined;
+          /** @enum {string|null} */
+          fit?: 'scale-down' | 'contain' | 'cover' | 'crop' | 'pad' | null | undefined;
+          /** @enum {string|null} */
+          gravity?: 'auto' | 'center' | 'top' | 'bottom' | 'left' | 'right' | null | undefined;
+          background?: string | undefined;
+          quality?: number | undefined;
+          /** @enum {string|null} */
+          format?: 'auto' | 'avif' | 'webp' | 'jpeg' | 'png' | null | undefined;
+          dpr?: number | undefined;
+          rotate?: number | undefined;
+          sharpen?: number | undefined;
+        }
+      | undefined;
+    'home-user.dto.accountCurrent': {
+      name: string;
+      avatar?: string | undefined;
+      locale?: unknown;
+      tz?: string | undefined;
+      hasSimpleAuth: boolean;
+      canSendSetPasswordLink: boolean;
+      eligibleEmailMasked?: string | undefined;
+    };
+    'home-user.dto.accountProfileUpdate': {
+      /** @description Display name */
+      name: string;
+      /**
+       * Avatar
+       * @description Absolute HTTPS avatar URL or API delivery URL
+       */
+      avatar?: string | undefined;
+      /** @description Locale */
+      locale?: string | undefined;
+      /** @description Time zone */
+      tz?: string | undefined;
+    };
+    'home-user.dto.accountActivation': {
+      token: string;
+    };
+    'home-user.dto.accountRelogin': {
+      requiresRelogin: boolean;
+    };
+    'home-user.dto.accountPasswordChange': {
+      /** @description Current Password */
+      currentPassword: string;
+      /** @description New Password */
+      newPassword: string;
+      /** @description Confirm Password */
+      passwordConfirm: string;
+    };
+    'home-user.dto.accountPasswordSetIssue': {
+      /** Format: email */
+      email: string;
+      consumerUrl: string;
+    };
+    'home-user.dto.accountPasswordSet': {
+      token: string;
+      /** @description Password */
+      newPassword: string;
+      /** @description Confirm Password */
+      passwordConfirm: string;
+    };
+    'home-user.dto.accountPasswordResetRequestResult': {
+      accepted: boolean;
+    };
+    'home-user.dto.accountPasswordResetRequest': {
+      /** Format: email */
+      email: string;
+      consumerUrl: string;
+      captcha: components['schemas']['a-captcha.dto.captchaVerify_42dbf1a77dd2259bc46e709048a4a5eaa5f766ef_626802c24df1498cec99aab0854fedf90c9b6dd3_bb4fbbbf2ac4822c1e541f79b527745b9c7aa662'];
+    };
+    'a-captcha.dto.captchaVerify_42dbf1a77dd2259bc46e709048a4a5eaa5f766ef_626802c24df1498cec99aab0854fedf90c9b6dd3_bb4fbbbf2ac4822c1e541f79b527745b9c7aa662': {
+      id: string;
+      token: string;
+    };
+    'home-user.dto.accountPasswordReset': {
+      token: string;
+      /** @description Password */
+      newPassword: string;
+      /** @description Confirm Password */
+      passwordConfirm: string;
+    };
     'home-user.dto.passport_2d063d28bc7243bed02ebd8bddf1212a93c6305b':
       | {
-          user: components['schemas']['home-user.entity.user'];
+          user: components['schemas']['home-user.dto.passportUser'];
           auth: components['schemas']['a-auth.dto.auth'];
           roles: components['schemas']['home-user.entity.role'][];
         }
       | undefined;
-    'home-user.entity.user': {
-      /**
-       * Format: date-time
-       * @description Created At
-       */
-      createdAt: Date;
-      /**
-       * Format: date-time
-       * @description Updated At
-       */
-      updatedAt: Date;
-      /**
-       * @description Deleted
-       * @default false
-       */
-      deleted?: boolean;
-      /**
-       * @description Instance ID
-       * @default 0
-       */
-      iid?: number;
-      /** @description ID */
+    'home-user.dto.passportUser': {
       id: number | string;
-      /** @description User Name */
       name: string;
-      /** @description Avatar */
       avatar?: string | undefined;
-      /** @description Email */
       email?: string | undefined;
-      /** @description Mobile */
       mobile?: string | undefined;
+      activated?: boolean | undefined;
       /**
-       * @description Identity Activated
-       * @default false
-       */
-      activated?: boolean;
-      /**
-       * @description Account Status
        * @default active
        * @enum {string}
        */
       accountStatus?: 'active' | 'disabled';
-      /** @description Language */
-      locale?: string | undefined;
-      /** @description Timezone */
+      locale?: unknown;
       tz?: string | undefined;
+      anonymous?: boolean | undefined;
     };
     'a-auth.dto.auth': {
       /** @description ID */
@@ -1293,13 +1748,15 @@ export interface components {
           }
         | undefined;
       siteIds: string[];
+      /** @default false */
+      builtin?: boolean;
     };
     'home-user.dto.passportJwt': {
       passport: components['schemas']['home-user.dto.passport'];
       jwt: components['schemas']['a-jwt.dto.jwtToken'];
     };
     'home-user.dto.passport': {
-      user: components['schemas']['home-user.entity.user'];
+      user: components['schemas']['home-user.dto.passportUser'];
       auth: components['schemas']['a-auth.dto.auth'];
       roles: components['schemas']['home-user.entity.role'][];
     };
@@ -1309,14 +1766,22 @@ export interface components {
       expiresIn: number;
     };
     'home-user.dto.register': {
+      /** @description User Name */
       username: string;
-      /** Format: email */
+      /**
+       * Format: email
+       * @description Email
+       */
       email: string;
+      consumerUrl: string;
+      /** @description Password */
       password: string;
+      /** @description Confirm Password */
       passwordConfirm: string;
-      captcha: components['schemas']['a-captcha.dto.captchaVerify_42dbf1a77dd2259bc46e709048a4a5eaa5f766ef'];
+      captcha: components['schemas']['a-captcha.dto.captchaVerify_42dbf1a77dd2259bc46e709048a4a5eaa5f766ef_626802c24df1498cec99aab0854fedf90c9b6dd3_bb4fbbbf2ac4822c1e541f79b527745b9c7aa662_0aab216abd3467dd07f61c69172266c2441af477_885000189fd007fcdf19470e3413af66a203abe0'];
     };
-    'a-captcha.dto.captchaVerify_42dbf1a77dd2259bc46e709048a4a5eaa5f766ef': {
+    /** @description Captcha */
+    'a-captcha.dto.captchaVerify_42dbf1a77dd2259bc46e709048a4a5eaa5f766ef_626802c24df1498cec99aab0854fedf90c9b6dd3_bb4fbbbf2ac4822c1e541f79b527745b9c7aa662_0aab216abd3467dd07f61c69172266c2441af477_885000189fd007fcdf19470e3413af66a203abe0': {
       id: string;
       token: string;
     };
@@ -1329,6 +1794,7 @@ export interface components {
       id: string;
       token: string;
     };
+    /** @description Create Student Training Record */
     'training-record.dto.recordCreate': {
       /** @description Training Record Name */
       name: string;
@@ -1415,6 +1881,8 @@ export interface components {
       iid?: number;
       /** @description ID */
       id: number | string;
+      departmentId: number | string | undefined;
+      userIdOwner: number | string;
       /** @description Training Record Name */
       name: string;
       /** @description Student */
@@ -1470,7 +1938,8 @@ export interface components {
       /** @default true */
       signed?: boolean;
     };
-    'training-record.dto.recordView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_88947ca8c18d5d4ad1f377d379e77df5fe5c0ce5':
+    /** @description View Student Training Record */
+    'training-record.dto.recordView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_79ca06e0fa89c8f250537d4a0b8a8cc1e39df05a':
       | {
           /**
            * Format: date-time
@@ -1494,6 +1963,8 @@ export interface components {
           iid?: number;
           /** @description ID */
           id: number | string;
+          departmentId: number | string | undefined;
+          userIdOwner: number | string;
           /** @description Training Record Name */
           name: string;
           /** @description Student */
@@ -1545,11 +2016,12 @@ export interface components {
             | undefined;
         }
       | undefined;
+    /** @description Update Student Training Record */
     'training-record.dto.recordUpdate': {
       /** @description Training Record Name */
       name: string;
       /** @description Student */
-      studentId: number | string;
+      studentId?: number | string | undefined;
       /** @description Subject Count */
       subjectCount?: number | undefined;
       /** @description Total Score */
@@ -1589,17 +2061,23 @@ export interface components {
         | components['schemas']['training-record.dto.detailRecordSubjectResItem'][]
         | undefined;
     };
+    'training-record.dto.recordBulkDelete': {
+      ids: (number | string)[];
+    };
+    /** @description Create Student */
     'training-student.dto.studentCreate': {
       /** @description Student Name */
       name: string;
-      /** @description Description */
-      description?: string | undefined;
       /** @description Mobile */
       mobile: string;
       /** @description Student Image */
       imageId?: number | string | undefined;
       /** @description Training Stage */
       level: 1 | 2 | 3;
+      content?: {
+        /** @description Description */
+        descriptionMarkdown?: string | undefined;
+      };
       /** @description Student Training Records */
       trainingRecords?:
         | {
@@ -1769,12 +2247,12 @@ export interface components {
       id: number | string;
       /** @description Student Name */
       name: string;
-      /** @description Description */
-      description?: string | undefined;
       /** @description Mobile */
       mobile: string;
       /** @description Student Image */
       imageId?: number | string | undefined;
+      departmentId: number | string | undefined;
+      userIdOwner: number | string;
       /** @description Training Stage */
       level: 1 | 2 | 3;
       image?: components['schemas']['a-image.dto.imageView_a83c3e638bca4b30ec8675860cdc52d66f6a16d1_2d063d28bc7243bed02ebd8bddf1212a93c6305b_efb37794d7c03c65122279f90d79919f009c34e5_1816ff740d81c738ec055c7038bbd93beb9405a7_537cd6552a384183a9457fb6a920bbae337277f6'];
@@ -1793,7 +2271,8 @@ export interface components {
           signed?: boolean;
         }
       | undefined;
-    'training-student.dto.studentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_2ade7655a06636cfe9aa1cc76e9518982ec19f2e':
+    /** @description View Student */
+    'training-student.dto.studentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_1587266c819c8b70731e8ba64e7460d7f2809951':
       | {
           /**
            * Format: date-time
@@ -1819,14 +2298,18 @@ export interface components {
           id: number | string;
           /** @description Student Name */
           name: string;
-          /** @description Description */
-          description?: string | undefined;
           /** @description Mobile */
           mobile: string;
           /** @description Student Image */
           imageId?: number | string | undefined;
+          departmentId: number | string | undefined;
+          userIdOwner: number | string;
           /** @description Training Stage */
           level: 1 | 2 | 3;
+          content?: {
+            /** @description Description */
+            descriptionMarkdown?: string | undefined;
+          };
           /** @description Student Training Records */
           trainingRecords: {
             /**
@@ -1906,19 +2389,30 @@ export interface components {
           _trainingRecords?:
             | components['schemas']['training-student.dto.detailRecordResItem'][]
             | undefined;
+          _descriptionMarkdown?: string | undefined;
         }
       | undefined;
+    /** @description Update Student */
     'training-student.dto.studentUpdate': {
       /** @description Student Name */
       name: string;
-      /** @description Description */
-      description?: string | undefined;
       /** @description Mobile */
       mobile: string;
       /** @description Student Image */
       imageId?: number | string | undefined;
       /** @description Training Stage */
       level: 1 | 2 | 3;
+      content?: {
+        /**
+         * @description Deleted
+         * @default false
+         */
+        deleted?: boolean | undefined;
+        /** @description ID */
+        id?: number | string | undefined;
+        /** @description Description */
+        descriptionMarkdown?: string | undefined;
+      };
       /** @description Student Training Records */
       trainingRecords?:
         | {
@@ -2008,12 +2502,14 @@ export interface components {
           id: number | string;
           /** @description Student Name */
           name: string;
-          /** @description Description */
-          description?: string | undefined;
           /** @description Mobile */
           mobile: string;
           /** @description Training Stage */
           level: 1 | 2 | 3;
+          /** @description Description */
+          descriptionMarkdown: string;
+          /** @description Description */
+          descriptionHtml: string;
           /** @description Level Title */
           levelTitle: string;
           /** @description Description Length */
@@ -2022,6 +2518,9 @@ export interface components {
           summaryText: string;
         }
       | undefined;
+    'training-student.dto.studentDeleteBulk': {
+      ids: (number | string)[];
+    };
     'admin-department.dto.departmentCreate': {
       /** @description Department Name */
       name: string;
@@ -2140,27 +2639,27 @@ export interface components {
       list: components['schemas']['admin-department.dto.departmentMembershipSummary'][];
     };
     'admin-department.dto.departmentMembershipSummary': {
+      /** @description ID */
       id: number | string;
       /** @description User */
       userId: number | string;
-      user: components['schemas']['admin-department.dto.departmentUserSummary_626802c24df1498cec99aab0854fedf90c9b6dd3_0aab216abd3467dd07f61c69172266c2441af477_c4656f36fd04b7e6710079f758ab6240097007f7'];
       /** @description Position */
       position?: string | undefined;
       /** @description Enabled */
       enabled: boolean;
-      /** @description Primary */
       primary: boolean;
+      user?: {
+        /** @description ID */
+        id: number | string;
+        /** @description User Name */
+        name: string;
+        /** @description Avatar */
+        avatar?: string | undefined;
+      };
       /** @description Department Manager */
       manager: boolean;
       /** @description Operations */
       _operationsRow?: unknown;
-    };
-    /** @description User */
-    'admin-department.dto.departmentUserSummary_626802c24df1498cec99aab0854fedf90c9b6dd3_0aab216abd3467dd07f61c69172266c2441af477_c4656f36fd04b7e6710079f758ab6240097007f7': {
-      id: number | string;
-      /** @description User */
-      name: string;
-      avatar?: unknown;
     };
     'admin-department.dto.departmentMembershipCreate': {
       /** @description User */
@@ -2171,6 +2670,7 @@ export interface components {
     'admin-department.dto.departmentMembershipUpdate': {
       /** @description Position */
       position?: string | undefined;
+      /** @description Enabled */
       enabled?: boolean | undefined;
       /** @description Department Manager */
       managerMembershipId?: number | string | undefined;
@@ -2182,7 +2682,7 @@ export interface components {
         }
       | undefined;
     'admin-department.dto.departmentMembershipPrimary': {
-      /** @description Primary */
+      /** @description Default Department */
       primary: boolean;
     };
     'admin-department.dto.departmentManagerUpdate': {
@@ -2200,6 +2700,311 @@ export interface components {
     'admin-department.dto.departmentActivation': {
       enabled: boolean;
     };
+    'admin-menu.dto.roleMenuCatalogRes': {
+      revision: string;
+      list: components['schemas']['admin-menu.dto.roleMenuCatalogSite'][];
+    };
+    'admin-menu.dto.roleMenuCatalogSite': {
+      ssrSiteName: string;
+      title: string;
+      menus: components['schemas']['admin-menu.dto.roleMenuCatalogMenu'][];
+      groups: components['schemas']['admin-menu.dto.roleMenuCatalogGroup'][];
+    };
+    'admin-menu.dto.roleMenuCatalogMenu': {
+      ssrMenuName: string;
+      onionName: string;
+      configurable: boolean;
+      title?: string | undefined;
+      description?: string | undefined;
+      icon?: string | undefined;
+      order?: number | undefined;
+      group?: string | string[] | undefined;
+      separator?: boolean | undefined;
+    };
+    'admin-menu.dto.roleMenuCatalogGroup': {
+      ssrMenuGroupName: string;
+      onionName: string;
+      title?: string | undefined;
+      description?: string | undefined;
+      icon?: string | undefined;
+      order?: number | undefined;
+      group?: string | string[] | undefined;
+      collapsed?: boolean | undefined;
+    };
+    'admin-menu.dto.roleMenuRoleConfigurationRes': {
+      revision: string;
+      roleId: number | string;
+      list: components['schemas']['admin-menu.dto.roleMenuRoleConfigurationSite'][];
+    };
+    'admin-menu.dto.roleMenuRoleConfigurationSite': {
+      ssrSiteName: string;
+      title: string;
+      menus: components['schemas']['admin-menu.dto.roleMenuRoleConfigurationMenu'][];
+      groups: components['schemas']['admin-menu.dto.roleMenuCatalogGroup'][];
+    };
+    'admin-menu.dto.roleMenuRoleConfigurationMenu': {
+      ssrMenuName: string;
+      onionName: string;
+      configurable: boolean;
+      enabled: boolean;
+      title?: string | undefined;
+      description?: string | undefined;
+      icon?: string | undefined;
+      order?: number | undefined;
+      group?: string | string[] | undefined;
+      separator?: boolean | undefined;
+    };
+    'admin-menu.dto.roleMenuCreate': {
+      roleId: number | string;
+      ssrSiteName: string;
+      ssrMenuName: string;
+    };
+    'admin-menu.dto.roleMenuBatch': {
+      roleId: number | string;
+      creates: components['schemas']['admin-menu.dto.roleMenuBatchItem'][];
+      deletes: components['schemas']['admin-menu.dto.roleMenuBatchItem'][];
+    };
+    'admin-menu.dto.roleMenuBatchItem': {
+      ssrSiteName: string;
+      ssrMenuName: string;
+    };
+    'admin-menu.dto.roleMenuDelete': {
+      roleId: number | string;
+      ssrSiteName: string;
+      ssrMenuName: string;
+    };
+    'admin-rbac.dto.rbacGrantCreate': {
+      /** @description Role */
+      roleId: number | string;
+      /** @description Action Key */
+      actionKey: string;
+      /**
+       * @description Data Scope
+       * @enum {string}
+       */
+      dataScope:
+        | 'all'
+        | 'customDepartments'
+        | 'ownDepartment'
+        | 'ownDepartmentAndDescendants'
+        | 'mine';
+      /** @description Enabled */
+      enabled: boolean;
+      /** @description Description */
+      description?: string | undefined;
+    };
+    'admin-rbac.dto.rbacGrantSelectRes': {
+      list: components['schemas']['admin-rbac.dto.rbacGrantSelectResItem'][];
+      total: string;
+      pageCount: number;
+      pageSize: number;
+      pageNo: number;
+    };
+    'admin-rbac.dto.rbacGrantSelectResItem': {
+      /**
+       * Format: date-time
+       * @description Created At
+       */
+      createdAt: Date;
+      /**
+       * Format: date-time
+       * @description Updated At
+       */
+      updatedAt: Date;
+      /**
+       * @description Deleted
+       * @default false
+       */
+      deleted?: boolean;
+      /**
+       * @description Instance ID
+       * @default 0
+       */
+      iid?: number;
+      /** @description ID */
+      id: number | string;
+      /** @description Role */
+      roleId: number | string;
+      /** @description Action Key */
+      actionKey: string;
+      /**
+       * @description Data Scope
+       * @enum {string}
+       */
+      dataScope:
+        | 'all'
+        | 'customDepartments'
+        | 'ownDepartment'
+        | 'ownDepartmentAndDescendants'
+        | 'mine';
+      /** @description Enabled */
+      enabled: boolean;
+      /** @description Description */
+      description?: string | undefined;
+      /** @description Operations */
+      _operationsRow?: unknown;
+    };
+    'admin-rbac.dto.rbacGrantView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_5926519498397908989ce559e2153fbb3976fa24':
+      | {
+          /**
+           * Format: date-time
+           * @description Created At
+           */
+          createdAt: Date;
+          /**
+           * Format: date-time
+           * @description Updated At
+           */
+          updatedAt: Date;
+          /**
+           * @description Deleted
+           * @default false
+           */
+          deleted?: boolean;
+          /**
+           * @description Instance ID
+           * @default 0
+           */
+          iid?: number;
+          /** @description ID */
+          id: number | string;
+          /** @description Role */
+          roleId: number | string;
+          /** @description Action Key */
+          actionKey: string;
+          /**
+           * @description Data Scope
+           * @enum {string}
+           */
+          dataScope:
+            | 'all'
+            | 'customDepartments'
+            | 'ownDepartment'
+            | 'ownDepartmentAndDescendants'
+            | 'mine';
+          /** @description Enabled */
+          enabled: boolean;
+          /** @description Description */
+          description?: string | undefined;
+        }
+      | undefined;
+    'admin-rbac.dto.rbacGrantUpdate': {
+      /** @description Enabled */
+      enabled?: boolean | undefined;
+      /** @description Description */
+      description?: string | undefined;
+    };
+    'admin-rbac.dto.rbacGrantDepartmentCreate': {
+      /** @description RBAC Grant */
+      rbacGrantId: number | string;
+      /** @description Department */
+      departmentId: number | string;
+    };
+    'admin-rbac.dto.rbacGrantDepartmentSelectRes': {
+      list: components['schemas']['admin-rbac.dto.rbacGrantDepartmentSelectResItem'][];
+      total: string;
+      pageCount: number;
+      pageSize: number;
+      pageNo: number;
+    };
+    'admin-rbac.dto.rbacGrantDepartmentSelectResItem': {
+      /**
+       * Format: date-time
+       * @description Created At
+       */
+      createdAt: Date;
+      /**
+       * Format: date-time
+       * @description Updated At
+       */
+      updatedAt: Date;
+      /**
+       * @description Deleted
+       * @default false
+       */
+      deleted?: boolean;
+      /**
+       * @description Instance ID
+       * @default 0
+       */
+      iid?: number;
+      /** @description ID */
+      id: number | string;
+      /** @description RBAC Grant */
+      rbacGrantId: number | string;
+      /** @description Department */
+      departmentId: number | string;
+      /** @description Operations */
+      _operationsRow?: unknown;
+    };
+    'admin-rbac.dto.rbacGrantDepartmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_2b19dd6ac97292072af39de37b6db9e79a486789':
+      | {
+          /**
+           * Format: date-time
+           * @description Created At
+           */
+          createdAt: Date;
+          /**
+           * Format: date-time
+           * @description Updated At
+           */
+          updatedAt: Date;
+          /**
+           * @description Deleted
+           * @default false
+           */
+          deleted?: boolean;
+          /**
+           * @description Instance ID
+           * @default 0
+           */
+          iid?: number;
+          /** @description ID */
+          id: number | string;
+          /** @description RBAC Grant */
+          rbacGrantId: number | string;
+          /** @description Department */
+          departmentId: number | string;
+        }
+      | undefined;
+    'admin-rbac.dto.rbacPolicyCatalogRes': {
+      revision: string;
+      list: components['schemas']['admin-rbac.dto.rbacPolicyCatalogResItem'][];
+    };
+    'admin-rbac.dto.rbacPolicyCatalogResItem': {
+      controllerBeanFullName: string;
+      controllerSummary?: string | undefined;
+      action: string;
+      actionSummary?: string | undefined;
+      actionKey: string;
+      dataScopes: (
+        | 'all'
+        | 'customDepartments'
+        | 'ownDepartment'
+        | 'ownDepartmentAndDescendants'
+        | 'mine'
+      )[];
+    };
+    'admin-rbac.dto.rbacPolicyRoleConfigurationRes': {
+      revision: string;
+      roleId: number | string;
+      list: components['schemas']['admin-rbac.dto.rbacPolicyRoleConfigurationAction'][];
+    };
+    'admin-rbac.dto.rbacPolicyRoleConfigurationAction': {
+      actionKey: string;
+      dataScopes: components['schemas']['admin-rbac.dto.rbacPolicyRoleConfigurationScope'][];
+    };
+    'admin-rbac.dto.rbacPolicyRoleConfigurationScope': {
+      /** @enum {string} */
+      dataScope:
+        | 'all'
+        | 'customDepartments'
+        | 'ownDepartment'
+        | 'ownDepartmentAndDescendants'
+        | 'mine';
+      enabled: boolean;
+      customDepartmentsConfigured?: boolean | undefined;
+    };
     'admin-role.dto.roleView': {
       /** @description ID */
       id: number | string;
@@ -2215,6 +3020,11 @@ export interface components {
         | undefined;
       /** @description Site IDs */
       siteIds: string[];
+      /**
+       * @description Built-in
+       * @default false
+       */
+      builtin?: boolean;
       sites?: components['schemas']['home-base.dto.siteCatalogSelectResItem'][] | undefined;
     };
     'admin-role.dto.roleCreate': {
@@ -2253,11 +3063,16 @@ export interface components {
         | undefined;
       /** @description Site IDs */
       siteIds: string[];
+      /**
+       * @description Built-in
+       * @default false
+       */
+      builtin?: boolean;
       sites?: components['schemas']['home-base.dto.siteCatalogSelectResItem'][] | undefined;
       /** @description Operations */
       _operationsRow?: unknown;
     };
-    'admin-role.dto.roleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_326f9a25887c080b975d143095eec57412beb745':
+    'admin-role.dto.roleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_dfa5393c924ec7673aadfc44138eb510ba67ff8c':
       | {
           /** @description ID */
           id: number | string;
@@ -2273,14 +3088,19 @@ export interface components {
             | undefined;
           /** @description Site IDs */
           siteIds: string[];
+          /**
+           * @description Built-in
+           * @default false
+           */
+          builtin?: boolean;
           sites?: components['schemas']['home-base.dto.siteCatalogSelectResItem'][] | undefined;
         }
       | undefined;
     'admin-role.dto.roleUpdate': {
       /** @description Role Name */
-      name: string;
+      name?: string | undefined;
       /** @description Role Title */
-      title: string;
+      title?: string | undefined;
       /** @description Role Locales */
       titleLocales?:
         | {
@@ -2290,9 +3110,6 @@ export interface components {
       /** @description Site IDs */
       siteIds?: string[] | undefined;
     };
-    'admin-role.dto.userRoleReplace': {
-      roleIds: (number | string)[];
-    };
     'admin-role.dto.systemAdminFreshProofIssueRes': {
       proof: string;
       /** Format: date-time */
@@ -2300,10 +3117,6 @@ export interface components {
     };
     'admin-role.dto.systemAdminFreshProofIssue': {
       password: string;
-    };
-    'admin-role.dto.systemAdminGrant': {
-      reason: string;
-      freshProof: string;
     };
     'admin-role.dto.systemAdminRevoke': {
       reason: string;
@@ -2399,19 +3212,25 @@ export interface components {
       name: string;
       /** @description Role Title */
       title: string;
+      systemAdmin: boolean;
     };
     'admin-user.dto.userDepartmentMembershipSummary': {
+      /** @description ID */
       id: number | string;
       /** @description Department */
       departmentId: number | string;
-      /** @description Department Name */
-      departmentName: string;
       /** @description Position */
       position?: string | undefined;
       /** @description Enabled */
       enabled: boolean;
-      /** @description Primary */
+      /** @description Default Department */
       primary: boolean;
+      department?: {
+        /** @description ID */
+        id: number | string;
+        /** @description Department Name */
+        name: string;
+      };
     };
     'admin-user.dto.userUpdate': {
       /** @description User Name */
@@ -2436,6 +3255,14 @@ export interface components {
        * @enum {string}
        */
       accountStatus: 'active' | 'disabled';
+    };
+    'admin-role.dto.userRoleReplace': {
+      /** @description Roles */
+      roleIds: (number | string)[];
+    };
+    'admin-role.dto.systemAdminGrant': {
+      reason: string;
+      freshProof: string;
     };
     'start-metrics.dto.metricsSnapshot': {
       enabled: boolean;
@@ -2463,6 +3290,41 @@ export interface components {
           }
         | undefined;
       schedulers?: number | undefined;
+    };
+    'a-layoutprofile.dto.layoutProfile_2d063d28bc7243bed02ebd8bddf1212a93c6305b':
+      | {
+          /** @enum {number} */
+          version: 1;
+          schemaFingerprint?: string | undefined;
+          columns: {
+            key: string;
+            visible: true | false;
+            width: 'auto' | number;
+          }[];
+        }
+      | undefined;
+    'a-layoutprofile.dto.layoutProfile': {
+      /** @enum {number} */
+      version: 1;
+      schemaFingerprint?: string | undefined;
+      columns: {
+        key: string;
+        visible: true | false;
+        width: 'auto' | number;
+      }[];
+    };
+    'a-layoutprofile.dto.layoutProfileSave': {
+      layoutKey: string;
+      profile: {
+        /** @enum {number} */
+        version: 1;
+        schemaFingerprint?: string | undefined;
+        columns: {
+          key: string;
+          visible: true | false;
+          width: 'auto' | number;
+        }[];
+      };
     };
     'a-file.dto.fileUploadPolicyResponse': {
       fileScene: string;
@@ -2532,84 +3394,6 @@ export interface components {
       contentType?: string | undefined;
       objectKey?: string | undefined;
     };
-    'a-image.dto.imageUploadPolicyResponse': {
-      imageScene: string;
-      maxSize?: number | undefined;
-      mimeTypes?: string[] | undefined;
-      extensions?: string[] | undefined;
-      multiple?: boolean | undefined;
-      public?: boolean | undefined;
-      directUpload?: boolean | undefined;
-    };
-    'a-image.dto.imageUploadPolicyRequest': {
-      imageScene: string;
-    };
-    'a-image.dto.imageUploadResponse': {
-      id: number | string;
-      filename?: string | undefined;
-      contentType?: string | undefined;
-      size?: number | undefined;
-      width?: number | undefined;
-      height?: number | undefined;
-      public?: boolean | undefined;
-      url?: string | undefined;
-      signed?: boolean | undefined;
-    };
-    'a-image.dto.imageDirectUploadResponse': {
-      id: number | string;
-      uploadUrl: string;
-      filename?: string | undefined;
-      public?: boolean | undefined;
-    };
-    'a-image.dto.imageDirectUploadRequest': {
-      imageScene: string;
-      filename?: string | undefined;
-      size: number;
-      mimeType: string;
-      contentType?: string | undefined;
-      expiry?: string | undefined;
-      customId?: string | undefined;
-    };
-    'a-image.dto.imageDirectUploadFinalizeResponse': {
-      id: number | string;
-      filename?: string | undefined;
-      contentType?: string | undefined;
-      size?: number | undefined;
-      width?: number | undefined;
-      height?: number | undefined;
-      public?: boolean | undefined;
-      url?: string | undefined;
-      signed?: boolean | undefined;
-    };
-    'a-image.dto.imageDirectUploadFinalizeRequest': {
-      imageId: number | string;
-    };
-    'a-image.dto.imageUploadUrlRequest': {
-      imageScene: string;
-      /** Format: uri */
-      url: string;
-      size: number;
-      mimeType: string;
-      filename?: string | undefined;
-      contentType?: string | undefined;
-    };
-    'a-image.dto.imageTransformOptions_2d063d28bc7243bed02ebd8bddf1212a93c6305b':
-      | {
-          width?: number | undefined;
-          height?: number | undefined;
-          /** @enum {string|null} */
-          fit?: 'scale-down' | 'contain' | 'cover' | 'crop' | 'pad' | null | undefined;
-          /** @enum {string|null} */
-          gravity?: 'auto' | 'center' | 'top' | 'bottom' | 'left' | 'right' | null | undefined;
-          background?: string | undefined;
-          quality?: number | undefined;
-          /** @enum {string|null} */
-          format?: 'auto' | 'avif' | 'webp' | 'jpeg' | 'png' | null | undefined;
-          dpr?: number | undefined;
-          rotate?: number | undefined;
-          sharpen?: number | undefined;
-        }
-      | undefined;
     'a-pay.dto.paymentSessionView': {
       id: number | string;
       /** @enum {string} */
@@ -2668,49 +3452,6 @@ export interface components {
     'pay-mock.dto.mockRefundComplete': {
       /** @enum {string} */
       outcome: 'succeeded' | 'failed' | 'cancelled';
-    };
-    'a-paypal.entity.paypalRecord': {
-      /**
-       * Format: date-time
-       * @description Created At
-       */
-      createdAt: Date;
-      /**
-       * Format: date-time
-       * @description Updated At
-       */
-      updatedAt: Date;
-      /**
-       * @description Deleted
-       * @default false
-       */
-      deleted?: boolean;
-      /**
-       * @description Instance ID
-       * @default 0
-       */
-      iid?: number;
-      /** @description ID */
-      id: number | string;
-      userId: number | string;
-      /** @default 0 */
-      status?: number;
-      prepayId: string;
-      payload: components['schemas']['a-paypal.dto.paypalOrderRecordPayload'];
-      options: components['schemas']['a-paypal.dto.paypalOrderRecordOptions'];
-    };
-    'a-paypal.dto.paypalOrderRecordPayload': {
-      remark: string;
-      total: string;
-      currencyCode: string;
-    };
-    'a-paypal.dto.paypalOrderRecordOptions': {
-      brandName: string;
-      returnUrl: string;
-      cancelUrl: string;
-      returnTo: string;
-      scene: string;
-      orderId: number | string;
     };
   };
   responses: never;
@@ -2865,56 +3606,6 @@ export interface operations {
       };
     };
   };
-  MailconfirmMail_emailConfirmCallback: {
-    parameters: {
-      query: {
-        token: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: unknown;
-          };
-        };
-      };
-    };
-  };
-  MailconfirmMail_passwordResetCallback: {
-    parameters: {
-      query: {
-        token: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: unknown;
-          };
-        };
-      };
-    };
-  };
   HomeBaseMenu_retrieveMenus: {
     parameters: {
       query?: never;
@@ -3008,6 +3699,394 @@ export interface operations {
             code: string;
             message: string;
             data?: unknown;
+          };
+        };
+      };
+    };
+  };
+  Image_getUploadPolicy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['a-image.dto.imageUploadPolicyRequest'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['a-image.dto.imageUploadPolicyResponse'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  Image_upload: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'multipart/form-data': {
+          imageScene: string;
+          /** Format: binary */
+          image: Blob;
+        };
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['a-image.dto.imageUploadResponse'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  Image_createDirectUpload: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['a-image.dto.imageDirectUploadRequest'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['a-image.dto.imageDirectUploadResponse'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  Image_finalizeDirectUpload: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['a-image.dto.imageDirectUploadFinalizeRequest'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['a-image.dto.imageDirectUploadFinalizeResponse'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  Image_uploadUrl: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['a-image.dto.imageUploadUrlRequest'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['a-image.dto.imageUploadResponse'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  Image_delivery: {
+    parameters: {
+      query: {
+        imageId: number | string;
+        variantName?: string | undefined;
+        transformOptions?: components['schemas']['a-image.dto.imageTransformOptions_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
+        token?: string | undefined;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data?: unknown;
+          };
+        };
+      };
+    };
+  };
+  HomeUserAccount_current: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['home-user.dto.accountCurrent'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  HomeUserAccount_updateProfile: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['home-user.dto.accountProfileUpdate'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['home-user.dto.accountCurrent'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  HomeUserAccount_consumeActivation: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['home-user.dto.accountActivation'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data?: unknown;
+          };
+        };
+      };
+    };
+  };
+  HomeUserAccount_changePassword: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['home-user.dto.accountPasswordChange'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['home-user.dto.accountRelogin'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  HomeUserAccount_issuePasswordSetLink: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['home-user.dto.accountPasswordSetIssue'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data?: unknown;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  HomeUserAccount_consumePasswordSet: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['home-user.dto.accountPasswordSet'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['home-user.dto.accountRelogin'];
+          };
+        };
+      };
+    };
+  };
+  HomeUserAccount_requestPasswordReset: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['home-user.dto.accountPasswordResetRequest'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['home-user.dto.accountPasswordResetRequestResult'];
+          };
+        };
+      };
+    };
+  };
+  HomeUserAccount_consumePasswordReset: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['home-user.dto.accountPasswordReset'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['home-user.dto.accountRelogin'];
           };
         };
       };
@@ -3301,7 +4380,7 @@ export interface operations {
         pageSize?: number;
         createdAt?: string | undefined;
         name?: string | undefined;
-        studentId?: number | undefined;
+        studentId?: string | undefined;
       };
       header?: never;
       path?: never;
@@ -3371,7 +4450,7 @@ export interface operations {
           'application/json': {
             code: string;
             message: string;
-            data?: components['schemas']['training-record.dto.recordView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_88947ca8c18d5d4ad1f377d379e77df5fe5c0ce5'];
+            data?: components['schemas']['training-record.dto.recordView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_79ca06e0fa89c8f250537d4a0b8a8cc1e39df05a'];
           };
         };
       };
@@ -3416,6 +4495,34 @@ export interface operations {
     requestBody: {
       content: {
         'application/json': components['schemas']['training-record.dto.recordUpdate'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  TrainingRecord_deleteBulk: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['training-record.dto.recordBulkDelete'];
       };
     };
     responses: {
@@ -3518,7 +4625,7 @@ export interface operations {
           'application/json': {
             code: string;
             message: string;
-            data?: components['schemas']['training-student.dto.studentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_2ade7655a06636cfe9aa1cc76e9518982ec19f2e'];
+            data?: components['schemas']['training-student.dto.studentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_1587266c819c8b70731e8ba64e7460d7f2809951'];
           };
         };
       };
@@ -3633,6 +4740,34 @@ export interface operations {
     };
     authToken: true;
   };
+  TrainingStudent_deleteBulk: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['training-student.dto.studentDeleteBulk'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
   AdminDepartment_select: {
     parameters: {
       query?: {
@@ -3645,6 +4780,7 @@ export interface operations {
         orders?: string | string[][] | undefined;
         pageNo?: number;
         pageSize?: number;
+        createdAt?: Date;
         name?: string | undefined;
       };
       header?: never;
@@ -4071,6 +5207,452 @@ export interface operations {
     };
     authToken: true;
   };
+  AdminMenuRoleMenu_catalog: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['admin-menu.dto.roleMenuCatalogRes'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminMenuRoleMenu_roleConfiguration: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        roleId: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['admin-menu.dto.roleMenuRoleConfigurationRes'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminMenuRoleMenu_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-menu.dto.roleMenuCreate'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminMenuRoleMenu_delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-menu.dto.roleMenuDelete'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminMenuRoleMenu_batch: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-menu.dto.roleMenuBatch'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRbacRbacGrant_select: {
+    parameters: {
+      query?: {
+        columns?: string[] | undefined;
+        where?:
+          | {
+              [key: string]: unknown;
+            }
+          | undefined;
+        orders?: string | string[][] | undefined;
+        pageNo?: number;
+        pageSize?: number;
+        createdAt?: string | undefined;
+        actionKey?: string | undefined;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['admin-rbac.dto.rbacGrantSelectRes'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRbacRbacGrant_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-rbac.dto.rbacGrantCreate'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: number | string;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRbacRbacGrant_view: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data?: components['schemas']['admin-rbac.dto.rbacGrantView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_5926519498397908989ce559e2153fbb3976fa24'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRbacRbacGrant_delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRbacRbacGrant_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-rbac.dto.rbacGrantUpdate'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRbacRbacGrantDepartment_select: {
+    parameters: {
+      query?: {
+        columns?: string[] | undefined;
+        where?:
+          | {
+              [key: string]: unknown;
+            }
+          | undefined;
+        orders?: string | string[][] | undefined;
+        pageNo?: number;
+        pageSize?: number;
+        createdAt?: string | undefined;
+        departmentId?: number | string | undefined;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['admin-rbac.dto.rbacGrantDepartmentSelectRes'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRbacRbacGrantDepartment_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-rbac.dto.rbacGrantDepartmentCreate'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: number | string;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRbacRbacGrantDepartment_view: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data?: components['schemas']['admin-rbac.dto.rbacGrantDepartmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_2b19dd6ac97292072af39de37b6db9e79a486789'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRbacRbacGrantDepartment_delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRbacRbacPolicy_catalog: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['admin-rbac.dto.rbacPolicyCatalogRes'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminRbacRbacPolicy_roleConfiguration: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        roleId: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['admin-rbac.dto.rbacPolicyRoleConfigurationRes'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
   AdminRole_select: {
     parameters: {
       query?: {
@@ -4083,6 +5665,7 @@ export interface operations {
         orders?: string | string[][] | undefined;
         pageNo?: number;
         pageSize?: number;
+        createdAt?: Date;
         name?: string | undefined;
         title?: string | undefined;
       };
@@ -4135,6 +5718,43 @@ export interface operations {
     };
     authToken: true;
   };
+  AdminRole_selectMembershipCandidates: {
+    parameters: {
+      query?: {
+        columns?: string[] | undefined;
+        where?:
+          | {
+              [key: string]: unknown;
+            }
+          | undefined;
+        orders?: string | string[][] | undefined;
+        pageNo?: number;
+        pageSize?: number;
+        createdAt?: Date;
+        name?: string | undefined;
+        title?: string | undefined;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['admin-role.dto.roleSelectRes'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
   AdminRole_view: {
     parameters: {
       query?: never;
@@ -4154,7 +5774,7 @@ export interface operations {
           'application/json': {
             code: string;
             message: string;
-            data?: components['schemas']['admin-role.dto.roleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_326f9a25887c080b975d143095eec57412beb745'];
+            data?: components['schemas']['admin-role.dto.roleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_dfa5393c924ec7673aadfc44138eb510ba67ff8c'];
           };
         };
       };
@@ -4217,36 +5837,6 @@ export interface operations {
     };
     authToken: true;
   };
-  AdminRole_replaceUserRoles: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        userId: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-role.dto.userRoleReplace'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
   AdminRole_issueSystemAdminFreshProof: {
     parameters: {
       query?: never;
@@ -4269,36 +5859,6 @@ export interface operations {
             code: string;
             message: string;
             data: components['schemas']['admin-role.dto.systemAdminFreshProofIssueRes'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminRole_grantSystemAdmin: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        userId: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-role.dto.systemAdminGrant'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
           };
         };
       };
@@ -4407,6 +5967,7 @@ export interface operations {
         orders?: string | string[][] | undefined;
         pageNo?: number;
         pageSize?: number;
+        createdAt?: Date;
         name?: string | undefined;
         activated?: boolean | undefined;
         accountStatus?: 'active' | 'disabled' | null | undefined;
@@ -4544,6 +6105,66 @@ export interface operations {
     };
     authToken: true;
   };
+  AdminUser_replaceUserRoles: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        userId: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-role.dto.userRoleReplace'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminUser_grantSystemAdmin: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        userId: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-role.dto.systemAdminGrant'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
   StartMetrics_snapshot: {
     parameters: {
       query?: never;
@@ -4562,6 +6183,86 @@ export interface operations {
             code: string;
             message: string;
             data: components['schemas']['start-metrics.dto.metricsSnapshot'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  Layoutprofile_load: {
+    parameters: {
+      query: {
+        layoutKey: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data?: components['schemas']['a-layoutprofile.dto.layoutProfile_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  Layoutprofile_save: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['a-layoutprofile.dto.layoutProfileSave'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['a-layoutprofile.dto.layoutProfile'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  Layoutprofile_reset: {
+    parameters: {
+      query: {
+        layoutKey: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data?: unknown;
           };
         };
       };
@@ -4716,178 +6417,6 @@ export interface operations {
     parameters: {
       query: {
         fileId: number | string;
-        token?: string | undefined;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: unknown;
-          };
-        };
-      };
-    };
-  };
-  Image_getUploadPolicy: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['a-image.dto.imageUploadPolicyRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['a-image.dto.imageUploadPolicyResponse'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  Image_upload: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'multipart/form-data': {
-          imageScene: string;
-          /** Format: binary */
-          image: Blob;
-        };
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['a-image.dto.imageUploadResponse'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  Image_createDirectUpload: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['a-image.dto.imageDirectUploadRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['a-image.dto.imageDirectUploadResponse'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  Image_finalizeDirectUpload: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['a-image.dto.imageDirectUploadFinalizeRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['a-image.dto.imageDirectUploadFinalizeResponse'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  Image_uploadUrl: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['a-image.dto.imageUploadUrlRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['a-image.dto.imageUploadResponse'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  Image_delivery: {
-    parameters: {
-      query: {
-        imageId: number | string;
-        variantName?: string | undefined;
-        transformOptions?: components['schemas']['a-image.dto.imageTransformOptions_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
         token?: string | undefined;
       };
       header?: never;
@@ -5092,84 +6621,6 @@ export interface operations {
             code: string;
             message: string;
             data: components['schemas']['pay-mock.dto.mockRefundReceipt'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  Paypal_getRecord: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        recordId: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['a-paypal.entity.paypalRecord'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  Paypal_captureOrder: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        recordId: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: unknown;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  Paypal_cancelOrder: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        recordId: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: unknown;
           };
         };
       };

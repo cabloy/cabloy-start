@@ -1,6 +1,11 @@
 import type { TableIdentity } from 'table-identity';
 import type { IQueryParams } from 'vona-module-a-orm';
 import type { IDecoratorControllerOptions } from 'vona-module-a-web';
+import {
+  DtoSystemAdminGrant,
+  DtoSystemAdminRevoke,
+  DtoUserRoleReplace,
+} from 'vona-module-admin-role';
 import type { ModelUser } from 'vona-module-home-user';
 
 import { BeanBase } from 'vona';
@@ -66,5 +71,35 @@ export class ControllerUser extends BeanBase {
     @Arg.body() command: DtoUserAccountStatusUpdate,
   ): Promise<void> {
     await this.scope.service.user.updateAccountStatus(id, command.accountStatus);
+  }
+
+  @Web.put(':userId/roles')
+  @Api.body(z.null())
+  @Passport.systemAdmin()
+  async replaceUserRoles(
+    @Arg.param('userId', v.tableIdentity()) userId: TableIdentity,
+    @Arg.body() command: DtoUserRoleReplace,
+  ): Promise<void> {
+    await this.app.scope('admin-role').service.role.replaceUserRoles(userId, command);
+  }
+
+  @Web.post('system-admin/grant/:userId')
+  @Api.body(z.null())
+  @Passport.systemAdmin()
+  async grantSystemAdmin(
+    @Arg.param('userId', v.tableIdentity()) userId: TableIdentity,
+    @Arg.body() command: DtoSystemAdminGrant,
+  ): Promise<void> {
+    await this.app.scope('admin-role').service.systemAdmin.grant(userId, command);
+  }
+
+  @Web.post('system-admin/revoke/:userId')
+  @Api.body(z.null())
+  @Passport.systemAdmin()
+  async revokeSystemAdmin(
+    @Arg.param('userId', v.tableIdentity()) userId: TableIdentity,
+    @Arg.body() command: DtoSystemAdminRevoke,
+  ): Promise<void> {
+    await this.app.scope('admin-role').service.systemAdmin.revoke(userId, command);
   }
 }

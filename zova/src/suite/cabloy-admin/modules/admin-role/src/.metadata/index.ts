@@ -26,7 +26,7 @@ declare module 'zova-module-admin-role' {
 }
 /** model: end */
 /** model: begin */
-import { ModelRole } from '../model/role.js';
+import type { ModelRole } from '../model/role.js';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -57,7 +57,7 @@ declare module 'zova-module-admin-role' {
 }
 /** api: end */
 /** api: begin */
-import { ApiAdminRole } from '../api/adminRole.js';
+import type { ApiAdminRole } from '../api/adminRole.js';
 export interface IModuleApi {
   'adminRole': ApiAdminRole;
 }
@@ -97,7 +97,7 @@ declare module 'zova-module-admin-role' {
 }
 /** apiSchema: end */
 /** apiSchema: begin */
-import { ApiSchemaAdminRole } from '../apiSchema/adminRole.js';
+import type { ApiSchemaAdminRole } from '../apiSchema/adminRole.js';
 export interface IModuleApiSchema {
   'adminRole': ApiSchemaAdminRole;
 }
@@ -111,48 +111,6 @@ declare module 'zova' {
   }
 }
 /** apiSchema: end */
-/** controller: begin */
-export * from '../component/actionReplaceUserRoles/controller.jsx';
-
-import 'zova';
-declare module 'zova' {
-
-
-}
-declare module 'zova-module-admin-role' {
-
-        export interface ControllerActionReplaceUserRoles {
-          /** @internal */
-          get scope(): ScopeModuleAdminRole;
-        }
-}
-/** controller: end */
-/** controller: begin */
-import { ControllerActionReplaceUserRoles } from '../component/actionReplaceUserRoles/controller.jsx';
-import 'zova';
-declare module 'zova' {
-  export interface IBeanRecordLocal {
-    'admin-role.controller.actionReplaceUserRoles': ControllerActionReplaceUserRoles;
-  }
-}
-/** controller: end */
-
-/** components: begin */
-export * from './component/actionReplaceUserRoles.js';
-import { ZActionReplaceUserRoles } from './component/actionReplaceUserRoles.js';
-export const components = {
-  'actionReplaceUserRoles': ZActionReplaceUserRoles,
-};
-import 'zova';
-declare module 'zova' {
-export interface IComponentRecord {
-  'admin-role:actionReplaceUserRoles': ControllerActionReplaceUserRoles;
-}
-export interface IZovaComponentRecord {
-  'admin-role:actionReplaceUserRoles': typeof ZActionReplaceUserRoles;
-}
-}
-/** components: end */
 /** tableCell: begin */
 export * from '../bean/tableCell.actionOperationsRow.jsx';
 import { ITableCellOptionsActionOperationsRow } from '../bean/tableCell.actionOperationsRow.jsx';
@@ -180,7 +138,7 @@ declare module 'zova-module-admin-role' {
 }
 /** tableCell: end */
 /** tableCell: begin */
-import { TableCellActionOperationsRow } from '../bean/tableCell.actionOperationsRow.jsx';
+import type { TableCellActionOperationsRow } from '../bean/tableCell.actionOperationsRow.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {

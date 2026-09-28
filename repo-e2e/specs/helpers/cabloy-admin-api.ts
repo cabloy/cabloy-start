@@ -89,9 +89,10 @@ export async function loginAsAdmin(request: APIRequestContext): Promise<Register
 export async function registerAccountUser(
   request: APIRequestContext,
   testInfo: TestInfo,
+  fixtureUserNamePrefix = 'e2e-fixture-admin-rbac',
 ): Promise<RegisteredAccount> {
   const suffix = `${testInfo.workerIndex}-${testInfo.parallelIndex ?? testInfo.retry}-${crypto.randomUUID()}`;
-  const username = `e2e-fixture-admin-rbac-${suffix}`;
+  const username = `${fixtureUserNamePrefix}-${suffix}`;
   const password = 'rbac-e2e-pass';
   const captcha = await createCaptcha(request);
   const baseURL = testInfo.project.use.baseURL;
@@ -109,9 +110,7 @@ export async function registerAccountUser(
       captcha,
     },
   });
-  await requestApiOk<null>(request, 'POST', '/api/home/user/passportTest/activateCurrent', {
-    accessToken: registration.jwt.accessToken,
-  });
+  await activateAccountFixture(request, registration.jwt.accessToken);
   return {
     id: registration.passport.user.id,
     username,
@@ -120,12 +119,22 @@ export async function registerAccountUser(
   };
 }
 
+export async function activateAccountFixture(
+  request: APIRequestContext,
+  accessToken: string,
+): Promise<void> {
+  await requestApiOk<null>(request, 'POST', '/api/home/user/passportTest/activateCurrent', {
+    accessToken,
+  });
+}
+
 export async function removeAccountFixture(
   request: APIRequestContext,
   account: RegisteredAccount,
 ): Promise<void> {
+  const currentAccount = await loginAsAccount(request, account.username, account.password);
   await requestApiOk<null>(request, 'DELETE', '/api/home/user/passportTest/removeCurrentFixture', {
-    accessToken: account.accessToken,
+    accessToken: currentAccount.accessToken,
   });
 }
 

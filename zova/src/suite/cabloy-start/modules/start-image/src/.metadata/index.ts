@@ -26,7 +26,7 @@ declare module 'zova-module-start-image' {
 }
 /** model: end */
 /** model: begin */
-import { ModelImage } from '../model/image.js';
+import type { ModelImage } from '../model/image.js';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -57,7 +57,7 @@ declare module 'zova-module-start-image' {
 }
 /** api: end */
 /** api: begin */
-import { ApiImage } from '../api/image.js';
+import type { ApiImage } from '../api/image.js';
 export interface IModuleApi {
   'image': ApiImage;
 }
@@ -97,7 +97,7 @@ declare module 'zova-module-start-image' {
 }
 /** apiSchema: end */
 /** apiSchema: begin */
-import { ApiSchemaImage } from '../apiSchema/image.js';
+import type { ApiSchemaImage } from '../apiSchema/image.js';
 export interface IModuleApiSchema {
   'image': ApiSchemaImage;
 }
@@ -134,8 +134,8 @@ declare module 'zova-module-start-image' {
 }
 /** controller: end */
 /** controller: begin */
-import { ControllerFormFieldImage } from '../component/formFieldImage/controller.jsx';
-import { ControllerImageUploader } from '../component/imageUploader/controller.jsx';
+import type { ControllerFormFieldImage } from '../component/formFieldImage/controller.jsx';
+import type { ControllerImageUploader } from '../component/imageUploader/controller.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
@@ -193,7 +193,7 @@ declare module 'zova-module-start-image' {
 }
 /** tableCell: end */
 /** tableCell: begin */
-import { TableCellImage } from '../bean/tableCell.image.jsx';
+import type { TableCellImage } from '../bean/tableCell.image.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {

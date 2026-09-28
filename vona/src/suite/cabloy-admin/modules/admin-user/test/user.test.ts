@@ -56,7 +56,7 @@ describe('user.test.ts', { concurrency: false }, () => {
     });
   });
 
-  it('dto:user:role summary emits protected-role presentation and a view-only replacement action', async () => {
+  it('dto:user:role summary emits protected-role presentation and view-only protected actions', async () => {
     await app.bean.executor.mockCtx(async () => {
       const apiJson = await app.bean.openapi.generateJsonOfClass(DtoUserRoleSummary);
       const component = Object.values(apiJson.components!.schemas as any).find(item => {
@@ -65,9 +65,24 @@ describe('user.test.ts', { concurrency: false }, () => {
       assert.ok(component, JSON.stringify(apiJson.components?.schemas));
       assert.equal(component.properties.title.rest?.table?.render, 'admin-user:roleTitle');
       assert.equal(component.properties.systemAdmin.rest?.visible, false);
-      const action = component.rest?.blocks?.[0]?.options?.blocks?.[0]?.options?.actions?.[0];
-      assert.equal(action?.render, 'admin-role:actionReplaceUserRoles');
-      assert.deepEqual(action?.options?.permission, { formScene: ['view'] });
+      const actions = component.rest?.blocks?.[0]?.options?.blocks?.[0]?.options?.actions;
+      assert.deepEqual(
+        actions?.map(action => action?.render),
+        [
+          'admin-user:actionReplaceUserRoles',
+          'admin-user:actionGrantSystemAdmin',
+          'admin-user:actionRevokeSystemAdmin',
+        ],
+      );
+      assert.deepEqual(actions?.[0]?.options?.permission, {
+        formScene: ['view'],
+      });
+      assert.deepEqual(actions?.[1]?.options?.permission, {
+        formScene: ['view'],
+      });
+      assert.deepEqual(actions?.[2]?.options?.permission, {
+        formScene: ['view'],
+      });
     });
   });
 

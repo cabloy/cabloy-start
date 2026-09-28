@@ -26,7 +26,7 @@ declare module 'zova-module-admin-rbac' {
 }
 /** model: end */
 /** model: begin */
-import { ModelRbacPolicy } from '../model/rbacPolicy.js';
+import type { ModelRbacPolicy } from '../model/rbacPolicy.js';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -81,9 +81,9 @@ declare module 'zova-module-admin-rbac' {
 }
 /** api: end */
 /** api: begin */
-import { ApiAdminRbacRbacGrant } from '../api/adminRbacRbacGrant.js';
-import { ApiAdminRbacRbacGrantDepartment } from '../api/adminRbacRbacGrantDepartment.js';
-import { ApiAdminRbacRbacPolicy } from '../api/adminRbacRbacPolicy.js';
+import type { ApiAdminRbacRbacGrant } from '../api/adminRbacRbacGrant.js';
+import type { ApiAdminRbacRbacGrantDepartment } from '../api/adminRbacRbacGrantDepartment.js';
+import type { ApiAdminRbacRbacPolicy } from '../api/adminRbacRbacPolicy.js';
 export interface IModuleApi {
   'adminRbacRbacGrant': ApiAdminRbacRbacGrant;
 'adminRbacRbacGrantDepartment': ApiAdminRbacRbacGrantDepartment;
@@ -151,9 +151,9 @@ declare module 'zova-module-admin-rbac' {
 }
 /** apiSchema: end */
 /** apiSchema: begin */
-import { ApiSchemaAdminRbacRbacGrant } from '../apiSchema/adminRbacRbacGrant.js';
-import { ApiSchemaAdminRbacRbacGrantDepartment } from '../apiSchema/adminRbacRbacGrantDepartment.js';
-import { ApiSchemaAdminRbacRbacPolicy } from '../apiSchema/adminRbacRbacPolicy.js';
+import type { ApiSchemaAdminRbacRbacGrant } from '../apiSchema/adminRbacRbacGrant.js';
+import type { ApiSchemaAdminRbacRbacGrantDepartment } from '../apiSchema/adminRbacRbacGrantDepartment.js';
+import type { ApiSchemaAdminRbacRbacPolicy } from '../apiSchema/adminRbacRbacPolicy.js';
 export interface IModuleApiSchema {
   'adminRbacRbacGrant': ApiSchemaAdminRbacRbacGrant;
 'adminRbacRbacGrantDepartment': ApiSchemaAdminRbacRbacGrantDepartment;
@@ -188,7 +188,7 @@ declare module 'zova-module-admin-rbac' {
 }
 /** controller: end */
 /** controller: begin */
-import { ControllerBlockPolicyEditor } from '../component/blockPolicyEditor/controller.jsx';
+import type { ControllerBlockPolicyEditor } from '../component/blockPolicyEditor/controller.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {

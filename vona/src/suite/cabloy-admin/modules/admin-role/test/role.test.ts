@@ -344,7 +344,7 @@ describe('role.test.ts', { concurrency: false }, () => {
 
           const replacementResult = await app.bean.executor.performAction(
             'put',
-            '/admin/role/user/:userId/roles',
+            '/admin/user/:userId/roles',
             {
               params: { userId: admin.id },
               body: { roleIds: [registeredUser.id, roleId] },
@@ -366,7 +366,7 @@ describe('role.test.ts', { concurrency: false }, () => {
           );
 
           assert.equal(
-            await app.bean.executor.performAction('put', '/admin/role/user/:userId/roles', {
+            await app.bean.executor.performAction('put', '/admin/user/:userId/roles', {
               params: { userId: admin.id },
               body: { roleIds: [roleId] },
             }),
@@ -388,7 +388,7 @@ describe('role.test.ts', { concurrency: false }, () => {
           );
 
           const [__, protectedRoleError] = await catchError(() => {
-            return app.bean.executor.performAction('put', '/admin/role/user/:userId/roles', {
+            return app.bean.executor.performAction('put', '/admin/user/:userId/roles', {
               params: { userId: admin.id },
               body: { roleIds: [roleId, systemAdmin.id] },
             });
@@ -411,7 +411,7 @@ describe('role.test.ts', { concurrency: false }, () => {
           );
 
           const [duplicateMembershipResult, duplicateMembershipError] = await catchError(() => {
-            return app.bean.executor.performAction('put', '/admin/role/user/:userId/roles', {
+            return app.bean.executor.performAction('put', '/admin/user/:userId/roles', {
               params: { userId: admin.id },
               body: { roleIds: [roleId, roleId] },
             });
@@ -427,7 +427,7 @@ describe('role.test.ts', { concurrency: false }, () => {
           );
 
           const [missingRoleResult, missingRoleError] = await catchError(() => {
-            return app.bean.executor.performAction('put', '/admin/role/user/:userId/roles', {
+            return app.bean.executor.performAction('put', '/admin/user/:userId/roles', {
               params: { userId: admin.id },
               body: { roleIds: [roleId, -1] },
             });
@@ -451,7 +451,7 @@ describe('role.test.ts', { concurrency: false }, () => {
           );
 
           const [missingUserResult, missingUserError] = await catchError(() => {
-            return app.bean.executor.performAction('put', '/admin/role/user/:userId/roles', {
+            return app.bean.executor.performAction('put', '/admin/user/:userId/roles', {
               params: { userId: -1 },
               body: { roleIds: [roleId] },
             });
@@ -530,7 +530,7 @@ describe('role.test.ts', { concurrency: false }, () => {
           });
           roleIds.push(deletedRole.id);
           assert.equal(
-            await app.bean.executor.performAction('put', '/admin/role/user/:userId/roles', {
+            await app.bean.executor.performAction('put', '/admin/user/:userId/roles', {
               params: { userId: ordinaryUser.id },
               body: { roleIds: [deletedRole.id] },
             }),
@@ -617,7 +617,7 @@ describe('role.test.ts', { concurrency: false }, () => {
               assert.equal(error?.code, 404);
             }
             const [replaceResult, replaceError] = await catchError(() => {
-              return app.bean.executor.performAction('put', '/admin/role/user/:userId/roles', {
+              return app.bean.executor.performAction('put', '/admin/user/:userId/roles', {
                 params: { userId: localUser.id },
                 body: { roleIds: [String(roleId)] },
               });

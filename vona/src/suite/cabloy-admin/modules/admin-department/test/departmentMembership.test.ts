@@ -8,6 +8,7 @@ import {
   DtoDepartmentMembershipCreate,
   DtoDepartmentMembershipDelete,
   DtoDepartmentMembershipPrimary,
+  DtoDepartmentMembershipSummary,
   DtoDepartmentMembershipUpdate,
 } from '../src/index.ts';
 
@@ -80,6 +81,29 @@ describe('departmentMembership.test.ts', { concurrency: false }, () => {
       assert.ok(schema);
       assert.equal(schema.properties.enabled.rest.form.render, 'start-switch:formFieldSwitch');
       assert.equal(schema.properties.managerMembershipId.rest.visible, false);
+
+      const summaryApiJson = await app.bean.openapi.generateJsonOfClass(DtoDepartmentMembershipSummary);
+      const summarySchema = Object.values(summaryApiJson.components!.schemas as any).find(item => {
+        return (item as any).properties?._operationsRow;
+      }) as any;
+      assert.ok(summarySchema);
+      const actions = summarySchema.properties._operationsRow.rest.table.columnProps.actions;
+      const togglePrimaryAction = actions.find(
+        (action: { render?: string }) => action.render === 'admin-department:actionToggleMembershipPrimary',
+      );
+      const updateManagerAction = actions.find(
+        (action: { render?: string }) => action.render === 'admin-department:actionUpdateMembershipManager',
+      );
+      assert.equal(togglePrimaryAction?.name, 'toggleMembershipPrimary');
+      assert.deepEqual(togglePrimaryAction?.options?.permission, {
+        actionInherit: 'updateMembershipPrimary',
+        formScene: ['view'],
+      });
+      assert.equal(updateManagerAction?.name, 'updateMembershipManager');
+      assert.deepEqual(updateManagerAction?.options?.permission, {
+        actionInherit: 'updateManager',
+        formScene: ['view'],
+      });
     });
   });
 

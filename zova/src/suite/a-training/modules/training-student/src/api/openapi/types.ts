@@ -1022,22 +1022,6 @@ export interface paths {
     patch: operations['AdminRole_update'];
     trace?: never;
   };
-  '/api/admin/role/user/{userId}/roles': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put: operations['AdminRole_replaceUserRoles'];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   '/api/admin/role/system-admin/fresh-proof': {
     parameters: {
       query?: never;
@@ -1048,22 +1032,6 @@ export interface paths {
     get?: never;
     put?: never;
     post: operations['AdminRole_issueSystemAdminFreshProof'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/role/system-admin/grant/{userId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: operations['AdminRole_grantSystemAdmin'];
     delete?: never;
     options?: never;
     head?: never;
@@ -1182,6 +1150,38 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/admin/user/{userId}/roles': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put: operations['AdminUser_replaceUserRoles'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/user/system-admin/grant/{userId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['AdminUser_grantSystemAdmin'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/start/metrics/snapshot': {
     parameters: {
       query?: never;
@@ -1193,6 +1193,54 @@ export interface paths {
     put?: never;
     post?: never;
     delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/layoutprofile/load': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['Layoutprofile_load'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/layoutprofile/save': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['Layoutprofile_save'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/layoutprofile/reset': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete: operations['Layoutprofile_reset'];
     options?: never;
     head?: never;
     patch?: never;
@@ -1972,6 +2020,8 @@ export interface components {
     'training-record.dto.recordUpdate': {
       /** @description Training Record Name */
       name: string;
+      /** @description Student */
+      studentId?: number | string | undefined;
       /** @description Subject Count */
       subjectCount?: number | undefined;
       /** @description Total Score */
@@ -3060,10 +3110,6 @@ export interface components {
       /** @description Site IDs */
       siteIds?: string[] | undefined;
     };
-    'admin-role.dto.userRoleReplace': {
-      /** @description Roles */
-      roleIds: (number | string)[];
-    };
     'admin-role.dto.systemAdminFreshProofIssueRes': {
       proof: string;
       /** Format: date-time */
@@ -3071,10 +3117,6 @@ export interface components {
     };
     'admin-role.dto.systemAdminFreshProofIssue': {
       password: string;
-    };
-    'admin-role.dto.systemAdminGrant': {
-      reason: string;
-      freshProof: string;
     };
     'admin-role.dto.systemAdminRevoke': {
       reason: string;
@@ -3214,6 +3256,14 @@ export interface components {
        */
       accountStatus: 'active' | 'disabled';
     };
+    'admin-role.dto.userRoleReplace': {
+      /** @description Roles */
+      roleIds: (number | string)[];
+    };
+    'admin-role.dto.systemAdminGrant': {
+      reason: string;
+      freshProof: string;
+    };
     'start-metrics.dto.metricsSnapshot': {
       enabled: boolean;
       runtime: components['schemas']['start-metrics.dto.metricsRuntime'];
@@ -3240,6 +3290,41 @@ export interface components {
           }
         | undefined;
       schedulers?: number | undefined;
+    };
+    'a-layoutprofile.dto.layoutProfile_2d063d28bc7243bed02ebd8bddf1212a93c6305b':
+      | {
+          /** @enum {number} */
+          version: 1;
+          schemaFingerprint?: string | undefined;
+          columns: {
+            key: string;
+            visible: true | false;
+            width: 'auto' | number;
+          }[];
+        }
+      | undefined;
+    'a-layoutprofile.dto.layoutProfile': {
+      /** @enum {number} */
+      version: 1;
+      schemaFingerprint?: string | undefined;
+      columns: {
+        key: string;
+        visible: true | false;
+        width: 'auto' | number;
+      }[];
+    };
+    'a-layoutprofile.dto.layoutProfileSave': {
+      layoutKey: string;
+      profile: {
+        /** @enum {number} */
+        version: 1;
+        schemaFingerprint?: string | undefined;
+        columns: {
+          key: string;
+          visible: true | false;
+          width: 'auto' | number;
+        }[];
+      };
     };
     'a-file.dto.fileUploadPolicyResponse': {
       fileScene: string;
@@ -5752,36 +5837,6 @@ export interface operations {
     };
     authToken: true;
   };
-  AdminRole_replaceUserRoles: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        userId: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-role.dto.userRoleReplace'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
   AdminRole_issueSystemAdminFreshProof: {
     parameters: {
       query?: never;
@@ -5804,36 +5859,6 @@ export interface operations {
             code: string;
             message: string;
             data: components['schemas']['admin-role.dto.systemAdminFreshProofIssueRes'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminRole_grantSystemAdmin: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        userId: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-role.dto.systemAdminGrant'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
           };
         };
       };
@@ -6080,6 +6105,66 @@ export interface operations {
     };
     authToken: true;
   };
+  AdminUser_replaceUserRoles: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        userId: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-role.dto.userRoleReplace'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminUser_grantSystemAdmin: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        userId: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-role.dto.systemAdminGrant'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
   StartMetrics_snapshot: {
     parameters: {
       query?: never;
@@ -6098,6 +6183,86 @@ export interface operations {
             code: string;
             message: string;
             data: components['schemas']['start-metrics.dto.metricsSnapshot'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  Layoutprofile_load: {
+    parameters: {
+      query: {
+        layoutKey: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data?: components['schemas']['a-layoutprofile.dto.layoutProfile_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  Layoutprofile_save: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['a-layoutprofile.dto.layoutProfileSave'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['a-layoutprofile.dto.layoutProfile'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  Layoutprofile_reset: {
+    parameters: {
+      query: {
+        layoutKey: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data?: unknown;
           };
         };
       };

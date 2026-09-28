@@ -4,7 +4,11 @@ import { expect, test } from '@playwright/test';
 
 import type { RegisteredAccount } from './helpers/cabloy-admin-api.ts';
 
-import { registerAccountUser, removeAccountFixture } from './helpers/cabloy-admin-api.ts';
+import {
+  loginAsAccount,
+  registerAccountUser,
+  removeAccountFixture,
+} from './helpers/cabloy-admin-api.ts';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -211,7 +215,7 @@ async function replaceUserRoles(
   userId: number | string,
   roleIds: Array<number | string>,
 ) {
-  await requestApi(page, 'PUT', `/api/admin/role/user/${userId}/roles`, {
+  await requestApi(page, 'PUT', `/api/admin/user/${userId}/roles`, {
     roleIds,
   });
 }
@@ -614,14 +618,14 @@ test(
       await expect(systemAdminRow.getByText('Protected', { exact: true })).toBeVisible();
       await expect(
         page.getByRole('button', {
-          name: 'Replace Non-System-Administrator Roles',
+          name: 'Replace Roles',
           exact: true,
         }),
       ).toBeVisible();
 
       await page
         .getByRole('button', {
-          name: 'Replace Non-System-Administrator Roles',
+          name: 'Replace Roles',
           exact: true,
         })
         .click();
@@ -634,7 +638,29 @@ test(
       });
       await expect(options.getByText('Registered User', { exact: true })).toBeVisible();
       await expect(options.getByText('System Administrator', { exact: true })).toHaveCount(0);
-      await options.getByText(roleName, { exact: true }).click();
+      const ariaHiddenFocusWarnings: string[] = [];
+      const collectAriaHiddenFocusWarning = (message: { text(): string }) => {
+        const text = message.text();
+        if (/Blocked aria-hidden on an element because its descendant retained focus/i.test(text)) {
+          ariaHiddenFocusWarnings.push(text);
+        }
+      };
+      page.on('console', collectAriaHiddenFocusWarning);
+      try {
+        const roleOption = options.getByRole('option', { name: roleName, exact: true });
+        await roleOption.click();
+        await expect(roleOption).toHaveAttribute('aria-selected', 'true');
+        await expect(roleOption.locator('.v-checkbox-btn input')).toHaveCount(0);
+        expect(ariaHiddenFocusWarnings).toEqual([]);
+
+        await roleOption.focus();
+        await page.keyboard.press('Space');
+        await expect(roleOption).toHaveAttribute('aria-selected', 'false');
+        await page.keyboard.press('Space');
+        await expect(roleOption).toHaveAttribute('aria-selected', 'true');
+      } finally {
+        page.off('console', collectAriaHiddenFocusWarning);
+      }
       await closeRolePicker(rolePicker, options, dialog);
 
       let genericUserPatchRequests = 0;
@@ -647,7 +673,7 @@ test(
       const replaced = waitForApiResponse(
         page,
         'PUT',
-        new RegExp(`/api/admin/role/user/${userId}/roles$`),
+        new RegExp(`/api/admin/user/${userId}/roles$`),
       );
       await dialog.getByRole('button', { name: 'Save', exact: true }).click();
       const replacementResponse = await replaced;
@@ -669,7 +695,7 @@ test(
       });
       await expect(
         page.getByRole('button', {
-          name: 'Replace Non-System-Administrator Roles',
+          name: 'Replace Roles',
           exact: true,
         }),
       ).toHaveCount(0);
@@ -679,6 +705,247 @@ test(
         await replaceUserRoles(page, userId, originalNonSystemAdminRoleIds);
       }
       if (roleId !== undefined) await deleteRole(page, roleId);
+    }
+  },
+);
+
+test(
+  'ATP-ADM-SUP-01: User details grant system administrator through the protected rendered command',
+  { tag: ['@admin', '@cabloy-admin'], timeout: 60_000 },
+  async ({ page, request }, testInfo) => {
+    const pageErrors = collectPageErrors(page);
+    const account = await registerAccountUser(request, testInfo);
+    const reason = `Grant system administrator for ATP ${testInfo.workerIndex}-${Date.now()}`;
+    await loginAsAdmin(page);
+    try {
+      await page.goto(`${resourcePath('admin-user:user')}/${account.id}`, {
+        waitUntil: 'load',
+      });
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+      await expect(page.getByText('Roles', { exact: true })).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: 'Grant System Administrator', exact: true }),
+      ).toBeVisible();
+
+      await page.goto(`${resourcePath('admin-user:user')}/${account.id}/edit`, {
+        waitUntil: 'load',
+      });
+      await expect(
+        page.getByRole('button', { name: 'Grant System Administrator', exact: true }),
+      ).toHaveCount(0);
+
+      await page.goto(`${resourcePath('admin-user:user')}/${account.id}`, {
+        waitUntil: 'load',
+      });
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+      const grantButton = page.getByRole('button', {
+        name: 'Grant System Administrator',
+        exact: true,
+      });
+      const dialogsBeforeGrant = await page.getByRole('dialog').count();
+      await grantButton.click();
+      const dialog = page.getByRole('dialog').nth(dialogsBeforeGrant);
+      await expect(dialog).toBeVisible();
+      await expect(
+        dialog.getByText(
+          'This grants full system-administrator access. Enter your current password and an operational reason to continue.',
+          { exact: true },
+        ),
+      ).toBeVisible();
+      await expect(dialog.getByLabel('Current password')).toHaveAttribute('type', 'password');
+      await expect(dialog.getByLabel('Operational reason')).toBeVisible();
+      await expect(dialog.getByText(/fresh proof/i)).toHaveCount(0);
+
+      let freshProofRequests = 0;
+      let grantRequests = 0;
+      let genericUserPatchRequests = 0;
+      page.on('request', request => {
+        const url = new URL(request.url());
+        if (
+          request.method() === 'POST' &&
+          url.pathname === '/api/admin/role/system-admin/fresh-proof'
+        ) {
+          freshProofRequests += 1;
+        }
+        if (
+          request.method() === 'POST' &&
+          url.pathname === `/api/admin/user/system-admin/grant/${account.id}`
+        ) {
+          grantRequests += 1;
+        }
+        if (request.method() === 'PATCH' && url.pathname === `/api/admin/user/${account.id}`) {
+          genericUserPatchRequests += 1;
+        }
+      });
+
+      await dialog.getByLabel('Operational reason').fill(reason);
+      await dialog.getByLabel('Current password').fill('incorrect-password');
+      const rejectedProof = waitForApiResponse(
+        page,
+        'POST',
+        /^\/api\/admin\/role\/system-admin\/fresh-proof$/,
+        false,
+      );
+      await dialog.getByRole('button', { name: 'Grant access', exact: true }).click();
+      expect((await rejectedProof).status()).toBe(401);
+      expect(freshProofRequests).toBe(1);
+      expect(grantRequests).toBe(0);
+      const rejectedProofAlert = page.getByRole('dialog').filter({
+        hasText: 'Fresh reauthentication proof is invalid, expired, or already used',
+      });
+      await expect(rejectedProofAlert).toBeVisible();
+      await rejectedProofAlert.getByRole('button', { name: 'Close', exact: true }).click();
+      await expect(rejectedProofAlert).toBeHidden();
+      await expect(dialog).toBeVisible();
+      await expect(dialog.getByRole('button', { name: 'Grant access', exact: true })).toBeEnabled();
+
+      await dialog.getByLabel('Current password').fill('123456');
+      const proofIssued = waitForApiResponse(
+        page,
+        'POST',
+        /^\/api\/admin\/role\/system-admin\/fresh-proof$/,
+        false,
+      );
+      const grantCompleted = waitForApiResponse(
+        page,
+        'POST',
+        new RegExp(`^/api/admin/user/system-admin/grant/${account.id}$`),
+        false,
+      );
+      await dialog.getByRole('button', { name: 'Grant access', exact: true }).click();
+      const proofResponse = await proofIssued;
+      const grantResponse = await grantCompleted;
+      expect(proofResponse.ok()).toBeTruthy();
+      const proofBody = proofResponse.request().postDataJSON() as { password?: unknown };
+      expect(typeof proofBody.password).toBe('string');
+      const proofPayload = (await proofResponse.json()) as { data: { proof?: unknown } };
+      const grantBody = grantResponse.request().postDataJSON() as {
+        password?: unknown;
+        reason?: unknown;
+        freshProof?: unknown;
+      };
+      expect(grantBody.password).toBeUndefined();
+      expect(grantBody.reason).toBe(reason);
+      expect(typeof grantBody.freshProof === 'string' && grantBody.freshProof.length > 0).toBe(
+        true,
+      );
+      expect(grantBody.freshProof).toBe(proofPayload.data.proof);
+      expect(freshProofRequests).toBe(2);
+      expect(grantResponse.ok()).toBeTruthy();
+      await expect(dialog).toBeHidden();
+      const systemAdminRow = page.getByRole('row').filter({
+        has: page.getByRole('cell', { name: 'systemAdmin', exact: true }),
+      });
+      await expect(systemAdminRow).toBeVisible();
+      await expect(systemAdminRow.getByText('Protected', { exact: true })).toBeVisible();
+      await expect(grantButton).toHaveCount(0);
+      expect(grantRequests).toBe(1);
+      expect(genericUserPatchRequests).toBe(0);
+
+      const revokeReason = `Revoke system administrator for ATP ${testInfo.workerIndex}-${Date.now()}`;
+      const revokeButton = page.getByRole('button', {
+        name: 'Revoke System Administrator',
+        exact: true,
+      });
+      await expect(revokeButton).toBeVisible();
+      await page.goto(`${resourcePath('admin-user:user')}/${account.id}/edit`, {
+        waitUntil: 'load',
+      });
+      await expect(revokeButton).toHaveCount(0);
+      await page.goto(`${resourcePath('admin-user:user')}/${account.id}`, {
+        waitUntil: 'load',
+      });
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+      await expect(
+        page.getByRole('button', { name: 'Revoke System Administrator', exact: true }),
+      ).toBeVisible();
+      const revokeDialogCount = await page.getByRole('dialog').count();
+      await page.getByRole('button', { name: 'Revoke System Administrator', exact: true }).click();
+      const revokeDialog = page.getByRole('dialog').nth(revokeDialogCount);
+      await expect(revokeDialog).toBeVisible();
+      await expect(
+        revokeDialog.getByText(
+          'This removes full system-administrator access. Enter your current password and an operational reason to continue.',
+          { exact: true },
+        ),
+      ).toBeVisible();
+      await expect(revokeDialog.getByLabel('Current password')).toHaveAttribute(
+        'type',
+        'password',
+      );
+      await expect(revokeDialog.getByLabel('Operational reason')).toBeVisible();
+      await expect(revokeDialog.getByText(/fresh proof/i)).toHaveCount(0);
+
+      let revokeRequests = 0;
+      page.on('request', request => {
+        const url = new URL(request.url());
+        if (
+          request.method() === 'POST' &&
+          url.pathname === `/api/admin/user/system-admin/revoke/${account.id}`
+        ) {
+          revokeRequests += 1;
+        }
+      });
+      await revokeDialog.getByLabel('Operational reason').fill(revokeReason);
+      await revokeDialog.getByLabel('Current password').fill('incorrect-password');
+      const rejectedRevokeProof = waitForApiResponse(
+        page,
+        'POST',
+        /^\/api\/admin\/role\/system-admin\/fresh-proof$/,
+        false,
+      );
+      await revokeDialog.getByRole('button', { name: 'Revoke access', exact: true }).click();
+      expect((await rejectedRevokeProof).status()).toBe(401);
+      expect(revokeRequests).toBe(0);
+      const rejectedRevokeAlert = page.getByRole('dialog').filter({
+        hasText: 'Fresh reauthentication proof is invalid, expired, or already used',
+      });
+      await expect(rejectedRevokeAlert).toBeVisible();
+      await rejectedRevokeAlert.getByRole('button', { name: 'Close', exact: true }).click();
+      await expect(rejectedRevokeAlert).toBeHidden();
+      await expect(revokeDialog).toBeVisible();
+
+      await revokeDialog.getByLabel('Current password').fill('123456');
+      const revokeProofIssued = waitForApiResponse(
+        page,
+        'POST',
+        /^\/api\/admin\/role\/system-admin\/fresh-proof$/,
+        false,
+      );
+      const revokeCompleted = waitForApiResponse(
+        page,
+        'POST',
+        new RegExp(`^/api/admin/user/system-admin/revoke/${account.id}$`),
+        false,
+      );
+      await revokeDialog.getByRole('button', { name: 'Revoke access', exact: true }).click();
+      const revokeProofResponse = await revokeProofIssued;
+      const revokeResponse = await revokeCompleted;
+      expect(revokeProofResponse.ok()).toBeTruthy();
+      const revokeProofPayload = (await revokeProofResponse.json()) as { data: { proof: string } };
+      const revokeBody = revokeResponse.request().postDataJSON() as {
+        password?: unknown;
+        reason?: unknown;
+        freshProof?: unknown;
+      };
+      expect(revokeBody.password).toBeUndefined();
+      expect(revokeBody.reason).toBe(revokeReason);
+      expect(revokeBody.freshProof).toBe(revokeProofPayload.data.proof);
+      expect(revokeResponse.ok()).toBeTruthy();
+      expect(revokeRequests).toBe(1);
+      expect(genericUserPatchRequests).toBe(0);
+      await expect(revokeDialog).toBeHidden();
+      await expect(
+        page.getByRole('row').filter({
+          has: page.getByRole('cell', { name: 'systemAdmin', exact: true }),
+        }),
+      ).toHaveCount(0);
+      await expect(
+        page.getByRole('button', { name: 'Grant System Administrator', exact: true }),
+      ).toBeVisible();
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await removeAccountFixture(request, account);
     }
   },
 );
@@ -1318,14 +1585,14 @@ test(
         ).toBeChecked();
         expect(otherBrowserReloads).toBe(0);
 
-        const replacementRequestPath = `/api/admin/role/user/${userId}/roles`;
+        const replacementRequestPath = `/api/admin/user/${userId}/roles`;
         await subjectPage.goto(`${resourcePath('admin-user:user')}/${userId}`, {
           waitUntil: 'load',
         });
         await expect(subjectPage.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
         await subjectPage
           .getByRole('button', {
-            name: 'Replace Non-System-Administrator Roles',
+            name: 'Replace Roles',
             exact: true,
           })
           .click();
@@ -1388,7 +1655,7 @@ test(
         await expect(subjectPage.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
         await subjectPage
           .getByRole('button', {
-            name: 'Replace Non-System-Administrator Roles',
+            name: 'Replace Roles',
             exact: true,
           })
           .click();
@@ -1410,7 +1677,7 @@ test(
           const unrelatedUserReplacement = waitForApiResponse(
             subjectPage,
             'PUT',
-            new RegExp(`/api/admin/role/user/${unrelatedAccount.id}/roles$`),
+            new RegExp(`/api/admin/user/${unrelatedAccount.id}/roles$`),
           );
           await unrelatedUserDialog.getByRole('button', { name: 'Save', exact: true }).click();
           expect((await unrelatedUserReplacement).ok()).toBeTruthy();

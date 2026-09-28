@@ -4,14 +4,20 @@ import type {
   IJsxRenderContextPageEntry,
   IResourceBlockOptionsBase,
   ISchemaObjectExtensionField,
+  TypeOpenapiPermissions,
 } from 'zova-module-a-openapi';
+
+import type { TypeDetailsCheckPermission } from 'zova-module-start-details';
 
 import { VNode } from 'vue';
 import { VBtn, VCard, VCardText } from 'vuetify/components';
-import { BeanControllerBase, deepExtend, Use } from 'zova';
+import { BeanControllerBase, Use } from 'zova';
 import { ZovaJsx } from 'zova-jsx';
 import { Controller } from 'zova-module-a-bean';
 
+import { createDetailsPermissionChecker } from 'zova-module-start-details';
+
+import { createDepartmentMembershipDetailsHostOptions } from '../../lib/departmentMembershipDetailsHost.js';
 import type { ModelDepartment } from '../../model/department.ts';
 
 export interface ControllerBlockDepartmentMembershipsProps extends IResourceBlockOptionsBase {}
@@ -75,19 +81,30 @@ export class ControllerBlockDepartmentMemberships extends BeanControllerBase {
     const schemaRow = this.apiSchemas.row as ISchemaObjectExtensionField | undefined;
     const blocks = schemaRow?.rest?.blocks;
     if (!schemaRow || !blocks || blocks.length === 0) return;
+    const checkPermission: TypeDetailsCheckPermission = createDetailsPermissionChecker(
+      () => $$pageEntry.jsxCelScope.permissions as TypeOpenapiPermissions | undefined,
+      () => {
+        if ($$pageEntry.formMeta.editMode === 'create') return;
+        return (
+          ($$pageEntry.formRef?.formState.values ?? $$pageEntry.formData) as
+            | Record<string, unknown>
+            | undefined
+        );
+      },
+      (permissions, actionName, permissionHint, currentData) => {
+        return this.$passport.checkPermission(permissions, actionName, permissionHint, currentData);
+      },
+    );
     const domBlocks: VNode[] = [];
     blocks.forEach((block, index) => {
-      const options = deepExtend(
-        { key: index },
-        {
-          formMeta: $$pageEntry.formMeta,
-          schemaForm: schemaRow,
-          schemaRow,
-          permissions: $$pageEntry.jsxCelScope.permissions,
-          departmentId: this.departmentId,
-          getDetailItems: () => this.membershipItems,
-        },
-        block.options,
+      const options = createDepartmentMembershipDetailsHostOptions(
+        index,
+        block,
+        $$pageEntry.formMeta,
+        schemaRow,
+        this.departmentId,
+        () => this.membershipItems,
+        checkPermission,
       );
       const domBlock = this.jsxZova.render(
         block.render!,
