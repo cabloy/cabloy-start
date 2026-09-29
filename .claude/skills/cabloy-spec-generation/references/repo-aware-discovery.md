@@ -78,13 +78,13 @@ Hand actual implementation-time synchronization to `cabloy-contract-loop`.
 
 ## Documentation boundaries
 
-| Content | Home |
-| --- | --- |
-| Product requirements, SRS contracts, WBS, ATPs, suite ADRs, delivery status | `repo-specs/<suite>/` |
-| Reusable user-facing or agent-facing framework guidance | `repo-docs/` |
-| Cross-suite maintainer architecture, rationale, and engineering ADRs | `repo-docs-internal/`; individual records may vary by edition |
-| Short durable AI operating rules | `CLAUDE.md` |
-| Reusable Claude procedure | `.claude/skills/` |
+| Content                                                                     | Home                                                          |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Product requirements, SRS contracts, WBS, ATPs, suite ADRs, delivery status | `repo-specs/<suite>/`                                         |
+| Reusable user-facing or agent-facing framework guidance                     | `repo-docs/`                                                  |
+| Cross-suite maintainer architecture, rationale, and engineering ADRs        | `repo-docs-internal/`; individual records may vary by edition |
+| Short durable AI operating rules                                            | `repo-agent-governance/policies/`                             |
+| Reusable procedural workflow                                                | `repo-agent-governance/skills/`                               |
 
 Do not place suite product specifications in public docs, or copy repository-wide process rationale into every suite. Link to authoritative framework records instead.
 

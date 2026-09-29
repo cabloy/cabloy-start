@@ -1,3 +1,5 @@
+<!-- Generated from repo-agent-governance/. Do not edit this adapter output directly. -->
+
 # Cabloy Monorepo Guidance
 
 ## Repository identity
@@ -21,7 +23,8 @@ Always perform this detection before making UI-sensitive assumptions, choosing f
 - `repo-specs/` contains product and business specifications, delivery plans, and suite-local ADRs.
 - `repo-e2e/` contains the end-to-end test project.
 - `repo-observability/` contains local observability infrastructure.
-- `.claude/` contains Claude commands, skills, and settings.
+- `repo-agent-governance/` is the authored source for portable agent rules, root skills, adapters, and deterministic governance tools.
+- `.claude/`, `.agents/`, `.codex/`, and `.cursor/` contain generated platform adapters plus platform-specific runtime integration.
 
 ## Preferred workflow
 
@@ -66,7 +69,8 @@ Before inventing a custom implementation path:
 - Default to establishing such query state during render. Use `disableSuspenseOnInit: true` only for relatively stable query-backed state when you want to skip the init-time `query.suspense()` kick; it does not prevent query creation, fetches, or hydration-time rendering. If strict readiness is needed later, wait explicitly at the interaction boundary.
 - For render-driving async state, read the current query-owned reactive surface (`query.data` or a model-derived projection); an awaited `query.refetch()` result is valid only for one-shot interaction or orchestration and must not become a parallel ongoing controller/render state owner.
 - In SSR, keep server HTML and the client's hydration-time initial render equivalent. When server rendering intentionally omits private, cookie-unavailable, or browser-only state, keep the same neutral shell or placeholder through hydration and defer its query/load/render branch to an explicit post-hydration, admission, mounted, or interaction boundary.
-- Keep repo-wide AI rules in `CLAUDE.md` short and durable; put branching Zova analysis workflows in `.claude/skills/`.
+- Keep portable repo-wide AI rules short and durable in `repo-agent-governance/policies/`; put branching root workflows in `repo-agent-governance/skills/` and regenerate platform adapters instead of hand-editing them.
+- Treat hooks, permissions, local settings, credentials, MCP registration, command discovery, and automatic command execution as platform-specific integrations, not portable rule or skill capabilities.
 - After implementation, do not launch broad reviews automatically; when review is needed, scope it to the current diff and report only high-confidence issues.
 - Do not modify shared environment identity or ports merely to bypass a busy resource. For intentional parallel worktree setup, follow `repo-docs/fullstack/parallel-worktree-environment.md`; otherwise wait for the shared resource or ask the user. Create or change worktree-local environment overrides only through the explicitly invoked `cabloy-worktree-environment` skill and its confirmation phase, and only in `vona/env/.env.local` and `zova/env/.env.local`; never modify flavor-, mode-, app-mode-, or runtime-specific `.env.*.local` files. The skill derives the standard `APP_NAME`, `SERVER_LISTEN_PORT`, `DEV_SERVER_PORT`, `DEV_SERVER_HMR_PORT`, and API-derived `API_BASE_URL` tuple only from Git worktree metadata and fixed port baselines; never read or expose `.env*` content while recommending values. Admin and Web are alternative commands using this shared tuple and must not run concurrently in one worktree; use another linked worktree for concurrent use. Detect the active edition before choosing scripts, and never run `npm run init` as an automatic follow-up.
 - For SSR theme-sensitive frontend work, detect the active edition marker and UI library before making assumptions. Cabloy Basic currently means DaisyUI + Tailwind CSS assumptions; Cabloy Start currently means Vuetify assumptions.

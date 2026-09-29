@@ -24,31 +24,31 @@ The release script at `scripts/release.ts` performs 4 steps for the public `cabl
 
 Only after the Basic preflight above succeeds, use the matching script that exists in the active root `package.json`:
 
-| Command | Description |
-|---------|-------------|
-| `pnpm release-patch` | Full release with patch version bump |
-| `pnpm release-minor` | Full release with minor version bump |
-| `pnpm release-major` | Full release with major version bump |
-| `pnpm release` | Full release with default patch bump |
-| `pnpm release:dry-run` | Preview what would happen without executing |
-| `pnpm release:changelog` | Only generate changelog (no version bump) |
-| `pnpm release:publish` | Only publish to npm |
-| `pnpm release:github` | Only create GitHub release |
+| Command                  | Description                                 |
+| ------------------------ | ------------------------------------------- |
+| `pnpm release-patch`     | Full release with patch version bump        |
+| `pnpm release-minor`     | Full release with minor version bump        |
+| `pnpm release-major`     | Full release with major version bump        |
+| `pnpm release`           | Full release with default patch bump        |
+| `pnpm release:dry-run`   | Preview what would happen without executing |
+| `pnpm release:changelog` | Only generate changelog (no version bump)   |
+| `pnpm release:publish`   | Only publish to npm                         |
+| `pnpm release:github`    | Only create GitHub release                  |
 
 Do not infer equivalent commands in Cabloy Start when this table is absent from its package scripts.
 
 ## CLI Options
 
-| Option | Description |
-|--------|-------------|
-| `--dry-run` | Show what would happen without executing |
-| `--changelog-only` | Only generate changelog (no version bump) |
-| `--publish-only` | Only publish to npm |
-| `--release-only` | Only create GitHub release |
-| `--skip-changelog` | Skip changelog generation |
-| `--skip-publish` | Skip npm publish |
-| `--skip-release` | Skip GitHub release |
-| `--no-ai` | Use raw commit list instead of AI for changelog |
+| Option             | Description                                     |
+| ------------------ | ----------------------------------------------- |
+| `--dry-run`        | Show what would happen without executing        |
+| `--changelog-only` | Only generate changelog (no version bump)       |
+| `--publish-only`   | Only publish to npm                             |
+| `--release-only`   | Only create GitHub release                      |
+| `--skip-changelog` | Skip changelog generation                       |
+| `--skip-publish`   | Skip npm publish                                |
+| `--skip-release`   | Skip GitHub release                             |
+| `--no-ai`          | Use raw commit list instead of AI for changelog |
 
 ## Execution
 

@@ -26,7 +26,7 @@ From the active repository root, inspect:
 
 1. `git rev-parse --show-toplevel`, `git status --short`, current `HEAD`, and the working-tree classification;
 2. `__CABLOY_BASIC__` or `__CABLOY_START__`;
-3. root `package.json` and `CLAUDE.md`;
+3. root `package.json` and `repo-agent-governance/` (or the active generated adapter);
 4. the target `repo-specs/<suite>/` directory and relevant source/module topology.
 
 Interpret the markers as follows:

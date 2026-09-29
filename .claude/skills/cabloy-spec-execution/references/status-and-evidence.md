@@ -54,15 +54,15 @@ Do not create an empty `evidence/` directory, placeholder `EVD-*` record, or fab
 
 Use the suite’s canonical status meanings:
 
-| Status | Meaning |
-| --- | --- |
-| `not-started` | Defined, but implementation or acceptance evidence has not started. |
-| `in-progress` | Work or verification has started, but closure checks remain. |
-| `implementation-complete` | Source work is reported complete, but required ATP or release evidence is incomplete. |
-| `verified` | Applicable WBS checks and ATPs passed, with durable traceable evidence containing revision, environment, exact procedure, result, and redacted artifact location. |
-| `blocked` | A dependency, unresolved decision, failed gate, attribution problem, or missing required proof prevents closure. |
-| `waived` | A temporary exception has an owner, reason, affected scope, and expiry; expiry becomes a release blocker. |
-| `deferred` | Explicitly postponed scope; it is not complete or verified. |
+| Status                    | Meaning                                                                                                                                                           |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `not-started`             | Defined, but implementation or acceptance evidence has not started.                                                                                               |
+| `in-progress`             | Work or verification has started, but closure checks remain.                                                                                                      |
+| `implementation-complete` | Source work is reported complete, but required ATP or release evidence is incomplete.                                                                             |
+| `verified`                | Applicable WBS checks and ATPs passed, with durable traceable evidence containing revision, environment, exact procedure, result, and redacted artifact location. |
+| `blocked`                 | A dependency, unresolved decision, failed gate, attribution problem, or missing required proof prevents closure.                                                  |
+| `waived`                  | A temporary exception has an owner, reason, affected scope, and expiry; expiry becomes a release blocker.                                                         |
+| `deferred`                | Explicitly postponed scope; it is not complete or verified.                                                                                                       |
 
 The normal path is:
 

@@ -1,6 +1,6 @@
 ---
 name: cabloy-workflow
-description: This skill should be used when the main Cabloy problem is workflow routing before implementation: deciding between Vona backend scaffolding, Zova frontend scaffolding, contract-loop work, or docs/AI-enablement homes such as repo-docs, repo-docs-internal, CLAUDE.md, commands, or skills, including cases where Cabloy Basic vs Cabloy Start assumptions affect that routing. Trigger on requests to route, classify, choose a workflow, choose an edition-specific path, or decide where Cabloy guidance should live. Do not use it once the task is already clearly a backend scaffold, frontend scaffold, or contract-loop job.
+description: This skill should be used when the main Cabloy problem is workflow routing before implementation: deciding between Vona backend scaffolding, Zova frontend scaffolding, contract-loop work, or docs/AI-enablement homes such as repo-docs, repo-docs-internal, repo-agent-governance, commands, or skills, including cases where Cabloy Basic vs Cabloy Start assumptions affect that routing. Trigger on requests to route, classify, choose a workflow, choose an edition-specific path, or decide where Cabloy guidance should live. Do not use it once the task is already clearly a backend scaffold, frontend scaffold, or contract-loop job.
 ---
 
 # Cabloy Workflow
@@ -79,9 +79,8 @@ Use the docs/AI path when the task is about:
 
 - `repo-docs/`
 - `repo-docs-internal/`
-- `CLAUDE.md`
-- `.claude/commands/`
-- `.claude/skills/`
+- `repo-agent-governance/`
+- generated platform adapters such as `CLAUDE.md`, `.claude/commands/`, and `.claude/skills/`
 - repo guidance for AI development
 
 ## Step 3: Start from shared entrypoints
@@ -91,7 +90,7 @@ Before inventing a workflow, inspect these shared surfaces:
 - the repository or workspace `package.json` that owns the active scripts
 - `npm run vona`
 - `npm run zova`
-- root `CLAUDE.md` if present
+- root `repo-agent-governance/` if present, otherwise the active generated adapter
 - `repo-docs/` for public guidance
 - `repo-docs-internal/` for supporting maintainer rationale
 
@@ -179,7 +178,7 @@ Relevant internal records support routing and implementation but do not block th
 
 ### Root rules and commands
 
-Use `CLAUDE.md` and `.claude/commands/` for:
+Use `repo-agent-governance/policies/` and `commands/` as the authored source for:
 
 - concise operational guidance
 - named recurring workflows
@@ -187,7 +186,7 @@ Use `CLAUDE.md` and `.claude/commands/` for:
 
 ### Skills
 
-Use `.claude/skills/` for:
+Use `repo-agent-governance/skills/` for:
 
 - procedural workflows that benefit from reusable instructions
 - edition-aware decision trees
@@ -208,7 +207,7 @@ For these requests:
 
 - put the durable operational explanation in `repo-docs/`
 - put supporting rationale and invariants in `repo-docs-internal/`; preserve the public operational explanation when a particular internal record is unavailable or irrelevant
-- keep `CLAUDE.md` short and behavioral
+- keep canonical repository policy short and behavioral, then render adapters
 - do not treat `@Service()` as a business-layer naming decision only; for B2 it is a runtime-anchor placement choice
 
 ### Service underscore files

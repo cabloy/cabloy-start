@@ -193,11 +193,11 @@ When explaining a split page or component, establish role ownership before discu
 
 The source-confirmed direct member lookup order is:
 
-| Current bean | Direct member lookup order |
-| --- | --- |
-| Controller | Controller only |
-| Style | Style, then Controller |
-| Render | Render, then Controller, then Style |
+| Current bean | Direct member lookup order          |
+| ------------ | ----------------------------------- |
+| Controller   | Controller only                     |
+| Style        | Style, then Controller              |
+| Render       | Render, then Controller, then Style |
 
 State the shadowing caveat: an own member on the current bean takes precedence over each fallback surface. Recommend `this.member` for ordinary same-component companion access, such as Render reading Controller state or a Style-generated class.
 

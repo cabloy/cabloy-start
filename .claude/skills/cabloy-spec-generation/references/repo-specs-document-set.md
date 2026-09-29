@@ -24,18 +24,18 @@ The directory is repository-native, suite-local, and maintainer-facing. It is no
 
 ## Authority map
 
-| Document | Authority |
-| --- | --- |
-| `README.md` | Index, reading order, baseline summary, topology, authority map, and related-record links. It does not replace the other documents. |
-| `prd.md` | Product outcomes, personas, scope, journeys, business rules, product requirements, and product acceptance. |
-| `srs.md` | System contracts, capability/data ownership, APIs/DTOs, authorization, state, transactions, invariants, frontend/SSR boundaries, and technical acceptance. |
-| `pdp-wbs.md` | Delivery sequencing, dependencies, implementation tasks, completion checks, and delivery traceability. |
-| `test-plan.md` | Quality priorities, executable acceptance scenarios, fixtures, evidence format, verification procedures, and release proof. |
-| `progress.md` | Derived execution status, blockers, decisions needed, next proof, and evidence pointers. It never redefines requirements or contracts. |
-| `implementation-gantt.svg` | Deterministic derived WBS view of phases, task order, dependencies, status, and optional ATP labels. It is not schedule or planning authority. |
-| `implementation-burndown.svg` | Deterministic derived scope/status view. Without dated history, it is a scope-count reference, not a time-series, velocity trend, or forecast. |
-| `decisions/*.md` | Durable suite-local scope, architecture, security, ownership, migration, or integration decisions. |
-| `runbooks/*.md` | Operational procedures subordinate to the relevant SRS, ADR, WBS, and test plan. |
+| Document                      | Authority                                                                                                                                                  |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `README.md`                   | Index, reading order, baseline summary, topology, authority map, and related-record links. It does not replace the other documents.                        |
+| `prd.md`                      | Product outcomes, personas, scope, journeys, business rules, product requirements, and product acceptance.                                                 |
+| `srs.md`                      | System contracts, capability/data ownership, APIs/DTOs, authorization, state, transactions, invariants, frontend/SSR boundaries, and technical acceptance. |
+| `pdp-wbs.md`                  | Delivery sequencing, dependencies, implementation tasks, completion checks, and delivery traceability.                                                     |
+| `test-plan.md`                | Quality priorities, executable acceptance scenarios, fixtures, evidence format, verification procedures, and release proof.                                |
+| `progress.md`                 | Derived execution status, blockers, decisions needed, next proof, and evidence pointers. It never redefines requirements or contracts.                     |
+| `implementation-gantt.svg`    | Deterministic derived WBS view of phases, task order, dependencies, status, and optional ATP labels. It is not schedule or planning authority.             |
+| `implementation-burndown.svg` | Deterministic derived scope/status view. Without dated history, it is a scope-count reference, not a time-series, velocity trend, or forecast.             |
+| `decisions/*.md`              | Durable suite-local scope, architecture, security, ownership, migration, or integration decisions.                                                         |
+| `runbooks/*.md`               | Operational procedures subordinate to the relevant SRS, ADR, WBS, and test plan.                                                                           |
 
 When records disagree, update the authoritative record first, then update downstream summaries, mappings, and derived status. After any change to `pdp-wbs.md`, `test-plan.md`, or `progress.md`, run `npm run spec:charts -- <suite>` followed by `npm run spec:charts:check -- <suite>`.
 
@@ -186,15 +186,15 @@ Use:
 
 Initialize a new suite with statuses such as `not-started`, `deferred`, or explicitly `blocked`; do not mark planning work as verified. Use this vocabulary:
 
-| Status | Meaning |
-| --- | --- |
-| `not-started` | Defined, but implementation or acceptance evidence has not started. |
-| `in-progress` | Work started, but closure checks are incomplete. |
-| `implementation-complete` | Source work is reported complete, but required ATP evidence or release gates are incomplete. |
-| `verified` | Required ATP evidence is observed and retained with revision, environment, procedure, result, and redacted artifact location. |
-| `blocked` | A dependency, unresolved decision, or failed gate prevents closure. |
-| `waived` | A temporary exception with owner, reason, and expiry; expiry makes it a release blocker. |
-| `deferred` | Explicitly postponed scope, not completed scope. |
+| Status                    | Meaning                                                                                                                       |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `not-started`             | Defined, but implementation or acceptance evidence has not started.                                                           |
+| `in-progress`             | Work started, but closure checks are incomplete.                                                                              |
+| `implementation-complete` | Source work is reported complete, but required ATP evidence or release gates are incomplete.                                  |
+| `verified`                | Required ATP evidence is observed and retained with revision, environment, procedure, result, and redacted artifact location. |
+| `blocked`                 | A dependency, unresolved decision, or failed gate prevents closure.                                                           |
+| `waived`                  | A temporary exception with owner, reason, and expiry; expiry makes it a release blocker.                                      |
+| `deferred`                | Explicitly postponed scope, not completed scope.                                                                              |
 
 Progress must remain a derived register. It may point to evidence but must not become a second requirements document. Include a decision-register entry for each material site strategy and show strategy/identifier deferral as a blocker only on affected frontend/site WBS branches; source reading, planning, or a selected strategy alone is not implementation evidence.
 
@@ -244,13 +244,13 @@ Use `Accepted` only for explicitly confirmed durable decisions; otherwise use `P
 
 Generate only when the confirmed scope requires them:
 
-| Extension | Generate when |
-| --- | --- |
-| `presentation-contracts.md` | Multiple Admin/resource scenes need stable audience, task, information-area, editability, snapshot, or renderer decisions. Keep it subordinate to PRD/SRS. |
-| `semantic-presentation-rollout.md` | Presentation/metadata work is staged, serial, resumable, and needs handoff gates. It does not replace WBS or test plan. |
-| `runbooks/<provider-or-operation>.md` | Real external provider/webhook, sandbox/live operation, reconciliation, cutover, incident, or deployment procedure is in scope. Never include secrets. |
-| Additional ADRs | A separate durable boundary or trade-off exists after ADR 0001. |
-| `evidence/` | Actual ATP execution has produced retained redacted evidence. Do not create empty evidence to simulate progress. |
+| Extension                             | Generate when                                                                                                                                              |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `presentation-contracts.md`           | Multiple Admin/resource scenes need stable audience, task, information-area, editability, snapshot, or renderer decisions. Keep it subordinate to PRD/SRS. |
+| `semantic-presentation-rollout.md`    | Presentation/metadata work is staged, serial, resumable, and needs handoff gates. It does not replace WBS or test plan.                                    |
+| `runbooks/<provider-or-operation>.md` | Real external provider/webhook, sandbox/live operation, reconciliation, cutover, incident, or deployment procedure is in scope. Never include secrets.     |
+| Additional ADRs                       | A separate durable boundary or trade-off exists after ADR 0001.                                                                                            |
+| `evidence/`                           | Actual ATP execution has produced retained redacted evidence. Do not create empty evidence to simulate progress.                                           |
 
 For a presentation matrix, record audience, task, resource/scene, business information areas, field boundaries, renderer choice, and linked PRD/SRS/ATP records. It must not redefine API authority, persistence, validation, authorization, page/state ownership, or SSR privacy.
 
@@ -260,8 +260,8 @@ For an operational runbook, record environment boundaries, secret-management rul
 
 Every core document links to the README and relevant peers. Maintain a compact matrix like:
 
-| Product area | PRD | SRS | WBS | ATP | Evidence/status |
-| --- | --- | --- | --- | --- | --- |
+| Product area   | PRD       | SRS       | WBS       | ATP       | Evidence/status               |
+| -------------- | --------- | --------- | --------- | --------- | ----------------------------- |
 | `<capability>` | `PRD-...` | `SRS-...` | `WBS-...` | `ATP-...` | `progress.md` / evidence link |
 
 Every material product requirement needs at least one technical contract, delivery item, and executable acceptance scenario. Before reporting generation complete, statically audit exact-ID referential integrity and README/ADR decision-status consistency across the planning authority set. Exclude `evidence/` from this static audit: evidence is added only after execution.

@@ -28,7 +28,7 @@ From the repository root, inspect:
 
 1. `git rev-parse --show-toplevel` and `git status --short`;
 2. `__CABLOY_BASIC__` and `__CABLOY_START__`;
-3. the root `package.json` and `CLAUDE.md`;
+3. the root `package.json` and `repo-agent-governance/` (or the active generated adapter);
 4. existing `repo-specs/` indexes and related suite/module topology;
 5. `npm run vona` and `npm run zova` when the records will cite implementation commands.
 
@@ -173,7 +173,7 @@ Optional records remain subordinate to the PRD/SRS/WBS/test-plan authority appro
 
 While drafting, preserve these principles and tailor them to confirmed scope:
 
-- `repo-specs/` is the product/business planning home; `repo-docs/` is public and agent-facing framework guidance; `repo-docs-internal/` holds supporting cross-suite maintainer rationale; `.claude/skills/` is workflow behavior; do not assume a particular internal record exists in every edition;
+- `repo-specs/` is the product/business planning home; `repo-docs/` is public and agent-facing framework guidance; `repo-docs-internal/` holds supporting cross-suite maintainer rationale; `repo-agent-governance/skills/` is authored workflow behavior; do not assume a particular internal record exists in every edition;
 - use suite-first ownership and distinguish new domain modules from reusable framework modules; do not duplicate an existing persistence or identity owner without a stated decision;
 - treat the active Vona instance as the tenant by default; do not introduce a store, organization, or merchant entity unless the confirmed domain contract requires it;
 - make identity, tenant scope, authorization, and ownership server-authoritative; menus, routes, browser filters, and UI visibility are not API authorization;

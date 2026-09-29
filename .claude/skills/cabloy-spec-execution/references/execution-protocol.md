@@ -13,7 +13,7 @@ git rev-parse HEAD
 find . -maxdepth 1 \( -name '__CABLOY_BASIC__' -o -name '__CABLOY_START__' \) -print
 ```
 
-Then inspect the root `package.json`, `CLAUDE.md`, the suite spec directory, and actual affected source paths. Classify the worktree as clean, dirty with unrelated changes, dirty with overlapping changes, or otherwise unknown. Do not clean or reset it to make execution easier.
+Then inspect the root `package.json`, `repo-agent-governance/` (or the active generated adapter), the suite spec directory, and actual affected source paths. Classify the worktree as clean, dirty with unrelated changes, dirty with overlapping changes, or otherwise unknown. Do not clean or reset it to make execution easier.
 
 For Basic, resolve current scripts, sites, flavors, UI, and generated paths from the active repository. For Start, inspect the active Start repository and use its own commands and flavor/site names. The shared execution model does not make edition-specific runtime facts interchangeable.
 
@@ -111,13 +111,13 @@ Require explicit confirmation. If the user changes scope, rebuild the dossier an
 
 ## 6. Specialist routing
 
-| Task shape | Primary route | Coordinator must preserve |
-| --- | --- | --- |
-| Vona module/bean/service/model/entity/DTO/validation/migration/test | `cabloy-backend-scaffold` | CLI-first generation, tenant/security review, migration/index/version gate, tests, OpenAPI impact |
-| Zova page/component/route/model/metadata/SSR/test | `cabloy-frontend-scaffold` | route metadata, state ownership, hydration equivalence, emitted import suffixes, flavor/site proof |
-| OpenAPI, SDK/schema, generated consumer, reverse metadata, stale consumer | `cabloy-contract-loop` | source-first direction, paired SSR/REST reverse build, `deps:vona`, no hand edits |
-| master-detail, resource-field, module removal | corresponding specialist skill | specialized ownership and cleanup order |
-| requirement, architecture, scope, identity, or authority change | `cabloy-spec-generation` / `cabloy-domain-planning` | no implementation around unresolved authority |
+| Task shape                                                                | Primary route                                       | Coordinator must preserve                                                                          |
+| ------------------------------------------------------------------------- | --------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Vona module/bean/service/model/entity/DTO/validation/migration/test       | `cabloy-backend-scaffold`                           | CLI-first generation, tenant/security review, migration/index/version gate, tests, OpenAPI impact  |
+| Zova page/component/route/model/metadata/SSR/test                         | `cabloy-frontend-scaffold`                          | route metadata, state ownership, hydration equivalence, emitted import suffixes, flavor/site proof |
+| OpenAPI, SDK/schema, generated consumer, reverse metadata, stale consumer | `cabloy-contract-loop`                              | source-first direction, paired SSR/REST reverse build, `deps:vona`, no hand edits                  |
+| master-detail, resource-field, module removal                             | corresponding specialist skill                      | specialized ownership and cleanup order                                                            |
+| requirement, architecture, scope, identity, or authority change           | `cabloy-spec-generation` / `cabloy-domain-planning` | no implementation around unresolved authority                                                      |
 
 The coordinator may pass the dossier to the specialist; it should not duplicate the specialist’s detailed command tree.
 

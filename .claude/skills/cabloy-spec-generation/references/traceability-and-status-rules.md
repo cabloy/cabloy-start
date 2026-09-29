@@ -64,15 +64,15 @@ Downstream records summarize or operationalize authority; they do not silently o
 
 ## Status semantics
 
-| Status | Meaning |
-| --- | --- |
-| `not-started` | Defined, but implementation or acceptance evidence has not started. |
-| `in-progress` | Work or verification has started, but closure checks are incomplete. |
-| `implementation-complete` | Source work is reported complete, but required ATP or release evidence is incomplete. |
-| `verified` | Applicable WBS checks and ATPs passed, and durable evidence contains revision, environment, exact procedure, result, and redacted artifact location. |
-| `blocked` | A failed gate, dependency, or unresolved decision prevents closure. |
-| `waived` | A temporary exception explicitly approved with owner, reason, and expiry. |
-| `deferred` | Explicitly postponed scope; it is not complete or verified. |
+| Status                    | Meaning                                                                                                                                              |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `not-started`             | Defined, but implementation or acceptance evidence has not started.                                                                                  |
+| `in-progress`             | Work or verification has started, but closure checks are incomplete.                                                                                 |
+| `implementation-complete` | Source work is reported complete, but required ATP or release evidence is incomplete.                                                                |
+| `verified`                | Applicable WBS checks and ATPs passed, and durable evidence contains revision, environment, exact procedure, result, and redacted artifact location. |
+| `blocked`                 | A failed gate, dependency, or unresolved decision prevents closure.                                                                                  |
+| `waived`                  | A temporary exception explicitly approved with owner, reason, and expiry.                                                                            |
+| `deferred`                | Explicitly postponed scope; it is not complete or verified.                                                                                          |
 
 For a newly created plan, initialize delivery rows as `not-started`, `deferred`, or `blocked` as appropriate. Creating Markdown files never makes implementation `implementation-complete` or `verified`.
 

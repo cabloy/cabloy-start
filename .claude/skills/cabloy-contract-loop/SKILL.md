@@ -30,7 +30,14 @@ Do not keep debugging source-level contract or renderer changes until the local 
 ## Current safeguard behavior in this repo
 
 - there is no contract-loop pre-commit gate in the current repo workflow
-- the active safeguard lives in the Claude `PostToolUse` hook configured in `.claude/settings.json`
+- the active safeguards are platform-specific adapters over the same portable classifier and reverse auto-sync runtime in `repo-agent-governance/tools/contract-loop/`
+- Claude Code uses the `PostToolUse` hook in `.claude/settings.json`
+- Codex uses the `PostToolUse` hook in `.codex/hooks.json`; it matches `apply_patch` / `Edit` / `Write`, resolves the project-local bridge without requiring Git, preserves Add/Update/Delete patch operations, and returns model-visible context through the Codex hook contract
+- Codex project-hook discovery and trust remain client-local. In a non-Git project opened from a nested directory, configure the local Codex `project_root_markers` to include `__CABLOY_BASIC__` and `__CABLOY_START__` alongside `.git`; the repository must not write that user setting
+- Cursor uses native `postToolUse` for Agent `Write` context plus `afterTabFileEdit` for Tab `TabWrite` side effects in `.cursor/hooks.json`; the native `afterFileEdit` route is intentionally absent so one Agent write does not run the gate twice
+- Cursor payloads are not Claude hook payloads. When Cursor imports `.claude/settings.json`, the Claude bridge recognizes Cursor and returns without work, leaving the native Cursor adapter as the single Agent gate
+- `postToolUse` injects `additional_context` into the agent turn; `afterTabFileEdit` is side-effect only and still runs the shared reverse auto-sync when the edited file matches
+- Codex handles every matching entry in one `apply_patch` call and runs at most one high-confidence reverse auto-sync for that patch. Explicit Delete entries use path-only evidence; an unreadable Add or Update target is reported as an inspection failure, never reinterpreted as a delete
 - for high-confidence reverse-chain source edits on the Zova side, the hook auto-runs `npm run build:zova:admin` and then `npm run deps:vona`
 - forward-chain detections remain reminder-only, so backend contract changes still require deliberate regeneration and verification
 - consumer-side reverse signals remain reminder-only, so do not assume every reverse-chain case auto-syncs itself
@@ -238,7 +245,7 @@ Important Cabloy Basic reverse-sync rule:
 - run `npm run build:zova:admin` from the repo root instead, then run `npm run deps:vona`
 - treat this as a JS-bundle-plus-rest-output handoff, not a rest-types-only refresh
 - the current repo safeguard may auto-run those two commands for high-confidence Zova reverse-source edits, but only as a convenience layer on top of the contract-loop model
-- if the change was consumer-side, low-confidence, cross-edition, or happened outside the Claude hook path, run the reverse sync flow deliberately yourself
+- if the change was consumer-side, low-confidence, cross-edition, happened outside a supported platform hook path, or used an untrusted/discovery-disabled hook, run the reverse sync flow deliberately yourself
 - prefer visible proof under `zova/src/**/.metadata/**` when it is available; if the effective handoff only appears in `.zova-rest`, treat the safeguard as conservative reminder/auto-sync assistance rather than strict proof
 
 For Cabloy Start, verify the exact Start-specific flavor names, paths, SSR site baselines, project assets, and source-confirmed root wrappers in the active Start repository. If the work affects an independent SSR site, follow Mode E: build that site’s paired wrapper rather than assuming an Admin/Web command covers it.

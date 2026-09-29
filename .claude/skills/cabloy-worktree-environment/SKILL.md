@@ -29,10 +29,10 @@ Before proposing configuration values or writing files:
 
 Interpretation:
 
-| Marker | Edition | Managed clean E2E command |
-| --- | --- | --- |
-| `__CABLOY_BASIC__` only | Cabloy Basic | `npm run test:e2e` |
-| `__CABLOY_START__` only | Cabloy Start | `npm run test:e2e` |
+| Marker                  | Edition      | Managed clean E2E command |
+| ----------------------- | ------------ | ------------------------- |
+| `__CABLOY_BASIC__` only | Cabloy Basic | `npm run test:e2e`        |
+| `__CABLOY_START__` only | Cabloy Start | `npm run test:e2e`        |
 
 Stop without edits when both markers are present, neither marker is present, the checkout is primary/unregistered, required environment directories are missing, or the selected edition's required scripts are unavailable.
 
@@ -66,11 +66,11 @@ offset = linkedWorktreeOrdinal + batch
 
 Use these fixed baseline ports, which match the committed Cabloy defaults:
 
-| Setting | Baseline | Recommended value |
-| --- | ---: | --- |
-| `SERVER_LISTEN_PORT` | `7102` | `7102 + offset` |
-| `DEV_SERVER_PORT` | `9000` | `9000 + offset` |
-| `DEV_SERVER_HMR_PORT` | `24679` | `24679 + offset` |
+| Setting               | Baseline | Recommended value |
+| --------------------- | -------: | ----------------- |
+| `SERVER_LISTEN_PORT`  |   `7102` | `7102 + offset`   |
+| `DEV_SERVER_PORT`     |   `9000` | `9000 + offset`   |
+| `DEV_SERVER_HMR_PORT` |  `24679` | `24679 + offset`  |
 
 Set `APP_NAME` to the basename of the validated current worktree root. Do not inspect other worktrees’ configurations or append an env-derived suffix. Stop if that basename is empty or cannot be used as an application name without altering it; ask the user to rename/recreate the linked worktree instead.
 
