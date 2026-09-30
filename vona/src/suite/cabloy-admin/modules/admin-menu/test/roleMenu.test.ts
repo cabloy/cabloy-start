@@ -2,14 +2,13 @@ import { catchError } from '@cabloy/utils';
 import assert from 'node:assert';
 import { describe, it } from 'node:test';
 import { app } from 'vona-mock';
-import { resolveVisibleSsrMenuGroups } from 'vona-module-a-ssr';
+import { resolveSsrMenuEligibility, resolveVisibleSsrMenuGroups } from 'vona-module-a-ssr';
 
 const ssrSiteName = 'start-siteadmin:admin';
 const staticMenuName = 'training-student:student#student';
 const otherStaticMenuName = 'training-record:record#record';
 const publicMenuName = 'start-siteweb:home';
 const groupMenuName = 'start-siteadmin:management';
-const omittedSiteMenuName = 'admin-role:role';
 const webSsrSiteName = 'start-siteweb:web';
 
 async function removeRole(roleId: string | undefined): Promise<void> {
@@ -74,38 +73,63 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
     }
   });
 
-  it('ATP-ADM-MNU-04: keeps omitted-site menu identities separately addressable per site', async () => {
-    const roleName = `admin-menu-role-menu-omitted-site-${crypto.randomUUID()}`;
+  it('ATP-ADM-MNU-04: keeps explicitly shared-site menu identities separately addressable per site', async t => {
+    const roleName = `admin-menu-role-menu-shared-site-${crypto.randomUUID()}`;
+    const sharedMenuName = 'test:shared';
+    const menus = [
+      {
+        name: sharedMenuName,
+        beanOptions: {
+          options: {
+            site: [ssrSiteName, webSsrSiteName],
+            item: { roles: [] },
+          },
+        },
+      },
+    ] as any;
     let roleId: string | undefined;
     try {
       await app.bean.executor.mockCtx(async () => {
         const role = await app.scope('admin-role').service.role.create({
           name: roleName,
-          title: 'Role menu omitted-site fixture',
+          title: 'Role menu shared-site fixture',
           siteIds: ['admin'],
         });
         roleId = String(role.id);
-        const service = app.scope('admin-menu').service.roleMenu;
-        const identities = [
-          { roleId, ssrSiteName, ssrMenuName: omittedSiteMenuName },
-          { roleId, ssrSiteName: webSsrSiteName, ssrMenuName: omittedSiteMenuName },
-        ];
-
-        for (const identity of identities) await service.create(identity);
-        const rows = await app.scope('admin-menu').model.roleMenu.select({ where: { roleId } });
-        assert.deepEqual(
-          rows
-            .map(row => [row.ssrSiteName, row.ssrMenuName])
-            .toSorted(([leftSite], [rightSite]) => leftSite.localeCompare(rightSite)),
-          [
-            [ssrSiteName, omittedSiteMenuName],
-            [webSsrSiteName, omittedSiteMenuName],
-          ],
+        const ssr = app.scope('a-ssr').service.ssr;
+        const eligibilityMock = t.mock.method(
+          ssr,
+          'resolveMenuEligibility',
+          (siteName, menuName) => {
+            if (!ssr.getSitesEnabled().some(site => site.name === siteName)) return;
+            return resolveSsrMenuEligibility(siteName, menuName, menus);
+          },
         );
+        try {
+          const service = app.scope('admin-menu').service.roleMenu;
+          const identities = [
+            { roleId, ssrSiteName, ssrMenuName: sharedMenuName },
+            { roleId, ssrSiteName: webSsrSiteName, ssrMenuName: sharedMenuName },
+          ];
 
-        await service.delete(identities[0]);
-        assert.equal(await app.scope('admin-menu').model.roleMenu.get(identities[0]), undefined);
-        assert.ok(await app.scope('admin-menu').model.roleMenu.get(identities[1]));
+          for (const identity of identities) await service.create(identity);
+          const rows = await app.scope('admin-menu').model.roleMenu.select({ where: { roleId } });
+          assert.deepEqual(
+            rows
+              .map(row => [row.ssrSiteName, row.ssrMenuName])
+              .toSorted(([leftSite], [rightSite]) => leftSite.localeCompare(rightSite)),
+            [
+              [ssrSiteName, sharedMenuName],
+              [webSsrSiteName, sharedMenuName],
+            ],
+          );
+
+          await service.delete(identities[0]);
+          assert.equal(await app.scope('admin-menu').model.roleMenu.get(identities[0]), undefined);
+          assert.ok(await app.scope('admin-menu').model.roleMenu.get(identities[1]));
+        } finally {
+          eligibilityMock.mock.restore();
+        }
       });
     } finally {
       await app.bean.executor.mockCtx(async () => await removeRole(roleId));
