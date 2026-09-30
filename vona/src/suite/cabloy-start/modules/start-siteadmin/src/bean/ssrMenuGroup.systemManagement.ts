@@ -17,5 +17,6 @@ export interface ISsrMenuGroupOptionsSystemManagement extends IDecoratorSsrMenuG
     order: $order(2),
     icon: undefined,
   },
+  site: ['start-siteadmin:admin'],
 })
 export class SsrMenuGroupSystemManagement extends BeanBase {}

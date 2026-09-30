@@ -24,5 +24,6 @@ export interface ISsrMenuOptionsDepartment extends IDecoratorSsrMenuOptions<
     group: 'start-siteadmin:systemManagement',
     roles: ['systemAdmin'],
   },
+  site: ['start-siteadmin:admin'],
 })
 export class SsrMenuDepartment extends BeanBase {}

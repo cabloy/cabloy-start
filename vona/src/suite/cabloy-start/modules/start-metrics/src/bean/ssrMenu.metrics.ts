@@ -20,5 +20,6 @@ export interface ISsrMenuOptionsMetrics extends IDecoratorSsrMenuOptions<ISsrSit
       roles: ['systemAdmin'],
     },
   },
+  site: ['start-siteadmin:admin'],
 })
 export class SsrMenuMetrics extends BeanBase {}
