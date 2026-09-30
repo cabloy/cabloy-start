@@ -463,18 +463,16 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
     ] as any;
     try {
       await app.bean.executor.mockCtx(async () => {
-        const [dynamicRole, staticRole] = await Promise.all([
-          app.scope('admin-role').service.role.create({
-            name: dynamicRoleName,
-            title: 'Role menu dynamic visibility fixture',
-            siteIds: ['admin'],
-          }),
-          app.scope('admin-role').service.role.create({
-            name: staticRoleName,
-            title: 'Role menu static visibility fixture',
-            siteIds: ['admin'],
-          }),
-        ]);
+        const dynamicRole = await app.scope('admin-role').service.role.create({
+          name: dynamicRoleName,
+          title: 'Role menu dynamic visibility fixture',
+          siteIds: ['admin'],
+        });
+        const staticRole = await app.scope('admin-role').service.role.create({
+          name: staticRoleName,
+          title: 'Role menu static visibility fixture',
+          siteIds: ['admin'],
+        });
         dynamicRoleId = String(dynamicRole.id);
         staticRoleId = String(staticRole.id);
         const resolve = async (currentRoleIds: Array<number | string>) =>
