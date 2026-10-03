@@ -4,11 +4,7 @@ import { expect, test } from '@playwright/test';
 
 import type { RegisteredAccount } from './helpers/cabloy-admin-api.ts';
 
-import {
-  loginAsAccount,
-  registerAccountUser,
-  removeAccountFixture,
-} from './helpers/cabloy-admin-api.ts';
+import { registerAccountUser, removeAccountFixture } from './helpers/cabloy-admin-api.ts';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -869,10 +865,7 @@ test(
           { exact: true },
         ),
       ).toBeVisible();
-      await expect(revokeDialog.getByLabel('Current password')).toHaveAttribute(
-        'type',
-        'password',
-      );
+      await expect(revokeDialog.getByLabel('Current password')).toHaveAttribute('type', 'password');
       await expect(revokeDialog.getByLabel('Operational reason')).toBeVisible();
       await expect(revokeDialog.getByText(/fresh proof/i)).toHaveCount(0);
 

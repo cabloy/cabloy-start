@@ -351,7 +351,7 @@ async function getTableFooterGeometry(footer: Locator): Promise<ITableFooterGeom
 
 function getVerticalBands(regions: ITableFooterGeometry['regions']) {
   const bands: Array<{ top: number; bottom: number }> = [];
-  for (const region of [...regions].sort((left, right) => left.top - right.top)) {
+  for (const region of regions.toSorted((left, right) => left.top - right.top)) {
     const band = bands.at(-1);
     if (band && region.top <= band.bottom + 1) {
       band.bottom = Math.max(band.bottom, region.bottom);

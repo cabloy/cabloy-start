@@ -69,40 +69,35 @@ function descriptionEditor(page: Page) {
 }
 
 function taskCheckboxes(root: Locator) {
-  return root.locator(
-    'ul[data-type="taskList"] li > label > input[type="checkbox"]',
-  );
+  return root.locator('ul[data-type="taskList"] li > label > input[type="checkbox"]');
 }
 
 async function expectTaskCheckboxLayout(root: Locator) {
-  const layout = await root.locator('ul[data-type="taskList"] li').evaluateAll(
-    taskItems =>
-      taskItems.map(taskItem => {
-        const checkbox = taskItem.querySelector<HTMLInputElement>(
-          'label > input[type="checkbox"]',
-        );
-        const label = taskItem.querySelector<HTMLElement>('label');
-        const text = taskItem.querySelector<HTMLElement>('div > p');
-        if (!checkbox || !label || !text) return null;
+  const layout = await root.locator('ul[data-type="taskList"] li').evaluateAll(taskItems =>
+    taskItems.map(taskItem => {
+      const checkbox = taskItem.querySelector<HTMLInputElement>('label > input[type="checkbox"]');
+      const label = taskItem.querySelector<HTMLElement>('label');
+      const text = taskItem.querySelector<HTMLElement>('div > p');
+      if (!checkbox || !label || !text) return null;
 
-        const checkboxRect = checkbox.getBoundingClientRect();
-        const textRect = text.getBoundingClientRect();
-        const checkboxStyle = getComputedStyle(checkbox);
-        const labelStyle = getComputedStyle(label);
-        const itemStyle = getComputedStyle(taskItem);
-        return {
-          checkboxHeight: checkboxRect.height,
-          checkboxWidth: checkboxRect.width,
-          checkboxCenter: checkboxRect.top + checkboxRect.height / 2,
-          checkboxMarginBlockEnd: checkboxStyle.marginBlockEnd,
-          checkboxMarginBlockStart: checkboxStyle.marginBlockStart,
-          checkboxMarginInlineEnd: checkboxStyle.marginInlineEnd,
-          checkboxMarginInlineStart: checkboxStyle.marginInlineStart,
-          itemDisplay: itemStyle.display,
-          labelDisplay: labelStyle.display,
-          textCenter: textRect.top + parseFloat(getComputedStyle(text).lineHeight) / 2,
-        };
-      }),
+      const checkboxRect = checkbox.getBoundingClientRect();
+      const textRect = text.getBoundingClientRect();
+      const checkboxStyle = getComputedStyle(checkbox);
+      const labelStyle = getComputedStyle(label);
+      const itemStyle = getComputedStyle(taskItem);
+      return {
+        checkboxHeight: checkboxRect.height,
+        checkboxWidth: checkboxRect.width,
+        checkboxCenter: checkboxRect.top + checkboxRect.height / 2,
+        checkboxMarginBlockEnd: checkboxStyle.marginBlockEnd,
+        checkboxMarginBlockStart: checkboxStyle.marginBlockStart,
+        checkboxMarginInlineEnd: checkboxStyle.marginInlineEnd,
+        checkboxMarginInlineStart: checkboxStyle.marginInlineStart,
+        itemDisplay: itemStyle.display,
+        labelDisplay: labelStyle.display,
+        textCenter: textRect.top + Number.parseFloat(getComputedStyle(text).lineHeight) / 2,
+      };
+    }),
   );
 
   expect(layout).toHaveLength(2);
