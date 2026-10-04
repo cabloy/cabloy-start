@@ -73,7 +73,9 @@ export class ModelUser extends BeanModelBase {
       id: userId,
       action: 'grantSystemAdmin',
       mutationFn: async ({ password, reason }) => {
-        const { proof } = await (await this.app.bean.getScope('admin-role')).api.adminRole.issueSystemAdminFreshProof({
+        const { proof } = await (
+          await this.app.bean.getScope('admin-role')
+        ).api.adminRole.issueSystemAdminFreshProof({
           password,
         });
         await (this.scope.api.adminUser.grantSystemAdmin(
@@ -95,7 +97,9 @@ export class ModelUser extends BeanModelBase {
       id: userId,
       action: 'revokeSystemAdmin',
       mutationFn: async ({ password, reason }) => {
-        const { proof } = await (await this.app.bean.getScope('admin-role')).api.adminRole.issueSystemAdminFreshProof({
+        const { proof } = await (
+          await this.app.bean.getScope('admin-role')
+        ).api.adminRole.issueSystemAdminFreshProof({
           password,
         });
         await (this.scope.api.adminUser.revokeSystemAdmin(

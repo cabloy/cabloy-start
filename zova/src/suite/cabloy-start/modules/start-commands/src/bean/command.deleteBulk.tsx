@@ -9,8 +9,7 @@ import { BeanCommandSelectedBase, Command } from 'zova-module-a-command';
 
 export type TypeCommandDeleteBulkResult = unknown;
 
-export interface ICommandOptionsDeleteBulk
-  extends ICommandSelectedOptionsBase<TypeCommandDeleteBulkResult> {}
+export interface ICommandOptionsDeleteBulk extends ICommandSelectedOptionsBase<TypeCommandDeleteBulkResult> {}
 
 @Command<ICommandOptionsDeleteBulk>()
 export class CommandDeleteBulk extends BeanCommandSelectedBase implements ICommandExecute {

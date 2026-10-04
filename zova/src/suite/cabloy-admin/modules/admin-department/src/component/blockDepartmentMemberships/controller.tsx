@@ -6,7 +6,6 @@ import type {
   ISchemaObjectExtensionField,
   TypeOpenapiPermissions,
 } from 'zova-module-a-openapi';
-
 import type { TypeDetailsCheckPermission } from 'zova-module-start-details';
 
 import { VNode } from 'vue';
@@ -14,11 +13,11 @@ import { VBtn, VCard, VCardText } from 'vuetify/components';
 import { BeanControllerBase, Use } from 'zova';
 import { ZovaJsx } from 'zova-jsx';
 import { Controller } from 'zova-module-a-bean';
-
 import { createDetailsPermissionChecker } from 'zova-module-start-details';
 
-import { createDepartmentMembershipDetailsHostOptions } from '../../lib/departmentMembershipDetailsHost.js';
 import type { ModelDepartment } from '../../model/department.ts';
+
+import { createDepartmentMembershipDetailsHostOptions } from '../../lib/departmentMembershipDetailsHost.js';
 
 export interface ControllerBlockDepartmentMembershipsProps extends IResourceBlockOptionsBase {}
 
@@ -85,11 +84,9 @@ export class ControllerBlockDepartmentMemberships extends BeanControllerBase {
       () => $$pageEntry.jsxCelScope.permissions as TypeOpenapiPermissions | undefined,
       () => {
         if ($$pageEntry.formMeta.editMode === 'create') return;
-        return (
-          ($$pageEntry.formRef?.formState.values ?? $$pageEntry.formData) as
-            | Record<string, unknown>
-            | undefined
-        );
+        return ($$pageEntry.formRef?.formState.values ?? $$pageEntry.formData) as
+          | Record<string, unknown>
+          | undefined;
       },
       (permissions, actionName, permissionHint, currentData) => {
         return this.$passport.checkPermission(permissions, actionName, permissionHint, currentData);

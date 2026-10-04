@@ -36,9 +36,7 @@ export function isDetailsActionAllowed(
   action: IDetailsPermissionAction,
 ): boolean {
   const permissionHint = action.options?.permission;
-  return (
-    checkFormScene(formScene, permissionHint) && checkPermission(action.name, permissionHint)
-  );
+  return checkFormScene(formScene, permissionHint) && checkPermission(action.name, permissionHint);
 }
 
 export function filterDetailsActions<TAction extends IDetailsPermissionAction>(

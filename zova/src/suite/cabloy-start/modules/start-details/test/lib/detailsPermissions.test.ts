@@ -42,7 +42,10 @@ test('details permission checker lazily reads the current enclosing Resource pro
       ['grantSystemAdmin', permissionHint],
     ],
   );
-  assert.equal(calls.every(call => call.length === 4), true);
+  assert.equal(
+    calls.every(call => call.length === 4),
+    true,
+  );
 });
 
 test('bulk details actions apply form-scene filtering before the enclosing Resource checker', () => {
@@ -75,7 +78,10 @@ test('bulk details actions apply form-scene filtering before the enclosing Resou
     actions as any,
   );
 
-  assert.deepEqual(allowed.map(action => action.name), ['grantSystemAdmin']);
+  assert.deepEqual(
+    allowed.map(action => action.name),
+    ['grantSystemAdmin'],
+  );
   assert.deepEqual(
     calls.map(([actionName]) => actionName),
     ['denied', 'grantSystemAdmin'],
@@ -111,6 +117,9 @@ test('row details actions use the same enclosing Resource checker and form-scene
     actions as any,
   );
 
-  assert.deepEqual(allowed.map(action => action.name), ['allowed']);
+  assert.deepEqual(
+    allowed.map(action => action.name),
+    ['allowed'],
+  );
   assert.deepEqual(calls, ['allowed', 'denied']);
 });
