@@ -69,6 +69,7 @@ const fullstackGroups = [
     text: 'Fullstack / Getting Started',
     items: [
       { text: 'Introduction', link: '/fullstack/introduction' },
+      { text: 'Development History', link: '/fullstack/development-history' },
       { text: 'Quickstart', link: '/fullstack/quickstart' },
       { text: 'Suites and Modules', link: '/fullstack/suites-and-modules' },
     ],
@@ -98,7 +99,7 @@ const fullstackGroups = [
         link: '/fullstack/tutorial-5-backend-contract-sharing',
       },
       {
-        text: 'Tutorial 6: One Contract Surface, Four Uses',
+        text: 'Tutorial 6: One Contract Model, Four Uses',
         link: '/fullstack/tutorial-6-one-contract-four-uses',
       },
     ],
@@ -115,7 +116,7 @@ const fullstackGroups = [
     ],
   },
   {
-    text: 'Architecture & Integration',
+    text: 'Architecture & Editions',
     items: [
       {
         text: 'Comparison with Other Frameworks',
@@ -123,18 +124,27 @@ const fullstackGroups = [
       },
       { text: 'Framework Performance', link: '/fullstack/framework-performance' },
       { text: 'Vona + Zova Integration', link: '/fullstack/vona-zova-integration' },
-      { text: 'SSR Site and Flavor Setup', link: '/fullstack/ssr-site-and-flavor-setup' },
-      { text: 'A-Pay Payment Suite', link: '/fullstack/a-pay-payment-suite' },
       {
-        text: 'Payment Provider Sandbox Configuration',
-        link: '/fullstack/payment-sandbox-configuration',
+        text: 'Edition Collaboration Differences',
+        link: '/fullstack/edition-collaboration-differences',
       },
+    ],
+  },
+  {
+    text: 'Contracts & Integration',
+    items: [
       { text: 'Contract Loop Playbook', link: '/fullstack/contract-loop-playbook' },
       { text: 'Semantic Presentation Contract', link: '/fullstack/semantic-presentation-contract' },
+      { text: 'Backend OpenAPI to Frontend SDK', link: '/fullstack/openapi-to-sdk' },
       {
-        text: 'Admin Resource and Web Self-Service',
-        link: '/fullstack/admin-resource-and-web-self-service',
+        text: 'Frontend Metadata Back to Backend',
+        link: '/fullstack/frontend-metadata-to-backend',
       },
+    ],
+  },
+  {
+    text: 'Metadata-Driven UI',
+    items: [
       {
         text: 'Backend Metadata to Frontend Table Actions',
         link: '/fullstack/backend-metadata-to-frontend-table-actions',
@@ -151,20 +161,32 @@ const fullstackGroups = [
         text: 'Backend Metadata to Frontend Table Actions Source Reading Map',
         link: '/fullstack/backend-metadata-to-frontend-table-actions-source-reading-map',
       },
-      { text: 'Fullstack Image Workflow', link: '/fullstack/image-workflow' },
-      { text: 'Fullstack File Workflow', link: '/fullstack/file-workflow' },
-      { text: 'Backend OpenAPI to Frontend SDK', link: '/fullstack/openapi-to-sdk' },
+    ],
+  },
+  {
+    text: 'Resource & SSR Patterns',
+    items: [
+      { text: 'Vona Integrated SSR vs Zova Standalone SSR', link: '/fullstack/ssr-entry-modes' },
+      { text: 'SSR Site and Flavor Setup', link: '/fullstack/ssr-site-and-flavor-setup' },
       {
-        text: 'Frontend Metadata Back to Backend',
-        link: '/fullstack/frontend-metadata-to-backend',
+        text: 'Admin Resource and Web Self-Service',
+        link: '/fullstack/admin-resource-and-web-self-service',
       },
       {
         text: 'One-to-One Companion Resource',
         link: '/fullstack/one-to-one-companion-resource-guide',
       },
+    ],
+  },
+  {
+    text: 'Media & Payments',
+    items: [
+      { text: 'Fullstack Image Workflow', link: '/fullstack/image-workflow' },
+      { text: 'Fullstack File Workflow', link: '/fullstack/file-workflow' },
+      { text: 'A-Pay Payment Suite', link: '/fullstack/a-pay-payment-suite' },
       {
-        text: 'Edition Collaboration Differences',
-        link: '/fullstack/edition-collaboration-differences',
+        text: 'Payment Provider Sandbox Configuration',
+        link: '/fullstack/payment-sandbox-configuration',
       },
     ],
   },
@@ -194,22 +216,22 @@ const referenceGroups = [
 const GA_MEASUREMENT_ID = 'G-2NYR9RGRL4'; // process.env.GA_MEASUREMENT_ID;
 const gaHead = GA_MEASUREMENT_ID
   ? [
-      [
-        'script',
-        {
-          async: '',
-          src: `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`,
-        },
-      ],
-      [
-        'script',
-        {},
-        `window.dataLayer = window.dataLayer || [];
+    [
+      'script',
+      {
+        async: '',
+        src: `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`,
+      },
+    ],
+    [
+      'script',
+      {},
+      `window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', '${GA_MEASUREMENT_ID}');`,
-      ],
-    ]
+    ],
+  ]
   : [];
 
 export default defineConfig({
@@ -218,7 +240,10 @@ export default defineConfig({
   lang: 'en-US',
   base: '/',
   ignoreDeadLinks: [/^https?:\/\/localhost/],
-  head: gaHead,
+  head: [
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+    ...gaHead,
+  ],
   transformPageData(pageData) {
     if (!/^blogs\/[^/]+\/index\.md$/.test(pageData.relativePath)) return;
 

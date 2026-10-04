@@ -59,7 +59,8 @@
     "agent:governance:adopt": "node repo-agent-governance/scripts/governance.mjs adopt",
     "agent:governance:pack-check": "node repo-agent-governance/scripts/pack-check.mjs",
     "test:agent-governance": "node --test repo-agent-governance/tests/*.test.mjs",
-    "contract:gate": "node repo-agent-governance/tools/contract-loop/check.mjs"
+    "contract:gate": "node repo-agent-governance/tools/contract-loop/check.mjs",
+    "spec:check": "node ./repo-agent-governance/tools/spec-audit/audit.mjs"
   },
   "devDependencies": {
     "@cabloy/dotenv": "^1.2.8",
