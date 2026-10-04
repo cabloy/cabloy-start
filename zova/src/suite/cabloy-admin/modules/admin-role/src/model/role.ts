@@ -14,5 +14,4 @@ export class ModelRole extends BeanModelBase {
   protected get $$modelResource(): ModelResource {
     return usePrepareArg(RoleResource, true);
   }
-
 }
