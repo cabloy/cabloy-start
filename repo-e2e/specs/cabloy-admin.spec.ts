@@ -4,7 +4,11 @@ import { expect, test } from '@playwright/test';
 
 import type { RegisteredAccount } from './helpers/cabloy-admin-api.ts';
 
-import { registerAccountUser, removeAccountFixture } from './helpers/cabloy-admin-api.ts';
+import {
+  registerAccountUser,
+  removeAccountFixture,
+  runCleanup,
+} from './helpers/cabloy-admin-api.ts';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -710,10 +714,13 @@ test(
   { tag: ['@admin', '@cabloy-admin'], timeout: 60_000 },
   async ({ page, request }, testInfo) => {
     const pageErrors = collectPageErrors(page);
-    const account = await registerAccountUser(request, testInfo);
+    let account: RegisteredAccount | undefined;
     const reason = `Grant system administrator for ATP ${testInfo.workerIndex}-${Date.now()}`;
-    await loginAsAdmin(page);
     try {
+      account = await registerAccountUser(request, testInfo, undefined, registered => {
+        account = registered;
+      });
+      await loginAsAdmin(page);
       await page.goto(`${resourcePath('admin-user:user')}/${account.id}`, {
         waitUntil: 'load',
       });
@@ -938,7 +945,7 @@ test(
       ).toBeVisible();
       expect(pageErrors).toEqual([]);
     } finally {
-      await removeAccountFixture(request, account);
+      if (account) await removeAccountFixture(request, account);
     }
   },
 );
@@ -1282,12 +1289,15 @@ test(
     if (!baseURL) throw new Error('Admin E2E base URL is unavailable');
     const browser = page.context().browser();
     if (!browser) throw new Error('Admin E2E browser is unavailable');
-    const account = await registerAccountUser(request, testInfo);
+    let account: RegisteredAccount | undefined;
     const roleName = `ATP Menu Disclosure Role ${testInfo.workerIndex}-${Date.now()}`;
     let roleId: number | string | undefined;
     let accountContext: Awaited<ReturnType<typeof page.context>> | undefined;
-    await loginAsAdmin(page);
     try {
+      account = await registerAccountUser(request, testInfo, undefined, registered => {
+        account = registered;
+      });
+      await loginAsAdmin(page);
       roleId = (await createRole(page, roleName)).id;
       await replaceUserRoles(page, account.id, [roleId]);
       await requestApi(page, 'PUT', '/api/admin/menu/roleMenu/batch', {
@@ -1336,9 +1346,17 @@ test(
         expect((await requestApiResponse(accountPage, 'GET', path)).status()).toBe(403);
       }
     } finally {
-      if (accountContext) await accountContext.close();
-      if (roleId !== undefined) await deleteRole(page, roleId);
-      await removeAccountFixture(request, account);
+      await runCleanup([
+        async () => {
+          if (accountContext) await accountContext.close();
+        },
+        async () => {
+          if (roleId !== undefined) await deleteRole(page, roleId);
+        },
+        async () => {
+          if (account) await removeAccountFixture(request, account);
+        },
+      ]);
     }
   },
 );
@@ -1511,7 +1529,9 @@ test(
       heldRoleId = (await createRole(page, heldRoleName)).id;
       replacementRoleId = (await createRole(page, replacementRoleName)).id;
       unrelatedRoleId = (await createRole(page, unrelatedRoleName)).id;
-      unrelatedAccount = await registerAccountUser(request, testInfo);
+      unrelatedAccount = await registerAccountUser(request, testInfo, undefined, registered => {
+        unrelatedAccount = registered;
+      });
       await replaceUserRoles(page, userId, [...originalNonSystemAdminRoleIds, heldRoleId]);
 
       subjectContext = await browser.newContext({ baseURL });
@@ -1717,14 +1737,28 @@ test(
         page.off('framenavigated', countOtherBrowserReload);
       }
     } finally {
-      if (subjectContext) await subjectContext.close();
-      if (originalNonSystemAdminRoleIds) {
-        await replaceUserRoles(page, userId, originalNonSystemAdminRoleIds);
-      }
-      if (unrelatedAccount) await removeAccountFixture(request, unrelatedAccount);
-      if (unrelatedRoleId !== undefined) await deleteRole(page, unrelatedRoleId);
-      if (replacementRoleId !== undefined) await deleteRole(page, replacementRoleId);
-      if (heldRoleId !== undefined) await deleteRole(page, heldRoleId);
+      await runCleanup([
+        async () => {
+          if (subjectContext) await subjectContext.close();
+        },
+        async () => {
+          if (originalNonSystemAdminRoleIds) {
+            await replaceUserRoles(page, userId, originalNonSystemAdminRoleIds);
+          }
+        },
+        async () => {
+          if (unrelatedAccount) await removeAccountFixture(request, unrelatedAccount);
+        },
+        async () => {
+          if (unrelatedRoleId !== undefined) await deleteRole(page, unrelatedRoleId);
+        },
+        async () => {
+          if (replacementRoleId !== undefined) await deleteRole(page, replacementRoleId);
+        },
+        async () => {
+          if (heldRoleId !== undefined) await deleteRole(page, heldRoleId);
+        },
+      ]);
     }
   },
 );
@@ -1822,9 +1856,7 @@ test(
     } as const;
     const pageErrors = collectPageErrors(page);
     const consoleErrors = collectConsoleErrors(page);
-    const delegated = await registerAccountUser(request, testInfo);
-    const allowedCreator = await registerAccountUser(request, testInfo);
-    const foreignCreator = await registerAccountUser(request, testInfo);
+    const accounts: RegisteredAccount[] = [];
     const grantIds: Array<number | string> = [];
     const grantDepartmentIds: Array<number | string> = [];
     const studentIds: Array<number | string> = [];
@@ -1844,8 +1876,17 @@ test(
     let updateGrantDepartmentId: number | string | undefined;
     let delegatedContext: Awaited<ReturnType<typeof page.context>> | undefined;
 
-    await loginAsAdmin(page);
     try {
+      const delegated = await registerAccountUser(request, testInfo, undefined, account => {
+        accounts.push(account);
+      });
+      const allowedCreator = await registerAccountUser(request, testInfo, undefined, account => {
+        accounts.push(account);
+      });
+      const foreignCreator = await registerAccountUser(request, testInfo, undefined, account => {
+        accounts.push(account);
+      });
+      await loginAsAdmin(page);
       delegatedRoleId = (await createRole(page, roleName)).id;
       roleIds.push(delegatedRoleId);
       allowedCreatorRoleId = (await createRole(page, `${roleName} Allowed Creator`)).id;
@@ -2050,31 +2091,39 @@ test(
       expect(pageErrors).toEqual([]);
       expect(consoleErrors).toEqual([]);
     } finally {
-      for (const studentId of studentIds.toReversed()) {
-        await requestApi(page, 'DELETE', `/api/training/student/deleteForce/${studentId}`);
-      }
-      for (const grantDepartmentId of grantDepartmentIds.toReversed()) {
-        await requestApi(
-          page,
-          'DELETE',
-          `/api/admin/rbac/rbacGrantDepartment/${grantDepartmentId}`,
-        );
-      }
-      for (const grantId of grantIds.toReversed()) {
-        await requestApi(page, 'DELETE', `/api/admin/rbac/rbacGrant/${grantId}`);
-      }
-      if (delegatedContext) await delegatedContext.close();
-      for (const membership of memberships.toReversed()) {
-        await deleteMembership(page, membership.departmentId, membership.membershipId);
-      }
-      if (foreignDepartmentId !== undefined) await deleteDepartment(page, foreignDepartmentId);
-      if (allowedDepartmentId !== undefined) await deleteDepartment(page, allowedDepartmentId);
-      for (const roleId of roleIds.toReversed()) {
-        await deleteRole(page, roleId);
-      }
-      for (const user of [delegated, allowedCreator, foreignCreator]) {
-        await removeAccountFixture(request, user);
-      }
+      await runCleanup([
+        ...studentIds.toReversed().map(studentId => async () => {
+          await requestApi(page, 'DELETE', `/api/training/student/deleteForce/${studentId}`);
+        }),
+        ...grantDepartmentIds.toReversed().map(grantDepartmentId => async () => {
+          await requestApi(
+            page,
+            'DELETE',
+            `/api/admin/rbac/rbacGrantDepartment/${grantDepartmentId}`,
+          );
+        }),
+        ...grantIds.toReversed().map(grantId => async () => {
+          await requestApi(page, 'DELETE', `/api/admin/rbac/rbacGrant/${grantId}`);
+        }),
+        async () => {
+          if (delegatedContext) await delegatedContext.close();
+        },
+        ...memberships.toReversed().map(membership => async () => {
+          await deleteMembership(page, membership.departmentId, membership.membershipId);
+        }),
+        async () => {
+          if (foreignDepartmentId !== undefined) await deleteDepartment(page, foreignDepartmentId);
+        },
+        async () => {
+          if (allowedDepartmentId !== undefined) await deleteDepartment(page, allowedDepartmentId);
+        },
+        ...roleIds.toReversed().map(roleId => async () => {
+          await deleteRole(page, roleId);
+        }),
+        ...accounts.toReversed().map(account => async () => {
+          await removeAccountFixture(request, account);
+        }),
+      ]);
     }
   },
 );

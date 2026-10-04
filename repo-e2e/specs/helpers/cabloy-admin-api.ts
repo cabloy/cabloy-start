@@ -4,11 +4,17 @@ import { expect } from '@playwright/test';
 
 export type TableIdentity = number | string;
 
+export interface AccountRole {
+  id: TableIdentity;
+  name: string;
+}
+
 export interface RegisteredAccount {
   id: TableIdentity;
   username: string;
   password: string;
   accessToken: string;
+  roles: AccountRole[];
 }
 
 export interface ApiRequestOptions {
@@ -65,7 +71,7 @@ export async function loginAsAccount(
 ): Promise<RegisteredAccount> {
   const captcha = await createCaptcha(request);
   const passport = await requestApiOk<{
-    passport: { user: { id: TableIdentity } };
+    passport: { user: { id: TableIdentity }; roles: AccountRole[] };
     jwt: { accessToken: string };
   }>(request, 'POST', '/api/home/user/passport/login', {
     data: {
@@ -79,6 +85,7 @@ export async function loginAsAccount(
     username,
     password,
     accessToken: passport.jwt.accessToken,
+    roles: passport.passport.roles,
   };
 }
 
@@ -90,6 +97,7 @@ export async function registerAccountUser(
   request: APIRequestContext,
   testInfo: TestInfo,
   fixtureUserNamePrefix = 'e2e-fixture-admin-rbac',
+  onRegistered?: (account: RegisteredAccount) => void,
 ): Promise<RegisteredAccount> {
   const suffix = `${testInfo.workerIndex}-${testInfo.parallelIndex ?? testInfo.retry}-${crypto.randomUUID()}`;
   const username = `${fixtureUserNamePrefix}-${suffix}`;
@@ -98,7 +106,7 @@ export async function registerAccountUser(
   const baseURL = testInfo.project.use.baseURL;
   if (!baseURL) throw new Error('account E2E base URL is unavailable');
   const registration = await requestApiOk<{
-    passport: { user: { id: TableIdentity } };
+    passport: { user: { id: TableIdentity }; roles: AccountRole[] };
     jwt: { accessToken: string };
   }>(request, 'POST', '/api/home/user/passport/register', {
     data: {
@@ -110,13 +118,18 @@ export async function registerAccountUser(
       captcha,
     },
   });
-  await activateAccountFixture(request, registration.jwt.accessToken);
-  return {
+  const account: RegisteredAccount = {
     id: registration.passport.user.id,
     username,
     password,
     accessToken: registration.jwt.accessToken,
+    roles: registration.passport.roles,
   };
+  onRegistered?.(account);
+  await activateAccountFixture(request, account.accessToken);
+  const activatedAccount = await loginAsAccount(request, username, password);
+  expect(String(activatedAccount.id)).toBe(String(account.id));
+  return activatedAccount;
 }
 
 export async function activateAccountFixture(
@@ -133,6 +146,9 @@ export async function removeAccountFixture(
   account: RegisteredAccount,
 ): Promise<void> {
   const currentAccount = await loginAsAccount(request, account.username, account.password);
+  if (String(currentAccount.id) !== String(account.id)) {
+    throw new Error(`Fixture login resolved a different account: ${account.username}`);
+  }
   await requestApiOk<null>(request, 'DELETE', '/api/home/user/passportTest/removeCurrentFixture', {
     accessToken: currentAccount.accessToken,
   });

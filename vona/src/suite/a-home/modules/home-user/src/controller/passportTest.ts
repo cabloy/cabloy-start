@@ -24,7 +24,7 @@ export class ControllerPassportTest extends BeanBase {
   }
 
   @Web.delete('removeCurrentFixture')
-  @Passport.activated(true)
+  @Passport.activated('noCheck')
   @Core.transaction()
   async removeCurrentFixture() {
     const user = this.bean.passport.currentUser!;

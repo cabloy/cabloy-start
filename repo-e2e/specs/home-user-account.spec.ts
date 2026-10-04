@@ -4,12 +4,7 @@ import { expect, test } from '@playwright/test';
 
 import type { RegisteredAccount } from './helpers/cabloy-admin-api.ts';
 
-import {
-  activateAccountFixture,
-  registerAccountUser,
-  removeAccountFixture,
-  runCleanup,
-} from './helpers/cabloy-admin-api.ts';
+import { registerAccountUser, removeAccountFixture } from './helpers/cabloy-admin-api.ts';
 
 const accountPath = '/home/user/account';
 const passwordSetPath = '/home/user/password-set';
@@ -145,17 +140,18 @@ test(
       const registrationResponse = await registerResponse;
       expect(registrationResponse.ok()).toBeTruthy();
       const registration = (await registrationResponse.json()).data as {
-        passport: { user: { id: RegisteredAccount['id'] } };
+        passport: { user: { id: RegisteredAccount['id'] }; roles: RegisteredAccount['roles'] };
         jwt: { accessToken: string };
       };
-      expect(registration.passport.user.id).toEqual(expect.anything());
-      expect(registration.jwt.accessToken).toEqual(expect.any(String));
       account = {
         id: registration.passport.user.id,
         username,
         password,
         accessToken: registration.jwt.accessToken,
+        roles: registration.passport.roles,
       };
+      expect(account.id).toEqual(expect.anything());
+      expect(account.accessToken).toEqual(expect.any(String));
 
       await expect(
         page.getByText('Check your email to activate your account before signing in.', {
@@ -167,10 +163,7 @@ test(
       expect(new URL(page.url()).searchParams.get('returnTo')).toBe(accountPath);
     } finally {
       if (account) {
-        await runCleanup([
-          () => activateAccountFixture(request, account.accessToken),
-          () => removeAccountFixture(request, account),
-        ]);
+        await removeAccountFixture(request, account);
       }
     }
   },
@@ -269,7 +262,15 @@ test(
   async ({ page, request }, testInfo) => {
     let account: RegisteredAccount | undefined;
     try {
-      account = await registerAccountUser(request, testInfo, 'e2e-fixture-home-account');
+      account = await registerAccountUser(
+        request,
+        testInfo,
+        'e2e-fixture-home-account',
+        registered => {
+          account = registered;
+        },
+      );
+      expect(account.roles.map(role => role.name)).toContain('registeredUser');
       const pageErrors = collectPageErrors(page);
       const consoleErrors = collectConsoleErrors(page);
       await page.goto('/login?returnTo=%2Fhome%2Fuser%2Faccount', { waitUntil: 'load' });
@@ -310,7 +311,15 @@ test(
   async ({ page, request }, testInfo) => {
     let account: RegisteredAccount | undefined;
     try {
-      account = await registerAccountUser(request, testInfo, 'e2e-fixture-home-account');
+      account = await registerAccountUser(
+        request,
+        testInfo,
+        'e2e-fixture-home-account',
+        registered => {
+          account = registered;
+        },
+      );
+      expect(account.roles.map(role => role.name)).toContain('registeredUser');
       const pageErrors = collectPageErrors(page);
       const consoleErrors = collectConsoleErrors(page);
       await page.goto('/login?returnTo=%2Fhome%2Fuser%2Faccount', { waitUntil: 'load' });

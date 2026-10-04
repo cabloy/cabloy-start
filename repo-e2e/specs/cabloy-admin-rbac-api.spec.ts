@@ -405,9 +405,9 @@ async function createAccount(
   ledger: ApiFixtureLedger,
   testInfo: TestInfo,
 ): Promise<RegisteredAccount> {
-  const account = await registerAccountUser(request, testInfo);
-  ledger.accounts.push(account);
-  return account;
+  return await registerAccountUser(request, testInfo, undefined, account => {
+    ledger.accounts.push(account);
+  });
 }
 
 async function grantReadScope(
@@ -574,10 +574,10 @@ test(
     const suffix = testSuffix(testInfo);
     const ledger = createLedger();
     const admin = await loginAsAdmin(request);
-    const delegated = await createAccount(request, ledger, testInfo);
     let testFailure: unknown;
 
     try {
+      const delegated = await createAccount(request, ledger, testInfo);
       const roleId = await createRole(request, admin, ledger, `ATP API Policy ${suffix}`);
       await assignRole(request, admin, delegated, roleId);
 
@@ -1003,11 +1003,11 @@ test(
     const suffix = testSuffix(testInfo);
     const ledger = createLedger();
     const admin = await loginAsAdmin(request);
-    const subject = await createAccount(request, ledger, testInfo);
-    const foreignOwner = await createAccount(request, ledger, testInfo);
     let testFailure: unknown;
 
     try {
+      const subject = await createAccount(request, ledger, testInfo);
+      const foreignOwner = await createAccount(request, ledger, testInfo);
       const ownDepartmentId = await createDepartment(
         request,
         admin,
