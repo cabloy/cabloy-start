@@ -82,17 +82,21 @@ describe('departmentMembership.test.ts', { concurrency: false }, () => {
       assert.equal(schema.properties.enabled.rest.form.render, 'start-switch:formFieldSwitch');
       assert.equal(schema.properties.managerMembershipId.rest.visible, false);
 
-      const summaryApiJson = await app.bean.openapi.generateJsonOfClass(DtoDepartmentMembershipSummary);
+      const summaryApiJson = await app.bean.openapi.generateJsonOfClass(
+        DtoDepartmentMembershipSummary,
+      );
       const summarySchema = Object.values(summaryApiJson.components!.schemas as any).find(item => {
         return (item as any).properties?._operationsRow;
       }) as any;
       assert.ok(summarySchema);
       const actions = summarySchema.properties._operationsRow.rest.table.columnProps.actions;
       const togglePrimaryAction = actions.find(
-        (action: { render?: string }) => action.render === 'admin-department:actionToggleMembershipPrimary',
+        (action: { render?: string }) =>
+          action.render === 'admin-department:actionToggleMembershipPrimary',
       );
       const updateManagerAction = actions.find(
-        (action: { render?: string }) => action.render === 'admin-department:actionUpdateMembershipManager',
+        (action: { render?: string }) =>
+          action.render === 'admin-department:actionUpdateMembershipManager',
       );
       assert.equal(togglePrimaryAction?.name, 'toggleMembershipPrimary');
       assert.deepEqual(togglePrimaryAction?.options?.permission, {

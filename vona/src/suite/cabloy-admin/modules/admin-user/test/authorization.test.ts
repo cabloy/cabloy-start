@@ -200,7 +200,9 @@ describe('authorization.test.ts', { concurrency: false }, () => {
           await adminRole.model.systemAdminAudit.delete({ targetId: { _in_: userIds } });
           await homeUser.model.roleUser.delete({ userId: { _in_: userIds } });
           if (proofHashes.length) {
-            await adminRole.model.systemAdminFreshProof.delete({ proofHash: { _in_: proofHashes } });
+            await adminRole.model.systemAdminFreshProof.delete({
+              proofHash: { _in_: proofHashes },
+            });
           }
           for (const userId of userIds.toReversed()) {
             await app.bean.user.removeById(userId);

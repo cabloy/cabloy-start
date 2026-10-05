@@ -13,9 +13,9 @@ import { getTargetDecoratorRules } from 'vona-module-a-openapiutils';
 import { $Dto } from 'vona-module-a-orm';
 
 import { DtoDetailRecordSubjectResItem } from '../src/dto/detailRecordSubjectResItem.tsx';
-import { DtoRecordUpdate } from '../src/dto/recordUpdate.tsx';
 import { DtoRecordSelectReq } from '../src/dto/recordSelectReq.tsx';
 import { DtoRecordSelectResItem } from '../src/dto/recordSelectResItem.tsx';
+import { DtoRecordUpdate } from '../src/dto/recordUpdate.tsx';
 import { DtoRecordView } from '../src/dto/recordView.tsx';
 import { ModelRecord } from '../src/model/record.ts';
 
@@ -331,9 +331,7 @@ describe('record.test.ts', { concurrency: false }, () => {
           params: { id: recordId },
         });
         const [updatedMathSubject, updatedEnglishSubject] = record.trainingRecordSubjects ?? [];
-        const recordAfterUpdate = await app
-          .scope('training-record')
-          .model.record.getById(recordId);
+        const recordAfterUpdate = await app.scope('training-record').model.record.getById(recordId);
         assert.ok(recordAfterUpdate);
         assert.equal(String(record.studentId), String(studentId));
         assert.equal(String(record.student?.id), String(studentId));

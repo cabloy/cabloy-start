@@ -46,8 +46,9 @@ describe('role.test.ts', { concurrency: false }, () => {
         return (item as any).properties?.name && (item as any).properties?.builtin;
       }) as any;
       assert.ok(component, JSON.stringify(apiJson.components?.schemas));
-      const tabs = component.rest?.blocks?.[0]?.options?.blocks?.[0]?.options?.blocks?.[0]?.options
-        ?.formLayout?.children[0];
+      const tabs =
+        component.rest?.blocks?.[0]?.options?.blocks?.[0]?.options?.blocks?.[0]?.options?.formLayout
+          ?.children[0];
       const policyBlock = tabs?.children[1]?.children[0]?.block;
       const menuBlock = tabs?.children[2]?.children[0]?.block;
       assert.equal(policyBlock?.render, 'admin-rbac:blockPolicyEditor');
@@ -311,11 +312,13 @@ describe('role.test.ts', { concurrency: false }, () => {
             ).name,
             persistedBuiltinRole.name,
           );
-          const [persistedBuiltinDeleteResult, persistedBuiltinDeleteError] = await catchError(() => {
-            return app.bean.executor.performAction('delete', '/admin/role/:id', {
-              params: { id: persistedBuiltinRole.id },
-            });
-          });
+          const [persistedBuiltinDeleteResult, persistedBuiltinDeleteError] = await catchError(
+            () => {
+              return app.bean.executor.performAction('delete', '/admin/role/:id', {
+                params: { id: persistedBuiltinRole.id },
+              });
+            },
+          );
           assert.equal(persistedBuiltinDeleteResult, undefined);
           assert.equal(persistedBuiltinDeleteError?.code, 'admin-role:1002');
 

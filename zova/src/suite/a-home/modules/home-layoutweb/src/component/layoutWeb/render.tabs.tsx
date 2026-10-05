@@ -25,7 +25,12 @@ export class RenderTabs extends BeanRenderBase {
     }
     const tabKeyCurrent = this._getTabKeyCurrent();
     const domWrapper = (
-      <VTabs centerActive modelValue={tabKeyCurrent} mandatory={false} style={{ marginInlineStart: '24px' }}>
+      <VTabs
+        centerActive
+        modelValue={tabKeyCurrent}
+        mandatory={false}
+        style={{ marginInlineStart: '24px' }}
+      >
         {domTabs}
       </VTabs>
     );

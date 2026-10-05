@@ -2,17 +2,17 @@
 
 ## Execution identity
 
-| Field | Observed value |
-| --- | --- |
-| Suite / WBS | Cabloy Admin / `WBS-ADM-90-08` |
-| Candidate revision | `1e6a51793e39eea156865aff9f218b949aecb58f` |
-| Working tree | Clean before and after the verification procedures; `git diff --check` passed |
-| Clean-tree diff digest | Empty `git diff --binary HEAD` SHA-256: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` |
-| Edition / flavor | Cabloy Start / Vona `normal` / Start Admin SSR and REST |
-| Database classification | Managed local better-sqlite3 test databases created by the test runners |
-| OpenAPI producer | Managed local Vona normal-flavor Swagger producer |
-| Browser target | Managed local fast-E2E Start Admin runtime |
-| Secret handling | Access tokens, cookies, fixture identities, and mail-preview URLs are omitted from this retained record |
+| Field                   | Observed value                                                                                             |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Suite / WBS             | Cabloy Admin / `WBS-ADM-90-08`                                                                             |
+| Candidate revision      | `1e6a51793e39eea156865aff9f218b949aecb58f`                                                                 |
+| Working tree            | Clean before and after the verification procedures; `git diff --check` passed                              |
+| Clean-tree diff digest  | Empty `git diff --binary HEAD` SHA-256: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` |
+| Edition / flavor        | Cabloy Start / Vona `normal` / Start Admin SSR and REST                                                    |
+| Database classification | Managed local better-sqlite3 test databases created by the test runners                                    |
+| OpenAPI producer        | Managed local Vona normal-flavor Swagger producer                                                          |
+| Browser target          | Managed local fast-E2E Start Admin runtime                                                                 |
+| Secret handling         | Access tokens, cookies, fixture identities, and mail-preview URLs are omitted from this retained record    |
 
 ## Reconciliation
 
@@ -69,12 +69,12 @@ The focused and browser procedures cover the retained MNU-01–MNU-08 role-menu 
 
 ## Derived status and disposition
 
-| WBS | Derived status | Basis |
-| --- | --- | --- |
-| `WBS-ADM-90-02`–`WBS-ADM-90-06` | `verified` | Clean-candidate MNU-01–MNU-09 proof covers the persistence, visibility, protected API, editor, and freshness acceptance checks. |
-| `WBS-ADM-90-07` | `verified` | All MNU-01–MNU-08 procedures are retained and revalidated at the clean candidate. |
-| `WBS-ADM-100-01`–`WBS-ADM-100-02` | `verified` | Clean-candidate ownership, generated consumer, and version-1 path proof covers their acceptance checks. |
-| `WBS-ADM-100-03` | `verified` | The historical extraction proof is retained and its contract/regression gates are revalidated at the clean candidate. |
-| `WBS-ADM-90-08` | `verified` | This combined traceability disposition maps ATP-ADM-MNU-01–09 to clean, passing, redacted, retained proof. |
+| WBS                               | Derived status | Basis                                                                                                                           |
+| --------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `WBS-ADM-90-02`–`WBS-ADM-90-06`   | `verified`     | Clean-candidate MNU-01–MNU-09 proof covers the persistence, visibility, protected API, editor, and freshness acceptance checks. |
+| `WBS-ADM-90-07`                   | `verified`     | All MNU-01–MNU-08 procedures are retained and revalidated at the clean candidate.                                               |
+| `WBS-ADM-100-01`–`WBS-ADM-100-02` | `verified`     | Clean-candidate ownership, generated consumer, and version-1 path proof covers their acceptance checks.                         |
+| `WBS-ADM-100-03`                  | `verified`     | The historical extraction proof is retained and its contract/regression gates are revalidated at the clean candidate.           |
+| `WBS-ADM-90-08`                   | `verified`     | This combined traceability disposition maps ATP-ADM-MNU-01–09 to clean, passing, redacted, retained proof.                      |
 
 **Phase 90 is verified.** All applicable WBS acceptance checks and ATP-ADM-MNU-01–09 evidence are retained at the clean candidate, with no waiver or severity-one invariant failure. This is an evidence disposition only: no database-reset command, clean E2E runner, deployment, release, version change, commit, or push was performed.

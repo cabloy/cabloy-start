@@ -2,16 +2,16 @@
 
 ## Execution identity
 
-| Field | Observed value |
-| --- | --- |
-| Suite / WBS / ATP | Cabloy Admin / `WBS-ADM-100-03` / `ATP-ADM-MNU-09` |
-| Source revision | `6584f216102c2ee7cc87a124864424edb02bed40` |
-| Working tree | Dirty: MNU-09 Vona test additions plus generator-produced Zova OpenAPI snapshot updates |
-| Edition / flavor | Cabloy Start / Vona `normal` / Start Admin SSR and REST |
-| Database classification | Managed local better-sqlite3 test databases created by test runners |
-| OpenAPI producer | Managed local Vona normal-flavor Swagger producer at `http://127.0.0.1:7202` |
-| Browser target | Managed local fast-E2E Start Admin runtime at `http://127.0.0.1:7202` |
-| Secret handling | Access tokens, cookies, fixture identities, and mail-preview URLs are omitted from this retained record |
+| Field                   | Observed value                                                                                          |
+| ----------------------- | ------------------------------------------------------------------------------------------------------- |
+| Suite / WBS / ATP       | Cabloy Admin / `WBS-ADM-100-03` / `ATP-ADM-MNU-09`                                                      |
+| Source revision         | `6584f216102c2ee7cc87a124864424edb02bed40`                                                              |
+| Working tree            | Dirty: MNU-09 Vona test additions plus generator-produced Zova OpenAPI snapshot updates                 |
+| Edition / flavor        | Cabloy Start / Vona `normal` / Start Admin SSR and REST                                                 |
+| Database classification | Managed local better-sqlite3 test databases created by test runners                                     |
+| OpenAPI producer        | Managed local Vona normal-flavor Swagger producer at `http://127.0.0.1:7202`                            |
+| Browser target          | Managed local fast-E2E Start Admin runtime at `http://127.0.0.1:7202`                                   |
+| Secret handling         | Access tokens, cookies, fixture identities, and mail-preview URLs are omitted from this retained record |
 
 ## Ownership and reconciliation result
 

@@ -181,10 +181,7 @@ describe('role.test.ts', { concurrency: false }, () => {
         assert.deepEqual(result, { addedRoleIds: [roles[2].id], removedRoleIds: [roles[0].id] });
         assert.equal(events.length, 1);
         assert.deepEqual(events[0]?.userIds, [user.id]);
-        assert.deepEqual(
-          events[0]?.roleIds.toSorted(),
-          [roles[0].id, roles[2].id].toSorted(),
-        );
+        assert.deepEqual(events[0]?.roleIds.toSorted(), [roles[0].id, roles[2].id].toSorted());
 
         const memberships = await homeUser.model.roleUser.select({ where: { userId: user.id } });
         assert.deepEqual(

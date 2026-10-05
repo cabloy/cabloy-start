@@ -1,11 +1,11 @@
 # ATP-ADM-MNU-09 — Extracted role-menu contract loop and reconciliation
 
-| Field | Value |
-| --- | --- |
-| WBS | `WBS-ADM-100-03` |
-| Tested revision | `6584f216` plus dirty MNU-09 proof/generator-output worktree |
-| Procedure | Metadata/OpenAPI fixed point, paired Start Admin reverse handoff, focused/browser/full regression |
-| Result | pass |
+| Field           | Value                                                                                             |
+| --------------- | ------------------------------------------------------------------------------------------------- |
+| WBS             | `WBS-ADM-100-03`                                                                                  |
+| Tested revision | `6584f216` plus dirty MNU-09 proof/generator-output worktree                                      |
+| Procedure       | Metadata/OpenAPI fixed point, paired Start Admin reverse handoff, focused/browser/full regression |
+| Result          | pass                                                                                              |
 
 Vona role-menu ownership is exclusively `admin-menu`: its controller emits `AdminMenuRoleMenu_*` operations and protected safe projections, while `admin-rbac` has no role-menu controller ownership and its version-1 path retains only policy/grant storage. Role View composes `admin-menu:blockRoleMenuEditor` beside `admin-rbac:blockPolicyEditor`.
 
