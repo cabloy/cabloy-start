@@ -40,7 +40,7 @@ An authorized administrator who maintains the Department forest, assigns members
 
 - Find and view all existing accounts in the active instance.
 - Maintain permitted account profile information and activation state; the exact mutable fields and credential lifecycle are deferred to the SRS.
-- Create, edit, and delete custom existing roles; configured framework-role definitions remain unavailable to generic Role Resource CRUD.
+- Create, edit, and delete custom existing roles; configured framework-role definitions remain unavailable to generic Role Resource lifecycle operations except validated `siteIds`-only updates.
 - Display every assigned account role and assign or revoke every non-system-administrator membership, including the fixed `registeredUser` membership.
 - Exclude `systemAdmin` membership from generic role edit, delete, candidate-selection, and bulk-replacement operations.
 - Grant or revoke `systemAdmin` only through a dedicated protected workflow.
@@ -80,7 +80,7 @@ An authorized administrator who maintains the Department forest, assigns members
 1. A System Administrator creates or selects an ordinary role.
 2. They maintain its business-facing identity and presentation information within the supported role contract.
 3. They assign or revoke non-system-administrator membership for selected accounts, including `registeredUser`.
-4. They cannot use generic role maintenance to mutate a fixed role definition or the protected `systemAdmin` membership.
+4. They cannot use generic role maintenance to change a fixed role definition beyond its validated `siteIds` configuration, or to mutate the protected `systemAdmin` membership.
 
 ### Establish a Department tree
 
@@ -129,66 +129,66 @@ An authorized administrator who maintains the Department forest, assigns members
 
 ### Account Management
 
-- **PRD-ADM-USR-01**: A System Administrator can find and inspect all existing accounts in the active instance.
-- **PRD-ADM-USR-02**: A System Administrator can maintain only the account information and activation lifecycle permitted by the phase-one contract.
-- **PRD-ADM-USR-03**: Account administration reuses the established identity model and does not create a second account identity.
+- **PRD-ADM-USR-01**: A System Administrator can find and inspect all existing accounts in the active instance. Traceability: `SRS-ADM-USR-01`.
+- **PRD-ADM-USR-02**: A System Administrator can maintain only the account information and activation lifecycle permitted by the phase-one contract. Traceability: `SRS-ADM-USR-02`, `SRS-ADM-USR-03`, `SRS-ADM-USR-04`, `SRS-ADM-USR-05`.
+- **PRD-ADM-USR-03**: Account administration reuses the established identity model and does not create a second account identity. Traceability: `SRS-ADM-USR-01`, `SRS-ADM-USR-06`.
 
 ### Ordinary Role Management
 
-- **PRD-ADM-ROL-01**: A System Administrator can create, inspect, edit, and delete custom roles in the active instance; configured framework-role definitions remain unavailable to generic Role Resource CRUD.
-- **PRD-ADM-ROL-02**: A System Administrator can assign and revoke non-system-administrator membership for accounts, including `registeredUser`.
-- **PRD-ADM-ROL-03**: Generic role administration cannot rename, delete, alter the site admission of, select as a replacement candidate, grant, revoke, or bulk-replace the protected `systemAdmin` membership.
-- **PRD-ADM-ROL-04**: A newly created custom role has no authority until a protected policy administrator creates an enabled policy grant for an explicitly opted-in action.
+- **PRD-ADM-ROL-01**: A System Administrator can create, inspect, edit, and delete custom roles in the active instance; configured framework-role definitions remain unavailable to generic Role Resource lifecycle operations except for the validated `siteIds`-only update. Traceability: `SRS-ADM-ROL-01`, `SRS-ADM-ROL-02`, `SRS-ADM-ROL-03`, `SRS-ADM-ROL-04`.
+- **PRD-ADM-ROL-02**: A System Administrator can assign and revoke non-system-administrator membership for accounts, including `registeredUser`. Traceability: `SRS-ADM-ROL-06`, `SRS-ADM-ROL-07`.
+- **PRD-ADM-ROL-03**: Generic role administration cannot rename or delete the protected `systemAdmin` role definition, or select, grant, revoke, or bulk-replace its protected membership. Role Management may update only the built-in role's `siteIds` site-admission configuration; that definition-field exception does not permit a membership change. Traceability: `SRS-ADM-ROL-04`, `SRS-ADM-ROL-05`, `SRS-ADM-ROL-06`, `SRS-ADM-ROL-07`.
+- **PRD-ADM-ROL-04**: A newly created custom role has no authority until a protected policy administrator creates an enabled policy grant for an explicitly opted-in action. Traceability: `SRS-ADM-POL-05`, `SRS-ADM-POL-07`.
 
 ### Dynamic Policy and Data Scope
 
-- **PRD-ADM-POL-01**: A protected policy administrator can inspect a server-derived catalog of explicitly opted-in actions, including eligible non-Resource actions, without changing the authorization behavior of undecorated legacy actions.
-- **PRD-ADM-POL-02**: A protected policy administrator can grant an ordinary role access to an opted-in action and choose an allowed data-scope term when that action supports data scope.
-- **PRD-ADM-POL-03**: A policy grant has one stable canonical action identity and cannot use an HTTP path, browser route, or mutable display label as authorization identity.
-- **PRD-ADM-POL-04**: Mutable policy administration cannot remove the protected `systemAdmin` recovery authority or convert protected control-plane workflows into ordinary delegated actions.
-- **PRD-ADM-SCP-01**: An opted-in action defaults to deny when no effective allowed policy grant exists for the caller in the active instance.
-- **PRD-ADM-SCP-02**: Matching grants combine as a logical union: `all` is unrestricted; custom Department, own Department, own Department plus descendant, and mine terms remain independent alternatives.
-- **PRD-ADM-SCP-03**: Department scope recognizes only enabled Department facts in the active instance. Custom Departments do not imply descendants; own-plus-descendants resolves enabled descendants recursively.
-- **PRD-ADM-SCP-04**: A browser menu, route, filter, permission hint, or browser-safe row/detail action projection does not authorize an API or data mutation; the server remains authoritative.
-- **PRD-ADM-SCP-05**: Selected Student and Record actions provide the first acceptance slice for scoped reads and writes; this does not require migration of unrelated existing Controllers.
+- **PRD-ADM-POL-01**: A protected policy administrator can inspect a server-derived catalog of explicitly opted-in actions, including eligible non-Resource actions, without changing the authorization behavior of undecorated legacy actions. Traceability: `SRS-ADM-POL-01`, `SRS-ADM-POL-02`, `SRS-ADM-POL-03`, `SRS-ADM-POL-09`.
+- **PRD-ADM-POL-02**: A protected policy administrator can grant an ordinary role access to an opted-in action and choose an allowed data-scope term when that action supports data scope. Traceability: `SRS-ADM-POL-04`, `SRS-ADM-POL-05`, `SRS-ADM-POL-08`, `SRS-ADM-SCP-01`.
+- **PRD-ADM-POL-03**: A policy grant has one stable canonical action identity and cannot use an HTTP path, browser route, or mutable display label as authorization identity. Traceability: `SRS-ADM-POL-02`, `SRS-ADM-POL-05`.
+- **PRD-ADM-POL-04**: Mutable policy administration cannot remove the protected `systemAdmin` recovery authority or convert protected control-plane workflows into ordinary delegated actions. Traceability: `SRS-ADM-POL-07`, `SRS-ADM-AUT-02`.
+- **PRD-ADM-SCP-01**: An opted-in action defaults to deny when no effective allowed policy grant exists for the caller in the active instance. Traceability: `SRS-ADM-POL-04`, `SRS-ADM-POL-06`, `SRS-ADM-SCP-04`.
+- **PRD-ADM-SCP-02**: Matching grants combine as a logical union: `all` is unrestricted; custom Department, own Department, own Department plus descendant, and mine terms remain independent alternatives. Traceability: `SRS-ADM-SCP-01`, `SRS-ADM-SCP-02`, `SRS-ADM-SCP-03`, `SRS-ADM-SCP-04`.
+- **PRD-ADM-SCP-03**: Department scope recognizes only enabled Department facts in the active instance. Custom Departments do not imply descendants; own-plus-descendants resolves enabled descendants recursively. Traceability: `SRS-ADM-SCP-02`, `SRS-ADM-SCP-05`, `SRS-ADM-TEN-01`.
+- **PRD-ADM-SCP-04**: A browser menu, route, filter, permission hint, or browser-safe row/detail action projection does not authorize an API or data mutation; the server remains authoritative. Traceability: `SRS-ADM-AUT-01`, `SRS-ADM-SCP-06`, `SRS-ADM-SCP-07`, `SRS-ADM-SCP-08`, `SRS-ADM-SCP-09`, `SRS-ADM-MNU-10`.
+- **PRD-ADM-SCP-05**: Selected Student and Record actions provide the first acceptance slice for scoped reads and writes; this does not require migration of unrelated existing Controllers. Traceability: `SRS-ADM-SCP-10`, `SRS-ADM-SCP-11`, `SRS-ADM-SCP-12`, `SRS-ADM-SCP-12a`, `SRS-ADM-SCP-13`.
 
 ### Role-Menu Visibility
 
-- **PRD-ADM-MNU-01**: A System Administrator can configure additional navigation disclosure for defined-role leaves in server-derived trees for registered SSR sites through a separate menu domain, without creating a second Role, menu, site, or authorization domain.
-- **PRD-ADM-MNU-02**: `roles === undefined` is public and cannot receive a dynamic association; `roles: []` is default-deny and requires a surviving association for at least one current role in the active instance; a nonempty `roles` array is disclosed by static any-role matching or a surviving association. An unchecked association is deleted rather than retained as a disabled row.
-- **PRD-ADM-MNU-03**: Dynamic associations are identified by target role, SSR-site onion name, and final SSR menu leaf name. `systemAdmin` has no implicit menu-visibility override; protected configuration APIs remain independently guarded.
-- **PRD-ADM-MNU-04**: A menu declaration with omitted `site` binds to every registered SSR site. Groups are derived from visible children and never receive an independently persisted association.
-- **PRD-ADM-MNU-05**: A menu, route, page, browser projection, or guessed destination never grants Resource, controller, API, action, or data-scope authority.
-- **PRD-ADM-MNU-06**: A committed menu-policy or ordinary-role membership change affecting the current browser subject appears after the application reloads and reconstructs authenticated and navigation state. A change affecting another subject does not reload the current browser; other subjects and browsers observe the committed change on a later authenticated load or reload. No real-time cross-browser push is introduced.
+- **PRD-ADM-MNU-01**: A System Administrator can configure additional navigation disclosure for defined-role leaves in server-derived trees for registered SSR sites through a separate menu domain, without creating a second Role, menu, site, or authorization domain. Traceability: `SRS-ADM-MNU-01`, `SRS-ADM-MNU-06`, `SRS-ADM-MNU-14`, `SRS-ADM-MNU-15`.
+- **PRD-ADM-MNU-02**: `roles === undefined` is public and cannot receive a dynamic association; `roles: []` is default-deny and requires a surviving association for at least one current role in the active instance; a nonempty `roles` array is disclosed by static any-role matching or a surviving association. An unchecked association is deleted rather than retained as a disabled row. Traceability: `SRS-ADM-MNU-02`, `SRS-ADM-MNU-03`, `SRS-ADM-MNU-07`, `SRS-ADM-MNU-08`, `SRS-ADM-MNU-09`.
+- **PRD-ADM-MNU-03**: Dynamic associations are identified by target role, SSR-site onion name, and final SSR menu leaf name. `systemAdmin` has no implicit menu-visibility override; protected configuration APIs remain independently guarded. Traceability: `SRS-ADM-MNU-03`, `SRS-ADM-MNU-04`, `SRS-ADM-MNU-05`, `SRS-ADM-MNU-06`, `SRS-ADM-MNU-08`.
+- **PRD-ADM-MNU-04**: A menu declaration with omitted `site` binds to every registered SSR site. Groups are derived from visible children and never receive an independently persisted association. Traceability: `SRS-ADM-MNU-01`, `SRS-ADM-MNU-02`, `SRS-ADM-MNU-09`.
+- **PRD-ADM-MNU-05**: A menu, route, page, browser projection, or guessed destination never grants Resource, controller, API, action, or data-scope authority. Traceability: `SRS-ADM-MNU-10`, `SRS-ADM-MNU-06`.
+- **PRD-ADM-MNU-06**: A committed menu-policy or ordinary-role membership change affecting the current browser subject appears after the application reloads and reconstructs authenticated and navigation state. A change affecting another subject does not reload the current browser; other subjects and browsers observe the committed change on a later authenticated load or reload. No real-time cross-browser push is introduced. Traceability: `SRS-ADM-MNU-11`, `SRS-ADM-MNU-12`, `SRS-ADM-MNU-13`.
 
 ### Protected System Administrator Authority
 
-- **PRD-ADM-SUP-01**: `systemAdmin` remains a protected break-glass role rather than an ordinary role-management record.
-- **PRD-ADM-SUP-02**: Granting or revoking `systemAdmin` uses a dedicated sensitive workflow.
-- **PRD-ADM-SUP-03**: No management operation may leave the active instance with zero activated `systemAdmin` accounts.
-- **PRD-ADM-SUP-04**: Sensitive `systemAdmin` changes retain evidence suitable for later operational review.
+- **PRD-ADM-SUP-01**: `systemAdmin` remains a protected break-glass role rather than an ordinary role-management record. Traceability: `SRS-ADM-SUP-01`, `SRS-ADM-SUP-03`, `SRS-ADM-ROL-05`.
+- **PRD-ADM-SUP-02**: Granting or revoking `systemAdmin` uses a dedicated sensitive workflow. Traceability: `SRS-ADM-SUP-01`, `SRS-ADM-SUP-02`.
+- **PRD-ADM-SUP-03**: No management operation may leave the active instance with zero activated `systemAdmin` accounts. Traceability: `SRS-ADM-TXN-01`, `SRS-ADM-TXN-02`, `SRS-ADM-TXN-03`, `SRS-ADM-TXN-04`, `SRS-ADM-NFR-02`.
+- **PRD-ADM-SUP-04**: Sensitive `systemAdmin` changes retain evidence suitable for later operational review. Traceability: `SRS-ADM-SUP-04`, `SRS-ADM-AUD-01`, `SRS-ADM-AUD-02`, `SRS-ADM-AUD-03`.
 
 ### Department Management
 
-- **PRD-ADM-DEP-01**: The active instance can contain a Department forest with multiple top-level Departments.
-- **PRD-ADM-DEP-02**: A top-level Department has `parentId = null`.
-- **PRD-ADM-DEP-03**: A non-root Department may reference only an existing parent in the active instance and may not form a cycle.
-- **PRD-ADM-DEP-04**: A Department can identify a manager through the Department membership domain.
+- **PRD-ADM-DEP-01**: The active instance can contain a Department forest with multiple top-level Departments. Traceability: `SRS-ADM-DEP-01`, `SRS-ADM-DEP-03`, `SRS-ADM-DEP-05`, `SRS-ADM-DEP-06`, `SRS-ADM-DEP-07`.
+- **PRD-ADM-DEP-02**: A top-level Department has `parentId = null`. Traceability: `SRS-ADM-DEP-02`.
+- **PRD-ADM-DEP-03**: A non-root Department may reference only an existing parent in the active instance and may not form a cycle. Traceability: `SRS-ADM-DEP-02`, `SRS-ADM-DEP-04`.
+- **PRD-ADM-DEP-04**: A Department can identify a manager through the Department membership domain. Traceability: `SRS-ADM-DEP-01`, `SRS-ADM-MEM-04`, `SRS-ADM-MEM-05`.
 
 ### Membership Management
 
-- **PRD-ADM-MEM-01**: One account can hold memberships in multiple Departments.
-- **PRD-ADM-MEM-02**: A membership belongs to one Department in the active instance.
-- **PRD-ADM-MEM-03**: A membership can hold optional textual `position` information in phase one.
-- **PRD-ADM-MEM-04**: The phase-one contract can designate one membership as primary according to the future technical invariant.
-- **PRD-ADM-MEM-05**: A Department manager is expected to be an active member of that Department.
+- **PRD-ADM-MEM-01**: One account can hold memberships in multiple Departments. Traceability: `SRS-ADM-MEM-01`, `SRS-ADM-MEM-02`.
+- **PRD-ADM-MEM-02**: A membership belongs to one Department in the active instance. Traceability: `SRS-ADM-MEM-01`, `SRS-ADM-MEM-02`, `SRS-ADM-TEN-02`.
+- **PRD-ADM-MEM-03**: A membership can hold optional textual `position` information in phase one. Traceability: `SRS-ADM-MEM-01`.
+- **PRD-ADM-MEM-04**: The phase-one contract can designate one membership as primary according to the future technical invariant. Traceability: `SRS-ADM-MEM-03`.
+- **PRD-ADM-MEM-05**: A Department manager is expected to be an active member of that Department. Traceability: `SRS-ADM-MEM-04`, `SRS-ADM-MEM-05`.
 
 ### Security and Operational Surface
 
-- **PRD-ADM-SEC-01**: The active Vona instance remains the authoritative tenant boundary for all Cabloy Admin operations.
-- **PRD-ADM-SEC-02**: A browser does not supply the authoritative instance, account ownership, or Department scope for authorization.
-- **PRD-ADM-SEC-03**: Menu visibility and route admission do not replace backend API authorization.
-- **PRD-ADM-UI-01**: Conventional operational resources use the existing Start Admin Resource infrastructure rather than a competing CRUD state owner.
+- **PRD-ADM-SEC-01**: The active Vona instance remains the authoritative tenant boundary for all Cabloy Admin operations. Traceability: `SRS-ADM-TEN-01`, `SRS-ADM-TEN-02`, `SRS-ADM-TEN-04`, `SRS-ADM-NFR-01`.
+- **PRD-ADM-SEC-02**: A browser does not supply the authoritative instance, account ownership, or Department scope for authorization. Traceability: `SRS-ADM-TEN-03`, `SRS-ADM-API-03`, `SRS-ADM-SCP-08`.
+- **PRD-ADM-SEC-03**: Menu visibility and route admission do not replace backend API authorization. Traceability: `SRS-ADM-AUT-01`, `SRS-ADM-AUT-02`, `SRS-ADM-AUT-03`, `SRS-ADM-UI-03`, `SRS-ADM-API-02`.
+- **PRD-ADM-UI-01**: Conventional operational resources use the existing Start Admin Resource infrastructure rather than a competing CRUD state owner. Traceability: `SRS-ADM-UI-01`, `SRS-ADM-UI-02`, `SRS-ADM-API-01`, `SRS-ADM-API-04`, `SRS-ADM-API-05`.
 
 ## Business Rules
 

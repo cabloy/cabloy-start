@@ -27,6 +27,8 @@ The baseline traceability review uses the complete acceptance catalogue as a who
 
 #### WBS-ADM-10-01: Freeze the accepted technical baseline
 
+Traceability: `SRS-ADM-API-04`, `SRS-ADM-API-05`, `SRS-ADM-NFR-04`.
+
 Primary documents:
 
 - `repo-specs/cabloy-admin/prd.md`
@@ -54,6 +56,10 @@ Dependencies: `WBS-ADM-10-01`.
 
 #### WBS-ADM-20-01: Generate the suite and capability modules
 
+Traceability: `SRS-ADM-API-01`, `SRS-ADM-API-04`, `SRS-ADM-API-05`.
+
+Traceability: `ATP-ADM-CTR-01`.
+
 Primary areas:
 
 - `vona/src/suite/cabloy-admin/`
@@ -73,6 +79,10 @@ Acceptance checks:
 
 #### WBS-ADM-20-02: Establish Start Admin Resource and menu entry points
 
+Traceability: `SRS-ADM-TEN-01`, `SRS-ADM-TEN-02`, `SRS-ADM-TEN-04`, `SRS-ADM-AUT-01`, `SRS-ADM-AUT-02`, `SRS-ADM-AUT-03`, `SRS-ADM-API-01`, `SRS-ADM-API-02`, `SRS-ADM-API-03`, `SRS-ADM-UI-01`, `SRS-ADM-UI-03`.
+
+Traceability: `ATP-ADM-TEN-01`, `ATP-ADM-AUT-01`, `ATP-ADM-RES-01`, `ATP-ADM-SSR-01`.
+
 Primary areas:
 
 - Cabloy Admin controllers, Resource metadata, and `@SsrMenu` records
@@ -91,6 +101,10 @@ Acceptance checks:
 - no module-local generic CRUD/cache owner is introduced.
 
 #### WBS-ADM-20-03: Prove contract-loop plumbing
+
+Traceability: `SRS-ADM-API-04`, `SRS-ADM-API-05`.
+
+Traceability: `ATP-ADM-CTR-01`.
 
 Primary areas:
 
@@ -116,6 +130,10 @@ Dependencies: `WBS-ADM-20-*`.
 
 #### WBS-ADM-30-01: Deliver the account-management façade
 
+Traceability: `SRS-ADM-USR-01`, `SRS-ADM-USR-02`, `SRS-ADM-USR-03`, `SRS-ADM-USR-04`, `SRS-ADM-USR-05`, `SRS-ADM-TEN-01`, `SRS-ADM-TEN-03`.
+
+Traceability: `ATP-ADM-USR-01`, `ATP-ADM-TEN-01`.
+
 Primary areas:
 
 - `admin-user` projections, service, controller, DTOs, Resource metadata, tests
@@ -135,6 +153,10 @@ Acceptance checks:
 
 #### WBS-ADM-30-02: Deliver ordinary-role lifecycle and membership
 
+Traceability: `SRS-ADM-ROL-01`, `SRS-ADM-ROL-02`, `SRS-ADM-ROL-03`, `SRS-ADM-ROL-04`, `SRS-ADM-ROL-05`, `SRS-ADM-ROL-06`, `SRS-ADM-ROL-07`.
+
+Traceability: `ATP-ADM-ROL-01`, `ATP-ADM-RES-03`.
+
 Primary areas:
 
 - `admin-role` ordinary role façade, DTOs, Resource metadata, service, tests
@@ -142,7 +164,7 @@ Primary areas:
 
 Tasks:
 
-- implement custom-role create/view/update/delete while protecting every configured framework-role definition;
+- implement custom-role create/view/update/delete while protecting configured framework-role definitions except validated `siteIds`-only updates;
 - implement atomic non-system-administrator membership replacement for custom roles and `registeredUser`;
 - expose a guarded membership-candidate selector that excludes only `systemAdmin` without widening generic Role Resource CRUD;
 - preserve existing `systemAdmin` membership, reject supplied `systemAdmin` IDs, and retain the dedicated protected workflow as the only grant/revoke path;
@@ -151,7 +173,7 @@ Tasks:
 Acceptance checks:
 
 - role names are active-instance-scoped, case-insensitive, immutable after creation, and transactionally unique;
-- generic Role Resource actions cannot mutate fixed framework-role definitions; generic membership replacement can reconcile `registeredUser` but cannot mutate `systemAdmin` membership;
+- generic Role Resource actions cannot mutate fixed framework-role definitions except their validated `siteIds` configuration; generic membership replacement can reconcile `registeredUser` but cannot mutate `systemAdmin` membership;
 - no duplicate role persistence or partial replacement survives failure.
 
 ### Phase 40: Protected system administrator authority
@@ -159,6 +181,10 @@ Acceptance checks:
 Dependencies: `WBS-ADM-30-*`.
 
 #### WBS-ADM-40-01: Implement fresh reauthentication and protected commands
+
+Traceability: `SRS-ADM-SUP-01`, `SRS-ADM-SUP-02`, `SRS-ADM-SUP-03`.
+
+Traceability: `ATP-ADM-SUP-01`.
 
 Primary areas:
 
@@ -178,6 +204,10 @@ Acceptance checks:
 
 #### WBS-ADM-40-02: Implement final-administrator transaction, audit, and session behavior
 
+Traceability: `SRS-ADM-SUP-04`, `SRS-ADM-TXN-01`, `SRS-ADM-TXN-02`, `SRS-ADM-TXN-03`, `SRS-ADM-AUD-01`, `SRS-ADM-AUD-02`, `SRS-ADM-AUD-03`.
+
+Traceability: `ATP-ADM-SUP-01`, `ATP-ADM-SUP-02`.
+
 Primary areas:
 
 - protected role/user mutations, audit entity/model, Passport post-commit eviction, tests
@@ -196,6 +226,10 @@ Acceptance checks:
 
 #### WBS-ADM-40-03: Prove protected-operation contention
 
+Traceability: `SRS-ADM-TXN-04`, `SRS-ADM-NFR-02`.
+
+Traceability: `ATP-ADM-SUP-RACE-01`.
+
 Tasks:
 
 - run competing revoke/deactivation operations from separate `mockCtx(...)` boundaries;
@@ -213,6 +247,10 @@ Dependencies: `WBS-ADM-20-*`, `WBS-ADM-40-*`.
 
 #### WBS-ADM-50-01: Implement Department persistence and conventional Resource surface
 
+Traceability: `SRS-ADM-DEP-01`, `SRS-ADM-DEP-02`, `SRS-ADM-TEN-02`, `SRS-ADM-API-01`.
+
+Traceability: `ATP-ADM-DEP-01`.
+
 Tasks:
 
 - add Department entity/model, version path, ordinary indexes, DTOs, service, controller, and Resource metadata;
@@ -226,6 +264,10 @@ Acceptance checks:
 - no Organization field, entity, or foreign scope is introduced.
 
 #### WBS-ADM-50-02: Implement safe tree commands and lifecycle
+
+Traceability: `SRS-ADM-DEP-03`, `SRS-ADM-DEP-04`, `SRS-ADM-DEP-05`, `SRS-ADM-DEP-06`, `SRS-ADM-DEP-07`, `SRS-ADM-TEN-04`.
+
+Traceability: `ATP-ADM-DEP-01`, `ATP-ADM-DEP-02`.
 
 Tasks:
 
@@ -245,6 +287,10 @@ Dependencies: `WBS-ADM-50-*`.
 
 #### WBS-ADM-60-01: Implement membership and position lifecycle
 
+Traceability: `SRS-ADM-MEM-01`, `SRS-ADM-MEM-02`.
+
+Traceability: `ATP-ADM-MEM-01`, `ATP-ADM-RES-02`.
+
 Tasks:
 
 - add membership persistence, indexes, DTOs, commands, and Department/account projections;
@@ -258,6 +304,10 @@ Acceptance checks:
 - custom actions reuse the generic Resource invalidation owner.
 
 #### WBS-ADM-60-02: Implement primary membership and manager lifecycle
+
+Traceability: `SRS-ADM-MEM-03`, `SRS-ADM-MEM-04`, `SRS-ADM-MEM-05`.
+
+Traceability: `ATP-ADM-MEM-02`, `ATP-ADM-MGR-01`.
 
 Tasks:
 
@@ -273,6 +323,10 @@ Acceptance checks:
 
 #### WBS-ADM-60-03: Complete integrated Admin views
 
+Traceability: `SRS-ADM-USR-06`, `SRS-ADM-UI-01`, `SRS-ADM-UI-02`.
+
+Traceability: `ATP-ADM-RES-01`, `ATP-ADM-RES-02`, `ATP-ADM-RES-03`.
+
 Tasks:
 
 - expose all assigned role summaries, including a presentation-only protected marker for `systemAdmin`, alongside approved Department membership/manager summaries;
@@ -286,9 +340,15 @@ Acceptance checks:
 
 ### Phase 70: Integration hardening and release acceptance
 
-Integration dependencies for `WBS-ADM-70-01` and `WBS-ADM-70-02`: `WBS-ADM-30-*`, `WBS-ADM-40-*`, `WBS-ADM-50-*`, `WBS-ADM-60-*`. `WBS-ADM-70-03` additionally depends on completed `WBS-ADM-70-01`, `WBS-ADM-70-02`, `WBS-ADM-80-05`, and every other applicable release gate. The integration lane may collect shared evidence before Phase 80 closes, but it cannot make a release decision.
+The integration lane may collect shared evidence before Phase 80 closes, but it cannot make a release decision. `WBS-ADM-70-03` must also satisfy every other applicable release gate.
 
 #### WBS-ADM-70-01: Complete migration and contract synchronization
+
+Traceability: `SRS-ADM-API-04`, `SRS-ADM-API-05`, `SRS-ADM-NFR-04`.
+
+Traceability: `ATP-ADM-CTR-01`.
+
+Dependencies: `WBS-ADM-30-*`, `WBS-ADM-40-*`, `WBS-ADM-50-*`, `WBS-ADM-60-*`.
 
 Tasks:
 
@@ -304,6 +364,12 @@ Acceptance checks:
 
 #### WBS-ADM-70-02: Complete focused and repository verification
 
+Traceability: `SRS-ADM-NFR-01`, `SRS-ADM-NFR-02`, `SRS-ADM-NFR-03`.
+
+Traceability: `ATP-ADM-SUP-RACE-01`, `ATP-ADM-DEP-02`, `ATP-ADM-MEM-02`, `ATP-ADM-SSR-01`.
+
+Dependencies: `WBS-ADM-30-*`, `WBS-ADM-40-*`, `WBS-ADM-50-*`, `WBS-ADM-60-*`.
+
 Tasks:
 
 - run focused module/action/transaction tests;
@@ -317,6 +383,10 @@ Acceptance checks:
 - direct API, SSR, navigation, and browser evidence remain separate and all pass.
 
 #### WBS-ADM-70-03: Close traceability and release decision
+
+Traceability: `SRS-ADM-NFR-01`, `SRS-ADM-NFR-04`.
+
+Dependencies: `WBS-ADM-70-01`, `WBS-ADM-70-02`, `WBS-ADM-80-05`.
 
 Tasks:
 
@@ -332,9 +402,15 @@ Acceptance checks:
 
 ### Phase 80: Dynamic RBAC and Department data-scope acceptance
 
-Dependencies: `WBS-ADM-20-*`, `WBS-ADM-30-*`, `WBS-ADM-40-*`, `WBS-ADM-50-*`, `WBS-ADM-60-*`. Phase 80 may consume shared integration evidence from `WBS-ADM-70-01` or `WBS-ADM-70-02`, but those tasks are not prerequisites for Phase 80 acceptance. `WBS-ADM-70-03` remains downstream of `WBS-ADM-80-05`.
+Dependencies: `WBS-ADM-20-*`, `WBS-ADM-30-*`, `WBS-ADM-40-*`, `WBS-ADM-50-*`, `WBS-ADM-60-*`.
+
+Phase 80 may consume shared integration evidence from `WBS-ADM-70-01` or `WBS-ADM-70-02`, but those tasks are not prerequisites for Phase 80 acceptance. `WBS-ADM-70-03` remains downstream of `WBS-ADM-80-05`.
 
 #### WBS-ADM-80-01: Complete reusable RBAC catalog and guard contracts
+
+Traceability: `SRS-ADM-POL-01`, `SRS-ADM-POL-02`, `SRS-ADM-POL-03`, `SRS-ADM-POL-04`, `SRS-ADM-POL-06`, `SRS-ADM-POL-07`.
+
+Traceability: `ATP-ADM-POL-01`.
 
 Primary areas:
 
@@ -356,6 +432,10 @@ Acceptance checks:
 
 #### WBS-ADM-80-02: Deliver Start grants, Department resolution, and policy invalidation
 
+Traceability: `SRS-ADM-POL-04`, `SRS-ADM-POL-05`, `SRS-ADM-POL-08`, `SRS-ADM-POL-09`, `SRS-ADM-SCP-01`, `SRS-ADM-SCP-02`, `SRS-ADM-SCP-03`, `SRS-ADM-SCP-04`, `SRS-ADM-SCP-05`.
+
+Traceability: `ATP-ADM-POL-02`, `ATP-ADM-SCP-01`.
+
 Primary areas:
 
 - `admin-rbac` grant and Department-association persistence, policy service, catalog projection, revision/invalidation, protected policy administration
@@ -374,6 +454,10 @@ Acceptance checks:
 - grant, role-membership, Department, and membership mutations invalidate policy decisions independently of coarse permission caches.
 
 #### WBS-ADM-80-03: Enforce Student and Record scoped operations
+
+Traceability: `SRS-ADM-SCP-06`, `SRS-ADM-SCP-07`, `SRS-ADM-SCP-08`, `SRS-ADM-SCP-10`, `SRS-ADM-SCP-11`, `SRS-ADM-SCP-12`, `SRS-ADM-SCP-12a`, `SRS-ADM-SCP-13`.
+
+Traceability: `ATP-ADM-SCP-02`.
 
 Primary areas:
 
@@ -395,6 +479,10 @@ Acceptance checks:
 
 #### WBS-ADM-80-04: Deliver policy-editor and capability UX
 
+Traceability: `SRS-ADM-POL-09`, `SRS-ADM-SCP-09`, `SRS-ADM-UI-01`, `SRS-ADM-UI-03`.
+
+Traceability: `ATP-ADM-POL-03`, `ATP-ADM-POL-04`.
+
 Primary areas:
 
 - Cabloy Start Admin policy editor, generated contracts, safe catalog projections, row/detail capability rendering
@@ -413,6 +501,10 @@ Acceptance checks:
 
 #### WBS-ADM-80-05: Close contract loop and acceptance evidence
 
+Traceability: `SRS-ADM-API-04`, `SRS-ADM-API-05`, `SRS-ADM-NFR-02`, `SRS-ADM-NFR-04`.
+
+Traceability: `ATP-ADM-POL-01`, `ATP-ADM-POL-02`, `ATP-ADM-POL-03`, `ATP-ADM-POL-04`, `ATP-ADM-SCP-01`, `ATP-ADM-SCP-02`.
+
 Tasks:
 
 - regenerate metadata and consumers from Vona contract truth;
@@ -427,7 +519,9 @@ Acceptance checks:
 
 ### Phase 90: Role-menu visibility delivery and acceptance
 
-Dependencies: `WBS-ADM-20-*`, `WBS-ADM-30-*`, `WBS-ADM-80-*`, and the existing SSR/menu foundations. Phase 90 extends navigation disclosure only; it does not reopen verified Phase 70/80 evidence or change action/data-scope authority. ADR 0003 acceptance, the definedness-based `roles` contract, and the source-informed registered-site inventory are completion gates inside `WBS-ADM-90-01`, not predecessors of that same task.
+Dependencies: `WBS-ADM-20-*`, `WBS-ADM-30-*`, `WBS-ADM-80-*`.
+
+Phase 90 builds on the existing SSR/menu foundations and extends navigation disclosure only; it does not reopen verified Phase 70/80 evidence or change action/data-scope authority. ADR 0003 acceptance, the definedness-based `roles` contract, and the source-informed registered-site inventory are completion gates inside `WBS-ADM-90-01`, not predecessors of that same task.
 
 #### WBS-ADM-90-01: Reclose the role-menu decision and registered-site inventory
 
@@ -452,13 +546,15 @@ Acceptance checks:
 - persistence terminology consistently uses `roleId`, `ssrSiteName`, and final `ssrMenuName`, not an Admin-only `siteId` or immutable policy key;
 - the inventory and ADR preserve navigation disclosure as distinct from API, action, Resource, route, and data-scope authority.
 
-Traceability: `PRD-ADM-MNU-01`–`PRD-ADM-MNU-05`; `SRS-ADM-MNU-01`–`SRS-ADM-MNU-10`; `ATP-ADM-MNU-01`–`ATP-ADM-MNU-06`.
+Traceability: `SRS-ADM-MNU-01`, `SRS-ADM-MNU-02`, `SRS-ADM-MNU-09`, `SRS-ADM-MNU-10`.
+
+Traceability: `ATP-ADM-MNU-01`, `ATP-ADM-MNU-03`, `ATP-ADM-MNU-05`, `ATP-ADM-MNU-06`.
 
 #### WBS-ADM-90-02: Implement role-menu persistence and lifecycle in the current version path
 
 Primary areas:
 
-- `vona/src/suite/cabloy-admin/modules/admin-rbac/src/`
+- `vona/src/suite/cabloy-admin/modules/admin-menu/src/`
 - `admin-menu` `meta.version.ts`, entity/model/service tests
 - `admin-rbac` current-version-path removal and `admin-role` role-deletion lifecycle integration
 
@@ -475,7 +571,9 @@ Acceptance checks:
 - cross-instance, wrong-site, public-leaf, stale-name, duplicate, absent-row deletion, and partial-write paths fail safely;
 - the changed `meta.version.ts` path is covered by `npm run test` and test-owned associations are removed in `finally`.
 
-Traceability: `PRD-ADM-MNU-01`–`PRD-ADM-MNU-04`; `SRS-ADM-MNU-03`–`SRS-ADM-MNU-05`, `SRS-ADM-MNU-15`; `ATP-ADM-MNU-01`, `ATP-ADM-MNU-02`, `ATP-ADM-MNU-04`.
+Traceability: `SRS-ADM-MNU-03`, `SRS-ADM-MNU-04`, `SRS-ADM-MNU-05`, `SRS-ADM-MNU-15`.
+
+Traceability: `ATP-ADM-MNU-01`, `ATP-ADM-MNU-02`, `ATP-ADM-MNU-04`.
 
 #### WBS-ADM-90-03: Deliver server-side catalog, SSR evaluation, and safe public projection
 
@@ -498,7 +596,9 @@ Acceptance checks:
 - public, dynamic-only, and static-or-dynamic leaf semantics are exact, and empty groups are omitted;
 - public menu responses contain neither role declarations, association state, protected catalog metadata, revisions, nor role topology.
 
-Traceability: `PRD-ADM-MNU-02`–`PRD-ADM-MNU-05`; `SRS-ADM-MNU-02`, `SRS-ADM-MNU-07`–`SRS-ADM-MNU-10`; `ATP-ADM-MNU-02`, `ATP-ADM-MNU-03`, `ATP-ADM-MNU-05`, `ATP-ADM-MNU-08`.
+Traceability: `SRS-ADM-MNU-02`, `SRS-ADM-MNU-07`, `SRS-ADM-MNU-08`, `SRS-ADM-MNU-09`, `SRS-ADM-MNU-10`.
+
+Traceability: `ATP-ADM-MNU-02`, `ATP-ADM-MNU-03`, `ATP-ADM-MNU-05`, `ATP-ADM-MNU-08`.
 
 #### WBS-ADM-90-04: Deliver protected configuration APIs and separate invalidation
 
@@ -520,7 +620,9 @@ Acceptance checks:
 - committed configuration mutations invalidate only the relevant visibility resolver/editor state and do not leave stale effective policy;
 - generated API consumers contain the intended contract without hand edits.
 
-Traceability: `PRD-ADM-MNU-01`–`PRD-ADM-MNU-03`, `PRD-ADM-MNU-05`; `SRS-ADM-MNU-04`, `SRS-ADM-MNU-06`, `SRS-ADM-MNU-11`, `SRS-ADM-MNU-14`; `ATP-ADM-MNU-01`, `ATP-ADM-MNU-04`, `ATP-ADM-MNU-05`, `ATP-ADM-MNU-09`.
+Traceability: `SRS-ADM-MNU-04`, `SRS-ADM-MNU-06`, `SRS-ADM-MNU-11`, `SRS-ADM-MNU-14`.
+
+Traceability: `ATP-ADM-MNU-01`, `ATP-ADM-MNU-04`, `ATP-ADM-MNU-05`, `ATP-ADM-MNU-09`.
 
 #### WBS-ADM-90-05: Add the Role-detail Menu Authorization editor
 
@@ -540,7 +642,7 @@ Tasks:
 
 Acceptance checks:
 
-- Role detail displays only its safe site-tree configuration state; public leaves and groups have no configurable checkbox, and the UI cannot submit hidden policy topology;
+- Role detail displays only its safe site-tree configuration state; public leaves and groups cannot be persisted as associations, while a presentation-only group control may batch configurable descendant leaf changes without submitting a group identity or hidden policy topology;
 - the new block coexists with Resource Permissions without a competing Role Resource cache owner;
 - the generated consumer and paired Start Admin outputs reflect Vona-first contract truth.
 
@@ -570,11 +672,15 @@ Acceptance checks:
 - continuing-session behavior remains server-authoritative and does not expose role identity through a browser cache key;
 - one browser's update does not imply unplanned push semantics for other browsers.
 
-Traceability: `PRD-ADM-MNU-02`, `PRD-ADM-MNU-03`, `PRD-ADM-MNU-06`; `SRS-ADM-MNU-08`, `SRS-ADM-MNU-11`–`SRS-ADM-MNU-13`; `ATP-ADM-MNU-02`, `ATP-ADM-MNU-07`, `ATP-ADM-MNU-08`.
+Traceability: `SRS-ADM-MNU-08`, `SRS-ADM-MNU-11`, `SRS-ADM-MNU-12`, `SRS-ADM-MNU-13`.
+
+Traceability: `ATP-ADM-MNU-02`, `ATP-ADM-MNU-07`, `ATP-ADM-MNU-08`.
 
 #### WBS-ADM-90-07: Prove focused role-menu policy, isolation, and browser behavior
 
-Dependencies: `WBS-ADM-100-01` and `WBS-ADM-100-02`; it executes `ATP-ADM-MNU-01`–`ATP-ADM-MNU-08` against the extracted `admin-menu` ownership.
+Dependencies: `WBS-ADM-100-01`, `WBS-ADM-100-02`.
+
+This task executes `ATP-ADM-MNU-01`–`ATP-ADM-MNU-08` against the extracted `admin-menu` ownership.
 
 Primary areas:
 
@@ -596,7 +702,9 @@ Acceptance checks:
 - direct server authorization remains separately negative-tested from browser navigation disclosure;
 - no Phase 90 status advances beyond observed evidence.
 
-Traceability: `PRD-ADM-MNU-*`; `SRS-ADM-MNU-01`–`SRS-ADM-MNU-13`; `ATP-ADM-MNU-01`–`ATP-ADM-MNU-08`.
+Traceability: `SRS-ADM-MNU-01`, `SRS-ADM-MNU-02`, `SRS-ADM-MNU-03`, `SRS-ADM-MNU-04`, `SRS-ADM-MNU-05`, `SRS-ADM-MNU-06`, `SRS-ADM-MNU-07`, `SRS-ADM-MNU-08`, `SRS-ADM-MNU-09`, `SRS-ADM-MNU-10`, `SRS-ADM-MNU-11`, `SRS-ADM-MNU-12`, `SRS-ADM-MNU-13`.
+
+Traceability: `ATP-ADM-MNU-01`, `ATP-ADM-MNU-02`, `ATP-ADM-MNU-03`, `ATP-ADM-MNU-04`, `ATP-ADM-MNU-05`, `ATP-ADM-MNU-06`, `ATP-ADM-MNU-07`, `ATP-ADM-MNU-08`.
 
 #### WBS-ADM-90-08: Close the Vona/Zova contract loop and Phase 90 evidence
 
@@ -620,11 +728,15 @@ Acceptance checks:
 - `ATP-ADM-MNU-09` and all applicable preceding ATP evidence identify revision, environment, procedure, and outcome;
 - Phase 90 remains `not-started` until implementation/evidence exists and becomes verified only through retained traceable proof.
 
-Traceability: `PRD-ADM-MNU-*`; `SRS-ADM-MNU-14`, `SRS-ADM-MNU-15`; `ATP-ADM-MNU-01`–`ATP-ADM-MNU-09`.
+Traceability: `SRS-ADM-MNU-14`, `SRS-ADM-MNU-15`.
+
+Traceability: `ATP-ADM-MNU-01`, `ATP-ADM-MNU-02`, `ATP-ADM-MNU-03`, `ATP-ADM-MNU-04`, `ATP-ADM-MNU-05`, `ATP-ADM-MNU-06`, `ATP-ADM-MNU-07`, `ATP-ADM-MNU-08`, `ATP-ADM-MNU-09`.
 
 ### Phase 100: Extract the paired admin-menu module
 
-Dependencies: `WBS-ADM-90-01`–`WBS-ADM-90-06`. This refactoring moves role-menu domain ownership from the existing `admin-rbac` implementation to paired `admin-menu` modules before current-revision Phase 90 behavior acceptance. It preserves the approved menu-visibility behavior and independent authorization boundary, creates no new suite or Admin site, intentionally permits menu API and generated-consumer renaming during development, and keeps each affected `vonaModule.fileVersion` at `1`. `WBS-ADM-90-07` executes `ATP-ADM-MNU-01`–`ATP-ADM-MNU-08` against the extracted ownership; `WBS-ADM-100-03` then closes the extraction contract-loop and regression proof before `WBS-ADM-90-08` performs the combined Phase 90 evidence closure.
+Dependencies: `WBS-ADM-90-01`–`WBS-ADM-90-06`.
+
+This refactoring moves role-menu domain ownership from the existing `admin-rbac` implementation to paired `admin-menu` modules before current-revision Phase 90 behavior acceptance. It preserves the approved menu-visibility behavior and independent authorization boundary, creates no new suite or Admin site, intentionally permits menu API and generated-consumer renaming during development, and keeps each affected `vonaModule.fileVersion` at `1`. `WBS-ADM-90-07` executes `ATP-ADM-MNU-01`–`ATP-ADM-MNU-08` against the extracted ownership; `WBS-ADM-100-03` then closes the extraction contract-loop and regression proof before `WBS-ADM-90-08` performs the combined Phase 90 evidence closure.
 
 #### WBS-ADM-100-01: Establish paired admin-menu module ownership
 
@@ -647,7 +759,9 @@ Acceptance checks:
 - every menu-domain owner is `admin-menu`, while `admin-rbac` retains no role-menu persistence, API, projection, revision, resolver, model, or editor responsibility;
 - no new SSR site, flavor, public path, tenant, identity, persistence, or API-authorization boundary is introduced.
 
-Traceability: `PRD-ADM-MNU-01`–`PRD-ADM-MNU-06`; `SRS-ADM-MNU-03`, `SRS-ADM-MNU-06`, `SRS-ADM-MNU-10`–`SRS-ADM-MNU-15`; `ATP-ADM-MNU-01`–`ATP-ADM-MNU-09`.
+Traceability: `SRS-ADM-MNU-03`, `SRS-ADM-MNU-06`, `SRS-ADM-MNU-10`, `SRS-ADM-MNU-11`, `SRS-ADM-MNU-12`, `SRS-ADM-MNU-13`, `SRS-ADM-MNU-14`, `SRS-ADM-MNU-15`.
+
+Traceability: `ATP-ADM-MNU-01`, `ATP-ADM-MNU-08`, `ATP-ADM-MNU-09`.
 
 #### WBS-ADM-100-02: Move version-1 menu persistence and contracts
 
@@ -670,7 +784,9 @@ Acceptance checks:
 - generated API/schema outputs identify `admin-menu` ownership and are not hand-edited;
 - old `admin-rbac` role-menu API paths and generated-consumer names are absent rather than maintained as compatibility aliases.
 
-Traceability: `PRD-ADM-MNU-01`–`PRD-ADM-MNU-06`; `SRS-ADM-MNU-03`–`SRS-ADM-MNU-15`; `ATP-ADM-MNU-01`–`ATP-ADM-MNU-09`.
+Traceability: `SRS-ADM-MNU-03`, `SRS-ADM-MNU-04`, `SRS-ADM-MNU-05`, `SRS-ADM-MNU-06`, `SRS-ADM-MNU-07`, `SRS-ADM-MNU-08`, `SRS-ADM-MNU-09`, `SRS-ADM-MNU-10`, `SRS-ADM-MNU-11`, `SRS-ADM-MNU-12`, `SRS-ADM-MNU-13`, `SRS-ADM-MNU-14`, `SRS-ADM-MNU-15`.
+
+Traceability: `ATP-ADM-MNU-01`, `ATP-ADM-MNU-02`, `ATP-ADM-MNU-04`, `ATP-ADM-MNU-09`.
 
 #### WBS-ADM-100-03: Close the extraction contract loop and regression proof
 
@@ -694,7 +810,9 @@ Acceptance checks:
 - menu visibility behavior and direct API authorization remain independently proven after the ownership move;
 - no generated consumer is hand-edited, and the new evidence identifies the extraction revision, environment, procedure, and result.
 
-Traceability: `PRD-ADM-MNU-*`; `SRS-ADM-MNU-10`, `SRS-ADM-MNU-14`, `SRS-ADM-MNU-15`; `ATP-ADM-MNU-01`–`ATP-ADM-MNU-09`.
+Traceability: `SRS-ADM-MNU-10`, `SRS-ADM-MNU-14`, `SRS-ADM-MNU-15`.
+
+Traceability: `ATP-ADM-MNU-06`, `ATP-ADM-MNU-09`.
 
 ## Future Implementation Commands
 
