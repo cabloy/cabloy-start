@@ -27,6 +27,8 @@ The baseline traceability review uses the complete acceptance catalogue as a who
 
 #### WBS-ADM-10-01: Freeze the accepted technical baseline
 
+Traceability exception: authority-only — This baseline decision and document-alignment gate uses retained review against its completion checks; it does not execute or replace a particular ATP scenario.
+
 Traceability: `SRS-ADM-API-04`, `SRS-ADM-API-05`, `SRS-ADM-NFR-04`.
 
 Primary documents:
@@ -383,6 +385,8 @@ Acceptance checks:
 - direct API, SSR, navigation, and browser evidence remain separate and all pass.
 
 #### WBS-ADM-70-03: Close traceability and release decision
+
+Traceability exception: authority-only — This gate reconciles revision-scoped ATP evidence and prerequisite checks in a retained release-disposition record; it neither executes an independent ATP nor waives any applicable scenario.
 
 Traceability: `SRS-ADM-NFR-01`, `SRS-ADM-NFR-04`.
 

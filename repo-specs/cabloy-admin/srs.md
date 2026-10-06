@@ -188,8 +188,8 @@ Phase one creates no new Admin SSR site, public path, flavor, or independent app
 
 - **SRS-ADM-NFR-01**: Protected operations, Department mutations, and membership transitions are attributable, transactionally consistent, active-instance-isolated, and cache-consistent after commit or rollback.
 - **SRS-ADM-NFR-02**: PostgreSQL verification covers protected-administrator, tree, and membership contention. Focused tests prove all deliberately competing operations with explicit concurrent business calls.
-- **SRS-ADM-NFR-03**: Every test-owned persistent record is removed in `finally` using exact identities and reverse dependency order. Shared durable fixtures use the owning module `meta.version.ts` seed hook and remain read-only to tests.
-- **SRS-ADM-NFR-04**: Before changing an existing persisted resource, the implementer asks whether `vonaModule.fileVersion` must increment. Every `meta.version.ts` change requires `npm run test`.
+- **SRS-ADM-NFR-03**: Every test-owned persistent record is removed in `finally` using exact identities and reverse dependency order. Shared durable fixtures use the owning module `meta.version.ts` seed hook and remain read-only to tests. Traceability exception: technical-only — [Repository test-fixture policy](../../repo-agent-governance/policies/repository.md) governs this engineering obligation; `WBS-ADM-70-02` owns the applicable verification, not a separate PRD outcome.
+- **SRS-ADM-NFR-04**: Before changing an existing persisted resource, the implementer asks whether `vonaModule.fileVersion` must increment. Every `meta.version.ts` change requires `npm run test`. Traceability exception: technical-only — [Repository migration and test policy](../../repo-agent-governance/policies/repository.md) governs this engineering obligation; linked WBS gates retain the version decision and required test checks without asserting a separate PRD outcome.
 
 ## Acceptance Mapping
 
