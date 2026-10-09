@@ -1,10 +1,7 @@
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-export type E2eRunMode = 'clean' | 'fast';
-
 export type ParsedE2eArgs = {
-  mode: E2eRunMode;
   specNames: string[];
   playwrightArgs: string[];
   tags: string[];
@@ -46,35 +43,21 @@ export function buildTagGrep(tags: string[]): string | undefined {
 }
 
 export function parseE2eArgs(args: string[], specsDir: string): ParsedE2eArgs {
-  let mode: E2eRunMode | undefined;
-  const remainingArgs: string[] = [];
-
-  for (const arg of args) {
-    if (arg === '--clean' || arg === '--fast') {
-      if (mode && mode !== arg.slice(2)) {
-        throw new Error('Choose exactly one E2E mode: --clean or --fast.');
-      }
-      if (mode === arg.slice(2)) {
-        throw new Error(`E2E mode ${arg} was provided more than once.`);
-      }
-      mode = arg.slice(2) as E2eRunMode;
-    } else {
-      remainingArgs.push(arg);
-    }
-  }
-
-  if (!mode) {
-    throw new Error('Missing E2E mode. Use --clean or --fast.');
-  }
-
   const specNames: string[] = [];
   const playwrightArgs: string[] = [];
   const tags: string[] = [];
   let optionStarted = false;
   let pendingValueFor: string | undefined;
 
-  for (let index = 0; index < remainingArgs.length; index++) {
-    const arg = remainingArgs[index];
+  for (const arg of args) {
+    if (
+      arg === '--clean' ||
+      arg === '--fast' ||
+      arg.startsWith('--clean=') ||
+      arg.startsWith('--fast=')
+    ) {
+      throw new Error('E2E --clean and --fast modes have been removed; use npm run test:e2e.');
+    }
 
     if (pendingValueFor) {
       if (!arg || arg.startsWith('--')) {
@@ -133,7 +116,7 @@ export function parseE2eArgs(args: string[], specsDir: string): ParsedE2eArgs {
     throw new Error(`Missing value for ${pendingValueFor}.`);
   }
 
-  return { mode, specNames, playwrightArgs, tags };
+  return { specNames, playwrightArgs, tags };
 }
 
 export function combineGreps(args: string[], tags: string[]): string[] {

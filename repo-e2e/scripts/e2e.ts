@@ -4,8 +4,12 @@ import { fileURLToPath } from 'node:url';
 
 export const E2E_ROOT_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
+if (process.env.E2E_BASE_URL !== undefined) {
+  throw new Error('E2E_BASE_URL is no longer supported; E2E always manages its local test server.');
+}
+
 const vonaEnv = dotenv.loadEnvs(
-  { flavor: 'normal', mode: 'dev', local: 'local' },
+  { flavor: 'normal', mode: 'test', local: 'local' },
   resolve(E2E_ROOT_DIR, 'vona', 'env'),
   '.env',
 );

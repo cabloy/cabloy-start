@@ -86,8 +86,7 @@ Included demonstration suites give AI vibe coding agents high-quality, project-n
 | Check formatting                         | `npm run format`           |
 | Lint                                     | `npm run lint`             |
 | Run backend tests                        | `npm run test`             |
-| Run the full E2E suite                   | `npm run test:e2e`         |
-| Run E2E tests without reset              | `npm run test:e2e:fast`    |
+| Run the managed E2E suite                | `npm run test:e2e`         |
 
 ## Upgrade the Cabloy framework baseline
 

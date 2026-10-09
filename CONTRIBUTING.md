@@ -37,8 +37,7 @@ Start with the narrowest meaningful check, then broaden validation when a change
 | Lint                                     | `npm run lint`             |
 | Type-check Vona and Zova                 | `npm run tsc`              |
 | Run backend tests                        | `npm run test`             |
-| Run the full E2E suite                   | `npm run test:e2e`         |
-| Rerun E2E tests without reset            | `npm run test:e2e:fast`    |
+| Run the managed E2E suite                | `npm run test:e2e`         |
 | Build all required artifacts             | `npm run build`            |
 | Build Start Admin SSR and REST artifacts | `npm run build:zova:admin` |
 | Build Start Web SSR and REST artifacts   | `npm run build:zova:web`   |
