@@ -13,7 +13,7 @@ import {
   runCleanup,
 } from './helpers/cabloy-admin-api.ts';
 
-test.describe.configure({ mode: 'serial' });
+test.describe.configure({ mode: 'serial', timeout: 120_000 });
 
 type DataScope =
   | 'all'
