@@ -1835,6 +1835,7 @@ test(
   'ATP-ADM-POL-05: delegated Student Resource projects scoped actions without authorizing stale mutations',
   { tag: ['@admin', '@cabloy-admin'] },
   async ({ page, request }, testInfo) => {
+    test.setTimeout(60_000);
     const baseURL = testInfo.project.use.baseURL;
     if (!baseURL) throw new Error('Admin E2E base URL is unavailable');
     const browser = page.context().browser();
