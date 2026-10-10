@@ -18,6 +18,12 @@ export function resolveDevMode(mode: unknown): 'dev' | 'test' {
   throw new Error('Invalid --mode: expected dev or test');
 }
 
+export function resolveTestWorkers(mode: 'dev' | 'test', workers: unknown): number | undefined {
+  if (mode !== 'test') return workers as number | undefined;
+  if (workers === undefined || workers === 1) return 1;
+  throw new Error('--mode=test requires --workers=1');
+}
+
 declare module '@cabloy/cli' {
   interface ICommandArgv {
     workers?: number;
@@ -39,18 +45,16 @@ export class CliBinDev extends BeanCliBase {
   async _dev(projectPath: string) {
     const { argv } = this.context;
     const mode = resolveDevMode(argv.mode);
-    if (mode === 'test' && argv.workers !== undefined && argv.workers !== 1) {
-      throw new Error('--mode=test requires --workers=1');
-    }
+    const workers = resolveTestWorkers(mode, argv.workers);
     const flavor: VonaMetaFlavor = argv.flavor || 'normal';
     const configMeta: VonaConfigMeta = { flavor, mode };
     const configOptions: VonaBinConfigOptions = {
       appDir: projectPath,
       runtimeDir: '.vona',
-      workers: mode === 'test' ? 1 : argv.workers,
+      workers,
     };
-    const { modulesMeta } = await generateVonaMeta(configMeta, configOptions);
     try {
+      const { modulesMeta } = await generateVonaMeta(configMeta, configOptions);
       if (mode === 'test') {
         await this._runTest(projectPath);
       } else {

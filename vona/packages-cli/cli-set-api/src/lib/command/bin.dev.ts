@@ -15,7 +15,7 @@ export default {
       type: 'string',
     },
     mode: {
-      description: 'runtime mode (default: dev)',
+      description: 'dev or test',
       type: 'string',
       choices: ['dev', 'test'],
     },
