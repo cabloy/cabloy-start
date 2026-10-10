@@ -460,7 +460,7 @@ test(
   async ({ page, request }) => {
     const response = await request.get('/');
     expect(response.ok()).toBeTruthy();
-    expect(response.headers()['cache-control']).toBe('no-cache, no-store, must-revalidate');
+    expect(response.headers()['cache-control']).toBe('public, max-age=600');
     const html = await response.text();
     expect(html).toContain('data-server-rendered');
     expect(html.toLowerCase()).not.toContain('data-zova-hydrated');
