@@ -1236,8 +1236,8 @@ test(
         `/api/training/student/${bulkStudentBId}`,
         { accessToken: subject.accessToken },
       );
-      expect(deletedStudent.status(), 'GET deleted Student').toBe(200);
-      expect(await deletedStudent.json()).toMatchObject({ code: 0, data: null });
+      expect(deletedStudent.status(), 'GET deleted Student').toBe(204);
+      expect(await deletedStudent.body()).toHaveLength(0);
 
       const forceStudentId = await createStudent(request, subject, ledger, {
         name: `ATP Data Force ${suffix}`,
@@ -1295,8 +1295,8 @@ test(
         `/api/training/record/${recordBulkBId}`,
         { accessToken: subject.accessToken },
       );
-      expect(deletedRecord.status(), 'GET deleted Record').toBe(200);
-      expect(await deletedRecord.json()).toMatchObject({ code: 0, data: null });
+      expect(deletedRecord.status(), 'GET deleted Record').toBe(204);
+      expect(await deletedRecord.body()).toHaveLength(0);
       removeFixtureId(ledger.records, recordBulkBId);
     } catch (error) {
       testFailure = error;
