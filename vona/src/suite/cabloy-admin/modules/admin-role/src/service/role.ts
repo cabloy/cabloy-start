@@ -90,11 +90,11 @@ export class ServiceRole extends BeanBase {
 
   @Core.transaction()
   async replaceUserRoles(userId: TableIdentity, command: DtoUserRoleReplace): Promise<void> {
+    const systemAdminRole = await this.getLockedSystemAdminRole();
     const user = await this.$scope.homeUser.model.user.getByIdForUpdate(userId);
     if (!user) this.app.throw(404, 'User not found');
 
     const requestedRoleIds = this.uniqueRoleIds(command.roleIds);
-    const systemAdminRole = await this.getLockedSystemAdminRole();
     const systemAdminRoleId = String(systemAdminRole.id);
     if (requestedRoleIds.some(id => String(id) === systemAdminRoleId)) {
       this.scope.error.BuiltinRoleProtected.throw();
