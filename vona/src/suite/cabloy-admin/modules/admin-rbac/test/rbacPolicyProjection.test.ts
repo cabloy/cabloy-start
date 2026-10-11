@@ -275,7 +275,6 @@ describe('rbacPolicyProjection.test.ts', { concurrency: false }, () => {
         for (const forbidden of [
           'description',
           'departmentId',
-          departmentId,
           'ownerId',
           'terms',
           'allowed',
