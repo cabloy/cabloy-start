@@ -1,7 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { expect, test } from '@playwright/test';
-
+import { expect, test } from '../scripts/managedTest.ts';
 import { loginAsAdmin as loginAsAdminApi, requestApiOk } from './helpers/cabloy-admin-api.ts';
 
 function collectPageErrors(page: Page) {

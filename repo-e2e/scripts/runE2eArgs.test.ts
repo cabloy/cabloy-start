@@ -1,33 +1,79 @@
 import assert from 'node:assert/strict';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
-import { describe, it } from 'node:test';
+import test from 'node:test';
 
-import { combineGreps, parseE2eArgs } from './runE2eArgs.ts';
+import { buildTagGrep, combineGreps, parseE2eArgs } from './runE2eArgs.ts';
 
-const specsDir = resolve(import.meta.dirname, '../specs');
+function withSpecs(callback: (specsDir: string) => void): void {
+  const tempDir = mkdtempSync(resolve(tmpdir(), 'cabloy-e2e-args-'));
+  try {
+    const specsDir = resolve(tempDir, 'specs');
+    mkdirSync(specsDir);
+    for (const name of ['account', 'a-commerce', 'cabloy-basic']) {
+      writeFileSync(resolve(specsDir, `${name}.spec.ts`), '');
+    }
+    callback(specsDir);
+  } finally {
+    rmSync(tempDir, { recursive: true, force: true });
+  }
+}
 
-describe('runE2eArgs', () => {
-  it('runs all specs by default without a mode flag', () => {
-    assert.deepEqual(parseE2eArgs([], specsDir), {
+test('parses multiple specs and repeatable tags', () => {
+  withSpecs(specsDir => {
+    assert.deepEqual(
+      parseE2eArgs(['cabloy-basic', 'account', '--tag', '@web', '--tag=@smoke'], specsDir),
+      {
+        specNames: ['cabloy-basic', 'account'],
+        playwrightArgs: [],
+        tags: ['@web', '@smoke'],
+      },
+    );
+  });
+});
+
+test('allows no spec names and forwards Playwright filters', () => {
+  withSpecs(specsDir => {
+    assert.deepEqual(parseE2eArgs(['--grep', '@flow'], specsDir), {
       specNames: [],
-      playwrightArgs: [],
+      playwrightArgs: ['--grep', '@flow'],
       tags: [],
     });
   });
+});
 
-  it('keeps spec, tag and Playwright filters', () => {
-    const parsed = parseE2eArgs(['cabloy-spec', '--grep', 'ATP-SPEC', '--tag', '@web'], specsDir);
-    assert.deepEqual(parsed.specNames, ['cabloy-spec']);
-    assert.deepEqual(parsed.tags, ['@web']);
-    assert.deepEqual(combineGreps(parsed.playwrightArgs, parsed.tags), [
-      '--grep',
-      '(?=.*(?:ATP-SPEC))(?=.*@web)',
-    ]);
-  });
-
-  it('rejects removed mode flags instead of forwarding them to Playwright', () => {
-    for (const flag of ['--clean', '--fast', '--clean=true', '--fast=false']) {
-      assert.throws(() => parseE2eArgs([flag], specsDir), /modes have been removed/);
+test('rejects invalid or unknown specs and managed config overrides', () => {
+  withSpecs(specsDir => {
+    assert.throws(() => parseE2eArgs(['../account'], specsDir), /Invalid E2E spec name/);
+    assert.throws(() => parseE2eArgs(['missing'], specsDir), /Unknown E2E spec/);
+    for (const args of [
+      ['--config', 'other.ts'],
+      ['--config=other.ts'],
+      ['-c', 'other.ts'],
+      ['-c=other.ts'],
+      ['-cother.ts'],
+    ]) {
+      assert.throws(() => parseE2eArgs(args, specsDir), /manages --config/);
+    }
+    for (const args of [['--workers', '2'], ['--workers=2'], ['-j', '2'], ['-j=2'], ['-j2']]) {
+      assert.throws(() => parseE2eArgs(args, specsDir), /manages --workers/);
     }
   });
+});
+
+test('rejects removed clean and fast options', () => {
+  withSpecs(specsDir => {
+    for (const option of ['--clean', '--fast', '--clean=true', '--fast=false']) {
+      assert.throws(() => parseE2eArgs(['account', option], specsDir), /Unsupported E2E option/);
+    }
+  });
+});
+
+test('combines tags with an existing grep expression', () => {
+  assert.equal(buildTagGrep(['@web', '@smoke']), '(?=.*@web)(?=.*@smoke)');
+  assert.deepEqual(combineGreps(['--grep', '@flow'], ['@web', '@smoke']), [
+    '--grep',
+    '(?=.*(?:@flow))(?=.*@web)(?=.*@smoke)',
+  ]);
 });

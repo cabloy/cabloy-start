@@ -25,7 +25,6 @@ const VALUE_OPTIONS = new Set([
   '--shard',
   '--timeout',
   '--trace',
-  '--workers',
 ]);
 
 function optionName(arg: string): string {
@@ -49,14 +48,16 @@ export function parseE2eArgs(args: string[], specsDir: string): ParsedE2eArgs {
   let optionStarted = false;
   let pendingValueFor: string | undefined;
 
-  for (const arg of args) {
+  for (let index = 0; index < args.length; index++) {
+    const arg = args[index];
+
     if (
       arg === '--clean' ||
-      arg === '--fast' ||
       arg.startsWith('--clean=') ||
+      arg === '--fast' ||
       arg.startsWith('--fast=')
     ) {
-      throw new Error('E2E --clean and --fast modes have been removed; use npm run test:e2e.');
+      throw new Error(`Unsupported E2E option: ${arg}. Use the single managed test:e2e command.`);
     }
 
     if (pendingValueFor) {
@@ -83,8 +84,11 @@ export function parseE2eArgs(args: string[], specsDir: string): ParsedE2eArgs {
       continue;
     }
 
-    if (arg === '--config' || arg.startsWith('--config=')) {
+    if (arg === '--config' || arg.startsWith('--config=') || arg.startsWith('-c')) {
       throw new Error('The E2E runner manages --config; do not provide it.');
+    }
+    if (arg === '--workers' || arg.startsWith('--workers=') || arg.startsWith('-j')) {
+      throw new Error('The E2E runner manages --workers; do not provide it.');
     }
 
     if (!optionStarted && !arg.startsWith('-')) {

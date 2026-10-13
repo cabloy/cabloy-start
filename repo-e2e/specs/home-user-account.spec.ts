@@ -1,9 +1,8 @@
 import type { Page } from '@playwright/test';
 
-import { expect, test } from '@playwright/test';
-
 import type { RegisteredAccount } from './helpers/cabloy-admin-api.ts';
 
+import { expect, test } from '../scripts/managedTest.ts';
 import { registerAccountUser, removeAccountFixture } from './helpers/cabloy-admin-api.ts';
 
 const accountPath = '/home/user/account';

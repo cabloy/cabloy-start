@@ -1,9 +1,8 @@
 import type { Frame, Locator, Page, Request, Response } from '@playwright/test';
 
-import { expect, test } from '@playwright/test';
-
 import type { RegisteredAccount } from './helpers/cabloy-admin-api.ts';
 
+import { expect, test } from '../scripts/managedTest.ts';
 import {
   registerAccountUser,
   removeAccountFixture,

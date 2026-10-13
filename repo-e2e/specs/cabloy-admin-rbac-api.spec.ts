@@ -1,9 +1,8 @@
 import type { APIRequestContext, APIResponse, TestInfo } from '@playwright/test';
 
-import { expect, test } from '@playwright/test';
-
 import type { RegisteredAccount, TableIdentity } from './helpers/cabloy-admin-api.ts';
 
+import { expect, test } from '../scripts/managedTest.ts';
 import {
   loginAsAdmin,
   registerAccountUser,

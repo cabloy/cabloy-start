@@ -1,7 +1,6 @@
 import type { Locator, Page, Route } from '@playwright/test';
 
-import { expect, test } from '@playwright/test';
-
+import { expect, test } from '../scripts/managedTest.ts';
 import { loginAsAdmin as loginAsAdminApi, requestApi } from './helpers/cabloy-admin-api.ts';
 
 type TableIdentity = number | string;

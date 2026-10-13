@@ -1,6 +1,6 @@
 import type { APIRequestContext, APIResponse, TestInfo } from '@playwright/test';
 
-import { expect } from '@playwright/test';
+import { expect } from '../scripts/managedTest.ts';
 
 export type TableIdentity = number | string;
 

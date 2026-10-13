@@ -1,9 +1,10 @@
 node_modules
 miniprogram_npm
+.assets/
+
 test-results/
 playwright-report/
 blob-report/
-.assets/
 **/vite.config.ts.timestamp-*
 **/coverage
 **/dist/
@@ -36,6 +37,8 @@ blob-report/
 # vona core related directories
 vona/.vona
 vona/.app
+vona/.vona-test-*
+vona/.app-test-*
 vona/.zova-rest
 
 **/.temp-dynamic-*
@@ -78,5 +81,5 @@ vona/docker-compose.yml
 
 **/assets/site
 
-/vona/src/suite/cabloy-store
-/zova/src/suite/cabloy-store
+**/.claude/scheduled_tasks.lock
+.cabloy-agent-governance-state.json
