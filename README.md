@@ -73,20 +73,21 @@ Included demonstration suites give AI vibe coding agents high-quality, project-n
 
 ## Common commands
 
-| Purpose                                  | Command                    |
-| ---------------------------------------- | -------------------------- |
-| Start Vona development                   | `npm run dev`              |
-| Start one Vona development process       | `npm run dev:one`          |
-| Start Start Admin SSR development        | `npm run dev:zova:admin`   |
-| Start Start Web SSR development          | `npm run dev:zova:web`     |
-| Build all required artifacts             | `npm run build`            |
-| Build Start Admin SSR and REST artifacts | `npm run build:zova:admin` |
-| Build Start Web SSR and REST artifacts   | `npm run build:zova:web`   |
-| Type-check Vona and Zova                 | `npm run tsc`              |
-| Check formatting                         | `npm run format`           |
-| Lint                                     | `npm run lint`             |
-| Run backend tests                        | `npm run test`             |
-| Run the managed E2E suite                | `npm run test:e2e`         |
+| Purpose                                   | Command                    |
+| ----------------------------------------- | -------------------------- |
+| Reset development databases and seed data | `npm run db:reset`         |
+| Start Vona development                    | `npm run dev`              |
+| Start one Vona development process        | `npm run dev:one`          |
+| Start Start Admin SSR development         | `npm run dev:zova:admin`   |
+| Start Start Web SSR development           | `npm run dev:zova:web`     |
+| Build all required artifacts              | `npm run build`            |
+| Build Start Admin SSR and REST artifacts  | `npm run build:zova:admin` |
+| Build Start Web SSR and REST artifacts    | `npm run build:zova:web`   |
+| Type-check Vona and Zova                  | `npm run tsc`              |
+| Check formatting                          | `npm run format`           |
+| Lint                                      | `npm run lint`             |
+| Run backend tests                         | `npm run test`             |
+| Run the managed E2E suite                 | `npm run test:e2e`         |
 
 ## Upgrade the Cabloy framework baseline
 
