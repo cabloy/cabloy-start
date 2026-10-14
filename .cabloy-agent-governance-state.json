@@ -391,7 +391,7 @@
     },
     {
       "target": ".cursor/rules/cabloy-governance.mdc",
-      "sha256": "539fa24fc49fa8402ea0d9ab89c058762c441d5b3ed87af34a16235d1f8251a0"
+      "sha256": "e2784a08d355455da0da0cfb7c83ff1df4db69566012a1b4a33a5d591764f730"
     },
     {
       "target": ".cursor/skills/cabloy-backend-scaffold/evals/evals.json",
@@ -575,11 +575,11 @@
     },
     {
       "target": "AGENTS.md",
-      "sha256": "f8172d4e80dc8b84bf99a0e926184eb78af5bd1fdfcdeebe63b02160f459afce"
+      "sha256": "d5f4d8fb331147baa92aa68d8579ac604d2a34bf872efc594393ff1e52e8cd79"
     },
     {
       "target": "CLAUDE.md",
-      "sha256": "f8172d4e80dc8b84bf99a0e926184eb78af5bd1fdfcdeebe63b02160f459afce"
+      "sha256": "d5f4d8fb331147baa92aa68d8579ac604d2a34bf872efc594393ff1e52e8cd79"
     }
   ]
 }
