@@ -1,20 +1,4 @@
 export interface paths {
-  '/api/auth/mock/authorize': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['AuthMock_authorize'];
-    put?: never;
-    post: operations['AuthMock_authorizePost'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   '/api/captcha/create': {
     parameters: {
       query?: never;
@@ -1038,22 +1022,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/admin/role/system-admin/revoke/{userId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: operations['AdminRole_revokeSystemAdmin'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   '/api/admin/role/system-admin/account-status/{userId}': {
     parameters: {
       query?: never;
@@ -1176,6 +1144,22 @@ export interface paths {
     get?: never;
     put?: never;
     post: operations['AdminUser_grantSystemAdmin'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/user/system-admin/revoke/{userId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['AdminUser_revokeSystemAdmin'];
     delete?: never;
     options?: never;
     head?: never;
@@ -1682,6 +1666,7 @@ export interface components {
     };
     'home-user.dto.passport_2d063d28bc7243bed02ebd8bddf1212a93c6305b':
       | {
+          instanceId: number | string | undefined;
           user: components['schemas']['home-user.dto.passportUser'];
           auth: components['schemas']['a-auth.dto.auth'];
           roles: components['schemas']['home-user.entity.role'][];
@@ -1756,6 +1741,7 @@ export interface components {
       jwt: components['schemas']['a-jwt.dto.jwtToken'];
     };
     'home-user.dto.passport': {
+      instanceId: number | string | undefined;
       user: components['schemas']['home-user.dto.passportUser'];
       auth: components['schemas']['a-auth.dto.auth'];
       roles: components['schemas']['home-user.entity.role'][];
@@ -3118,10 +3104,6 @@ export interface components {
     'admin-role.dto.systemAdminFreshProofIssue': {
       password: string;
     };
-    'admin-role.dto.systemAdminRevoke': {
-      reason: string;
-      freshProof: string;
-    };
     'admin-role.dto.systemAdminAccountStatus': {
       /** @enum {string} */
       accountStatus: 'active' | 'disabled';
@@ -3261,6 +3243,10 @@ export interface components {
       roleIds: (number | string)[];
     };
     'admin-role.dto.systemAdminGrant': {
+      reason: string;
+      freshProof: string;
+    };
+    'admin-role.dto.systemAdminRevoke': {
       reason: string;
       freshProof: string;
     };
@@ -3462,61 +3448,6 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-  AuthMock_authorize: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: unknown;
-          };
-        };
-      };
-    };
-  };
-  AuthMock_authorizePost: {
-    parameters: {
-      query: {
-        redirect_uri: string;
-        state: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': {
-          username: string;
-        };
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: unknown;
-          };
-        };
-      };
-    };
-  };
   Captcha_create: {
     parameters: {
       query?: never;
@@ -5865,36 +5796,6 @@ export interface operations {
     };
     authToken: true;
   };
-  AdminRole_revokeSystemAdmin: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        userId: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-role.dto.systemAdminRevoke'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
   AdminRole_updateSystemAdminAccountStatus: {
     parameters: {
       query?: never;
@@ -6147,6 +6048,36 @@ export interface operations {
     requestBody: {
       content: {
         'application/json': components['schemas']['admin-role.dto.systemAdminGrant'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: undefined;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  AdminUser_revokeSystemAdmin: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        userId: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['admin-role.dto.systemAdminRevoke'];
       };
     };
     responses: {
