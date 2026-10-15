@@ -6,7 +6,7 @@ import { VTextField } from 'vuetify/components';
 import z from 'zod';
 import { BeanControllerBase } from 'zova';
 import { Controller } from 'zova-module-a-bean';
-import { ZFormField } from 'zova-module-a-form';
+import { constFieldBindingSlot, ZFormField } from 'zova-module-a-form';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceFormFieldRecord {
@@ -32,6 +32,7 @@ export class ControllerFormFieldInput extends BeanControllerBase {
     return (
       <ZFormField
         {...this.$props}
+        {...{ [constFieldBindingSlot]: true }}
         slotDefault={({ propsBucket, props }, $$formField) => {
           const { field } = $$formField;
           const error = !field.state.meta.isValid;

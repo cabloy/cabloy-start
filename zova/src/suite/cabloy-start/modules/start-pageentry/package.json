@@ -48,5 +48,13 @@
       "exports.\\..import"
     ]
   },
-  "title": "start-pageentry"
+  "title": "start-pageentry",
+  "zovaModule": {
+    "capabilities": {
+      "monkey": true
+    },
+    "dependencies": {
+      "a-zova": "5.0.0"
+    }
+  }
 }

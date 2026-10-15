@@ -1,4 +1,70 @@
 // eslint-disable
+/** model: begin */
+export * from '../model/draft.js';
+import { IModelOptionsDraft } from '../model/draft.js';
+import 'zova-module-a-model';
+declare module 'zova-module-a-model' {
+
+    export interface IModelRecord {
+      'start-pageentry:draft': IModelOptionsDraft;
+    }
+
+
+}
+declare module 'zova-module-start-pageentry' {
+
+        export interface ModelDraft {
+          /** @internal */
+          get scope(): ScopeModuleStartPageentry;
+        }
+
+        export interface ModelDraft {
+          get $beanFullName(): 'start-pageentry.model.draft';
+          get $onionName(): 'start-pageentry:draft';
+          get $onionOptions(): IModelOptionsDraft;
+        }
+}
+/** model: end */
+/** model: begin */
+import type { ModelDraft } from '../model/draft.js';
+import 'zova';
+declare module 'zova' {
+  export interface IBeanRecordGeneral {
+    'start-pageentry.model.draft': ModelDraft;
+  }
+}
+/** model: end */
+/** bean: begin */
+export * from '../bean/bean.draftCoordinator.js';
+
+import 'zova';
+declare module 'zova' {
+
+
+}
+declare module 'zova-module-start-pageentry' {
+
+        export interface BeanDraftCoordinator {
+          /** @internal */
+          get scope(): ScopeModuleStartPageentry;
+        }
+
+        export interface BeanDraftCoordinator {
+          get $beanFullName(): 'start-pageentry.bean.draftCoordinator';
+          get $onionName(): 'start-pageentry:draftCoordinator';
+
+        }
+}
+/** bean: end */
+/** bean: begin */
+import type { BeanDraftCoordinator } from '../bean/bean.draftCoordinator.js';
+import 'zova';
+declare module 'zova' {
+  export interface IBeanRecordGeneral {
+    'start-pageentry.bean.draftCoordinator': BeanDraftCoordinator;
+  }
+}
+/** bean: end */
 /** controller: begin */
 export * from '../component/blockForm/controller.jsx';
 export * from '../component/blockPageEntry/controller.jsx';
@@ -6,11 +72,11 @@ export * from '../component/blockToolbarRow/controller.jsx';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-start-pageentry' {
-  
+
         export interface ControllerBlockForm {
           /** @internal */
           get scope(): ScopeModuleStartPageentry;
@@ -24,13 +90,13 @@ declare module 'zova-module-start-pageentry' {
         export interface ControllerBlockToolbarRow {
           /** @internal */
           get scope(): ScopeModuleStartPageentry;
-        } 
+        }
 }
 /** controller: end */
 /** controller: begin */
-import { ControllerBlockForm } from '../component/blockForm/controller.jsx';
-import { ControllerBlockPageEntry } from '../component/blockPageEntry/controller.jsx';
-import { ControllerBlockToolbarRow } from '../component/blockToolbarRow/controller.jsx';
+import type { ControllerBlockForm } from '../component/blockForm/controller.jsx';
+import type { ControllerBlockPageEntry } from '../component/blockPageEntry/controller.jsx';
+import type { ControllerBlockToolbarRow } from '../component/blockToolbarRow/controller.jsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
@@ -67,11 +133,18 @@ export interface IZovaComponentRecord {
 }
 }
 /** components: end */
+/** config: begin */
+export * from '../config/config.js';
+import { config } from '../config/config.js';
+/** config: end */
 /** locale: begin */
 import { locales } from './locales.js';
 /** locale: end */
+/** monkey: begin */
+export * from '../monkey.js';
+/** monkey: end */
 /** scope: begin */
-import { BeanScopeBase, type BeanScopeUtil, TypeModuleLocales, TypeLocaleBase } from 'zova';
+import { BeanScopeBase, type BeanScopeUtil, TypeModuleConfig, TypeModuleLocales, TypeLocaleBase } from 'zova';
 import { Scope } from 'zova-module-a-bean';
 
 @Scope()
@@ -79,6 +152,7 @@ export class ScopeModuleStartPageentry extends BeanScopeBase {}
 
 export interface ScopeModuleStartPageentry {
   util: BeanScopeUtil;
+config: TypeModuleConfig<typeof config>;
 locale: TypeModuleLocales<(typeof locales)[TypeLocaleBase]>;
 }
 
@@ -87,14 +161,16 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'start-pageentry': ScopeModuleStartPageentry;
   }
-  
-  
+
+  export interface IBeanScopeConfig {
+    'start-pageentry': ReturnType<typeof config>;
+  }
 
   export interface IBeanScopeLocale {
     'start-pageentry': (typeof locales)[TypeLocaleBase];
   }
 
-  
+
 }
 
 export function locale<K extends keyof (typeof locales)[TypeLocaleBase]>(key: K): `start-pageentry::${K}` {

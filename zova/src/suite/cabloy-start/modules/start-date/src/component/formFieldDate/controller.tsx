@@ -2,9 +2,11 @@ import type { IComponentOptions } from 'zova';
 import type { IFormFieldComponentOptions } from 'zova-module-a-form';
 import type { IResourceFormFieldOptionsBase } from 'zova-module-a-openapi';
 
+import { VTextField } from 'vuetify/components';
+import z from 'zod';
 import { BeanControllerBase } from 'zova';
 import { Controller } from 'zova-module-a-bean';
-import { ZFormFieldPreset } from 'zova-module-a-form';
+import { ZFormField } from 'zova-module-a-form';
 
 import { dateFormatUtil } from '../../lib/utils.js';
 import { TypeDateFormatPreset } from '../../types/date.js';
@@ -37,13 +39,37 @@ export class ControllerFormFieldDate extends BeanControllerBase {
   protected async __init__() {}
 
   protected render() {
-    const value = dateFormatUtil(this.$props.value, this.dateFormat);
     return (
-      <ZFormFieldPreset
+      <ZFormField
         {...this.$props}
-        render="start-input:formFieldInput"
-        options={{ modelValue: value }}
-      ></ZFormFieldPreset>
+        slotDefault={({ propsBucket, props }, $$formField) => {
+          const { field } = $$formField;
+          const error = !field.state.meta.isValid;
+          const errorObj = field.state.meta.errors[0] as z.ZodError | undefined;
+          const propsNew: VTextField['$props'] = {
+            'type': 'text',
+            'label': propsBucket.layout?.label,
+            'prependIcon': propsBucket.layout?.iconPrefix,
+            'appendIcon': propsBucket.layout?.iconSuffix,
+            'modelValue': dateFormatUtil(propsBucket.value, this.dateFormat),
+            'onUpdate:modelValue': value => {
+              $$formField.setValue(
+                value === '' ? undefined : value,
+                propsBucket.disableNotifyChanged,
+              );
+            },
+            'onUpdate:focused': (focused: boolean) => {
+              if (!focused) {
+                $$formField.handleBlur();
+              }
+            },
+            'errorMessages': error ? errorObj?.message : undefined,
+            ...propsBucket.options,
+            ...props,
+          };
+          return <VTextField {...propsNew}></VTextField>;
+        }}
+      ></ZFormField>
     );
   }
 

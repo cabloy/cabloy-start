@@ -389,10 +389,6 @@ export type ApiSchemaAdminRoleDtoSystemAdminFreshProofIssue =
   components['schemas']['admin-role.dto.systemAdminFreshProofIssue'];
 export type ApiSchemaAdminRoleDtoSystemAdminFreshProofIssuePartial =
   Partial<ApiSchemaAdminRoleDtoSystemAdminFreshProofIssue>;
-export type ApiSchemaAdminRoleDtoSystemAdminRevoke =
-  components['schemas']['admin-role.dto.systemAdminRevoke'];
-export type ApiSchemaAdminRoleDtoSystemAdminRevokePartial =
-  Partial<ApiSchemaAdminRoleDtoSystemAdminRevoke>;
 export type ApiSchemaAdminRoleDtoSystemAdminAccountStatus =
   components['schemas']['admin-role.dto.systemAdminAccountStatus'];
 export type ApiSchemaAdminRoleDtoSystemAdminAccountStatusPartial =
@@ -434,6 +430,10 @@ export type ApiSchemaAdminRoleDtoSystemAdminGrant =
   components['schemas']['admin-role.dto.systemAdminGrant'];
 export type ApiSchemaAdminRoleDtoSystemAdminGrantPartial =
   Partial<ApiSchemaAdminRoleDtoSystemAdminGrant>;
+export type ApiSchemaAdminRoleDtoSystemAdminRevoke =
+  components['schemas']['admin-role.dto.systemAdminRevoke'];
+export type ApiSchemaAdminRoleDtoSystemAdminRevokePartial =
+  Partial<ApiSchemaAdminRoleDtoSystemAdminRevoke>;
 export type ApiSchemaStartMetricsDtoMetricsSnapshot =
   components['schemas']['start-metrics.dto.metricsSnapshot'];
 export type ApiSchemaStartMetricsDtoMetricsSnapshotPartial =

@@ -20,7 +20,7 @@ function deferred<T = void>() {
   return { promise, resolve };
 }
 
-// Like basic-pageentry's draftModel harness, execute the current source rather than a
+// Like start-pageentry's draftModel harness, execute the current source rather than a
 // copied refresh algorithm. TSX requires transpileModule instead of native stripping.
 function evaluateClass(
   path: string,
@@ -113,13 +113,13 @@ const commonBindings = {
 
 const ZFormField = {};
 const ControllerFormFieldInput = evaluateClass(
-  '../../../../../../suite/cabloy-basic/modules/basic-input/src/component/formFieldInput/controller.tsx',
+  '../../../../../../suite/cabloy-start/modules/start-input/src/component/formFieldInput/controller.tsx',
   'ControllerFormFieldInput',
   {
     BeanControllerBase: ControllerBase,
     constFieldBindingSlot,
     ZFormField,
-    classes: (...values: unknown[]) => values.filter(Boolean).join(' '),
+    VTextField: 'VTextField',
     createElement: (type: unknown, props: any) => ({ type, props }),
   },
   ts.JsxEmit.React,
@@ -421,6 +421,118 @@ test(
       owner.refresh();
       assert.deepEqual(runtime.events, []);
     });
+  },
+);
+
+test(
+  'Start edit layout locale refresh preserves recovered input while localized custom options reset',
+  { concurrency: false },
+  async () => {
+    const nestedEffect = () => {};
+    const studentSchema = (locale: string) => {
+      const title = locale === 'en-us' ? 'Training Records' : '培训记录';
+      const result: any = schema(
+        locale,
+        {},
+        {
+          rest: {
+            blocks: [
+              {
+                render: 'start-pageentry:blockPageEntry',
+                options: {
+                  blocks: [
+                    {
+                      render: 'start-pageentry:blockForm',
+                      options: {
+                        blocks: [
+                          {
+                            render: 'start-form:blockFormLayout',
+                            options: {
+                              formLayout: {
+                                children: [
+                                  {
+                                    type: 'tabs',
+                                    children: [
+                                      {
+                                        type: 'tab',
+                                        title,
+                                        children: [{ type: 'field', name: 'name' }],
+                                      },
+                                    ],
+                                  },
+                                ],
+                              },
+                            },
+                          },
+                        ],
+                      },
+                    },
+                    {
+                      render: 'start-pageentry:blockToolbarRow',
+                      options: {
+                        actions: [
+                          {
+                            render: 'start-form:actionSubmit',
+                            options: { permission: { actionInherit: 'update' } },
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      );
+      result.properties.level = {
+        type: 'number',
+        rest: {
+          form: {
+            render: 'training-student:formFieldLevel',
+            options: { items: [{ value: 1, title }] },
+          },
+        },
+      };
+      result.properties.trainingRecords = {
+        type: 'array',
+        rest: { form: { render: 'start-details:formFieldDetails' } },
+        items: {
+          type: 'object',
+          properties: {
+            subject: { type: 'string', rest: { onEffect: nestedEffect } },
+          },
+        },
+      };
+      return result;
+    };
+    await withRuntime(
+      { data: { name: 'baseline', level: 1 }, schema: studentSchema('en-us') },
+      async runtime => {
+        const name = await initializedField(runtime, inputBindingProps());
+        const level = await initializedField(runtime, {
+          name: 'level',
+          slotDefault: () => 'custom level options',
+        });
+        runtime.form.reset(
+          { name: 'recovered unsaved name', level: 2 },
+          { keepDefaultValues: true },
+        );
+        // Establish the post-recovery epoch before switching locales, like mounted fields do.
+        name.refresh();
+        level.refresh();
+        for (const locale of ['zh-cn', 'en-us']) {
+          runtime.form.form.setFieldValue('level', 2, { dontValidate: true });
+          runtime.events.length = 0;
+          runtime.select(locale, studentSchema(locale));
+          name.refresh();
+          level.refresh();
+          assert.equal(runtime.form.form.getFieldValue('name'), 'recovered unsaved name');
+          assert.equal(runtime.form.form.getFieldValue('level'), 1);
+          assert.deepEqual(runtime.changed, []);
+        }
+      },
+    );
   },
 );
 
@@ -822,12 +934,12 @@ test(
 );
 
 test(
-  'manual Basic input and canonical custom provider slots remain replay-ineligible',
+  'manual Start input and canonical custom provider slots remain replay-ineligible',
   { concurrency: false },
   async () => {
     for (const props of [
-      inputBindingProps({ [constFieldProps]: false, render: 'basic-input:formFieldInput' }),
-      { render: 'basic-input:formFieldInput' },
+      inputBindingProps({ [constFieldProps]: false, render: 'start-input:formFieldInput' }),
+      { render: 'start-input:formFieldInput' },
       { render: 'custom:formFieldInput' },
       { render: 'Input' },
       {},
@@ -867,16 +979,19 @@ test('the input wrapper owns its marker and value/blur binding slot', () => {
   const input = props.slotDefault(
     { propsBucket: { value: 'current', disableNotifyChanged: true }, props: {} },
     {
+      field: { state: { meta: { isValid: true, errors: [] } } },
       setValue: (...args: unknown[]) => writes.push(args),
       handleBlur: () => {
         blurred = true;
       },
     },
   );
-  assert.equal(input.type, 'input');
-  assert.equal(input.props.value, 'current');
-  input.props.onInput({ target: { value: 'edited' } });
-  input.props.onBlur();
+  assert.equal(input.type, 'VTextField');
+  assert.equal(input.props.modelValue, 'current');
+  input.props['onUpdate:modelValue']('edited');
+  input.props['onUpdate:focused'](true);
+  assert.equal(blurred, false);
+  input.props['onUpdate:focused'](false);
   assert.deepEqual(writes, [['edited', true]]);
   assert.equal(blurred, true);
 });
