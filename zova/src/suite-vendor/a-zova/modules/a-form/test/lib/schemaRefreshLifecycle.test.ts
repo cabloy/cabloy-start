@@ -20,7 +20,7 @@ function deferred<T = void>() {
   return { promise, resolve };
 }
 
-// Like start-pageentry's draftModel harness, execute the current source rather than a
+// Like basic-pageentry's draftModel harness, execute the current source rather than a
 // copied refresh algorithm. TSX requires transpileModule instead of native stripping.
 function evaluateClass(
   path: string,
@@ -113,13 +113,13 @@ const commonBindings = {
 
 const ZFormField = {};
 const ControllerFormFieldInput = evaluateClass(
-  '../../../../../../suite/cabloy-start/modules/start-input/src/component/formFieldInput/controller.tsx',
+  '../../../../../../suite/cabloy-basic/modules/basic-input/src/component/formFieldInput/controller.tsx',
   'ControllerFormFieldInput',
   {
     BeanControllerBase: ControllerBase,
     constFieldBindingSlot,
     ZFormField,
-    VTextField: 'VTextField',
+    classes: (...values: unknown[]) => values.filter(Boolean).join(' '),
     createElement: (type: unknown, props: any) => ({ type, props }),
   },
   ts.JsxEmit.React,
@@ -934,12 +934,12 @@ test(
 );
 
 test(
-  'manual Start input and canonical custom provider slots remain replay-ineligible',
+  'manual Basic input and canonical custom provider slots remain replay-ineligible',
   { concurrency: false },
   async () => {
     for (const props of [
-      inputBindingProps({ [constFieldProps]: false, render: 'start-input:formFieldInput' }),
-      { render: 'start-input:formFieldInput' },
+      inputBindingProps({ [constFieldProps]: false, render: 'basic-input:formFieldInput' }),
+      { render: 'basic-input:formFieldInput' },
       { render: 'custom:formFieldInput' },
       { render: 'Input' },
       {},
@@ -979,19 +979,16 @@ test('the input wrapper owns its marker and value/blur binding slot', () => {
   const input = props.slotDefault(
     { propsBucket: { value: 'current', disableNotifyChanged: true }, props: {} },
     {
-      field: { state: { meta: { isValid: true, errors: [] } } },
       setValue: (...args: unknown[]) => writes.push(args),
       handleBlur: () => {
         blurred = true;
       },
     },
   );
-  assert.equal(input.type, 'VTextField');
-  assert.equal(input.props.modelValue, 'current');
-  input.props['onUpdate:modelValue']('edited');
-  input.props['onUpdate:focused'](true);
-  assert.equal(blurred, false);
-  input.props['onUpdate:focused'](false);
+  assert.equal(input.type, 'input');
+  assert.equal(input.props.value, 'current');
+  input.props.onInput({ target: { value: 'edited' } });
+  input.props.onBlur();
   assert.deepEqual(writes, [['edited', true]]);
   assert.equal(blurred, true);
 });
