@@ -76,10 +76,15 @@ describe('accountActivation.test.ts', { concurrency: false, sequential: true }, 
 
   it('preserves an enabled SSR site public path in activation links', async () => {
     let fixture: IFixture | undefined;
-    let restoreSites: (() => void) | undefined;
     try {
+      await app.bean.executor.mockCtx(async () => {
+        const site = app
+          .scope('a-ssr')
+          .service.ssr.getSitesEnabled()
+          .find(item => item.name === 'start-siteadmin:admin');
+        assert.equal(site?.beanOptions.options.publicPath, 'admin');
+      });
       fixture = await createFixture();
-      restoreSites = configureAdminSsrSite();
       const issued = await issueActivationLink(fixture, activationConsumerUrlAdmin);
       assert.equal(issued.path, '/admin/home/user/activation');
       assert.deepEqual(await getActivationState(getDigest(issued.token)), {
@@ -89,7 +94,6 @@ describe('accountActivation.test.ts', { concurrency: false, sequential: true }, 
         email: fixture.email,
       });
     } finally {
-      restoreSites?.();
       if (fixture) await removeFixture(fixture);
     }
   });
@@ -194,17 +198,6 @@ interface IRegistration extends IFixture {
   passport: { user: { activated: boolean } };
   token: string;
   path: string;
-}
-
-function configureAdminSsrSite() {
-  const service = app.scope('a-ssr').service.ssr;
-  const getSitesEnabled = service.getSitesEnabled;
-  service.getSitesEnabled = (() => [
-    { beanOptions: { options: { publicPath: 'admin' } } },
-  ]) as typeof service.getSitesEnabled;
-  return () => {
-    service.getSitesEnabled = getSitesEnabled;
-  };
 }
 
 async function configureActivation() {

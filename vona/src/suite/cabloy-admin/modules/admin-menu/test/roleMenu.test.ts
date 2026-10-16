@@ -73,7 +73,7 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
     }
   });
 
-  it('ATP-ADM-MNU-04: keeps explicitly shared-site menu identities separately addressable per site', async t => {
+  it('ATP-ADM-MNU-04: keeps explicitly shared-site menu identities separately addressable per site', async () => {
     const roleName = `admin-menu-role-menu-shared-site-${crypto.randomUUID()}`;
     const sharedMenuName = 'test:shared';
     const menus = [
@@ -97,39 +97,53 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
         });
         roleId = String(role.id);
         const ssr = app.scope('a-ssr').service.ssr;
-        const eligibilityMock = t.mock.method(
-          ssr,
-          'resolveMenuEligibility',
-          (siteName, menuName) => {
-            if (!ssr.getSitesEnabled().some(site => site.name === siteName)) return;
-            return resolveSsrMenuEligibility(siteName, menuName, menus);
-          },
-        );
-        try {
-          const service = app.scope('admin-menu').service.roleMenu;
-          const identities = [
-            { roleId, ssrSiteName, ssrMenuName: sharedMenuName },
-            { roleId, ssrSiteName: webSsrSiteName, ssrMenuName: sharedMenuName },
-          ];
-
-          for (const identity of identities) await service.create(identity);
-          const rows = await app.scope('admin-menu').model.roleMenu.select({ where: { roleId } });
+        const resolveMenuEligibility = ssr.resolveMenuEligibility;
+        const eligibility = ssr.resolveMenuEligibility(ssrSiteName, otherStaticMenuName);
+        assert.ok(eligibility?.rolesDefined);
+        const assertSharedEligibility = () => {
+          assert.equal(ssr.resolveMenuEligibility, resolveMenuEligibility);
           assert.deepEqual(
-            rows
-              .map(row => [row.ssrSiteName, row.ssrMenuName])
-              .toSorted(([leftSite], [rightSite]) => leftSite.localeCompare(rightSite)),
-            [
-              [ssrSiteName, sharedMenuName],
-              [webSsrSiteName, sharedMenuName],
-            ],
+            ssr.resolveMenuEligibility(ssrSiteName, otherStaticMenuName),
+            eligibility,
           );
+          assert.equal(ssr.resolveMenuEligibility(ssrSiteName, sharedMenuName), undefined);
+        };
+        const localResolver: typeof ssr.resolveMenuEligibility = (siteName, menuName) => {
+          assertSharedEligibility();
+          assert.equal(app.bean.database.current.transaction.inTransaction, true);
+          if (!ssr.getSitesEnabled().some(site => site.name === siteName)) return;
+          return resolveSsrMenuEligibility(siteName, menuName, menus);
+        };
+        const service = app.bean._newBean('admin-menu.service.roleMenu');
+        Object.defineProperty(service, '$scope', {
+          value: {
+            homeUser: app.scope('home-user'),
+            redlock: app.scope('a-redlock'),
+            ssr: { service: { ssr: { resolveMenuEligibility: localResolver } } },
+          },
+        });
+        const identities = [
+          { roleId, ssrSiteName, ssrMenuName: sharedMenuName },
+          { roleId, ssrSiteName: webSsrSiteName, ssrMenuName: sharedMenuName },
+        ];
 
-          await service.delete(identities[0]);
-          assert.equal(await app.scope('admin-menu').model.roleMenu.get(identities[0]), undefined);
-          assert.ok(await app.scope('admin-menu').model.roleMenu.get(identities[1]));
-        } finally {
-          eligibilityMock.mock.restore();
-        }
+        for (const identity of identities) await service.create(identity);
+        assertSharedEligibility();
+        const rows = await app.scope('admin-menu').model.roleMenu.select({ where: { roleId } });
+        assert.deepEqual(
+          rows
+            .map(row => [row.ssrSiteName, row.ssrMenuName])
+            .toSorted(([leftSite], [rightSite]) => leftSite.localeCompare(rightSite)),
+          [
+            [ssrSiteName, sharedMenuName],
+            [webSsrSiteName, sharedMenuName],
+          ],
+        );
+
+        await service.delete(identities[0]);
+        assertSharedEligibility();
+        assert.equal(await app.scope('admin-menu').model.roleMenu.get(identities[0]), undefined);
+        assert.ok(await app.scope('admin-menu').model.roleMenu.get(identities[1]));
       });
     } finally {
       await app.bean.executor.mockCtx(async () => await removeRole(roleId));
