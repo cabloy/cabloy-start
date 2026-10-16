@@ -35,7 +35,7 @@
     },
     {
       "target": ".agents/skills/cabloy-contract-loop/SKILL.md",
-      "sha256": "4aeb0477e3cb316b14bca7c4a3d1e277329be4a8f8e14ef31a3ceb858b6b0698"
+      "sha256": "27888ed8bb2c177a7bbe836a494d6185580f2e12e9de809809e3b38820084f94"
     },
     {
       "target": ".agents/skills/cabloy-domain-planning/SKILL.md",
@@ -227,7 +227,7 @@
     },
     {
       "target": ".claude/skills/cabloy-contract-loop/SKILL.md",
-      "sha256": "4aeb0477e3cb316b14bca7c4a3d1e277329be4a8f8e14ef31a3ceb858b6b0698"
+      "sha256": "27888ed8bb2c177a7bbe836a494d6185580f2e12e9de809809e3b38820084f94"
     },
     {
       "target": ".claude/skills/cabloy-domain-planning/SKILL.md",
@@ -427,7 +427,7 @@
     },
     {
       "target": ".cursor/skills/cabloy-contract-loop/SKILL.md",
-      "sha256": "4aeb0477e3cb316b14bca7c4a3d1e277329be4a8f8e14ef31a3ceb858b6b0698"
+      "sha256": "27888ed8bb2c177a7bbe836a494d6185580f2e12e9de809809e3b38820084f94"
     },
     {
       "target": ".cursor/skills/cabloy-domain-planning/SKILL.md",
