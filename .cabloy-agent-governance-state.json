@@ -107,7 +107,7 @@
     },
     {
       "target": ".agents/skills/cabloy-spec-execution/references/status-and-evidence.md",
-      "sha256": "d9bc04fff4781daed907508efb36efe7e60fcf8d2de98e0089b175273f29e14e"
+      "sha256": "17fd93c93c94e5a5b36bcea2c70e779d031b8158b99d03556e8d358e80ad7893"
     },
     {
       "target": ".agents/skills/cabloy-spec-execution/SKILL.md",
@@ -139,7 +139,7 @@
     },
     {
       "target": ".agents/skills/cabloy-spec-generation/references/traceability-and-status-rules.md",
-      "sha256": "4174bef895433d6bdfd6238c6a90391e825e1dce90194cfd47bd6aa2d7a02494"
+      "sha256": "6066944449f7072dbecfde7a79ceb16ebf75777b00c28ddc996b90d8dcdf2145"
     },
     {
       "target": ".agents/skills/cabloy-spec-generation/SKILL.md",
@@ -299,7 +299,7 @@
     },
     {
       "target": ".claude/skills/cabloy-spec-execution/references/status-and-evidence.md",
-      "sha256": "d9bc04fff4781daed907508efb36efe7e60fcf8d2de98e0089b175273f29e14e"
+      "sha256": "17fd93c93c94e5a5b36bcea2c70e779d031b8158b99d03556e8d358e80ad7893"
     },
     {
       "target": ".claude/skills/cabloy-spec-execution/SKILL.md",
@@ -331,7 +331,7 @@
     },
     {
       "target": ".claude/skills/cabloy-spec-generation/references/traceability-and-status-rules.md",
-      "sha256": "4174bef895433d6bdfd6238c6a90391e825e1dce90194cfd47bd6aa2d7a02494"
+      "sha256": "6066944449f7072dbecfde7a79ceb16ebf75777b00c28ddc996b90d8dcdf2145"
     },
     {
       "target": ".claude/skills/cabloy-spec-generation/SKILL.md",
@@ -391,7 +391,7 @@
     },
     {
       "target": ".cursor/rules/cabloy-governance.mdc",
-      "sha256": "0b196a0d31058bb1d54efd10cdd7acbe51534d5738a908af57ef13d285afea8a"
+      "sha256": "050769a0c11ce7706b6dc0d526aad3ecd9d5a2ca1edd4d3eab699aac5eec9996"
     },
     {
       "target": ".cursor/skills/cabloy-backend-scaffold/evals/evals.json",
@@ -499,7 +499,7 @@
     },
     {
       "target": ".cursor/skills/cabloy-spec-execution/references/status-and-evidence.md",
-      "sha256": "d9bc04fff4781daed907508efb36efe7e60fcf8d2de98e0089b175273f29e14e"
+      "sha256": "17fd93c93c94e5a5b36bcea2c70e779d031b8158b99d03556e8d358e80ad7893"
     },
     {
       "target": ".cursor/skills/cabloy-spec-execution/SKILL.md",
@@ -531,7 +531,7 @@
     },
     {
       "target": ".cursor/skills/cabloy-spec-generation/references/traceability-and-status-rules.md",
-      "sha256": "4174bef895433d6bdfd6238c6a90391e825e1dce90194cfd47bd6aa2d7a02494"
+      "sha256": "6066944449f7072dbecfde7a79ceb16ebf75777b00c28ddc996b90d8dcdf2145"
     },
     {
       "target": ".cursor/skills/cabloy-spec-generation/SKILL.md",
@@ -575,11 +575,11 @@
     },
     {
       "target": "AGENTS.md",
-      "sha256": "f4242299ae0b3a95427caaf9b137032767afa381d29135254195107348c4c42b"
+      "sha256": "4056d436da610d0438fe8aa4c873cd23442613de800799b358b1c1a2483d7402"
     },
     {
       "target": "CLAUDE.md",
-      "sha256": "f4242299ae0b3a95427caaf9b137032767afa381d29135254195107348c4c42b"
+      "sha256": "4056d436da610d0438fe8aa4c873cd23442613de800799b358b1c1a2483d7402"
     }
   ]
 }
