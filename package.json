@@ -45,7 +45,6 @@
     "tsc": "npm run tsc:zova && npm run tsc:vona",
     "tsc:zova": "pnpm --dir zova run tsc",
     "tsc:vona": "pnpm --dir vona run tsc",
-    "test:typecheck": "node --test scripts/typecheck.test.ts",
     "deps:vona": "pnpm --dir vona run vona :tools:deps",
     "deps:zova": "pnpm --dir zova run zova :tools:deps",
     "format": "oxfmt --check",

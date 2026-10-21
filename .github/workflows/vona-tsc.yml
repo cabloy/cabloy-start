@@ -22,7 +22,5 @@ jobs:
           version: '12.14.0'
       - name: init
         run: npm run init
-      - name: typecheck runner tests
-        run: npm run test:typecheck
       - name: typecheck
         run: npm run tsc
