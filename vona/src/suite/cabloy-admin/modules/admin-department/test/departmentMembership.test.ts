@@ -549,23 +549,20 @@ describe('departmentMembership.test.ts', { concurrency: false }, () => {
     const userIds: string[] = [];
     const shareTestDepartmentIds: string[] = [];
     try {
-      let departmentId: string | undefined;
-      let membershipId: string | undefined;
-      let userId: string | undefined;
-      await app.bean.executor.mockCtx(async () => {
+      const { departmentId, membershipId, userId } = await app.bean.executor.mockCtx(async () => {
         await app.bean.passport.signinMock();
         const department = await departmentService().create({
           name: `Department-Scoped-${crypto.randomUUID()}`,
           parentId: null,
         });
-        departmentId = String(department.id);
+        const departmentId = String(department.id);
         departmentIds.push(departmentId);
         const user = await app.bean.user.register({
           name: `department-scoped-${crypto.randomUUID()}`,
         });
-        userId = String(user.id);
+        const userId = String(user.id);
         userIds.push(userId);
-        membershipId = String(
+        const membershipId = String(
           await app.bean.executor.performAction(
             'post',
             '/admin/department/:departmentId/memberships',
@@ -580,6 +577,7 @@ describe('departmentMembership.test.ts', { concurrency: false }, () => {
           params: { id: departmentId },
           body: { membershipId },
         });
+        return { departmentId, membershipId, userId };
       });
 
       assert.ok(departmentId);
@@ -803,20 +801,19 @@ describe('departmentMembership.test.ts', { concurrency: false }, () => {
     const membershipIds: string[] = [];
     const userIds: string[] = [];
     try {
-      let departmentId: string | undefined;
-      let userId: string | undefined;
-      await app.bean.executor.mockCtx(async () => {
+      const { departmentId, userId } = await app.bean.executor.mockCtx(async () => {
         const department = await departmentService().create({
           name: `Department-Race-${crypto.randomUUID()}`,
           parentId: null,
         });
-        departmentId = String(department.id);
+        const departmentId = String(department.id);
         departmentIds.push(departmentId);
         const user = await app.bean.user.register({
           name: `department-race-${crypto.randomUUID()}`,
         });
-        userId = String(user.id);
+        const userId = String(user.id);
         userIds.push(userId);
+        return { departmentId, userId };
       });
 
       assert.ok(departmentId);

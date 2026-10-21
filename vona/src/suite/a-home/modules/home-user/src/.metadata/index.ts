@@ -799,6 +799,9 @@ export interface IApiPathPostRecord{
 '/home/user/passport/createTempAuthToken': undefined;
 '/home/user/passportTest/activateCurrent': undefined;
     }
+export interface IApiPathDeleteRecord{
+        '/home/user/passportTest/removeCurrentFixture': undefined;
+    }
 
 }
 

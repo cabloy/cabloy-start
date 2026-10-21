@@ -18,16 +18,30 @@ const actionKey = 'training-record.controller.record#create';
 
 function createAction(
   actionKey: string,
-  options: Record<string, unknown>,
+  options: IRbacActionDescriptor['options'],
   actionInheritKey?: string,
 ): IRbacActionDescriptor {
+  const controllerBeanFullName = 'test:policy';
+  const action = actionKey.split('#')[1];
+  const routePath = `/${controllerBeanFullName}/${action}`;
   return {
     actionKey,
     ...(actionInheritKey ? { actionInheritKey } : {}),
-    controllerBeanFullName: 'test:policy',
-    action: actionKey.split('#')[1],
+    controllerBeanFullName,
+    action,
+    route: {
+      controller: class {},
+      controllerBeanFullName,
+      action,
+      actionDescriptor: {},
+      route: { meta: {} },
+      routeMethod: 'get',
+      routePath,
+      routePathRaw: routePath,
+      routePathOriginal: action,
+    },
     options,
-  } as IRbacActionDescriptor;
+  };
 }
 
 describe('rbacPolicyProjection.test.ts', { concurrency: false }, () => {
@@ -284,7 +298,7 @@ describe('rbacPolicyProjection.test.ts', { concurrency: false }, () => {
         }
 
         const systemAdmin = await app.scope('home-user').model.role.get({
-          where: { name: 'systemAdmin' },
+          name: 'systemAdmin',
         });
         assert.ok(systemAdmin);
         const [systemAdminResult, systemAdminError] = await catchError(() =>

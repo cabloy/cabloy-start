@@ -175,9 +175,13 @@ describe('role.test.ts', { concurrency: false }, () => {
           });
           assert.equal(mixedSiteResult, undefined);
           assert.equal(mixedSiteError?.code, 422);
-          const mixedSiteIssue = (mixedSiteError?.message as any)?.[0];
-          assert.equal(mixedSiteIssue?.message, 'All Sites cannot be combined with specific sites');
-          assert.deepEqual(mixedSiteIssue?.path, ['siteIds']);
+          const mixedSiteIssues: unknown = mixedSiteError?.message;
+          assert.ok(Array.isArray(mixedSiteIssues));
+          const mixedSiteIssue: unknown = mixedSiteIssues[0];
+          assert.ok(mixedSiteIssue && typeof mixedSiteIssue === 'object');
+          assert.ok('message' in mixedSiteIssue && 'path' in mixedSiteIssue);
+          assert.equal(mixedSiteIssue.message, 'All Sites cannot be combined with specific sites');
+          assert.deepEqual(mixedSiteIssue.path, ['siteIds']);
 
           const [invalidSiteResult, invalidSiteError] = await catchError(() => {
             return app.bean.executor.performAction('post', rolePath, {
@@ -190,11 +194,17 @@ describe('role.test.ts', { concurrency: false }, () => {
           });
           assert.equal(invalidSiteResult, undefined);
           assert.equal(invalidSiteError?.code, 422);
-          assert.equal(invalidSiteError?.message?.[0]?.code, 'custom');
-          assert.equal(
-            invalidSiteError?.message?.[0]?.message,
-            'Sites "invalid-a", "invalid-b" are unavailable',
+          const invalidSiteIssues: unknown = invalidSiteError?.message;
+          assert.ok(Array.isArray(invalidSiteIssues));
+          const invalidSiteIssue: unknown = invalidSiteIssues[0];
+          assert.ok(invalidSiteIssue && typeof invalidSiteIssue === 'object');
+          assert.ok(
+            'code' in invalidSiteIssue &&
+              'message' in invalidSiteIssue &&
+              'path' in invalidSiteIssue,
           );
+          assert.equal(invalidSiteIssue.code, 'custom');
+          assert.equal(invalidSiteIssue.message, 'Sites "invalid-a", "invalid-b" are unavailable');
 
           const [singleInvalidSiteResult, singleInvalidSiteError] = await catchError(() => {
             return app.bean.executor.performAction('post', rolePath, {
@@ -207,10 +217,14 @@ describe('role.test.ts', { concurrency: false }, () => {
           });
           assert.equal(singleInvalidSiteResult, undefined);
           assert.equal(singleInvalidSiteError?.code, 422);
-          const singleInvalidSiteIssue = (singleInvalidSiteError?.message as any)?.[0];
-          assert.equal(singleInvalidSiteIssue?.message, 'Site "invalid-single" is unavailable');
-          assert.deepEqual(singleInvalidSiteIssue?.path, ['siteIds']);
-          assert.deepEqual(invalidSiteError?.message?.[0]?.path, ['siteIds']);
+          const singleInvalidSiteIssues: unknown = singleInvalidSiteError?.message;
+          assert.ok(Array.isArray(singleInvalidSiteIssues));
+          const singleInvalidSiteIssue: unknown = singleInvalidSiteIssues[0];
+          assert.ok(singleInvalidSiteIssue && typeof singleInvalidSiteIssue === 'object');
+          assert.ok('message' in singleInvalidSiteIssue && 'path' in singleInvalidSiteIssue);
+          assert.equal(singleInvalidSiteIssue.message, 'Site "invalid-single" is unavailable');
+          assert.deepEqual(singleInvalidSiteIssue.path, ['siteIds']);
+          assert.deepEqual(invalidSiteIssue.path, ['siteIds']);
 
           const view = await app.bean.executor.performAction('get', '/admin/role/:id', {
             params: { id: roleId },

@@ -13,7 +13,7 @@ async function issueFreshProof() {
 }
 
 async function protectedCommand(
-  path: string,
+  path: '/admin/user/system-admin/grant/:userId' | '/admin/user/system-admin/revoke/:userId',
   userId: string,
   proof: string,
   reason = 'Phase 40 protection test',

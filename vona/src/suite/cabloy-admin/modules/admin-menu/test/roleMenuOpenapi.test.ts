@@ -64,13 +64,13 @@ describe('roleMenuOpenapi.test.ts', () => {
         assert.deepEqual(operation.tags, ['AdminMenuRoleMenu']);
         assert.ok(operation.security);
 
-        if (expectation.request) {
+        if ('request' in expectation) {
           const schema = (
             operation.requestBody as { content?: { 'application/json'?: { schema?: any } } }
           ).content?.['application/json']?.schema;
           assert.equal(schema?.$ref, `#/components/schemas/${expectation.request}`);
         }
-        if (expectation.response) {
+        if ('response' in expectation) {
           const schema = operation.responses?.['200']?.content?.['application/json']?.schema;
           assert.equal(
             schema?.properties?.data?.$ref,

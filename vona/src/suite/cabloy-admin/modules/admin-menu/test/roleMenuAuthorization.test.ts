@@ -185,7 +185,7 @@ describe('roleMenuAuthorization.test.ts', { concurrency: false }, () => {
                 ssrMenuName,
               });
             }
-            for (const actionPath of ['/training/student', '/training/record']) {
+            for (const actionPath of ['/training/student', '/training/record'] as const) {
               const [result, error] = await catchError(() =>
                 app.bean.executor.performAction('get', actionPath, { innerAccess: false }),
               );

@@ -206,10 +206,7 @@ describe('department.test.ts', { concurrency: false }, () => {
   it('action:department:scopesForestCommandsByInstance', async () => {
     const ids: string[] = [];
     try {
-      let rootId: string | undefined;
-      let childId: string | undefined;
-      let rootName: string | undefined;
-      await app.bean.executor.mockCtx(async () => {
+      const { rootId, childId, rootName } = await app.bean.executor.mockCtx(async () => {
         await app.bean.passport.signinMock();
         const root = await departmentService().create({
           name: `Department-Scoped-Root-${crypto.randomUUID()}`,
@@ -219,10 +216,10 @@ describe('department.test.ts', { concurrency: false }, () => {
           name: `Department-Scoped-Child-${crypto.randomUUID()}`,
           parentId: root.id,
         });
-        rootId = String(root.id);
-        childId = String(child.id);
-        rootName = root.name;
+        const rootId = String(root.id);
+        const childId = String(child.id);
         ids.push(rootId, childId);
+        return { rootId, childId, rootName: root.name };
       });
 
       assert.ok(rootId);
@@ -252,19 +249,34 @@ describe('department.test.ts', { concurrency: false }, () => {
           );
           assert.equal(JSON.stringify(foreignTree).includes(rootId), false);
 
-          for (const [method, path, body] of [
-            ['patch', '/admin/department/:id', { name: 'Foreign update' }],
-            ['delete', '/admin/department/:id', undefined],
-            ['put', '/admin/department/:id/move', { parentId: null }],
-            ['put', '/admin/department/:id/reorder', { beforeId: null }],
-            ['put', '/admin/department/:id/activation', { enabled: false }],
-          ] as const) {
-            const [result, error] = await catchError(() => {
-              return app.bean.executor.performAction(method, path, {
-                params: { id: childId },
-                body,
-              });
-            });
+          const params = { id: childId };
+          for (const invoke of [
+            () =>
+              app.bean.executor.performAction('patch', '/admin/department/:id', {
+                params,
+                body: { name: 'Foreign update' },
+              }),
+            () =>
+              app.bean.executor.performAction('delete', '/admin/department/:id', {
+                params,
+              }),
+            () =>
+              app.bean.executor.performAction('put', '/admin/department/:id/move', {
+                params,
+                body: { parentId: null },
+              }),
+            () =>
+              app.bean.executor.performAction('put', '/admin/department/:id/reorder', {
+                params,
+                body: { beforeId: null },
+              }),
+            () =>
+              app.bean.executor.performAction('put', '/admin/department/:id/activation', {
+                params,
+                body: { enabled: false },
+              }),
+          ]) {
+            const [result, error] = await catchError(invoke);
             assert.equal(result, undefined);
             assert.equal(error?.code, 404);
           }
@@ -281,8 +293,8 @@ describe('department.test.ts', { concurrency: false }, () => {
       );
 
       await app.bean.executor.mockCtx(async () => {
-        const root = await departmentService().view(rootId!);
-        const child = await departmentService().view(childId!);
+        const root = await departmentService().view(rootId);
+        const child = await departmentService().view(childId);
         assert.equal(root?.name, rootName);
         assert.equal(String(child?.parentId), rootId);
         assert.equal(child?.enabled, true);

@@ -130,7 +130,7 @@ describe('roleMenuProjection.test.ts', { concurrency: false }, () => {
     let userName!: string;
     let roleId: string | undefined;
     const retrieveMenus = async () =>
-      await app.bean.executor.performAction('get', '/home/base/menu/:publicPath', {
+      await app.bean.executor.performAction('get', '/home/base/menu/:publicPath?', {
         innerAccess: false,
         params: { publicPath: 'admin' },
       });

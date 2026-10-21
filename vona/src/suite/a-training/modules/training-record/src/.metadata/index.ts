@@ -357,8 +357,12 @@ declare module 'vona-module-training-record' {
     }
 }
 declare module 'vona-module-a-web' {
-  export interface IApiPathGetRecord{
-        '/training/record/:id': undefined;
+  export interface IApiPathPostRecord{
+        '/training/record': undefined;
+    }
+export interface IApiPathGetRecord{
+        '/training/record': undefined;
+'/training/record/:id': undefined;
     }
 export interface IApiPathPatchRecord{
         '/training/record/:id': undefined;

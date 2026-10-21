@@ -368,17 +368,24 @@ describe('user.test.ts', { concurrency: false }, () => {
               users.list.some(item => String(item.id) === String(userId)),
               false,
             );
-            for (const [method, path, body] of [
-              ['patch', '/admin/user/:id', { avatar: ':emoji:alien' }],
-              ['post', '/admin/user/activate/:id', undefined],
-              ['put', '/admin/user/account-status/:id', { accountStatus: 'disabled' }],
-            ] as const) {
-              const [result, error] = await catchError(() => {
-                return app.bean.executor.performAction(method, path, {
-                  params: { id: userId },
-                  body,
-                });
-              });
+            const params = { id: userId };
+            for (const invoke of [
+              () =>
+                app.bean.executor.performAction('patch', '/admin/user/:id', {
+                  params,
+                  body: { avatar: ':emoji:alien' },
+                }),
+              () =>
+                app.bean.executor.performAction('post', '/admin/user/activate/:id', {
+                  params,
+                }),
+              () =>
+                app.bean.executor.performAction('put', '/admin/user/account-status/:id', {
+                  params,
+                  body: { accountStatus: 'disabled' },
+                }),
+            ]) {
+              const [result, error] = await catchError(invoke);
               assert.equal(result, undefined);
               assert.equal(error?.code, 404);
             }

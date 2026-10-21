@@ -153,7 +153,7 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
   it('ATP-ADM-MNU-09: reconciles a retired persisted identity to the exact current leaf', async () => {
     const roleName = `admin-menu-role-menu-retired-${crypto.randomUUID()}`;
     const retiredMenuName = 'training-student:student#retired';
-    let roleId: string | undefined;
+    let cleanupRoleId: string | undefined;
     try {
       await app.bean.executor.mockCtx(async () => {
         const role = await app.scope('admin-role').service.role.create({
@@ -161,7 +161,8 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
           title: 'Role menu retired identity fixture',
           siteIds: ['admin'],
         });
-        roleId = String(role.id);
+        const roleId = String(role.id);
+        cleanupRoleId = roleId;
         const menus = [{ name: staticMenuName, roles: [] }] as any;
         const resolve = async () =>
           await app
@@ -206,13 +207,13 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
         assert.equal(currentMenu?.enabled, true);
       });
     } finally {
-      await app.bean.executor.mockCtx(async () => await removeRole(roleId));
+      await app.bean.executor.mockCtx(async () => await removeRole(cleanupRoleId));
     }
   });
 
   it('service:roleMenu applies batch deltas atomically and idempotently', async () => {
     const roleName = `admin-menu-role-menu-batch-${crypto.randomUUID()}`;
-    let roleId: string | undefined;
+    let cleanupRoleId: string | undefined;
     try {
       await app.bean.executor.mockCtx(async () => {
         const role = await app.scope('admin-role').service.role.create({
@@ -220,7 +221,8 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
           title: 'Role menu batch fixture',
           siteIds: ['admin'],
         });
-        roleId = String(role.id);
+        const roleId = String(role.id);
+        cleanupRoleId = roleId;
 
         const service = app.scope('admin-menu').service.roleMenu;
         const model = app.scope('admin-menu').model.roleMenu;
@@ -265,7 +267,7 @@ describe('roleMenu.test.ts', { concurrency: false }, () => {
         );
       });
     } finally {
-      await app.bean.executor.mockCtx(async () => await removeRole(roleId));
+      await app.bean.executor.mockCtx(async () => await removeRole(cleanupRoleId));
     }
   });
 

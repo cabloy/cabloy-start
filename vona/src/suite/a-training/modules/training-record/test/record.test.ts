@@ -1,3 +1,4 @@
+import type { ISchemaObjectExtensionField } from 'vona-module-a-openapi';
 import type { DtoRecordCreate } from 'vona-module-training-record';
 import type { DtoStudentCreate } from 'vona-module-training-student';
 
@@ -70,7 +71,9 @@ describe('record.test.ts', { concurrency: false }, () => {
       assert.equal(updateComponent.required?.includes('studentId'), false);
 
       const selectReqRules = getTargetDecoratorRules(DtoRecordSelectReq.prototype);
-      const studentIdMetadata = ZodMetadata.getOpenapiMetadata(selectReqRules.studentId!);
+      const studentIdMetadata = ZodMetadata.getOpenapiMetadata(selectReqRules.studentId!) as
+        | ISchemaObjectExtensionField
+        | undefined;
       assert.equal(selectReqRules.studentId?.type, 'optional');
       assert.deepEqual(studentIdMetadata?.filter, {
         table: 'trainingStudent',
@@ -91,13 +94,17 @@ describe('record.test.ts', { concurrency: false }, () => {
         'V31',
       );
       const parameters = controllerApiJson.paths?.['/api/training/record']?.get?.parameters ?? [];
-      const studentIdParameter = parameters.find(parameter => parameter.name === 'studentId');
-      assert.ok(studentIdParameter);
+      const studentIdParameter = parameters.find(
+        parameter => !('$ref' in parameter) && parameter.name === 'studentId',
+      );
+      assert.ok(studentIdParameter && !('$ref' in studentIdParameter));
       assert.equal(studentIdParameter.in, 'query');
       assert.equal(studentIdParameter.required, false);
-      assert.deepEqual(studentIdParameter.schema?.type, ['string', 'null']);
+      const studentIdSchema = studentIdParameter.schema;
+      assert.ok(studentIdSchema && !('$ref' in studentIdSchema));
+      assert.deepEqual(studentIdSchema.type, ['string', 'null']);
       assert.equal(
-        parameters.some(parameter => parameter.name === 'studentName'),
+        parameters.some(parameter => !('$ref' in parameter) && parameter.name === 'studentName'),
         false,
       );
 
@@ -132,7 +139,7 @@ describe('record.test.ts', { concurrency: false }, () => {
     await app.bean.executor.mockCtx(async () => {
       const studentData: DtoStudentCreate = {
         name: '__Student__',
-        description: 'This is a student for record test',
+        content: { descriptionMarkdown: 'This is a student for record test' },
         mobile: '13812345678',
         level: 1,
         trainingRecords: [],
@@ -447,7 +454,7 @@ describe('record.test.ts', { concurrency: false }, () => {
       try {
         app.bean.passport.current!.roles = [];
         const actions = ['create', 'select', 'view', 'update', 'delete'];
-        const permissions = [];
+        const permissions: boolean[] = [];
         for (const action of actions) {
           permissions.push(
             await app.bean.permission.checkPermissionAction('training-record:record', action),
