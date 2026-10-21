@@ -14,7 +14,7 @@ Cabloy Basic and Cabloy Start share the Cabloy architecture, but intentionally d
 
 - Git
 - Node.js `>=24.4.0`
-- pnpm `>=11.5.2`
+- pnpm `>=12.14.0`
 - Redis `>=7.2.6`
 - One documented development database baseline: SQLite, MySQL `>=8`, or PostgreSQL `>=16`
 
