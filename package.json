@@ -42,8 +42,10 @@
     "test": "cd vona && npm run test",
     "test:e2e": "node scripts/runIsolatedTest.ts e2e",
     "db:reset": "cd vona && npm run db:reset",
-    "tsc": "npm run tsc:zova && pnpm --dir vona run tsc",
+    "tsc": "npm run tsc:zova && npm run tsc:vona",
     "tsc:zova": "pnpm --dir zova run tsc",
+    "tsc:vona": "pnpm --dir vona run tsc",
+    "test:typecheck": "node --test scripts/typecheck.test.ts",
     "deps:vona": "pnpm --dir vona run vona :tools:deps",
     "deps:zova": "pnpm --dir zova run zova :tools:deps",
     "format": "oxfmt --check",
@@ -72,6 +74,7 @@
     "@playwright/test": "^1.62.1",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^26.1.2",
+    "@typescript/native": "npm:typescript@7.0.2",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.5",
     "minimist": "^1.2.8",
@@ -87,7 +90,7 @@
   },
   "engines": {
     "node": ">=24.4.0",
-    "pnpm": ">=11.5.2"
+    "pnpm": ">=12.14.0"
   },
   "packageManager": "pnpm@12.14.0"
 }
