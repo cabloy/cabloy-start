@@ -5,10 +5,10 @@ import { isNavigationFailure } from '@cabloy/vue-router';
 import { BeanBehaviorBase, Behavior } from 'zova-module-a-behavior';
 
 export interface IBehaviorPropsInputPerform {
-  'disabled'?: boolean | '' | 'true' | 'false';
-  'loading'?: boolean | string;
-  'onClick'?: (e: MouseEvent) => unknown;
-  'nativeOnClick'?: (e: MouseEvent) => unknown;
+  disabled?: boolean | '' | 'true' | 'false';
+  loading?: boolean | string;
+  onClick?: (e: MouseEvent) => unknown;
+  nativeOnClick?: (e: MouseEvent) => unknown;
   ['aria-busy']?: boolean | 'true' | 'false';
 }
 
