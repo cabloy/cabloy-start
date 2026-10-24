@@ -3,9 +3,9 @@ import type { TypeControllerInnerProps } from 'zova';
 import { defineComponent } from 'vue';
 import { prepareComponentOptions, useController } from 'zova';
 
-import type { ControllerBlockPolicyEditorProps } from '../../component/blockPolicyEditor/controller.jsx';
+import type { ControllerBlockPolicyEditorProps } from '../../component/blockPolicyEditor/controller.tsx';
 
-import { ControllerBlockPolicyEditor } from '../../component/blockPolicyEditor/controller.jsx';
+import { ControllerBlockPolicyEditor } from '../../component/blockPolicyEditor/controller.tsx';
 export type ZBlockPolicyEditorProps = {
   controllerRef?: (ref: ControllerBlockPolicyEditor) => void;
 } & ControllerBlockPolicyEditorProps;

@@ -3,9 +3,9 @@ import type { TypeControllerInnerProps } from 'zova';
 import { defineComponent } from 'vue';
 import { prepareComponentOptions, useController } from 'zova';
 
-import type { ControllerActionEditDepartmentProps } from '../../component/actionEditDepartment/controller.jsx';
+import type { ControllerActionEditDepartmentProps } from '../../component/actionEditDepartment/controller.tsx';
 
-import { ControllerActionEditDepartment } from '../../component/actionEditDepartment/controller.jsx';
+import { ControllerActionEditDepartment } from '../../component/actionEditDepartment/controller.tsx';
 export type ZActionEditDepartmentProps = {
   controllerRef?: (ref: ControllerActionEditDepartment) => void;
 } & ControllerActionEditDepartmentProps;

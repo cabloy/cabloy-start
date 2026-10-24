@@ -1,22 +1,22 @@
 // eslint-disable
 /** controller: begin */
-export * from '../component/formFieldInput/controller.jsx';
+export * from '../component/formFieldInput/controller.tsx';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-start-input' {
-  
+
         export interface ControllerFormFieldInput {
           /** @internal */
           get scope(): ScopeModuleStartInput;
-        } 
+        }
 }
 /** controller: end */
 /** controller: begin */
-import { ControllerFormFieldInput } from '../component/formFieldInput/controller.jsx';
+import type { ControllerFormFieldInput } from '../component/formFieldInput/controller.tsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
@@ -26,8 +26,8 @@ declare module 'zova' {
 /** controller: end */
 
 /** components: begin */
-export * from './component/formFieldInput.js';
-import { ZFormFieldInput } from './component/formFieldInput.js';
+export * from './component/formFieldInput.ts';
+import { ZFormFieldInput } from './component/formFieldInput.ts';
 export const components = {
   'formFieldInput': ZFormFieldInput,
 };
@@ -57,12 +57,12 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'start-input': ScopeModuleStartInput;
   }
-  
-  
 
-  
 
-  
+
+
+
+
 }
 
 /** scope: end */

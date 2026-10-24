@@ -3,9 +3,9 @@ import type { TypeControllerInnerProps } from 'zova';
 import { defineComponent } from 'vue';
 import { prepareComponentOptions, useController } from 'zova';
 
-import type { ControllerActionCreateMembershipProps } from '../../component/actionCreateMembership/controller.jsx';
+import type { ControllerActionCreateMembershipProps } from '../../component/actionCreateMembership/controller.tsx';
 
-import { ControllerActionCreateMembership } from '../../component/actionCreateMembership/controller.jsx';
+import { ControllerActionCreateMembership } from '../../component/actionCreateMembership/controller.tsx';
 export type ZActionCreateMembershipProps = {
   controllerRef?: (ref: ControllerActionCreateMembership) => void;
 } & ControllerActionCreateMembershipProps;

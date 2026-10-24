@@ -3,9 +3,9 @@ import type { TypeControllerInnerProps } from 'zova';
 import { defineComponent } from 'vue';
 import { prepareComponentOptions, useController } from 'zova';
 
-import type { ControllerActionGrantSystemAdminProps } from '../../component/actionGrantSystemAdmin/controller.jsx';
+import type { ControllerActionGrantSystemAdminProps } from '../../component/actionGrantSystemAdmin/controller.tsx';
 
-import { ControllerActionGrantSystemAdmin } from '../../component/actionGrantSystemAdmin/controller.jsx';
+import { ControllerActionGrantSystemAdmin } from '../../component/actionGrantSystemAdmin/controller.tsx';
 export type ZActionGrantSystemAdminProps = {
   controllerRef?: (ref: ControllerActionGrantSystemAdmin) => void;
 } & ControllerActionGrantSystemAdminProps;

@@ -3,9 +3,9 @@ import type { TypeControllerInnerProps } from 'zova';
 import { defineComponent } from 'vue';
 import { prepareComponentOptions, useController } from 'zova';
 
-import type { ControllerFormFieldSwitchProps } from '../../component/formFieldSwitch/controller.jsx';
+import type { ControllerFormFieldSwitchProps } from '../../component/formFieldSwitch/controller.tsx';
 
-import { ControllerFormFieldSwitch } from '../../component/formFieldSwitch/controller.jsx';
+import { ControllerFormFieldSwitch } from '../../component/formFieldSwitch/controller.tsx';
 export type ZFormFieldSwitchProps = {
   controllerRef?: (ref: ControllerFormFieldSwitch) => void;
 } & ControllerFormFieldSwitchProps;

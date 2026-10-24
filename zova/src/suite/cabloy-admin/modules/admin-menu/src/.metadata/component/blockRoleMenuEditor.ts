@@ -3,9 +3,9 @@ import type { TypeControllerInnerProps } from 'zova';
 import { defineComponent } from 'vue';
 import { prepareComponentOptions, useController } from 'zova';
 
-import type { ControllerBlockRoleMenuEditorProps } from '../../component/blockRoleMenuEditor/controller.jsx';
+import type { ControllerBlockRoleMenuEditorProps } from '../../component/blockRoleMenuEditor/controller.tsx';
 
-import { ControllerBlockRoleMenuEditor } from '../../component/blockRoleMenuEditor/controller.jsx';
+import { ControllerBlockRoleMenuEditor } from '../../component/blockRoleMenuEditor/controller.tsx';
 export type ZBlockRoleMenuEditorProps = {
   controllerRef?: (ref: ControllerBlockRoleMenuEditor) => void;
 } & ControllerBlockRoleMenuEditorProps;

@@ -1,7 +1,7 @@
 // eslint-disable
 /** model: begin */
-export * from '../model/roleMenu.js';
-import { IModelOptionsRoleMenu } from '../model/roleMenu.js';
+export * from '../model/roleMenu.ts';
+import { IModelOptionsRoleMenu } from '../model/roleMenu.ts';
 import 'zova-module-a-model';
 declare module 'zova-module-a-model' {
 
@@ -26,7 +26,7 @@ declare module 'zova-module-admin-menu' {
 }
 /** model: end */
 /** model: begin */
-import type { ModelRoleMenu } from '../model/roleMenu.js';
+import type { ModelRoleMenu } from '../model/roleMenu.ts';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -35,7 +35,7 @@ declare module 'zova' {
 }
 /** model: end */
 /** api: begin */
-export * from '../api/adminMenuRoleMenu.js';
+export * from '../api/adminMenuRoleMenu.ts';
 
 import 'zova';
 declare module 'zova' {
@@ -57,7 +57,7 @@ declare module 'zova-module-admin-menu' {
 }
 /** api: end */
 /** api: begin */
-import type { ApiAdminMenuRoleMenu } from '../api/adminMenuRoleMenu.js';
+import type { ApiAdminMenuRoleMenu } from '../api/adminMenuRoleMenu.ts';
 export interface IModuleApi {
   'adminMenuRoleMenu': ApiAdminMenuRoleMenu;
 }
@@ -72,10 +72,10 @@ declare module 'zova' {
 }
 /** api: end */
 /** openapi: begin */
-export * from '../api/openapi/index.js';
+export * from '../api/openapi/index.ts';
 /** openapi: end */
 /** apiSchema: begin */
-export * from '../apiSchema/adminMenuRoleMenu.js';
+export * from '../apiSchema/adminMenuRoleMenu.ts';
 
 import 'zova';
 declare module 'zova' {
@@ -97,7 +97,7 @@ declare module 'zova-module-admin-menu' {
 }
 /** apiSchema: end */
 /** apiSchema: begin */
-import type { ApiSchemaAdminMenuRoleMenu } from '../apiSchema/adminMenuRoleMenu.js';
+import type { ApiSchemaAdminMenuRoleMenu } from '../apiSchema/adminMenuRoleMenu.ts';
 export interface IModuleApiSchema {
   'adminMenuRoleMenu': ApiSchemaAdminMenuRoleMenu;
 }
@@ -112,7 +112,7 @@ declare module 'zova' {
 }
 /** apiSchema: end */
 /** controller: begin */
-export * from '../component/blockRoleMenuEditor/controller.jsx';
+export * from '../component/blockRoleMenuEditor/controller.tsx';
 
 import 'zova';
 declare module 'zova' {
@@ -128,7 +128,7 @@ declare module 'zova-module-admin-menu' {
 }
 /** controller: end */
 /** controller: begin */
-import type { ControllerBlockRoleMenuEditor } from '../component/blockRoleMenuEditor/controller.jsx';
+import type { ControllerBlockRoleMenuEditor } from '../component/blockRoleMenuEditor/controller.tsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
@@ -138,8 +138,8 @@ declare module 'zova' {
 /** controller: end */
 
 /** components: begin */
-export * from './component/blockRoleMenuEditor.js';
-import { ZBlockRoleMenuEditor } from './component/blockRoleMenuEditor.js';
+export * from './component/blockRoleMenuEditor.ts';
+import { ZBlockRoleMenuEditor } from './component/blockRoleMenuEditor.ts';
 export const components = {
   'blockRoleMenuEditor': ZBlockRoleMenuEditor,
 };
@@ -154,7 +154,7 @@ export interface IZovaComponentRecord {
 }
 /** components: end */
 /** locale: begin */
-import { locales } from './locales.js';
+import { locales } from './locales.ts';
 /** locale: end */
 /** scope: begin */
 import { BeanScopeBase, type BeanScopeUtil, TypeModuleLocales, TypeLocaleBase } from 'zova';

@@ -1,15 +1,15 @@
 // eslint-disable
 /** controller: begin */
-export * from '../component/formFieldChips/controller.jsx';
-export * from '../component/formFieldSelect/controller.jsx';
+export * from '../component/formFieldChips/controller.tsx';
+export * from '../component/formFieldSelect/controller.tsx';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-start-select' {
-  
+
         export interface ControllerFormFieldChips {
           /** @internal */
           get scope(): ScopeModuleStartSelect;
@@ -18,12 +18,12 @@ declare module 'zova-module-start-select' {
         export interface ControllerFormFieldSelect {
           /** @internal */
           get scope(): ScopeModuleStartSelect;
-        } 
+        }
 }
 /** controller: end */
 /** controller: begin */
-import { ControllerFormFieldChips } from '../component/formFieldChips/controller.jsx';
-import { ControllerFormFieldSelect } from '../component/formFieldSelect/controller.jsx';
+import type { ControllerFormFieldChips } from '../component/formFieldChips/controller.tsx';
+import type { ControllerFormFieldSelect } from '../component/formFieldSelect/controller.tsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
@@ -34,10 +34,10 @@ declare module 'zova' {
 /** controller: end */
 
 /** components: begin */
-export * from './component/formFieldChips.js';
-import { ZFormFieldChips } from './component/formFieldChips.js';
-export * from './component/formFieldSelect.js';
-import { ZFormFieldSelect } from './component/formFieldSelect.js';
+export * from './component/formFieldChips.ts';
+import { ZFormFieldChips } from './component/formFieldChips.ts';
+export * from './component/formFieldSelect.ts';
+import { ZFormFieldSelect } from './component/formFieldSelect.ts';
 export const components = {
   'formFieldChips': ZFormFieldChips,
 'formFieldSelect': ZFormFieldSelect,
@@ -55,22 +55,22 @@ export interface IZovaComponentRecord {
 }
 /** components: end */
 /** tableCell: begin */
-export * from '../bean/tableCell.chips.jsx';
-export * from '../bean/tableCell.select.jsx';
-import { ITableCellOptionsChips } from '../bean/tableCell.chips.jsx';
-import { ITableCellOptionsSelect } from '../bean/tableCell.select.jsx';
+export * from '../bean/tableCell.chips.tsx';
+export * from '../bean/tableCell.select.tsx';
+import { ITableCellOptionsChips } from '../bean/tableCell.chips.tsx';
+import { ITableCellOptionsSelect } from '../bean/tableCell.select.tsx';
 import 'zova-module-a-table';
 declare module 'zova-module-a-table' {
-  
+
     export interface ITableCellRecord {
       'start-select:chips': ITableCellOptionsChips;
 'start-select:select': ITableCellOptionsSelect;
     }
 
-  
+
 }
 declare module 'zova-module-start-select' {
-  
+
         export interface TableCellChips {
           /** @internal */
           get scope(): ScopeModuleStartSelect;
@@ -91,12 +91,12 @@ declare module 'zova-module-start-select' {
           get $beanFullName(): 'start-select.tableCell.select';
           get $onionName(): 'start-select:select';
           get $onionOptions(): ITableCellOptionsSelect;
-        } 
+        }
 }
 /** tableCell: end */
 /** tableCell: begin */
-import { TableCellChips } from '../bean/tableCell.chips.jsx';
-import { TableCellSelect } from '../bean/tableCell.select.jsx';
+import type { TableCellChips } from '../bean/tableCell.chips.tsx';
+import type { TableCellSelect } from '../bean/tableCell.select.tsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -121,12 +121,12 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'start-select': ScopeModuleStartSelect;
   }
-  
-  
 
-  
 
-  
+
+
+
+
 }
 
 /** scope: end */

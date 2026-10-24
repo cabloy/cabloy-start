@@ -1,22 +1,22 @@
 // eslint-disable
 /** controller: begin */
-export * from '../component/formFieldSwitch/controller.jsx';
+export * from '../component/formFieldSwitch/controller.tsx';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-start-switch' {
-  
+
         export interface ControllerFormFieldSwitch {
           /** @internal */
           get scope(): ScopeModuleStartSwitch;
-        } 
+        }
 }
 /** controller: end */
 /** controller: begin */
-import { ControllerFormFieldSwitch } from '../component/formFieldSwitch/controller.jsx';
+import type { ControllerFormFieldSwitch } from '../component/formFieldSwitch/controller.tsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
@@ -26,8 +26,8 @@ declare module 'zova' {
 /** controller: end */
 
 /** components: begin */
-export * from './component/formFieldSwitch.js';
-import { ZFormFieldSwitch } from './component/formFieldSwitch.js';
+export * from './component/formFieldSwitch.ts';
+import { ZFormFieldSwitch } from './component/formFieldSwitch.ts';
 export const components = {
   'formFieldSwitch': ZFormFieldSwitch,
 };
@@ -42,19 +42,19 @@ export interface IZovaComponentRecord {
 }
 /** components: end */
 /** tableCell: begin */
-export * from '../bean/tableCell.switch.jsx';
-import { ITableCellOptionsSwitch } from '../bean/tableCell.switch.jsx';
+export * from '../bean/tableCell.switch.tsx';
+import { ITableCellOptionsSwitch } from '../bean/tableCell.switch.tsx';
 import 'zova-module-a-table';
 declare module 'zova-module-a-table' {
-  
+
     export interface ITableCellRecord {
       'start-switch:switch': ITableCellOptionsSwitch;
     }
 
-  
+
 }
 declare module 'zova-module-start-switch' {
-  
+
         export interface TableCellSwitch {
           /** @internal */
           get scope(): ScopeModuleStartSwitch;
@@ -64,11 +64,11 @@ declare module 'zova-module-start-switch' {
           get $beanFullName(): 'start-switch.tableCell.switch';
           get $onionName(): 'start-switch:switch';
           get $onionOptions(): ITableCellOptionsSwitch;
-        } 
+        }
 }
 /** tableCell: end */
 /** tableCell: begin */
-import { TableCellSwitch } from '../bean/tableCell.switch.jsx';
+import type { TableCellSwitch } from '../bean/tableCell.switch.tsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -92,12 +92,12 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'start-switch': ScopeModuleStartSwitch;
   }
-  
-  
 
-  
 
-  
+
+
+
+
 }
 
 /** scope: end */

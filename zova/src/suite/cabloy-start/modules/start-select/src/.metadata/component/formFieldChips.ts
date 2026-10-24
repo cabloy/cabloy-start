@@ -3,9 +3,9 @@ import type { TypeControllerInnerProps } from 'zova';
 import { defineComponent } from 'vue';
 import { prepareComponentOptions, useController } from 'zova';
 
-import type { ControllerFormFieldChipsProps } from '../../component/formFieldChips/controller.jsx';
+import type { ControllerFormFieldChipsProps } from '../../component/formFieldChips/controller.tsx';
 
-import { ControllerFormFieldChips } from '../../component/formFieldChips/controller.jsx';
+import { ControllerFormFieldChips } from '../../component/formFieldChips/controller.tsx';
 export type ZFormFieldChipsProps = {
   controllerRef?: (ref: ControllerFormFieldChips) => void;
 } & ControllerFormFieldChipsProps;

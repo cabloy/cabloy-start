@@ -1,9 +1,9 @@
 // eslint-disable
 /** controller: begin */
-export * from '../page/appModal/controller.jsx';
-export * from '../page/routedDialog/controller.jsx';
-export * from '../page/routedDialogDetail/controller.jsx';
-export * from '../page/routedDialogEntry/controller.jsx';
+export * from '../page/appModal/controller.tsx';
+export * from '../page/routedDialog/controller.tsx';
+export * from '../page/routedDialogDetail/controller.tsx';
+export * from '../page/routedDialogEntry/controller.tsx';
 
 import 'zova';
 declare module 'zova' {
@@ -34,10 +34,10 @@ declare module 'zova-module-start-demo' {
 }
 /** controller: end */
 /** controller: begin */
-import type { ControllerPageAppModal } from '../page/appModal/controller.jsx';
-import type { ControllerPageRoutedDialog } from '../page/routedDialog/controller.jsx';
-import type { ControllerPageRoutedDialogDetail } from '../page/routedDialogDetail/controller.jsx';
-import type { ControllerPageRoutedDialogEntry } from '../page/routedDialogEntry/controller.jsx';
+import type { ControllerPageAppModal } from '../page/appModal/controller.tsx';
+import type { ControllerPageRoutedDialog } from '../page/routedDialog/controller.tsx';
+import type { ControllerPageRoutedDialogDetail } from '../page/routedDialogDetail/controller.tsx';
+import type { ControllerPageRoutedDialogEntry } from '../page/routedDialogEntry/controller.tsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
@@ -49,13 +49,13 @@ declare module 'zova' {
 }
 /** controller: end */
 /** pages: begin */
-export * from './page/appModal.js';
-export * from './page/routedDialog.js';
-export * from './page/routedDialogDetail.js';
-import { NSControllerPageRoutedDialogDetail } from './page/routedDialogDetail.js';
-export * from './page/routedDialogEntry.js';
-import { NSControllerPageRoutedDialogEntry } from './page/routedDialogEntry.js';
-export * from '../routes.js';
+export * from './page/appModal.ts';
+export * from './page/routedDialog.ts';
+export * from './page/routedDialogDetail.ts';
+import { NSControllerPageRoutedDialogDetail } from './page/routedDialogDetail.ts';
+export * from './page/routedDialogEntry.ts';
+import { NSControllerPageRoutedDialogEntry } from './page/routedDialogEntry.ts';
+export * from '../routes.ts';
 import { TypePagePathSchema } from 'zova-module-a-router';
 import 'zova';
 declare module 'zova-module-a-router' {

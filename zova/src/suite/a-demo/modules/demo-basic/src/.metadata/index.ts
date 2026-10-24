@@ -1,17 +1,17 @@
 // eslint-disable
 /** controller: begin */
-export * from '../component/card/controller.jsx';
-export * from '../page/component/controller.jsx';
-export * from '../page/state/controller.jsx';
-export * from '../page/style/controller.jsx';
+export * from '../component/card/controller.tsx';
+export * from '../page/component/controller.tsx';
+export * from '../page/state/controller.tsx';
+export * from '../page/style/controller.tsx';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-demo-basic' {
-  
+
         export interface ControllerCard {
           /** @internal */
           get scope(): ScopeModuleDemoBasic;
@@ -30,14 +30,14 @@ declare module 'zova-module-demo-basic' {
         export interface ControllerPageStyle {
           /** @internal */
           get scope(): ScopeModuleDemoBasic;
-        } 
+        }
 }
 /** controller: end */
 /** controller: begin */
-import { ControllerCard } from '../component/card/controller.jsx';
-import { ControllerPageComponent } from '../page/component/controller.jsx';
-import { ControllerPageState } from '../page/state/controller.jsx';
-import { ControllerPageStyle } from '../page/style/controller.jsx';
+import type { ControllerCard } from '../component/card/controller.tsx';
+import type { ControllerPageComponent } from '../page/component/controller.tsx';
+import type { ControllerPageState } from '../page/state/controller.tsx';
+import type { ControllerPageStyle } from '../page/style/controller.tsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
@@ -49,10 +49,10 @@ declare module 'zova' {
 }
 /** controller: end */
 /** pages: begin */
-export * from './page/component.js';
-export * from './page/state.js';
-export * from './page/style.js';
-export * from '../routes.js';
+export * from './page/component.ts';
+export * from './page/state.ts';
+export * from './page/style.ts';
+export * from '../routes.ts';
 import { TypePagePathSchema } from 'zova-module-a-router';
 import 'zova';
 declare module 'zova-module-a-router' {
@@ -62,7 +62,7 @@ export interface IPagePathRecord {
 '/demo/basic/style': TypePagePathSchema<undefined,undefined>;
 }
 export interface IPageNameRecord {
-  
+
 }
 }
 export const pagePathSchemas = {
@@ -72,13 +72,13 @@ export const pageNameSchemas = {
 
 };
 declare module 'zova-module-demo-basic' {
-  
+
 }
 /** pages: end */
 
 /** components: begin */
-export * from './component/card.js';
-import { ZCard } from './component/card.js';
+export * from './component/card.ts';
+import { ZCard } from './component/card.ts';
 export const components = {
   'card': ZCard,
 };
@@ -108,12 +108,12 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'demo-basic': ScopeModuleDemoBasic;
   }
-  
-  
 
-  
 
-  
+
+
+
+
 }
 
 /** scope: end */

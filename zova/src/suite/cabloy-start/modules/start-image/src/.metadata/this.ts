@@ -1,2 +1,2 @@
 export const __ThisModule__ = 'start-image';
-export { ScopeModuleStartImage as ScopeModule } from './index.js';
+export { ScopeModuleStartImage as ScopeModule } from './index.ts';

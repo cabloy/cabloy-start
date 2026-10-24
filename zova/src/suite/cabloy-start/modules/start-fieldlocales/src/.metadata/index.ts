@@ -1,22 +1,22 @@
 // eslint-disable
 /** controller: begin */
-export * from '../component/formFieldLocalizedText/controller.jsx';
+export * from '../component/formFieldLocalizedText/controller.tsx';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-start-fieldlocales' {
-  
+
         export interface ControllerFormFieldLocalizedText {
           /** @internal */
           get scope(): ScopeModuleStartFieldlocales;
-        } 
+        }
 }
 /** controller: end */
 /** controller: begin */
-import { ControllerFormFieldLocalizedText } from '../component/formFieldLocalizedText/controller.jsx';
+import type { ControllerFormFieldLocalizedText } from '../component/formFieldLocalizedText/controller.tsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
@@ -26,8 +26,8 @@ declare module 'zova' {
 /** controller: end */
 
 /** components: begin */
-export * from './component/formFieldLocalizedText.js';
-import { ZFormFieldLocalizedText } from './component/formFieldLocalizedText.js';
+export * from './component/formFieldLocalizedText.ts';
+import { ZFormFieldLocalizedText } from './component/formFieldLocalizedText.ts';
 export const components = {
   'formFieldLocalizedText': ZFormFieldLocalizedText,
 };
@@ -42,19 +42,19 @@ export interface IZovaComponentRecord {
 }
 /** components: end */
 /** tableCell: begin */
-export * from '../bean/tableCell.localizedText.jsx';
-import { ITableCellOptionsLocalizedText } from '../bean/tableCell.localizedText.jsx';
+export * from '../bean/tableCell.localizedText.tsx';
+import { ITableCellOptionsLocalizedText } from '../bean/tableCell.localizedText.tsx';
 import 'zova-module-a-table';
 declare module 'zova-module-a-table' {
-  
+
     export interface ITableCellRecord {
       'start-fieldlocales:localizedText': ITableCellOptionsLocalizedText;
     }
 
-  
+
 }
 declare module 'zova-module-start-fieldlocales' {
-  
+
         export interface TableCellLocalizedText {
           /** @internal */
           get scope(): ScopeModuleStartFieldlocales;
@@ -64,11 +64,11 @@ declare module 'zova-module-start-fieldlocales' {
           get $beanFullName(): 'start-fieldlocales.tableCell.localizedText';
           get $onionName(): 'start-fieldlocales:localizedText';
           get $onionOptions(): ITableCellOptionsLocalizedText;
-        } 
+        }
 }
 /** tableCell: end */
 /** tableCell: begin */
-import { TableCellLocalizedText } from '../bean/tableCell.localizedText.jsx';
+import type { TableCellLocalizedText } from '../bean/tableCell.localizedText.tsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -77,7 +77,7 @@ declare module 'zova' {
 }
 /** tableCell: end */
 /** locale: begin */
-import { locales } from './locales.js';
+import { locales } from './locales.ts';
 /** locale: end */
 /** scope: begin */
 import { BeanScopeBase, type BeanScopeUtil, TypeModuleLocales, TypeLocaleBase } from 'zova';
@@ -96,14 +96,14 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'start-fieldlocales': ScopeModuleStartFieldlocales;
   }
-  
-  
+
+
 
   export interface IBeanScopeLocale {
     'start-fieldlocales': (typeof locales)[TypeLocaleBase];
   }
 
-  
+
 }
 
 export function locale<K extends keyof (typeof locales)[TypeLocaleBase]>(key: K): `start-fieldlocales::${K}` {

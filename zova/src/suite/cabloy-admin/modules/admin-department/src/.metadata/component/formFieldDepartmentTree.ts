@@ -3,9 +3,9 @@ import type { TypeControllerInnerProps } from 'zova';
 import { defineComponent } from 'vue';
 import { prepareComponentOptions, useController } from 'zova';
 
-import type { ControllerFormFieldDepartmentTreeProps } from '../../component/formFieldDepartmentTree/controller.jsx';
+import type { ControllerFormFieldDepartmentTreeProps } from '../../component/formFieldDepartmentTree/controller.tsx';
 
-import { ControllerFormFieldDepartmentTree } from '../../component/formFieldDepartmentTree/controller.jsx';
+import { ControllerFormFieldDepartmentTree } from '../../component/formFieldDepartmentTree/controller.tsx';
 export type ZFormFieldDepartmentTreeProps = {
   controllerRef?: (ref: ControllerFormFieldDepartmentTree) => void;
 } & ControllerFormFieldDepartmentTreeProps;

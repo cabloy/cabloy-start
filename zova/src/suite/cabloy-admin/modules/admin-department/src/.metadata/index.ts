@@ -1,7 +1,7 @@
 // eslint-disable
 /** model: begin */
-export * from '../model/department.js';
-import { IModelOptionsDepartment } from '../model/department.js';
+export * from '../model/department.ts';
+import { IModelOptionsDepartment } from '../model/department.ts';
 import 'zova-module-a-model';
 declare module 'zova-module-a-model' {
 
@@ -26,7 +26,7 @@ declare module 'zova-module-admin-department' {
 }
 /** model: end */
 /** model: begin */
-import type { ModelDepartment } from '../model/department.js';
+import type { ModelDepartment } from '../model/department.ts';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -35,7 +35,7 @@ declare module 'zova' {
 }
 /** model: end */
 /** api: begin */
-export * from '../api/adminDepartment.js';
+export * from '../api/adminDepartment.ts';
 
 import 'zova';
 declare module 'zova' {
@@ -57,7 +57,7 @@ declare module 'zova-module-admin-department' {
 }
 /** api: end */
 /** api: begin */
-import type { ApiAdminDepartment } from '../api/adminDepartment.js';
+import type { ApiAdminDepartment } from '../api/adminDepartment.ts';
 export interface IModuleApi {
   'adminDepartment': ApiAdminDepartment;
 }
@@ -72,10 +72,10 @@ declare module 'zova' {
 }
 /** api: end */
 /** openapi: begin */
-export * from '../api/openapi/index.js';
+export * from '../api/openapi/index.ts';
 /** openapi: end */
 /** apiSchema: begin */
-export * from '../apiSchema/adminDepartment.js';
+export * from '../apiSchema/adminDepartment.ts';
 
 import 'zova';
 declare module 'zova' {
@@ -97,7 +97,7 @@ declare module 'zova-module-admin-department' {
 }
 /** apiSchema: end */
 /** apiSchema: begin */
-import type { ApiSchemaAdminDepartment } from '../apiSchema/adminDepartment.js';
+import type { ApiSchemaAdminDepartment } from '../apiSchema/adminDepartment.ts';
 export interface IModuleApiSchema {
   'adminDepartment': ApiSchemaAdminDepartment;
 }
@@ -112,11 +112,11 @@ declare module 'zova' {
 }
 /** apiSchema: end */
 /** controller: begin */
-export * from '../component/actionCreateMembership/controller.jsx';
-export * from '../component/actionEditDepartment/controller.jsx';
-export * from '../component/blockDepartmentMemberships/controller.jsx';
-export * from '../component/blockPageDepartments/controller.jsx';
-export * from '../component/formFieldDepartmentTree/controller.jsx';
+export * from '../component/actionCreateMembership/controller.tsx';
+export * from '../component/actionEditDepartment/controller.tsx';
+export * from '../component/blockDepartmentMemberships/controller.tsx';
+export * from '../component/blockPageDepartments/controller.tsx';
+export * from '../component/formFieldDepartmentTree/controller.tsx';
 
 import 'zova';
 declare module 'zova' {
@@ -152,11 +152,11 @@ declare module 'zova-module-admin-department' {
 }
 /** controller: end */
 /** controller: begin */
-import type { ControllerActionCreateMembership } from '../component/actionCreateMembership/controller.jsx';
-import type { ControllerActionEditDepartment } from '../component/actionEditDepartment/controller.jsx';
-import type { ControllerBlockDepartmentMemberships } from '../component/blockDepartmentMemberships/controller.jsx';
-import type { ControllerBlockPageDepartments } from '../component/blockPageDepartments/controller.jsx';
-import type { ControllerFormFieldDepartmentTree } from '../component/formFieldDepartmentTree/controller.jsx';
+import type { ControllerActionCreateMembership } from '../component/actionCreateMembership/controller.tsx';
+import type { ControllerActionEditDepartment } from '../component/actionEditDepartment/controller.tsx';
+import type { ControllerBlockDepartmentMemberships } from '../component/blockDepartmentMemberships/controller.tsx';
+import type { ControllerBlockPageDepartments } from '../component/blockPageDepartments/controller.tsx';
+import type { ControllerFormFieldDepartmentTree } from '../component/formFieldDepartmentTree/controller.tsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
@@ -170,16 +170,16 @@ declare module 'zova' {
 /** controller: end */
 
 /** components: begin */
-export * from './component/actionCreateMembership.js';
-import { ZActionCreateMembership } from './component/actionCreateMembership.js';
-export * from './component/actionEditDepartment.js';
-import { ZActionEditDepartment } from './component/actionEditDepartment.js';
-export * from './component/blockDepartmentMemberships.js';
-import { ZBlockDepartmentMemberships } from './component/blockDepartmentMemberships.js';
-export * from './component/blockPageDepartments.js';
-import { ZBlockPageDepartments } from './component/blockPageDepartments.js';
-export * from './component/formFieldDepartmentTree.js';
-import { ZFormFieldDepartmentTree } from './component/formFieldDepartmentTree.js';
+export * from './component/actionCreateMembership.ts';
+import { ZActionCreateMembership } from './component/actionCreateMembership.ts';
+export * from './component/actionEditDepartment.ts';
+import { ZActionEditDepartment } from './component/actionEditDepartment.ts';
+export * from './component/blockDepartmentMemberships.ts';
+import { ZBlockDepartmentMemberships } from './component/blockDepartmentMemberships.ts';
+export * from './component/blockPageDepartments.ts';
+import { ZBlockPageDepartments } from './component/blockPageDepartments.ts';
+export * from './component/formFieldDepartmentTree.ts';
+import { ZFormFieldDepartmentTree } from './component/formFieldDepartmentTree.ts';
 export const components = {
   'actionCreateMembership': ZActionCreateMembership,
 'actionEditDepartment': ZActionEditDepartment,
@@ -206,22 +206,22 @@ export interface IZovaComponentRecord {
 }
 /** components: end */
 /** tableCell: begin */
-export * from '../bean/tableCell.actionActivation.jsx';
-export * from '../bean/tableCell.actionDeleteMembership.jsx';
-export * from '../bean/tableCell.actionMove.jsx';
-export * from '../bean/tableCell.actionReorder.jsx';
-export * from '../bean/tableCell.actionToggleMembershipPrimary.jsx';
-export * from '../bean/tableCell.actionUpdateMembership.jsx';
-export * from '../bean/tableCell.actionUpdateMembershipManager.jsx';
-export * from '../bean/tableCell.departmentName.jsx';
-import { ITableCellOptionsActionActivation } from '../bean/tableCell.actionActivation.jsx';
-import { ITableCellOptionsActionDeleteMembership } from '../bean/tableCell.actionDeleteMembership.jsx';
-import { ITableCellOptionsActionMove } from '../bean/tableCell.actionMove.jsx';
-import { ITableCellOptionsActionReorder } from '../bean/tableCell.actionReorder.jsx';
-import { ITableCellOptionsActionToggleMembershipPrimary } from '../bean/tableCell.actionToggleMembershipPrimary.jsx';
-import { ITableCellOptionsActionUpdateMembership } from '../bean/tableCell.actionUpdateMembership.jsx';
-import { ITableCellOptionsActionUpdateMembershipManager } from '../bean/tableCell.actionUpdateMembershipManager.jsx';
-import { ITableCellOptionsDepartmentName } from '../bean/tableCell.departmentName.jsx';
+export * from '../bean/tableCell.actionActivation.tsx';
+export * from '../bean/tableCell.actionDeleteMembership.tsx';
+export * from '../bean/tableCell.actionMove.tsx';
+export * from '../bean/tableCell.actionReorder.tsx';
+export * from '../bean/tableCell.actionToggleMembershipPrimary.tsx';
+export * from '../bean/tableCell.actionUpdateMembership.tsx';
+export * from '../bean/tableCell.actionUpdateMembershipManager.tsx';
+export * from '../bean/tableCell.departmentName.tsx';
+import { ITableCellOptionsActionActivation } from '../bean/tableCell.actionActivation.tsx';
+import { ITableCellOptionsActionDeleteMembership } from '../bean/tableCell.actionDeleteMembership.tsx';
+import { ITableCellOptionsActionMove } from '../bean/tableCell.actionMove.tsx';
+import { ITableCellOptionsActionReorder } from '../bean/tableCell.actionReorder.tsx';
+import { ITableCellOptionsActionToggleMembershipPrimary } from '../bean/tableCell.actionToggleMembershipPrimary.tsx';
+import { ITableCellOptionsActionUpdateMembership } from '../bean/tableCell.actionUpdateMembership.tsx';
+import { ITableCellOptionsActionUpdateMembershipManager } from '../bean/tableCell.actionUpdateMembershipManager.tsx';
+import { ITableCellOptionsDepartmentName } from '../bean/tableCell.departmentName.tsx';
 import 'zova-module-a-table';
 declare module 'zova-module-a-table' {
 
@@ -330,14 +330,14 @@ declare module 'zova-module-admin-department' {
 }
 /** tableCell: end */
 /** tableCell: begin */
-import type { TableCellActionActivation } from '../bean/tableCell.actionActivation.jsx';
-import type { TableCellActionDeleteMembership } from '../bean/tableCell.actionDeleteMembership.jsx';
-import type { TableCellActionMove } from '../bean/tableCell.actionMove.jsx';
-import type { TableCellActionReorder } from '../bean/tableCell.actionReorder.jsx';
-import type { TableCellActionToggleMembershipPrimary } from '../bean/tableCell.actionToggleMembershipPrimary.jsx';
-import type { TableCellActionUpdateMembership } from '../bean/tableCell.actionUpdateMembership.jsx';
-import type { TableCellActionUpdateMembershipManager } from '../bean/tableCell.actionUpdateMembershipManager.jsx';
-import type { TableCellDepartmentName } from '../bean/tableCell.departmentName.jsx';
+import type { TableCellActionActivation } from '../bean/tableCell.actionActivation.tsx';
+import type { TableCellActionDeleteMembership } from '../bean/tableCell.actionDeleteMembership.tsx';
+import type { TableCellActionMove } from '../bean/tableCell.actionMove.tsx';
+import type { TableCellActionReorder } from '../bean/tableCell.actionReorder.tsx';
+import type { TableCellActionToggleMembershipPrimary } from '../bean/tableCell.actionToggleMembershipPrimary.tsx';
+import type { TableCellActionUpdateMembership } from '../bean/tableCell.actionUpdateMembership.tsx';
+import type { TableCellActionUpdateMembershipManager } from '../bean/tableCell.actionUpdateMembershipManager.tsx';
+import type { TableCellDepartmentName } from '../bean/tableCell.departmentName.tsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -353,7 +353,7 @@ declare module 'zova' {
 }
 /** tableCell: end */
 /** locale: begin */
-import { locales } from './locales.js';
+import { locales } from './locales.ts';
 /** locale: end */
 /** scope: begin */
 import { BeanScopeBase, type BeanScopeUtil, TypeModuleLocales, TypeLocaleBase } from 'zova';

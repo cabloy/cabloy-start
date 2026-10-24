@@ -1,21 +1,21 @@
 // eslint-disable
 /** command: begin */
-export * from '../bean/command.expr.jsx';
-export * from '../bean/command.log.jsx';
-import { ICommandOptionsExpr } from '../bean/command.expr.jsx';
-import { ICommandOptionsLog } from '../bean/command.log.jsx';
+export * from '../bean/command.expr.tsx';
+export * from '../bean/command.log.tsx';
+import { ICommandOptionsExpr } from '../bean/command.expr.tsx';
+import { ICommandOptionsLog } from '../bean/command.log.tsx';
 import 'zova-module-a-command';
 declare module 'zova-module-a-command' {
-  
+
     export interface ICommandRecord {
       'start-commandssync:expr': ICommandOptionsExpr;
 'start-commandssync:log': ICommandOptionsLog;
     }
 
-  
+
 }
 declare module 'zova-module-start-commandssync' {
-  
+
         export interface CommandExpr {
           /** @internal */
           get scope(): ScopeModuleStartCommandssync;
@@ -36,12 +36,12 @@ declare module 'zova-module-start-commandssync' {
           get $beanFullName(): 'start-commandssync.command.log';
           get $onionName(): 'start-commandssync:log';
           get $onionOptions(): ICommandOptionsLog;
-        } 
+        }
 }
 /** command: end */
 /** command: begin */
-import { CommandExpr } from '../bean/command.expr.jsx';
-import { CommandLog } from '../bean/command.log.jsx';
+import type { CommandExpr } from '../bean/command.expr.tsx';
+import type { CommandLog } from '../bean/command.log.tsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -66,12 +66,12 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'start-commandssync': ScopeModuleStartCommandssync;
   }
-  
-  
 
-  
 
-  
+
+
+
+
 }
 
 /** scope: end */

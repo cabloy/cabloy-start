@@ -1,22 +1,22 @@
 // eslint-disable
 /** controller: begin */
-export * from '../component/formFieldTextarea/controller.jsx';
+export * from '../component/formFieldTextarea/controller.tsx';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-start-text' {
-  
+
         export interface ControllerFormFieldTextarea {
           /** @internal */
           get scope(): ScopeModuleStartText;
-        } 
+        }
 }
 /** controller: end */
 /** controller: begin */
-import { ControllerFormFieldTextarea } from '../component/formFieldTextarea/controller.jsx';
+import type { ControllerFormFieldTextarea } from '../component/formFieldTextarea/controller.tsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
@@ -26,8 +26,8 @@ declare module 'zova' {
 /** controller: end */
 
 /** components: begin */
-export * from './component/formFieldTextarea.js';
-import { ZFormFieldTextarea } from './component/formFieldTextarea.js';
+export * from './component/formFieldTextarea.ts';
+import { ZFormFieldTextarea } from './component/formFieldTextarea.ts';
 export const components = {
   'formFieldTextarea': ZFormFieldTextarea,
 };
@@ -42,22 +42,22 @@ export interface IZovaComponentRecord {
 }
 /** components: end */
 /** tableCell: begin */
-export * from '../bean/tableCell.text.jsx';
-export * from '../bean/tableCell.textarea.jsx';
-import { ITableCellOptionsText } from '../bean/tableCell.text.jsx';
-import { ITableCellOptionsTextarea } from '../bean/tableCell.textarea.jsx';
+export * from '../bean/tableCell.text.tsx';
+export * from '../bean/tableCell.textarea.tsx';
+import { ITableCellOptionsText } from '../bean/tableCell.text.tsx';
+import { ITableCellOptionsTextarea } from '../bean/tableCell.textarea.tsx';
 import 'zova-module-a-table';
 declare module 'zova-module-a-table' {
-  
+
     export interface ITableCellRecord {
       'start-text:text': ITableCellOptionsText;
 'start-text:textarea': ITableCellOptionsTextarea;
     }
 
-  
+
 }
 declare module 'zova-module-start-text' {
-  
+
         export interface TableCellText {
           /** @internal */
           get scope(): ScopeModuleStartText;
@@ -78,12 +78,12 @@ declare module 'zova-module-start-text' {
           get $beanFullName(): 'start-text.tableCell.textarea';
           get $onionName(): 'start-text:textarea';
           get $onionOptions(): ITableCellOptionsTextarea;
-        } 
+        }
 }
 /** tableCell: end */
 /** tableCell: begin */
-import { TableCellText } from '../bean/tableCell.text.jsx';
-import { TableCellTextarea } from '../bean/tableCell.textarea.jsx';
+import type { TableCellText } from '../bean/tableCell.text.tsx';
+import type { TableCellTextarea } from '../bean/tableCell.textarea.tsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -108,12 +108,12 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'start-text': ScopeModuleStartText;
   }
-  
-  
 
-  
 
-  
+
+
+
+
 }
 
 /** scope: end */

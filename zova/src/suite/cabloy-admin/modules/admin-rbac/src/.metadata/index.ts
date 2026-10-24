@@ -1,7 +1,7 @@
 // eslint-disable
 /** model: begin */
-export * from '../model/rbacPolicy.js';
-import { IModelOptionsRbacPolicy } from '../model/rbacPolicy.js';
+export * from '../model/rbacPolicy.ts';
+import { IModelOptionsRbacPolicy } from '../model/rbacPolicy.ts';
 import 'zova-module-a-model';
 declare module 'zova-module-a-model' {
 
@@ -26,7 +26,7 @@ declare module 'zova-module-admin-rbac' {
 }
 /** model: end */
 /** model: begin */
-import type { ModelRbacPolicy } from '../model/rbacPolicy.js';
+import type { ModelRbacPolicy } from '../model/rbacPolicy.ts';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -35,9 +35,9 @@ declare module 'zova' {
 }
 /** model: end */
 /** api: begin */
-export * from '../api/adminRbacRbacGrant.js';
-export * from '../api/adminRbacRbacGrantDepartment.js';
-export * from '../api/adminRbacRbacPolicy.js';
+export * from '../api/adminRbacRbacGrant.ts';
+export * from '../api/adminRbacRbacGrantDepartment.ts';
+export * from '../api/adminRbacRbacPolicy.ts';
 
 import 'zova';
 declare module 'zova' {
@@ -81,9 +81,9 @@ declare module 'zova-module-admin-rbac' {
 }
 /** api: end */
 /** api: begin */
-import type { ApiAdminRbacRbacGrant } from '../api/adminRbacRbacGrant.js';
-import type { ApiAdminRbacRbacGrantDepartment } from '../api/adminRbacRbacGrantDepartment.js';
-import type { ApiAdminRbacRbacPolicy } from '../api/adminRbacRbacPolicy.js';
+import type { ApiAdminRbacRbacGrant } from '../api/adminRbacRbacGrant.ts';
+import type { ApiAdminRbacRbacGrantDepartment } from '../api/adminRbacRbacGrantDepartment.ts';
+import type { ApiAdminRbacRbacPolicy } from '../api/adminRbacRbacPolicy.ts';
 export interface IModuleApi {
   'adminRbacRbacGrant': ApiAdminRbacRbacGrant;
 'adminRbacRbacGrantDepartment': ApiAdminRbacRbacGrantDepartment;
@@ -102,12 +102,12 @@ declare module 'zova' {
 }
 /** api: end */
 /** openapi: begin */
-export * from '../api/openapi/index.js';
+export * from '../api/openapi/index.ts';
 /** openapi: end */
 /** apiSchema: begin */
-export * from '../apiSchema/adminRbacRbacGrant.js';
-export * from '../apiSchema/adminRbacRbacGrantDepartment.js';
-export * from '../apiSchema/adminRbacRbacPolicy.js';
+export * from '../apiSchema/adminRbacRbacGrant.ts';
+export * from '../apiSchema/adminRbacRbacGrantDepartment.ts';
+export * from '../apiSchema/adminRbacRbacPolicy.ts';
 
 import 'zova';
 declare module 'zova' {
@@ -151,9 +151,9 @@ declare module 'zova-module-admin-rbac' {
 }
 /** apiSchema: end */
 /** apiSchema: begin */
-import type { ApiSchemaAdminRbacRbacGrant } from '../apiSchema/adminRbacRbacGrant.js';
-import type { ApiSchemaAdminRbacRbacGrantDepartment } from '../apiSchema/adminRbacRbacGrantDepartment.js';
-import type { ApiSchemaAdminRbacRbacPolicy } from '../apiSchema/adminRbacRbacPolicy.js';
+import type { ApiSchemaAdminRbacRbacGrant } from '../apiSchema/adminRbacRbacGrant.ts';
+import type { ApiSchemaAdminRbacRbacGrantDepartment } from '../apiSchema/adminRbacRbacGrantDepartment.ts';
+import type { ApiSchemaAdminRbacRbacPolicy } from '../apiSchema/adminRbacRbacPolicy.ts';
 export interface IModuleApiSchema {
   'adminRbacRbacGrant': ApiSchemaAdminRbacRbacGrant;
 'adminRbacRbacGrantDepartment': ApiSchemaAdminRbacRbacGrantDepartment;
@@ -172,7 +172,7 @@ declare module 'zova' {
 }
 /** apiSchema: end */
 /** controller: begin */
-export * from '../component/blockPolicyEditor/controller.jsx';
+export * from '../component/blockPolicyEditor/controller.tsx';
 
 import 'zova';
 declare module 'zova' {
@@ -188,7 +188,7 @@ declare module 'zova-module-admin-rbac' {
 }
 /** controller: end */
 /** controller: begin */
-import type { ControllerBlockPolicyEditor } from '../component/blockPolicyEditor/controller.jsx';
+import type { ControllerBlockPolicyEditor } from '../component/blockPolicyEditor/controller.tsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
@@ -198,8 +198,8 @@ declare module 'zova' {
 /** controller: end */
 
 /** components: begin */
-export * from './component/blockPolicyEditor.js';
-import { ZBlockPolicyEditor } from './component/blockPolicyEditor.js';
+export * from './component/blockPolicyEditor.ts';
+import { ZBlockPolicyEditor } from './component/blockPolicyEditor.ts';
 export const components = {
   'blockPolicyEditor': ZBlockPolicyEditor,
 };
@@ -214,7 +214,7 @@ export interface IZovaComponentRecord {
 }
 /** components: end */
 /** locale: begin */
-import { locales } from './locales.js';
+import { locales } from './locales.ts';
 /** locale: end */
 /** scope: begin */
 import { BeanScopeBase, type BeanScopeUtil, TypeModuleLocales, TypeLocaleBase } from 'zova';

@@ -1,7 +1,7 @@
 // eslint-disable
 /** model: begin */
-export * from '../model/role.js';
-import { IModelOptionsRole } from '../model/role.js';
+export * from '../model/role.ts';
+import { IModelOptionsRole } from '../model/role.ts';
 import 'zova-module-a-model';
 declare module 'zova-module-a-model' {
 
@@ -26,7 +26,7 @@ declare module 'zova-module-admin-role' {
 }
 /** model: end */
 /** model: begin */
-import type { ModelRole } from '../model/role.js';
+import type { ModelRole } from '../model/role.ts';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -35,7 +35,7 @@ declare module 'zova' {
 }
 /** model: end */
 /** api: begin */
-export * from '../api/adminRole.js';
+export * from '../api/adminRole.ts';
 
 import 'zova';
 declare module 'zova' {
@@ -57,7 +57,7 @@ declare module 'zova-module-admin-role' {
 }
 /** api: end */
 /** api: begin */
-import type { ApiAdminRole } from '../api/adminRole.js';
+import type { ApiAdminRole } from '../api/adminRole.ts';
 export interface IModuleApi {
   'adminRole': ApiAdminRole;
 }
@@ -72,10 +72,10 @@ declare module 'zova' {
 }
 /** api: end */
 /** openapi: begin */
-export * from '../api/openapi/index.js';
+export * from '../api/openapi/index.ts';
 /** openapi: end */
 /** apiSchema: begin */
-export * from '../apiSchema/adminRole.js';
+export * from '../apiSchema/adminRole.ts';
 
 import 'zova';
 declare module 'zova' {
@@ -97,7 +97,7 @@ declare module 'zova-module-admin-role' {
 }
 /** apiSchema: end */
 /** apiSchema: begin */
-import type { ApiSchemaAdminRole } from '../apiSchema/adminRole.js';
+import type { ApiSchemaAdminRole } from '../apiSchema/adminRole.ts';
 export interface IModuleApiSchema {
   'adminRole': ApiSchemaAdminRole;
 }
@@ -112,8 +112,8 @@ declare module 'zova' {
 }
 /** apiSchema: end */
 /** tableCell: begin */
-export * from '../bean/tableCell.actionOperationsRow.jsx';
-import { ITableCellOptionsActionOperationsRow } from '../bean/tableCell.actionOperationsRow.jsx';
+export * from '../bean/tableCell.actionOperationsRow.tsx';
+import { ITableCellOptionsActionOperationsRow } from '../bean/tableCell.actionOperationsRow.tsx';
 import 'zova-module-a-table';
 declare module 'zova-module-a-table' {
 
@@ -138,7 +138,7 @@ declare module 'zova-module-admin-role' {
 }
 /** tableCell: end */
 /** tableCell: begin */
-import type { TableCellActionOperationsRow } from '../bean/tableCell.actionOperationsRow.jsx';
+import type { TableCellActionOperationsRow } from '../bean/tableCell.actionOperationsRow.tsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -147,7 +147,7 @@ declare module 'zova' {
 }
 /** tableCell: end */
 /** locale: begin */
-import { locales } from './locales.js';
+import { locales } from './locales.ts';
 /** locale: end */
 /** scope: begin */
 import { BeanScopeBase, type BeanScopeUtil, TypeModuleLocales, TypeLocaleBase } from 'zova';

@@ -1,16 +1,16 @@
 // eslint-disable
 /** controller: begin */
-export * from '../component/actionBack/controller.jsx';
-export * from '../component/actionSubmit/controller.jsx';
-export * from '../component/blockFormLayout/controller.jsx';
+export * from '../component/actionBack/controller.tsx';
+export * from '../component/actionSubmit/controller.tsx';
+export * from '../component/blockFormLayout/controller.tsx';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-start-form' {
-  
+
         export interface ControllerActionBack {
           /** @internal */
           get scope(): ScopeModuleStartForm;
@@ -24,13 +24,13 @@ declare module 'zova-module-start-form' {
         export interface ControllerBlockFormLayout {
           /** @internal */
           get scope(): ScopeModuleStartForm;
-        } 
+        }
 }
 /** controller: end */
 /** controller: begin */
-import { ControllerActionBack } from '../component/actionBack/controller.jsx';
-import { ControllerActionSubmit } from '../component/actionSubmit/controller.jsx';
-import { ControllerBlockFormLayout } from '../component/blockFormLayout/controller.jsx';
+import type { ControllerActionBack } from '../component/actionBack/controller.tsx';
+import type { ControllerActionSubmit } from '../component/actionSubmit/controller.tsx';
+import type { ControllerBlockFormLayout } from '../component/blockFormLayout/controller.tsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
@@ -42,12 +42,12 @@ declare module 'zova' {
 /** controller: end */
 
 /** components: begin */
-export * from './component/actionBack.js';
-import { ZActionBack } from './component/actionBack.js';
-export * from './component/actionSubmit.js';
-import { ZActionSubmit } from './component/actionSubmit.js';
-export * from './component/blockFormLayout.js';
-import { ZBlockFormLayout } from './component/blockFormLayout.js';
+export * from './component/actionBack.ts';
+import { ZActionBack } from './component/actionBack.ts';
+export * from './component/actionSubmit.ts';
+import { ZActionSubmit } from './component/actionSubmit.ts';
+export * from './component/blockFormLayout.ts';
+import { ZBlockFormLayout } from './component/blockFormLayout.ts';
 export const components = {
   'actionBack': ZActionBack,
 'actionSubmit': ZActionSubmit,
@@ -68,25 +68,25 @@ export interface IZovaComponentRecord {
 }
 /** components: end */
 /** behavior: begin */
-export * from '../bean/behavior.formField.js';
-export * from '../bean/behavior.formFieldLayout.jsx';
-export * from '../bean/behavior.formFieldLayoutCol.jsx';
-import { IBehaviorOptionsFormField } from '../bean/behavior.formField.js';
-import { IBehaviorOptionsFormFieldLayout } from '../bean/behavior.formFieldLayout.jsx';
-import { IBehaviorOptionsFormFieldLayoutCol } from '../bean/behavior.formFieldLayoutCol.jsx';
+export * from '../bean/behavior.formField.ts';
+export * from '../bean/behavior.formFieldLayout.tsx';
+export * from '../bean/behavior.formFieldLayoutCol.tsx';
+import { IBehaviorOptionsFormField } from '../bean/behavior.formField.ts';
+import { IBehaviorOptionsFormFieldLayout } from '../bean/behavior.formFieldLayout.tsx';
+import { IBehaviorOptionsFormFieldLayoutCol } from '../bean/behavior.formFieldLayoutCol.tsx';
 import 'zova-module-a-behavior';
 declare module 'zova-module-a-behavior' {
-  
+
     export interface IBehaviorRecord {
       'start-form:formField': IBehaviorOptionsFormField;
 'start-form:formFieldLayout': IBehaviorOptionsFormFieldLayout;
 'start-form:formFieldLayoutCol': IBehaviorOptionsFormFieldLayoutCol;
     }
 
-  
+
 }
 declare module 'zova-module-start-form' {
-  
+
         export interface BehaviorFormField {
           /** @internal */
           get scope(): ScopeModuleStartForm;
@@ -118,13 +118,13 @@ declare module 'zova-module-start-form' {
           get $beanFullName(): 'start-form.behavior.formFieldLayoutCol';
           get $onionName(): 'start-form:formFieldLayoutCol';
           get $onionOptions(): IBehaviorOptionsFormFieldLayoutCol;
-        } 
+        }
 }
 /** behavior: end */
 /** behavior: begin */
-import { BehaviorFormField } from '../bean/behavior.formField.js';
-import { BehaviorFormFieldLayout } from '../bean/behavior.formFieldLayout.jsx';
-import { BehaviorFormFieldLayoutCol } from '../bean/behavior.formFieldLayoutCol.jsx';
+import type { BehaviorFormField } from '../bean/behavior.formField.ts';
+import type { BehaviorFormFieldLayout } from '../bean/behavior.formFieldLayout.tsx';
+import type { BehaviorFormFieldLayoutCol } from '../bean/behavior.formFieldLayoutCol.tsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
@@ -158,7 +158,7 @@ declare module 'vue/jsx-runtime' {
 }
 /** behaviors: end */
 /** locale: begin */
-import { locales } from './locales.js';
+import { locales } from './locales.ts';
 /** locale: end */
 /** scope: begin */
 import { BeanScopeBase, type BeanScopeUtil, TypeModuleLocales, TypeLocaleBase } from 'zova';
@@ -177,14 +177,14 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'start-form': ScopeModuleStartForm;
   }
-  
-  
+
+
 
   export interface IBeanScopeLocale {
     'start-form': (typeof locales)[TypeLocaleBase];
   }
 
-  
+
 }
 
 export function locale<K extends keyof (typeof locales)[TypeLocaleBase]>(key: K): `start-form::${K}` {

@@ -3,9 +3,9 @@ import type { TypeControllerInnerProps } from 'zova';
 import { defineComponent } from 'vue';
 import { prepareComponentOptions, useController } from 'zova';
 
-import type { ControllerBlockPageDepartmentsProps } from '../../component/blockPageDepartments/controller.jsx';
+import type { ControllerBlockPageDepartmentsProps } from '../../component/blockPageDepartments/controller.tsx';
 
-import { ControllerBlockPageDepartments } from '../../component/blockPageDepartments/controller.jsx';
+import { ControllerBlockPageDepartments } from '../../component/blockPageDepartments/controller.tsx';
 export type ZBlockPageDepartmentsProps = {
   controllerRef?: (ref: ControllerBlockPageDepartments) => void;
 } & ControllerBlockPageDepartmentsProps;

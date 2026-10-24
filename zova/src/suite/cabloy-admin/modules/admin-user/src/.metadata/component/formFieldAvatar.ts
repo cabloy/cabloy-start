@@ -3,9 +3,9 @@ import type { TypeControllerInnerProps } from 'zova';
 import { defineComponent } from 'vue';
 import { prepareComponentOptions, useController } from 'zova';
 
-import type { ControllerFormFieldAvatarProps } from '../../component/formFieldAvatar/controller.jsx';
+import type { ControllerFormFieldAvatarProps } from '../../component/formFieldAvatar/controller.tsx';
 
-import { ControllerFormFieldAvatar } from '../../component/formFieldAvatar/controller.jsx';
+import { ControllerFormFieldAvatar } from '../../component/formFieldAvatar/controller.tsx';
 export type ZFormFieldAvatarProps = {
   controllerRef?: (ref: ControllerFormFieldAvatar) => void;
 } & ControllerFormFieldAvatarProps;

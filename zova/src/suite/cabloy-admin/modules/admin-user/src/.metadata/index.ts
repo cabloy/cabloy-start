@@ -1,7 +1,7 @@
 // eslint-disable
 /** model: begin */
-export * from '../model/user.js';
-import { IModelOptionsUser } from '../model/user.js';
+export * from '../model/user.ts';
+import { IModelOptionsUser } from '../model/user.ts';
 import 'zova-module-a-model';
 declare module 'zova-module-a-model' {
 
@@ -26,7 +26,7 @@ declare module 'zova-module-admin-user' {
 }
 /** model: end */
 /** model: begin */
-import type { ModelUser } from '../model/user.js';
+import type { ModelUser } from '../model/user.ts';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -35,7 +35,7 @@ declare module 'zova' {
 }
 /** model: end */
 /** api: begin */
-export * from '../api/adminUser.js';
+export * from '../api/adminUser.ts';
 
 import 'zova';
 declare module 'zova' {
@@ -57,7 +57,7 @@ declare module 'zova-module-admin-user' {
 }
 /** api: end */
 /** api: begin */
-import type { ApiAdminUser } from '../api/adminUser.js';
+import type { ApiAdminUser } from '../api/adminUser.ts';
 export interface IModuleApi {
   'adminUser': ApiAdminUser;
 }
@@ -72,10 +72,10 @@ declare module 'zova' {
 }
 /** api: end */
 /** openapi: begin */
-export * from '../api/openapi/index.js';
+export * from '../api/openapi/index.ts';
 /** openapi: end */
 /** apiSchema: begin */
-export * from '../apiSchema/adminUser.js';
+export * from '../apiSchema/adminUser.ts';
 
 import 'zova';
 declare module 'zova' {
@@ -97,7 +97,7 @@ declare module 'zova-module-admin-user' {
 }
 /** apiSchema: end */
 /** apiSchema: begin */
-import type { ApiSchemaAdminUser } from '../apiSchema/adminUser.js';
+import type { ApiSchemaAdminUser } from '../apiSchema/adminUser.ts';
 export interface IModuleApiSchema {
   'adminUser': ApiSchemaAdminUser;
 }
@@ -112,10 +112,10 @@ declare module 'zova' {
 }
 /** apiSchema: end */
 /** controller: begin */
-export * from '../component/actionGrantSystemAdmin/controller.jsx';
-export * from '../component/actionReplaceUserRoles/controller.jsx';
-export * from '../component/actionRevokeSystemAdmin/controller.jsx';
-export * from '../component/formFieldAvatar/controller.jsx';
+export * from '../component/actionGrantSystemAdmin/controller.tsx';
+export * from '../component/actionReplaceUserRoles/controller.tsx';
+export * from '../component/actionRevokeSystemAdmin/controller.tsx';
+export * from '../component/formFieldAvatar/controller.tsx';
 
 import 'zova';
 declare module 'zova' {
@@ -146,10 +146,10 @@ declare module 'zova-module-admin-user' {
 }
 /** controller: end */
 /** controller: begin */
-import type { ControllerActionGrantSystemAdmin } from '../component/actionGrantSystemAdmin/controller.jsx';
-import type { ControllerActionReplaceUserRoles } from '../component/actionReplaceUserRoles/controller.jsx';
-import type { ControllerActionRevokeSystemAdmin } from '../component/actionRevokeSystemAdmin/controller.jsx';
-import type { ControllerFormFieldAvatar } from '../component/formFieldAvatar/controller.jsx';
+import type { ControllerActionGrantSystemAdmin } from '../component/actionGrantSystemAdmin/controller.tsx';
+import type { ControllerActionReplaceUserRoles } from '../component/actionReplaceUserRoles/controller.tsx';
+import type { ControllerActionRevokeSystemAdmin } from '../component/actionRevokeSystemAdmin/controller.tsx';
+import type { ControllerFormFieldAvatar } from '../component/formFieldAvatar/controller.tsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
@@ -162,14 +162,14 @@ declare module 'zova' {
 /** controller: end */
 
 /** components: begin */
-export * from './component/actionGrantSystemAdmin.js';
-import { ZActionGrantSystemAdmin } from './component/actionGrantSystemAdmin.js';
-export * from './component/actionReplaceUserRoles.js';
-import { ZActionReplaceUserRoles } from './component/actionReplaceUserRoles.js';
-export * from './component/actionRevokeSystemAdmin.js';
-import { ZActionRevokeSystemAdmin } from './component/actionRevokeSystemAdmin.js';
-export * from './component/formFieldAvatar.js';
-import { ZFormFieldAvatar } from './component/formFieldAvatar.js';
+export * from './component/actionGrantSystemAdmin.ts';
+import { ZActionGrantSystemAdmin } from './component/actionGrantSystemAdmin.ts';
+export * from './component/actionReplaceUserRoles.ts';
+import { ZActionReplaceUserRoles } from './component/actionReplaceUserRoles.ts';
+export * from './component/actionRevokeSystemAdmin.ts';
+import { ZActionRevokeSystemAdmin } from './component/actionRevokeSystemAdmin.ts';
+export * from './component/formFieldAvatar.ts';
+import { ZFormFieldAvatar } from './component/formFieldAvatar.ts';
 export const components = {
   'actionGrantSystemAdmin': ZActionGrantSystemAdmin,
 'actionReplaceUserRoles': ZActionReplaceUserRoles,
@@ -193,12 +193,12 @@ export interface IZovaComponentRecord {
 }
 /** components: end */
 /** tableCell: begin */
-export * from '../bean/tableCell.actionDisable.jsx';
-export * from '../bean/tableCell.roleTitle.jsx';
-export * from '../bean/tableCell.userName.jsx';
-import { ITableCellOptionsActionDisable } from '../bean/tableCell.actionDisable.jsx';
-import { ITableCellOptionsRoleTitle } from '../bean/tableCell.roleTitle.jsx';
-import { ITableCellOptionsUserName } from '../bean/tableCell.userName.jsx';
+export * from '../bean/tableCell.actionDisable.tsx';
+export * from '../bean/tableCell.roleTitle.tsx';
+export * from '../bean/tableCell.userName.tsx';
+import { ITableCellOptionsActionDisable } from '../bean/tableCell.actionDisable.tsx';
+import { ITableCellOptionsRoleTitle } from '../bean/tableCell.roleTitle.tsx';
+import { ITableCellOptionsUserName } from '../bean/tableCell.userName.tsx';
 import 'zova-module-a-table';
 declare module 'zova-module-a-table' {
 
@@ -247,9 +247,9 @@ declare module 'zova-module-admin-user' {
 }
 /** tableCell: end */
 /** tableCell: begin */
-import type { TableCellActionDisable } from '../bean/tableCell.actionDisable.jsx';
-import type { TableCellRoleTitle } from '../bean/tableCell.roleTitle.jsx';
-import type { TableCellUserName } from '../bean/tableCell.userName.jsx';
+import type { TableCellActionDisable } from '../bean/tableCell.actionDisable.tsx';
+import type { TableCellRoleTitle } from '../bean/tableCell.roleTitle.tsx';
+import type { TableCellUserName } from '../bean/tableCell.userName.tsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -260,7 +260,7 @@ declare module 'zova' {
 }
 /** tableCell: end */
 /** locale: begin */
-import { locales } from './locales.js';
+import { locales } from './locales.ts';
 /** locale: end */
 /** scope: begin */
 import { BeanScopeBase, type BeanScopeUtil, TypeModuleLocales, TypeLocaleBase } from 'zova';

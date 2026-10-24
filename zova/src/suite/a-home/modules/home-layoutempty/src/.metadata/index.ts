@@ -1,22 +1,22 @@
 // eslint-disable
 /** controller: begin */
-export * from '../component/layoutEmpty/controller.jsx';
+export * from '../component/layoutEmpty/controller.tsx';
 
 import 'zova';
 declare module 'zova' {
-  
-  
+
+
 }
 declare module 'zova-module-home-layoutempty' {
-  
+
         export interface ControllerLayoutEmpty {
           /** @internal */
           get scope(): ScopeModuleHomeLayoutempty;
-        } 
+        }
 }
 /** controller: end */
 /** controller: begin */
-import { ControllerLayoutEmpty } from '../component/layoutEmpty/controller.jsx';
+import type { ControllerLayoutEmpty } from '../component/layoutEmpty/controller.tsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
@@ -26,8 +26,8 @@ declare module 'zova' {
 /** controller: end */
 
 /** components: begin */
-export * from './component/layoutEmpty.js';
-import { ZLayoutEmpty } from './component/layoutEmpty.js';
+export * from './component/layoutEmpty.ts';
+import { ZLayoutEmpty } from './component/layoutEmpty.ts';
 export const components = {
   'layoutEmpty': ZLayoutEmpty,
 };
@@ -42,8 +42,8 @@ export interface IZovaComponentRecord {
 }
 /** components: end */
 /** config: begin */
-export * from '../config/config.js';
-import { config } from '../config/config.js';
+export * from '../config/config.ts';
+import { config } from '../config/config.ts';
 /** config: end */
 /** scope: begin */
 import { BeanScopeBase, type BeanScopeUtil, TypeModuleConfig } from 'zova';
@@ -62,14 +62,14 @@ declare module 'zova' {
   export interface IBeanScopeRecord {
     'home-layoutempty': ScopeModuleHomeLayoutempty;
   }
-  
+
   export interface IBeanScopeConfig {
     'home-layoutempty': ReturnType<typeof config>;
   }
 
-  
 
-  
+
+
 }
 
 /** scope: end */

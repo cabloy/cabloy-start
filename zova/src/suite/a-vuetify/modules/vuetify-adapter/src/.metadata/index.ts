@@ -1,9 +1,9 @@
 // eslint-disable
 /** sys: begin */
-export * from '../bean/sys.appBar.jsx';
-export * from '../bean/sys.icon.js';
-export * from '../bean/sys.main.jsx';
-export * from '../bean/sys.navigationDrawer.jsx';
+export * from '../bean/sys.appBar.tsx';
+export * from '../bean/sys.icon.ts';
+export * from '../bean/sys.main.tsx';
+export * from '../bean/sys.navigationDrawer.tsx';
 
 import 'zova';
 declare module 'zova' {
@@ -58,10 +58,10 @@ declare module 'zova-module-vuetify-adapter' {
 }
 /** sys: end */
 /** sys: begin */
-import { SysAppBar } from '../bean/sys.appBar.jsx';
-import { SysIcon } from '../bean/sys.icon.js';
-import { SysMain } from '../bean/sys.main.jsx';
-import { SysNavigationDrawer } from '../bean/sys.navigationDrawer.jsx';
+import type { SysAppBar } from '../bean/sys.appBar.tsx';
+import type { SysIcon } from '../bean/sys.icon.ts';
+import type { SysMain } from '../bean/sys.main.tsx';
+import type { SysNavigationDrawer } from '../bean/sys.navigationDrawer.tsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -73,7 +73,7 @@ declare module 'zova' {
 }
 /** sys: end */
 /** service: begin */
-export * from '../service/locale.js';
+export * from '../service/locale.ts';
 
 import 'zova-module-a-bean';
 declare module 'zova-module-a-bean' {
@@ -99,7 +99,7 @@ declare module 'zova-module-vuetify-adapter' {
 }
 /** service: end */
 /** service: begin */
-import { ServiceLocale } from '../service/locale.js';
+import type { ServiceLocale } from '../service/locale.ts';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordGeneral {
@@ -108,7 +108,7 @@ declare module 'zova' {
 }
 /** service: end */
 /** meta: begin */
-export * from '../bean/meta.themeHandler.js';
+export * from '../bean/meta.themeHandler.ts';
 
 import 'zova-module-a-meta';
 declare module 'zova-module-a-meta' {
@@ -134,7 +134,7 @@ declare module 'zova-module-vuetify-adapter' {
 }
 /** meta: end */
 /** meta: begin */
-import { MetaThemeHandler } from '../bean/meta.themeHandler.js';
+import type { MetaThemeHandler } from '../bean/meta.themeHandler.ts';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
@@ -143,14 +143,14 @@ declare module 'zova' {
 }
 /** meta: end */
 /** config: begin */
-export * from '../config/config.js';
-import { config } from '../config/config.js';
+export * from '../config/config.ts';
+import { config } from '../config/config.ts';
 /** config: end */
 /** monkey: begin */
-export * from '../monkey.js';
+export * from '../monkey.ts';
 /** monkey: end */
 /** monkeySys: begin */
-export * from '../monkeySys.js';
+export * from '../monkeySys.ts';
 /** monkeySys: end */
 /** scope: begin */
 import { BeanScopeBase, type BeanScopeUtil, TypeModuleConfig } from 'zova';

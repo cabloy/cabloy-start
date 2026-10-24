@@ -3,9 +3,9 @@ import type { TypeControllerInnerProps } from 'zova';
 import { defineComponent } from 'vue';
 import { prepareComponentOptions, useController } from 'zova';
 
-import type { ControllerBlockDepartmentMembershipsProps } from '../../component/blockDepartmentMemberships/controller.jsx';
+import type { ControllerBlockDepartmentMembershipsProps } from '../../component/blockDepartmentMemberships/controller.tsx';
 
-import { ControllerBlockDepartmentMemberships } from '../../component/blockDepartmentMemberships/controller.jsx';
+import { ControllerBlockDepartmentMemberships } from '../../component/blockDepartmentMemberships/controller.tsx';
 export type ZBlockDepartmentMembershipsProps = {
   controllerRef?: (ref: ControllerBlockDepartmentMemberships) => void;
 } & ControllerBlockDepartmentMembershipsProps;

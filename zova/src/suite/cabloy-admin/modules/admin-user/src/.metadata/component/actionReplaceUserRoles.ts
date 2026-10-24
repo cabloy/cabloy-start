@@ -3,9 +3,9 @@ import type { TypeControllerInnerProps } from 'zova';
 import { defineComponent } from 'vue';
 import { prepareComponentOptions, useController } from 'zova';
 
-import type { ControllerActionReplaceUserRolesProps } from '../../component/actionReplaceUserRoles/controller.jsx';
+import type { ControllerActionReplaceUserRolesProps } from '../../component/actionReplaceUserRoles/controller.tsx';
 
-import { ControllerActionReplaceUserRoles } from '../../component/actionReplaceUserRoles/controller.jsx';
+import { ControllerActionReplaceUserRoles } from '../../component/actionReplaceUserRoles/controller.tsx';
 export type ZActionReplaceUserRolesProps = {
   controllerRef?: (ref: ControllerActionReplaceUserRoles) => void;
 } & ControllerActionReplaceUserRolesProps;

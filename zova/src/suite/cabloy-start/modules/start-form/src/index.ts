@@ -1,3 +1,3 @@
-export * from './.metadata/index.js';
-export * from './.metadata/locales.js';
+export * from './.metadata/index.ts';
+export * from './.metadata/locales.ts';
 export * from './lib/compoundFormField.jsx';

@@ -3,9 +3,9 @@ import type { TypeControllerInnerProps } from 'zova';
 import { defineComponent } from 'vue';
 import { prepareComponentOptions, useController } from 'zova';
 
-import type { ControllerFormFieldLocalizedTextProps } from '../../component/formFieldLocalizedText/controller.jsx';
+import type { ControllerFormFieldLocalizedTextProps } from '../../component/formFieldLocalizedText/controller.tsx';
 
-import { ControllerFormFieldLocalizedText } from '../../component/formFieldLocalizedText/controller.jsx';
+import { ControllerFormFieldLocalizedText } from '../../component/formFieldLocalizedText/controller.tsx';
 export type ZFormFieldLocalizedTextProps = {
   controllerRef?: (ref: ControllerFormFieldLocalizedText) => void;
 } & ControllerFormFieldLocalizedTextProps;

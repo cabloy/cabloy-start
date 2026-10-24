@@ -3,9 +3,9 @@ import type { TypeControllerInnerProps } from 'zova';
 import { defineComponent } from 'vue';
 import { prepareComponentOptions, useController } from 'zova';
 
-import type { ControllerActionRevokeSystemAdminProps } from '../../component/actionRevokeSystemAdmin/controller.jsx';
+import type { ControllerActionRevokeSystemAdminProps } from '../../component/actionRevokeSystemAdmin/controller.tsx';
 
-import { ControllerActionRevokeSystemAdmin } from '../../component/actionRevokeSystemAdmin/controller.jsx';
+import { ControllerActionRevokeSystemAdmin } from '../../component/actionRevokeSystemAdmin/controller.tsx';
 export type ZActionRevokeSystemAdminProps = {
   controllerRef?: (ref: ControllerActionRevokeSystemAdmin) => void;
 } & ControllerActionRevokeSystemAdminProps;

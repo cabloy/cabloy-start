@@ -1,2 +1,2 @@
 export const __ThisModule__ = 'start-form';
-export { ScopeModuleStartForm as ScopeModule } from './index.js';
+export { ScopeModuleStartForm as ScopeModule } from './index.ts';
