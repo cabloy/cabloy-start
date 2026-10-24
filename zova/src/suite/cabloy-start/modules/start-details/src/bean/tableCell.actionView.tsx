@@ -11,8 +11,8 @@ import { TableCell } from 'zova-module-a-table';
 import { IModalDialogOptions } from 'zova-module-start-app';
 import { ZButton } from 'zova-module-start-button';
 
-import { ServiceDetail } from '../service/detail.jsx';
-import { IDialogFormOptions } from '../types/dialogForm.js';
+import { ServiceDetail } from '../service/detail.tsx';
+import { IDialogFormOptions } from '../types/dialogForm.ts';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceDetailsActionRowRecord {

@@ -18,7 +18,7 @@ import { BeanBase, isHttpUrl, useApp } from 'zova';
 import { Sys } from 'zova-module-a-bean';
 import { $getZovaIcon } from 'zova-module-a-icon';
 
-import { VSvgIconZova } from '../lib/svg.js';
+import { VSvgIconZova } from '../lib/svg.ts';
 
 @Sys()
 export class SysIcon extends BeanBase {

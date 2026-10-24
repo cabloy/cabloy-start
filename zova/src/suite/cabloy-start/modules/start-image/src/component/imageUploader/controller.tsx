@@ -8,10 +8,10 @@ import { BeanControllerBase, ClientOnly, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { $QueryEnsureLoaded } from 'zova-module-a-model';
 
-import type { IImageCropDialogLabels, IImageResizeOptions } from '../../lib/imageTransform.js';
+import type { IImageCropDialogLabels, IImageResizeOptions } from '../../lib/imageTransform.tsx';
 
-import { prepareImageFile } from '../../lib/imageTransform.js';
-import { ModelImage } from '../../model/image.js';
+import { prepareImageFile } from '../../lib/imageTransform.tsx';
+import { ModelImage } from '../../model/image.ts';
 
 export interface IImageUploaderResult {
   id: TableIdentity;

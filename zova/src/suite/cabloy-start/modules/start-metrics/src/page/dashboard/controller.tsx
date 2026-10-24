@@ -4,9 +4,9 @@ import { Controller } from 'zova-module-a-bean';
 import { $QueryEnsureLoaded } from 'zova-module-a-model';
 import { ZButton } from 'zova-module-start-button';
 
-import type { ApiApiStartMetricssnapshotResponseBody } from '../../api/startMetrics.js';
+import type { ApiApiStartMetricssnapshotResponseBody } from '../../api/startMetrics.ts';
 
-import { ModelMetrics } from '../../model/metrics.js';
+import { ModelMetrics } from '../../model/metrics.ts';
 
 type MetricsRuntime = ApiApiStartMetricssnapshotResponseBody['runtime'];
 type RuntimeMetric = { label: string; value: string };

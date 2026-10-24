@@ -11,16 +11,16 @@ import { ZFormField } from 'zova-module-a-form';
 import { ZButton } from 'zova-module-start-button';
 import { createCompoundFormFieldState, renderCompoundFormField } from 'zova-module-start-form';
 
-import type { IImageResizeOptions } from '../../lib/imageTransform.js';
-import type { IImageUploaderResult } from '../imageUploader/controller.jsx';
+import type { IImageResizeOptions } from '../../lib/imageTransform.tsx';
+import type { IImageUploaderResult } from '../imageUploader/controller.tsx';
 
-import { ZImageUploader } from '../../.metadata/component/imageUploader.js';
+import { ZImageUploader } from '../../.metadata/component/imageUploader.ts';
 import {
   buildImagePreviewTitle,
   inferImageRelationName,
   openImagePreviewDialog,
   resolveImagePreviewUrl,
-} from '../../lib/index.js';
+} from '../../lib/index.ts';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceFormFieldRecord {

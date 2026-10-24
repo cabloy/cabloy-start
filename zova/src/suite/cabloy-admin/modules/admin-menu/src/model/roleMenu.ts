@@ -3,7 +3,7 @@ import type { IDecoratorModelOptions } from 'zova-module-a-model';
 
 import { BeanModelBase, Model } from 'zova-module-a-model';
 
-import type { ApiApiAdminMenuRoleMenuroleConfigurationResponseBody } from '../api/adminMenuRoleMenu.js';
+import type { ApiApiAdminMenuRoleMenuroleConfigurationResponseBody } from '../api/adminMenuRoleMenu.ts';
 
 export interface IModelOptionsRoleMenu extends IDecoratorModelOptions {}
 

@@ -9,7 +9,7 @@ import { Controller } from 'zova-module-a-bean';
 import { ZFormField } from 'zova-module-a-form';
 import { $iconName } from 'zova-module-a-icon';
 
-import { normalizeLocalizedTextMap, resolveLocalizedText } from '../../lib/localizedText.js';
+import { normalizeLocalizedTextMap, resolveLocalizedText } from '../../lib/localizedText.ts';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceFormFieldRecord {

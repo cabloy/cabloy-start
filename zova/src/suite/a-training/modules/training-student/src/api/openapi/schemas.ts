@@ -1,5 +1,5 @@
 // eslint-disable
-import type { components } from './types.js';
+import type { components } from './types.ts';
 export type ApiSchemaACaptchaDtoCaptchaData = components['schemas']['a-captcha.dto.captchaData'];
 export type ApiSchemaACaptchaDtoCaptchaDataPartial = Partial<ApiSchemaACaptchaDtoCaptchaData>;
 export type ApiSchemaAMenuDtoMenus = components['schemas']['a-menu.dto.menus'];

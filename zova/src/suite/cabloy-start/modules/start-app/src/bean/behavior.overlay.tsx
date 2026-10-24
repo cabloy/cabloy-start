@@ -5,7 +5,7 @@ import { VDefaultsProvider } from 'vuetify/components';
 import { useTeleport } from 'vuetify/lib/composables/teleport.js';
 import { BeanBehaviorBase, Behavior } from 'zova-module-a-behavior';
 
-import { cabloyAdminDefaults } from '../lib/vuetifyDefaults.js';
+import { cabloyAdminDefaults } from '../lib/vuetifyDefaults.ts';
 
 export interface IBehaviorPropsInputOverlay {}
 

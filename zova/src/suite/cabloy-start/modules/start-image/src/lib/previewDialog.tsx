@@ -3,9 +3,9 @@ import type { VNode } from 'vue';
 import { reactive } from 'vue';
 import { VBtn } from 'vuetify/components';
 
-import type { IImagePreviewItem } from './preview.js';
+import type { IImagePreviewItem } from './preview.ts';
 
-import { resolveImagePreviewUrl } from './preview.js';
+import { resolveImagePreviewUrl } from './preview.ts';
 
 interface IImagePreviewDialogState {
   activeIndex: number;

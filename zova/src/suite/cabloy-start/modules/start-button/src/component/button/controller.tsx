@@ -4,7 +4,7 @@ import { VBtn } from 'vuetify/components';
 import { BeanControllerBase } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 
-import type { IBehaviorOptionsPerform, TypeBehaviorOnError } from '../../bean/behavior.perform.js';
+import type { IBehaviorOptionsPerform, TypeBehaviorOnError } from '../../bean/behavior.perform.ts';
 
 export interface ControllerButtonProps extends Omit<VBtn['$props'], 'onError'> {
   onPerform?: (e: MouseEvent) => Promise<void> | void;

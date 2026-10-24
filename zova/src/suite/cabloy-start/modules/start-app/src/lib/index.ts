@@ -1,3 +1,3 @@
-export * from './appModalItem.js';
-export * from './routedDialogHistory.js';
-export * from './vuetifyDefaults.js';
+export * from './appModalItem.ts';
+export * from './routedDialogHistory.ts';
+export * from './vuetifyDefaults.ts';

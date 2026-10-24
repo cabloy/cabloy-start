@@ -2,10 +2,10 @@ import type { IMonkeySysInitialize } from 'zova';
 
 import { BeanSimple } from 'zova';
 
-import { SysAppBar } from './bean/sys.appBar.jsx';
-import { SysIcon } from './bean/sys.icon.js';
-import { SysMain } from './bean/sys.main.js';
-import { SysNavigationDrawer } from './bean/sys.navigationDrawer.jsx';
+import { SysAppBar } from './bean/sys.appBar.tsx';
+import { SysIcon } from './bean/sys.icon.ts';
+import { SysMain } from './bean/sys.main.tsx';
+import { SysNavigationDrawer } from './bean/sys.navigationDrawer.tsx';
 
 export class MonkeySys extends BeanSimple implements IMonkeySysInitialize {
   async sysInitialize() {

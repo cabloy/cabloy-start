@@ -12,7 +12,7 @@ import {
   ApiApiAdminUserreplaceUserRolesPath,
   ApiApiAdminUsergrantSystemAdminPath,
   ApiApiAdminUserrevokeSystemAdminPath,
-} from '../api/adminUser.js';
+} from '../api/adminUser.ts';
 
 @ApiSchema()
 export class ApiSchemaAdminUser extends BeanBase {

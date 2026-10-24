@@ -2,7 +2,7 @@ import type { IDecoratorModelOptions } from 'zova-module-a-model';
 
 import { BeanModelBase, Model } from 'zova-module-a-model';
 
-import type { ApiApiStartMetricssnapshotResponseBody } from '../api/startMetrics.js';
+import type { ApiApiStartMetricssnapshotResponseBody } from '../api/startMetrics.ts';
 
 export interface IModelOptionsMetrics extends IDecoratorModelOptions {}
 

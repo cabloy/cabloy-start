@@ -9,7 +9,7 @@ import { VSelect } from 'vuetify/components';
 import { BeanBase } from 'zova';
 import { TableCell } from 'zova-module-a-table';
 
-import { isSelectValueEqual } from '../lib/utils.js';
+import { isSelectValueEqual } from '../lib/utils.ts';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceTableCellRecord {

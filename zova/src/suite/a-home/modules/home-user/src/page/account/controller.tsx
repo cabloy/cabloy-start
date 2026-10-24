@@ -23,9 +23,9 @@ import { $QueryEnsureLoaded } from 'zova-module-a-model';
 import { ZPage } from 'zova-module-home-base';
 import { resolveImagePreviewUrl, ZImageUploader } from 'zova-module-start-image';
 
-import type { AccountProfileUpdateCommand } from '../../model/account.js';
+import type { AccountProfileUpdateCommand } from '../../model/account.ts';
 
-import { ModelAccount } from '../../model/account.js';
+import { ModelAccount } from '../../model/account.ts';
 
 const homeUserAvatarScene = 'home-user:homeUserAvatar';
 

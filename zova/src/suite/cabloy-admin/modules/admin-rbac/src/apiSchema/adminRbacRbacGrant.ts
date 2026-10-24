@@ -9,7 +9,7 @@ import {
   ApiApiAdminRbacRbacGrantviewPath,
   ApiApiAdminRbacRbacGrantdeletePath,
   ApiApiAdminRbacRbacGrantupdatePath,
-} from '../api/adminRbacRbacGrant.js';
+} from '../api/adminRbacRbacGrant.ts';
 
 @ApiSchema()
 export class ApiSchemaAdminRbacRbacGrant extends BeanBase {

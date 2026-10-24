@@ -21,8 +21,8 @@ import { BeanControllerBase } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 
 import type { IRoleMenuEnabledBatchData, ModelRoleMenu } from '../../model/roleMenu.ts';
-import type { IRoleMenuEditorOperation, RoleMenuEditorLayers } from './state.js';
-import type { IRoleMenuTreeGroup, IRoleMenuTreeMenu, IRoleMenuTreeNode } from './tree.js';
+import type { IRoleMenuEditorOperation, RoleMenuEditorLayers } from './state.ts';
+import type { IRoleMenuTreeGroup, IRoleMenuTreeMenu, IRoleMenuTreeNode } from './tree.ts';
 
 import {
   applyRoleMenuEditorOperation,
@@ -31,8 +31,8 @@ import {
   normalizeRoleMenuEditorChanges,
   reconcileRoleMenuEditorLayers,
   rejectRoleMenuEditorOperation,
-} from './state.js';
-import { createRoleMenuTree, getRoleMenuTreeGroupState } from './tree.js';
+} from './state.ts';
+import { createRoleMenuTree, getRoleMenuTreeGroupState } from './tree.ts';
 
 export interface ControllerBlockRoleMenuEditorProps extends IResourceBlockOptionsBase {
   roleId: TableIdentity;

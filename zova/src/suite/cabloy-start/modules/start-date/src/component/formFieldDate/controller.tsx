@@ -8,8 +8,8 @@ import { BeanControllerBase } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { ZFormField } from 'zova-module-a-form';
 
-import { dateFormatUtil } from '../../lib/utils.js';
-import { TypeDateFormatPreset } from '../../types/date.js';
+import { dateFormatUtil } from '../../lib/utils.ts';
+import { TypeDateFormatPreset } from '../../types/date.ts';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceFormFieldRecord {

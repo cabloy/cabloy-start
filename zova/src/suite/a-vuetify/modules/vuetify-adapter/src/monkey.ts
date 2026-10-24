@@ -9,7 +9,7 @@ import { LocaleSymbol } from 'vuetify/lib/composables/locale.js';
 import { ThemeSymbol } from 'vuetify/lib/composables/theme.js';
 import { BeanSimple } from 'zova';
 
-import { ServiceLocale } from './service/locale.js';
+import { ServiceLocale } from './service/locale.ts';
 
 export class Monkey extends BeanSimple implements IMonkeyAppInitialize, IMonkeyBeanInit {
   async appInitialize() {

@@ -2,13 +2,13 @@ import { VApp, VMain } from 'vuetify/components';
 import { BeanRenderBase, Use } from 'zova';
 import { Render } from 'zova-module-a-bean';
 
-import { RenderContent } from './render.content.jsx';
-import { RenderFooter } from './render.footer.jsx';
-import { RenderHeader } from './render.header.jsx';
-import { RenderLocale } from './render.locale.jsx';
-import { RenderTabs } from './render.tabs.jsx';
-import { RenderTheme } from './render.theme.jsx';
-import { RenderUser } from './render.user.jsx';
+import { RenderContent } from './render.content.tsx';
+import { RenderFooter } from './render.footer.tsx';
+import { RenderHeader } from './render.header.tsx';
+import { RenderLocale } from './render.locale.tsx';
+import { RenderTabs } from './render.tabs.tsx';
+import { RenderTheme } from './render.theme.tsx';
+import { RenderUser } from './render.user.tsx';
 
 @Render()
 export class RenderLayoutWeb extends BeanRenderBase {

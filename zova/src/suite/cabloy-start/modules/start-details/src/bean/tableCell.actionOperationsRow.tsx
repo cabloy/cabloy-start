@@ -15,7 +15,7 @@ import { VBtnGroup } from 'vuetify/components';
 import { BeanBase } from 'zova';
 import { TableCell } from 'zova-module-a-table';
 
-import { filterDetailsRowActions } from '../lib/detailsPermissions.js';
+import { filterDetailsRowActions } from '../lib/detailsPermissions.ts';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceDetailsActionRowRecord {

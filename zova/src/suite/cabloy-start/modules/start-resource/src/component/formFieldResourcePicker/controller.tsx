@@ -24,13 +24,13 @@ import { ModelResource } from 'zova-module-rest-resource';
 import { createCompoundFormFieldState, renderCompoundFormField } from 'zova-module-start-form';
 import { resolvePickerSelectionMax } from 'zova-module-start-page';
 
-import type { TypeResourcePickerSelectionMode } from '../../lib/resourcePicker.js';
+import type { TypeResourcePickerSelectionMode } from '../../lib/resourcePicker.ts';
 
 import {
   normalizeResourcePickerIds,
   resolveResourcePickerValue,
-} from '../../lib/resourcePicker.js';
-import { createResourcePickerPageHost } from '../../lib/resourcePickerPageHost.js';
+} from '../../lib/resourcePicker.ts';
+import { createResourcePickerPageHost } from '../../lib/resourcePickerPageHost.ts';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceFormFieldRecord {

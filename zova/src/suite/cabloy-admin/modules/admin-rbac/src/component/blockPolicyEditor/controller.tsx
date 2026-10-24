@@ -31,7 +31,7 @@ import type {
   TypeRbacPolicyDataScope,
 } from '../../model/rbacPolicy.ts';
 
-import { groupRbacPolicyActions } from '../../model/rbacPolicy.js';
+import { groupRbacPolicyActions } from '../../model/rbacPolicy.ts';
 
 export interface ControllerBlockPolicyEditorProps extends IResourceBlockOptionsBase {
   roleId: TableIdentity;

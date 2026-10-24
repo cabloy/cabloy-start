@@ -13,7 +13,7 @@ import {
   ApiApiAdminRoleissueSystemAdminFreshProofPath,
   ApiApiAdminRoleupdateSystemAdminAccountStatusPath,
   ApiApiAdminRoleupdateSystemAdminActivationPath,
-} from '../api/adminRole.js';
+} from '../api/adminRole.ts';
 
 @ApiSchema()
 export class ApiSchemaAdminRole extends BeanBase {

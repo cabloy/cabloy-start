@@ -13,7 +13,7 @@ import type {
   ApiSchemaAdminDepartmentDtoDepartmentMembershipSelectRes,
   ApiSchemaAdminDepartmentDtoDepartmentMembershipUpdate,
   ApiSchemaAdminDepartmentDtoDepartmentTree,
-} from '../api/openapi/schemas.js';
+} from '../api/openapi/schemas.ts';
 
 export interface IModelOptionsDepartment extends IDecoratorModelOptions {}
 

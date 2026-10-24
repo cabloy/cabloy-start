@@ -19,7 +19,7 @@ import {
   ApiApiAdminDepartmentmovePath,
   ApiApiAdminDepartmentreorderPath,
   ApiApiAdminDepartmentupdateActivationPath,
-} from '../api/adminDepartment.js';
+} from '../api/adminDepartment.ts';
 
 @ApiSchema()
 export class ApiSchemaAdminDepartment extends BeanBase {

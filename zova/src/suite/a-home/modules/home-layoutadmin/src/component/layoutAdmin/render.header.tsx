@@ -2,7 +2,7 @@ import { VAppBar, VAppBarNavIcon, VSpacer, VToolbarTitle } from 'vuetify/compone
 import { BeanRenderBase, Use } from 'zova';
 import { Render } from 'zova-module-a-bean';
 
-import type { RenderLayoutAdmin } from './render.jsx';
+import type { RenderLayoutAdmin } from './render.tsx';
 
 @Render()
 export class RenderHeader extends BeanRenderBase {

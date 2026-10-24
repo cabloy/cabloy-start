@@ -3,7 +3,7 @@ import type { IResourceRenderBlockOptionsBlock } from 'zova-module-a-openapi';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { createDepartmentMembershipDetailsHostOptions } from '../../src/lib/departmentMembershipDetailsHost.js';
+import { createDepartmentMembershipDetailsHostOptions } from '../../src/lib/departmentMembershipDetailsHost.ts';
 
 test('Department membership details host preserves owner callbacks and overrides schema callbacks', () => {
   const formMeta = { formScene: 'view' } as any;

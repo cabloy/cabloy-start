@@ -10,7 +10,7 @@ import { $iconName } from 'zova-module-a-icon';
 import { ZButton } from 'zova-module-start-button';
 import { ZImageUploader } from 'zova-module-start-image';
 
-import { codeBlockLanguages, getCodeBlockLanguage } from '../../lib/codeBlockLanguages.js';
+import { codeBlockLanguages, getCodeBlockLanguage } from '../../lib/codeBlockLanguages.ts';
 
 @Render()
 export class RenderFormFieldMarkdown extends BeanRenderBase {

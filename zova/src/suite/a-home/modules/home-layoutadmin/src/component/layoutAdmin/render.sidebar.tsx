@@ -2,7 +2,7 @@ import { VNavigationDrawer } from 'vuetify/components';
 import { BeanRenderBase, Use } from 'zova';
 import { Render } from 'zova-module-a-bean';
 
-import type { RenderLayoutAdmin } from './render.jsx';
+import type { RenderLayoutAdmin } from './render.tsx';
 
 @Render()
 export class RenderSidebar extends BeanRenderBase {

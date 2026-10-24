@@ -7,8 +7,8 @@ import { $QueryEnsureLoaded } from 'zova-module-a-model';
 import { IServiceSsrLayoutOptions, ServiceSsrLayout } from 'zova-module-home-base';
 import { ILayoutConfig } from 'zova-module-vuetify-adapter';
 
-import { ModelLayout } from '../../model/layout.js';
-import { ModelMenu } from '../../model/menu.js';
+import { ModelLayout } from '../../model/layout.ts';
+import { ModelMenu } from '../../model/menu.ts';
 
 export interface ControllerLayoutAdminProps {}
 

@@ -14,7 +14,7 @@ import { BeanControllerBase, objectAssignReactive, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { ControllerForm, TypeFormOnSubmitData, ZForm } from 'zova-module-a-form';
 
-import { IPageFilterScope } from '../../types/page.js';
+import { IPageFilterScope } from '../../types/page.ts';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceBlockRecord {

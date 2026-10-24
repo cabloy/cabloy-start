@@ -4,7 +4,7 @@ import test from 'node:test';
 import type {
   IRoleMenuEditorOperation,
   RoleMenuEditorLayers,
-} from '../../src/component/blockRoleMenuEditor/state.js';
+} from '../../src/component/blockRoleMenuEditor/state.ts';
 
 import {
   applyRoleMenuEditorOperation,
@@ -12,7 +12,7 @@ import {
   getRoleMenuEditorEnabled,
   reconcileRoleMenuEditorLayers,
   rejectRoleMenuEditorOperation,
-} from '../../src/component/blockRoleMenuEditor/state.js';
+} from '../../src/component/blockRoleMenuEditor/state.ts';
 
 const menu = { ssrSiteName: 'test:admin', ssrMenuName: 'test:menu' };
 

@@ -8,8 +8,8 @@ import type { VDialog } from 'vuetify/components';
 import type { IIconRecord } from 'zova-module-a-icon';
 import type { BeanRouter } from 'zova-module-a-router';
 
-import type { AppModalItem } from '../lib/appModalItem.js';
-import type { ServiceAppModal } from '../service/appModal.js';
+import type { AppModalItem } from '../lib/appModalItem.ts';
+import type { ServiceAppModal } from '../service/appModal.ts';
 
 export type ModalType = 'alert' | 'confirm' | 'prompt' | 'dialog' | 'routedDialog';
 export type ModalCloseReason = 'api' | 'backdrop' | 'escape' | 'button' | 'error' | 'unmount';

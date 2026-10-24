@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import ts from 'typescript';
 
-import { dateFormatUtil } from '../../src/lib/utils.js';
+import { dateFormatUtil } from '../../src/lib/utils.ts';
 
 const source = readFileSync(
   new URL('../../src/component/formFieldDate/controller.tsx', import.meta.url),

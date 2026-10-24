@@ -1,9 +1,9 @@
 import type { IModuleRoute } from 'zova-module-a-router';
 
-import { ZPageAppModal } from './.metadata/page/appModal.js';
-import { ZPageRoutedDialog } from './.metadata/page/routedDialog.js';
-import { ZPageRoutedDialogDetail } from './.metadata/page/routedDialogDetail.js';
-import { ZPageRoutedDialogEntry } from './.metadata/page/routedDialogEntry.js';
+import { ZPageAppModal } from './.metadata/page/appModal.ts';
+import { ZPageRoutedDialog } from './.metadata/page/routedDialog.ts';
+import { ZPageRoutedDialogDetail } from './.metadata/page/routedDialogDetail.ts';
+import { ZPageRoutedDialogEntry } from './.metadata/page/routedDialogEntry.ts';
 
 export const routes: IModuleRoute[] = [
   {

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { dateFormatUtil } from '../../src/lib/utils.js';
+import { dateFormatUtil } from '../../src/lib/utils.ts';
 
 const iso = '2026-03-14T09:26:53.000Z';
 

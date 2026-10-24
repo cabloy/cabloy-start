@@ -6,7 +6,7 @@ import { ApiSchema } from 'zova-module-a-api';
 import {
   ApiApiAdminRbacRbacPolicycatalogPath,
   ApiApiAdminRbacRbacPolicyroleConfigurationPath,
-} from '../api/adminRbacRbacPolicy.js';
+} from '../api/adminRbacRbacPolicy.ts';
 
 @ApiSchema()
 export class ApiSchemaAdminRbacRbacPolicy extends BeanBase {

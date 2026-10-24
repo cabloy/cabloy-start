@@ -17,7 +17,7 @@ import { createDetailsPermissionChecker } from 'zova-module-start-details';
 
 import type { ModelDepartment } from '../../model/department.ts';
 
-import { createDepartmentMembershipDetailsHostOptions } from '../../lib/departmentMembershipDetailsHost.js';
+import { createDepartmentMembershipDetailsHostOptions } from '../../lib/departmentMembershipDetailsHost.ts';
 
 export interface ControllerBlockDepartmentMembershipsProps extends IResourceBlockOptionsBase {}
 

@@ -6,7 +6,7 @@ import { VBtn } from 'vuetify/components';
 import { ClientOnly } from 'zova';
 import { ZButton } from 'zova-module-start-button';
 
-import type { IImageTransformOptions } from '../types/image.js';
+import type { IImageTransformOptions } from '../types/image.ts';
 
 import 'vue-advanced-cropper/dist/style.css';
 

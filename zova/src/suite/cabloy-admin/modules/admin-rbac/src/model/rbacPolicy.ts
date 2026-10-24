@@ -3,12 +3,12 @@ import type { IDecoratorModelOptions } from 'zova-module-a-model';
 
 import { BeanModelBase, Model } from 'zova-module-a-model';
 
-import type { ApiApiAdminRbacRbacGrantselectResponseBody } from '../api/adminRbacRbacGrant.js';
-import type { ApiApiAdminRbacRbacGrantDepartmentselectResponseBody } from '../api/adminRbacRbacGrantDepartment.js';
+import type { ApiApiAdminRbacRbacGrantselectResponseBody } from '../api/adminRbacRbacGrant.ts';
+import type { ApiApiAdminRbacRbacGrantDepartmentselectResponseBody } from '../api/adminRbacRbacGrantDepartment.ts';
 import type {
   ApiApiAdminRbacRbacPolicycatalogResponseBody,
   ApiApiAdminRbacRbacPolicyroleConfigurationResponseBody,
-} from '../api/adminRbacRbacPolicy.js';
+} from '../api/adminRbacRbacPolicy.ts';
 
 export interface IModelOptionsRbacPolicy extends IDecoratorModelOptions {}
 

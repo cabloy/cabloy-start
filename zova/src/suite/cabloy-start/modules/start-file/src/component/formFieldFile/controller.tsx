@@ -15,15 +15,15 @@ import { $QueryEnsureLoaded } from 'zova-module-a-model';
 import { ZButton } from 'zova-module-start-button';
 import { createCompoundFormFieldState, renderCompoundFormField } from 'zova-module-start-form';
 
-import type { IFilePreviewItem } from '../../types/file.js';
+import type { IFilePreviewItem } from '../../types/file.ts';
 
 import {
   formatFileDate,
   formatFileSize,
   inferFileRelationName,
   resolveFileDownloadUrl,
-} from '../../lib/index.js';
-import { ModelFile } from '../../model/file.js';
+} from '../../lib/index.ts';
+import { ModelFile } from '../../model/file.ts';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceFormFieldRecord {

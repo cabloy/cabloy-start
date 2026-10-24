@@ -2,7 +2,7 @@ import type {
   TypeRoleMenuConfigurationGroup,
   TypeRoleMenuConfigurationMenu,
   TypeRoleMenuConfigurationSite,
-} from '../../model/roleMenu.js';
+} from '../../model/roleMenu.ts';
 
 export interface IRoleMenuTreeMenu extends TypeRoleMenuConfigurationMenu {
   id: string;

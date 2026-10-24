@@ -12,7 +12,7 @@ import {
   resolveTableActionBulkDynamicProps,
   selectionKey,
   selectionRowIds,
-} from '../../src/lib/selection.js';
+} from '../../src/lib/selection.ts';
 
 test('Bulk actions group by placement without changing declaration order', () => {
   const items = [

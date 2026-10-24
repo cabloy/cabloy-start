@@ -6,8 +6,8 @@ import { ModelTabs, ModelTabsOptions, RouteTabInitial } from 'zova-module-a-rout
 import { IServiceSsrLayoutOptions, ServiceSsrLayout } from 'zova-module-home-base';
 import { ILayoutConfig } from 'zova-module-vuetify-adapter';
 
-import { ModelLayout } from '../../model/layout.js';
-import { ModelMenu } from '../../model/menu.js';
+import { ModelLayout } from '../../model/layout.ts';
+import { ModelMenu } from '../../model/menu.ts';
 
 export interface ControllerLayoutWebProps {}
 

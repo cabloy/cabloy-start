@@ -13,8 +13,8 @@ import { Controller } from 'zova-module-a-bean';
 import { formMetaFromFormScene, ZForm } from 'zova-module-a-form';
 import { ZButton } from 'zova-module-start-button';
 
-import type { ApiSchemaAdminRoleDtoUserRoleReplace } from '../../api/openapi/schemas.js';
-import type { ModelUser } from '../../model/user.js';
+import type { ApiSchemaAdminRoleDtoUserRoleReplace } from '../../api/openapi/schemas.ts';
+import type { ModelUser } from '../../model/user.ts';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceDetailsActionBulkRecord {

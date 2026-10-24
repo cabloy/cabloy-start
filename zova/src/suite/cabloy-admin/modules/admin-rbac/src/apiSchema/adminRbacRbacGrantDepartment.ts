@@ -8,7 +8,7 @@ import {
   ApiApiAdminRbacRbacGrantDepartmentcreatePath,
   ApiApiAdminRbacRbacGrantDepartmentviewPath,
   ApiApiAdminRbacRbacGrantDepartmentdeletePath,
-} from '../api/adminRbacRbacGrantDepartment.js';
+} from '../api/adminRbacRbacGrantDepartment.ts';
 
 @ApiSchema()
 export class ApiSchemaAdminRbacRbacGrantDepartment extends BeanBase {

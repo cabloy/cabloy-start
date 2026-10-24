@@ -13,7 +13,7 @@ import { Controller } from 'zova-module-a-bean';
 import { formMetaFromFormScene, ZForm, ZFormFieldPreset } from 'zova-module-a-form';
 import { ZButton } from 'zova-module-start-button';
 
-import type { ModelUser } from '../../model/user.js';
+import type { ModelUser } from '../../model/user.ts';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceDetailsActionBulkRecord {

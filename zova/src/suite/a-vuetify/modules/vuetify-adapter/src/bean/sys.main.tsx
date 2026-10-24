@@ -7,7 +7,7 @@ import { useRender } from 'vuetify/lib/util/useRender.mjs';
 import { BeanBase } from 'zova';
 import { Sys } from 'zova-module-a-bean';
 
-import { ILayoutConfig } from '../types/layoutConfig.js';
+import { ILayoutConfig } from '../types/layoutConfig.ts';
 
 @Sys()
 export class SysMain extends BeanBase {

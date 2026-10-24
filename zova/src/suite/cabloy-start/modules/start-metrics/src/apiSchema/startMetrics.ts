@@ -3,7 +3,7 @@ import type { IApiSchemaOptions } from 'zova-module-a-api';
 import { BeanBase } from 'zova';
 import { ApiSchema } from 'zova-module-a-api';
 
-import { ApiApiStartMetricssnapshotPath } from '../api/startMetrics.js';
+import { ApiApiStartMetricssnapshotPath } from '../api/startMetrics.ts';
 
 @ApiSchema()
 export class ApiSchemaStartMetrics extends BeanBase {

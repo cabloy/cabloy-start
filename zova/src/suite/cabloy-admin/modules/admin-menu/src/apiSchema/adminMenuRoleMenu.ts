@@ -9,7 +9,7 @@ import {
   ApiApiAdminMenuRoleMenucreatePath,
   ApiApiAdminMenuRoleMenudeletePath,
   ApiApiAdminMenuRoleMenubatchPath,
-} from '../api/adminMenuRoleMenu.js';
+} from '../api/adminMenuRoleMenu.ts';
 
 @ApiSchema()
 export class ApiSchemaAdminMenuRoleMenu extends BeanBase {

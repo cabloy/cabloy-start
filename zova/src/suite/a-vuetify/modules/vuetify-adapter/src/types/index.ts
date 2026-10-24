@@ -1,2 +1,2 @@
-export * from './layoutConfig.js';
-export * from './vuetify.js';
+export * from './layoutConfig.ts';
+export * from './vuetify.ts';

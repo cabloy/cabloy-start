@@ -5,7 +5,7 @@ import {
   createRoleMenuTree,
   getConfigurableDescendantMenus,
   getRoleMenuTreeGroupState,
-} from '../../src/component/blockRoleMenuEditor/tree.js';
+} from '../../src/component/blockRoleMenuEditor/tree.ts';
 
 test('builds fully identifiable nested role-menu groups and menus', () => {
   const tree = createRoleMenuTree({
