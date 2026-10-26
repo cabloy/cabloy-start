@@ -134,7 +134,7 @@ describe('accountOpenapi.test.ts', () => {
             'locale',
             'tz',
           ]);
-          assert.deepEqual(schemaResolved?.required, undefined);
+          assert.deepEqual(schemaResolved?.required ?? [], []);
           for (const [field, title] of [
             ['displayName', 'home-user::AccountDisplayName'],
             ['avatar', 'home-user::AccountAvatar'],

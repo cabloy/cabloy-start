@@ -3,7 +3,11 @@ import type { Page } from '@playwright/test';
 import type { RegisteredAccount } from './helpers/cabloy-admin-api.ts';
 
 import { expect, test } from '../scripts/managedTest.ts';
-import { registerAccountUser, removeAccountFixture } from './helpers/cabloy-admin-api.ts';
+import {
+  loginAsAccount,
+  registerAccountUser,
+  removeAccountFixture,
+} from './helpers/cabloy-admin-api.ts';
 
 const accountPath = '/home/user/account';
 const passwordSetPath = '/home/user/password-set';
@@ -278,16 +282,29 @@ test(
       await expect(page).toHaveURL(accountPath);
       await expect(page.getByRole('heading', { name: 'Account Settings' })).toBeVisible();
 
+      const username = page.getByRole('textbox', { name: 'User name', exact: true });
+      await expect(username).toHaveValue(account.username);
+      await expect(username).toHaveAttribute('readonly', '');
+      const displayName = page.getByRole('textbox', { name: 'Display name', exact: true });
+      await expect(displayName).toHaveValue('');
       const profileName = `e2e-fixture-home-account-profile-${testInfo.workerIndex}-${crypto.randomUUID()}`;
-      await page.getByLabel('Display name').fill(profileName);
+      await displayName.fill(`  ${profileName}  `);
       await page.getByLabel('Time zone').fill('UTC');
       const profileResponse = waitForApiResponse(page, 'PATCH', accountProfileApiPath);
       const passportResponse = waitForApiResponse(page, 'GET', passportCurrentApiPath);
       await page.getByRole('button', { name: 'Save profile', exact: true }).click();
-      expect((await profileResponse).ok()).toBeTruthy();
-      account.username = profileName;
+      const savedProfile = await profileResponse;
+      expect(savedProfile.ok()).toBeTruthy();
+      expect(savedProfile.request().postDataJSON()).toMatchObject({ displayName: profileName });
+      expect(savedProfile.request().postDataJSON()).not.toHaveProperty('name');
+      expect((await savedProfile.json()).data).toMatchObject({
+        name: account.username,
+        displayName: profileName,
+      });
       expect((await passportResponse).ok()).toBeTruthy();
       await expect(page.getByText('Profile saved.', { exact: true })).toBeVisible();
+      await expect(username).toHaveValue(account.username);
+      await expect(displayName).toHaveValue(profileName);
 
       await page.goto('/', { waitUntil: 'load' });
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
@@ -296,6 +313,27 @@ test(
       await list.getByRole('listitem').filter({ hasText: 'Account Settings' }).click();
       await expect(page).toHaveURL(/\/home\/user\/account$/);
       await expect(page.getByRole('heading', { name: 'Account Settings' })).toBeVisible();
+      await expect(page.getByRole('textbox', { name: 'User name', exact: true })).toHaveValue(
+        account.username,
+      );
+
+      const clearedProfileResponse = waitForApiResponse(page, 'PATCH', accountProfileApiPath);
+      const clearedPassportResponse = waitForApiResponse(page, 'GET', passportCurrentApiPath);
+      await page.getByRole('textbox', { name: 'Display name', exact: true }).fill('   ');
+      await page.getByRole('button', { name: 'Save profile', exact: true }).click();
+      const clearedProfile = await clearedProfileResponse;
+      expect(clearedProfile.ok()).toBeTruthy();
+      expect((await clearedPassportResponse).ok()).toBeTruthy();
+      expect(clearedProfile.request().postDataJSON()).toMatchObject({ displayName: null });
+      expect((await clearedProfile.json()).data).toMatchObject({
+        name: account.username,
+      });
+      await page.goto('/', { waitUntil: 'load' });
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
+      await openUserMenu(page, account.username);
+
+      const originalLogin = await loginAsAccount(request, account.username, account.password);
+      expect(String(originalLogin.id)).toBe(String(account.id));
       expect(pageErrors).toEqual([]);
       expect(consoleErrors).toEqual([]);
     } finally {
