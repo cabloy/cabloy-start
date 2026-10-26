@@ -36,7 +36,7 @@ export class RenderUser extends BeanRenderBase {
             ),
           }}
         >
-          {this.$passport.user?.name}
+          {this.$passport.displayName}
         </VBtn>
       ),
     };

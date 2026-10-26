@@ -34,21 +34,50 @@ describe('account.test.ts', { concurrency: false }, () => {
             innerAccess: false,
           });
           assert.equal(current.name, fixture!.name);
+          assert.equal(current.displayName, undefined);
           assert.equal(current.hasSimpleAuth, true);
           assert.equal(current.canSendSetPasswordLink, false);
 
           const updated = await app.bean.executor.performAction('patch', profilePath, {
             innerAccess: false,
             body: {
-              name: `${fixture!.name}-updated`,
+              name: `${fixture!.name}-must-not-rename`,
+              displayName: '  Updated display  ',
               locale: 'en_us',
               tz: 'America/New_York',
               ignored: 'must-not-persist',
             },
           });
-          assert.equal(updated.name, `${fixture!.name}-updated`);
+          assert.equal(updated.name, fixture!.name);
+          assert.equal(updated.displayName, 'Updated display');
           assert.equal(updated.locale, 'en-us');
           assert.equal(updated.tz, 'America/New_York');
+
+          const preserved = await app.bean.executor.performAction('patch', profilePath, {
+            innerAccess: false,
+            body: { locale: 'en_us' },
+          });
+          assert.equal(preserved.name, fixture!.name);
+          assert.equal(preserved.displayName, 'Updated display');
+
+          const cleared = await app.bean.executor.performAction('patch', profilePath, {
+            innerAccess: false,
+            body: { displayName: '   ' },
+          });
+          assert.equal(cleared.name, fixture!.name);
+          assert.equal(cleared.displayName, undefined);
+
+          const restored = await app.bean.executor.performAction('patch', profilePath, {
+            innerAccess: false,
+            body: { displayName: 'Restored display' },
+          });
+          assert.equal(restored.displayName, 'Restored display');
+
+          const nullCleared = await app.bean.executor.performAction('patch', profilePath, {
+            innerAccess: false,
+            body: { displayName: null },
+          });
+          assert.equal(nullCleared.displayName, undefined);
         } finally {
           await app.bean.passport.signout();
         }
@@ -56,13 +85,14 @@ describe('account.test.ts', { concurrency: false }, () => {
 
       await app.bean.executor.mockCtx(async () => {
         const user = await app.bean.user.findOneById(fixture!.userId);
-        assert.equal(user?.name, `${fixture!.name}-updated`);
+        assert.equal(user?.name, fixture!.name);
+        assert.equal(user?.displayName, undefined);
         assert.ok(user);
         assert.equal(Object.hasOwn(user, 'ignored'), false);
       });
 
       await app.bean.executor.mockCtx(async () => {
-        await app.bean.passport.signinSystem('mock', -10002 as any, `${fixture!.name}-updated`);
+        await app.bean.passport.signinSystem('mock', -10002 as any, fixture!.name);
         try {
           const result = await app.bean.executor.performAction('post', passwordChangePath, {
             innerAccess: false,
@@ -133,7 +163,6 @@ describe('account.test.ts', { concurrency: false }, () => {
           const updated = await app.bean.executor.performAction('patch', profilePath, {
             innerAccess: false,
             body: {
-              name: fixture!.name,
               avatar: uploadedUrl,
             },
           });
@@ -145,7 +174,7 @@ describe('account.test.ts', { concurrency: false }, () => {
 
           const preserved = await app.bean.executor.performAction('patch', profilePath, {
             innerAccess: false,
-            body: { name: fixture!.name },
+            body: {},
           });
           assert.equal(preserved.avatar, uploadedUrl);
 
@@ -153,7 +182,6 @@ describe('account.test.ts', { concurrency: false }, () => {
           const thirdPartyUpdated = await app.bean.executor.performAction('patch', profilePath, {
             innerAccess: false,
             body: {
-              name: fixture!.name,
               avatar: thirdPartyAvatar,
             },
           });
@@ -161,7 +189,7 @@ describe('account.test.ts', { concurrency: false }, () => {
 
           const cleared = await app.bean.executor.performAction('patch', profilePath, {
             innerAccess: false,
-            body: { name: fixture!.name, avatar: null },
+            body: { avatar: null },
           });
           assert.equal(cleared.avatar, undefined);
         } finally {

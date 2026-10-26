@@ -88,7 +88,11 @@ export class ControllerPageAccount extends BeanControllerPageBase {
   }
 
   async submitProfile(data: TypeFormOnSubmitData<ProfileDraft>) {
-    const current = await this.$$modelAccount.updateProfile().mutateAsync(data.value);
+    const displayName = data.value.displayName;
+    const current = await this.$$modelAccount.updateProfile().mutateAsync({
+      ...data.value,
+      displayName: displayName === undefined ? undefined : displayName?.trim() || null,
+    });
     this._resetProfileDraft(current);
     this.profileMessage = this.scope.locale.AccountProfileSaved();
   }
@@ -126,7 +130,7 @@ export class ControllerPageAccount extends BeanControllerPageBase {
   private _resetProfileDraft(current = this.queryCurrent?.data) {
     if (!current) return;
     this.profileDraft = {
-      name: current.name,
+      displayName: current.displayName ?? '',
       avatar: current.avatar ?? undefined,
       locale: typeof current.locale === 'string' ? current.locale : undefined,
       tz: current.tz ?? undefined,
@@ -248,9 +252,15 @@ export class ControllerPageAccount extends BeanControllerPageBase {
             );
           }}
         />
-        <ZFormFieldPreset
+        <VTextField
           class="mt-4"
-          name="name"
+          label={this.scope.locale.AccountUserName()}
+          modelValue={this.queryCurrent?.data?.name}
+          readonly
+          autocomplete="username"
+        />
+        <ZFormFieldPreset
+          name="displayName"
           render="start-input:formFieldInput"
           options={{ type: 'text' }}
         />

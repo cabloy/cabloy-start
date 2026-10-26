@@ -12,6 +12,7 @@ function createPassport(): IPassport {
     user: {
       id: 'passport-response-user',
       name: 'Passport response fixture',
+      displayName: 'Passport display fixture',
       activated: true,
       accountStatus: 'active',
       instanceId: 'untrusted-user-instance',
@@ -38,6 +39,7 @@ describe('passport.test.ts', { concurrency: false }, () => {
       assert.ok(result);
       assert.equal(result.instanceId, instanceId);
       assert.equal(result.user.id, passport.user!.id);
+      assert.equal(result.user.displayName, passport.user!.displayName);
       assert.equal(result.auth, passport.auth);
       assert.equal(result.roles, passport.roles);
       assert.equal('instanceId' in result.user, false);
@@ -98,6 +100,7 @@ describe('passport.test.ts', { concurrency: false }, () => {
               assert.equal(response.passport.instanceId, app.ctx.instance?.id ?? null);
               assert.ok(Object.hasOwn(response.passport, 'instanceId'));
               assert.equal(response.passport.user.id, 'passport-response-user');
+              assert.equal(response.passport.user.displayName, 'Passport display fixture');
               assert.equal(response.jwt, jwt);
             }
             assert.equal(authenticate.mock.callCount(), 4);
@@ -160,6 +163,7 @@ describe('passport.test.ts', { concurrency: false }, () => {
           types(userId).sort(),
         );
         assert.equal(user.properties?.instanceId, undefined);
+        assert.ok(user.properties?.displayName);
         if (operation.requestBody && 'content' in operation.requestBody) {
           const request = resolve(
             operation.requestBody.content['application/json'].schema as SchemaObject,

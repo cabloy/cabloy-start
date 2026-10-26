@@ -129,14 +129,14 @@ describe('accountOpenapi.test.ts', () => {
           assert.ok(schema?.$ref);
           const schemaResolved = resolve(schema);
           assert.deepEqual(Object.keys(schemaResolved?.properties ?? {}), [
-            'name',
+            'displayName',
             'avatar',
             'locale',
             'tz',
           ]);
-          assert.deepEqual(schemaResolved?.required, ['name']);
+          assert.deepEqual(schemaResolved?.required, undefined);
           for (const [field, title] of [
-            ['name', 'home-user::AccountDisplayName'],
+            ['displayName', 'home-user::AccountDisplayName'],
             ['avatar', 'home-user::AccountAvatar'],
             ['locale', 'home-user::AccountLocale'],
             ['tz', 'home-user::AccountTimezone'],
@@ -144,9 +144,9 @@ describe('accountOpenapi.test.ts', () => {
             const property = resolve(schemaResolved.properties?.[field] as SchemaObject);
             assert.equal(property.title?.toString(), title);
           }
-          const name = resolve(schemaResolved.properties?.name as SchemaObject);
-          assert.equal(name.minLength, 1);
-          assert.equal(name.maxLength, 100);
+          const displayName = resolve(schemaResolved.properties?.displayName as SchemaObject);
+          assert.equal(displayName.maxLength, 100);
+          assert.deepEqual(displayName.type, ['string', 'null']);
           for (const field of ['avatar', 'locale', 'tz']) {
             const property = resolve(schemaResolved.properties?.[field] as SchemaObject);
             assert.deepEqual(property.type, ['string', 'null']);
