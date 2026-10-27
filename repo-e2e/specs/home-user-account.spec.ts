@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import type { Page, Route } from '@playwright/test';
 
 import type { RegisteredAccount } from './helpers/cabloy-admin-api.ts';
 
@@ -15,6 +15,7 @@ const passwordResetPath = '/home/user/password-reset';
 const passportLoginApiPath = '/api/home/user/passport/login';
 const passportRegisterApiPath = '/api/home/user/passport/register';
 const passportCurrentApiPath = '/api/home/user/passport/current';
+const accountApiPath = '/api/home/user/account/current';
 const accountProfileApiPath = '/api/home/user/account/profile';
 
 function waitForApiResponse(page: Page, method: string, pathname: string, requireOk = true) {
@@ -375,6 +376,126 @@ test(
     }
   },
 );
+
+for (const flavor of ['web', 'admin'] as const) {
+  test(
+    `ATP-ACCOUNT-LOGOUT-${flavor.toUpperCase()}-01: rejected logout shows an error and preserves authentication`,
+    { tag: ['@account', `@${flavor}`, '@flow'] },
+    async ({ page, request }, testInfo) => {
+      let account: RegisteredAccount | undefined;
+      const logoutRoute = (url: URL) => url.pathname === '/api/home/user/passport/logout';
+      const errorMessage = 'This operation is forbidden in demonstration mode';
+      let rejectedRequests = 0;
+      let releaseFirstRequest!: () => void;
+      const firstRequestReleased = new Promise<void>(resolve => {
+        releaseFirstRequest = resolve;
+      });
+      const rejectLogout = async (route: Route) => {
+        if (route.request().method() !== 'POST') return route.continue();
+        rejectedRequests++;
+        if (rejectedRequests === 1) await firstRequestReleased;
+        await route.fulfill({
+          status: 403,
+          contentType: 'application/json',
+          body: JSON.stringify({ code: 'demo-demonstration:1001', message: errorMessage }),
+        });
+      };
+      try {
+        if (flavor === 'web') {
+          account = await registerAccountUser(
+            request,
+            testInfo,
+            'e2e-fixture-home-account',
+            registered => {
+              account = registered;
+            },
+          );
+        }
+        const pageErrors = collectPageErrors(page);
+        const consoleErrors = collectConsoleErrors(page, [
+          /server responded with a status of 403/i,
+        ]);
+        const loginPath = flavor === 'admin' ? '/admin/login' : '/login';
+        await page.goto(loginPath, { waitUntil: 'load' });
+        await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', flavor);
+        await page.getByLabel('Your Username').fill(account?.username ?? 'admin');
+        await page.getByLabel('Your Password').fill(account?.password ?? '123456');
+        await expect(page.getByLabel('Please input captcha')).not.toHaveValue('');
+        const loginResponse = waitForApiResponse(page, 'POST', passportLoginApiPath);
+        await page.getByRole('button', { name: 'Login', exact: true }).click();
+        expect((await loginResponse).ok()).toBeTruthy();
+        await expect(page).not.toHaveURL(new RegExp(`${loginPath}(?:\\?|$)`));
+        const signedInUrl = page.url();
+        const token = (await page.context().cookies()).find(
+          cookie => cookie.name === 'token',
+        )?.value;
+        expect(token).toBeTruthy();
+
+        await page.route(logoutRoute, rejectLogout);
+        let list = await openUserMenu(page, account?.username ?? 'admin');
+        await expect(list.getByRole('listitem')).toHaveText(['Account Settings', 'Logout']);
+        let logout = list.getByRole('button', { name: 'Logout', exact: true });
+        await logout.click();
+        await expect.poll(() => rejectedRequests).toBe(1);
+        list = await openUserMenu(page, account?.username ?? 'admin');
+        logout = list.getByRole('button', { name: 'Logout', exact: true });
+        await expect(logout).toBeDisabled();
+        await expect(logout).toHaveAttribute('aria-busy', 'true');
+        expect(rejectedRequests).toBe(1);
+        releaseFirstRequest();
+
+        for (let attempt = 1; attempt <= 2; attempt++) {
+          const dialog = page.getByRole('dialog');
+          await expect(dialog).toBeVisible();
+          await expect(dialog).toContainText(errorMessage);
+          expect(rejectedRequests).toBe(attempt);
+          expect(page.url()).toBe(signedInUrl);
+          expect(
+            (await page.context().cookies()).find(cookie => cookie.name === 'token')?.value,
+          ).toBe(token);
+          await dialog.getByRole('button', { name: 'Close', exact: true }).click();
+          await expect(dialog).toHaveCount(0);
+          if (attempt === 2) break;
+          list = await openUserMenu(page, account?.username ?? 'admin');
+          logout = list.getByRole('button', { name: 'Logout', exact: true });
+          await expect(logout).toBeEnabled();
+          const requestCount = rejectedRequests;
+          await logout.click();
+          await expect.poll(() => rejectedRequests).toBe(requestCount + 1);
+        }
+
+        list = await openUserMenu(page, account?.username ?? 'admin');
+        const accountResponse = waitForApiResponse(page, 'GET', accountApiPath);
+        await list.getByRole('listitem').filter({ hasText: 'Account Settings' }).click();
+        expect((await accountResponse).ok()).toBeTruthy();
+        await expect(page.getByRole('heading', { name: 'Account Settings' })).toBeVisible();
+        await page.unroute(logoutRoute, rejectLogout);
+        if (flavor === 'web') {
+          await page.goto('/', { waitUntil: 'load' });
+          await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
+          list = await openUserMenu(page, account!.username);
+          logout = list.getByRole('button', { name: 'Logout', exact: true });
+          const logoutResponse = waitForApiResponse(page, 'POST', '/api/home/user/passport/logout');
+          await logout.click();
+          expect((await logoutResponse).ok()).toBeTruthy();
+          await expect(page).toHaveURL(/\/login(?:\?|$)/);
+          await expect(page.getByText('Logout', { exact: true })).toHaveCount(0);
+          expect(
+            (await page.context().cookies()).find(cookie => cookie.name === 'token')?.value,
+          ).toBeFalsy();
+          await page.goto(accountPath, { waitUntil: 'load' });
+          await expect(page).toHaveURL(/\/login(?:\?|$)/);
+        }
+        expect(pageErrors).toEqual([]);
+        expect(consoleErrors).toEqual([]);
+      } finally {
+        releaseFirstRequest();
+        if (!page.isClosed()) await page.unroute(logoutRoute, rejectLogout);
+        if (account) await removeAccountFixture(request, account);
+      }
+    },
+  );
+}
 
 test(
   'ATP-ACCOUNT-ADMIN-01: Admin Account Settings precedes Logout',
