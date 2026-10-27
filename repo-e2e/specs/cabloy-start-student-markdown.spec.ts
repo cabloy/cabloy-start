@@ -175,6 +175,42 @@ test(
       await expect(reopenedCheckboxes.nth(1)).toBeEnabled();
       await expectTaskCheckboxLayout(reopenedEditor);
 
+      const description = page.getByRole('group', { name: 'Description', exact: true });
+      const toolbar = description.getByRole('toolbar', { name: 'Markdown toolbar', exact: true });
+      const sourceButton = toolbar.getByRole('button', {
+        name: 'Source editing mode',
+        exact: true,
+      });
+      const sourceInput = description.getByRole('textbox', {
+        name: 'Markdown source',
+        exact: true,
+      });
+      await expect(sourceButton).toHaveAttribute('type', 'button');
+      await expect(sourceButton).toHaveAttribute('aria-pressed', 'false');
+      await sourceButton.click();
+      await expect(sourceButton).toHaveAttribute('aria-pressed', 'true');
+      await expect(sourceInput).toBeVisible();
+      const originalMarkdown = await sourceInput.inputValue();
+      expect(originalMarkdown).toContain('- [x] Completed task');
+      expect(originalMarkdown).toContain('- [ ] Open task');
+      await expect(reopenedEditor).toBeHidden();
+      await expect(toolbar.getByRole('button', { name: 'Bold', exact: true })).toHaveCount(0);
+      await sourceInput.click();
+      await expect(sourceInput).toBeFocused();
+      await sourceButton.click();
+      await expect(reopenedEditor).toBeVisible();
+      await sourceButton.click();
+      await expect(sourceInput).toHaveValue(originalMarkdown);
+      const sourceMarkdown = `${originalMarkdown}\n\n## Source heading\n\nSource **content**`;
+      await sourceInput.fill(sourceMarkdown);
+      await sourceButton.click();
+      await expect(reopenedEditor.locator('h2')).toHaveText('Source heading');
+      await expect(reopenedEditor.locator('strong')).toHaveText('content');
+      await sourceButton.click();
+      await expect(sourceInput).toHaveValue(sourceMarkdown);
+      const savedMarkdown = `${sourceMarkdown}\n\nSaved from source\n`;
+      await sourceInput.fill(savedMarkdown);
+
       const updatePath = `/api/training/student/${studentId}`;
       const updateResponsePromise = waitForApiResponse(page, 'PATCH', updatePath);
       await page.getByRole('button', { name: 'Submit', exact: true }).click();
@@ -182,6 +218,7 @@ test(
       const updatedMarkdown = (
         updateResponse.request().postDataJSON() as { content?: { descriptionMarkdown?: string } }
       ).content?.descriptionMarkdown;
+      expect(updatedMarkdown).toBe(savedMarkdown);
       expect(updatedMarkdown).toContain('- [x] Completed task');
       expect(updatedMarkdown).toContain('- [ ] Open task');
 
@@ -220,6 +257,9 @@ test(
         };
         expect(summary.descriptionMarkdown).toContain('- [x] Completed task');
         expect(summary.descriptionMarkdown).toContain('- [ ] Open task');
+        expect(summary.descriptionMarkdown).toContain('Saved from source');
+        expect(summary.descriptionHtml).toContain('<h2>Source heading</h2>');
+        expect(summary.descriptionHtml).toContain('<strong>content</strong>');
         expect(summary.descriptionHtml).toContain('Completed task');
         expect(summary.descriptionHtml).toContain('Open task');
       } finally {

@@ -6,6 +6,7 @@ import { richTextContentStyle } from '../../lib/richTextContentStyle.ts';
 @Style()
 export class StyleFormFieldMarkdown extends BeanStyleBase {
   cMarkdown: string;
+  cSource: string;
   cContainer: string;
   cContainerError: string;
   cToolbar: string;
@@ -37,6 +38,20 @@ export class StyleFormFieldMarkdown extends BeanStyleBase {
           padding: '1rem',
         },
       },
+    });
+    this.cSource = this.$style({
+      backgroundColor: 'rgb(var(--v-theme-surface))',
+      borderRadius: '0 0 4px 4px',
+      color: 'rgb(var(--v-theme-on-surface))',
+      display: 'block',
+      fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+      fontSize: '0.875rem',
+      lineHeight: 1.65,
+      minHeight: 'var(--cabloy-markdown-height)',
+      outline: 'none',
+      padding: '1rem',
+      resize: 'vertical',
+      width: '100%',
     });
     this.cContainer = this.$style({
       backgroundColor: 'rgb(var(--v-theme-surface))',
