@@ -18,4 +18,9 @@ export default {
   'Todo: CRUD': 'Todo: 增删改查',
   'Docs': '文档',
   'AccountSettings': '账户设置',
+  'MoreActions': '更多操作',
+  'Language': '语言',
+  'ColorMode': '明暗模式',
+  'Theme': '主题',
+  'Account': '账户',
 };

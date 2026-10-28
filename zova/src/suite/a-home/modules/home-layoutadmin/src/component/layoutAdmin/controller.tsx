@@ -46,14 +46,40 @@ export class ControllerLayoutAdmin extends BeanControllerBase {
   private viewportWidth: number = 0;
   private _windowResizeHandler?: () => void;
 
+  headerActionsOpen = false;
+  headerActionsId = 'home-layoutadmin-header-actions';
+  headerMenu = '';
+  private _headerActionsElement?: HTMLDivElement;
+  private _headerOutsideHandler?: (event: PointerEvent | FocusEvent) => void;
+  private _headerKeydownHandler?: (event: KeyboardEvent) => void;
+
   protected async __init__() {
     // viewport
     if (process.env.CLIENT) {
       this._windowResizeHandler = () => {
         this.viewportWidth = document.documentElement.clientWidth;
+        this.closeHeaderActions();
       };
       this._windowResizeHandler();
       window.addEventListener('resize', this._windowResizeHandler);
+      this._headerOutsideHandler = event => {
+        if (!this.isHeaderActionsTarget(event.target)) this.closeHeaderActions();
+      };
+      this._headerKeydownHandler = event => {
+        if (
+          event.key === 'Escape' &&
+          !event.defaultPrevented &&
+          this.headerActionsOpen &&
+          !this.headerMenu &&
+          this.isHeaderActionsTarget(event.target)
+        ) {
+          event.preventDefault();
+          this.closeHeaderActions(true);
+        }
+      };
+      document.addEventListener('pointerdown', this._headerOutsideHandler);
+      document.addEventListener('focusin', this._headerOutsideHandler);
+      document.addEventListener('keydown', this._headerKeydownHandler);
     }
     // belowBreakpoint
     this.belowBreakpoint = this.$computed(() => {
@@ -91,6 +117,12 @@ export class ControllerLayoutAdmin extends BeanControllerBase {
   }
 
   protected __dispose__() {
+    this._headerActionsElement = undefined;
+    if (this._headerOutsideHandler) {
+      document.removeEventListener('pointerdown', this._headerOutsideHandler);
+      document.removeEventListener('focusin', this._headerOutsideHandler);
+      document.removeEventListener('keydown', this._headerKeydownHandler!);
+    }
     if (this._windowResizeHandler) {
       window.removeEventListener('resize', this._windowResizeHandler);
     }
@@ -98,6 +130,52 @@ export class ControllerLayoutAdmin extends BeanControllerBase {
       window.clearTimeout(this.layoutConfigTimeout);
       this.layoutConfigTimeout = 0;
     }
+  }
+
+  setHeaderActionsElement(element?: HTMLDivElement) {
+    this._headerActionsElement = element;
+  }
+
+  toggleHeaderActions() {
+    if (this.headerActionsOpen) this.closeHeaderActions();
+    else this.headerActionsOpen = true;
+  }
+
+  closeHeaderActions(restoreFocus = false) {
+    const wasOpen = this.headerActionsOpen;
+    this.headerActionsOpen = false;
+    this.headerMenu = '';
+    if (restoreFocus && wasOpen) {
+      this._headerActionsElement
+        ?.querySelector<HTMLButtonElement>('[data-testid="header-actions-more"]')
+        ?.focus();
+    }
+  }
+
+  getHeaderMenuProps(key: string) {
+    return {
+      'modelValue': this.headerMenu === key,
+      'onUpdate:modelValue': (open: boolean) => {
+        if (open) this.headerMenu = key;
+        else if (this.headerMenu === key) this.headerMenu = '';
+      },
+      'transition': false as const,
+      'location': 'bottom end' as const,
+      'maxWidth': 'calc(100vw - 1rem)',
+      'maxHeight': 'calc(100dvh - 5rem)',
+      'contentProps': { 'data-header-actions-owner': this.headerActionsId },
+    };
+  }
+
+  private isHeaderActionsTarget(target: EventTarget | null) {
+    return (
+      target instanceof Node &&
+      (this._headerActionsElement?.contains(target) ||
+        (target instanceof Element &&
+          target
+            .closest('[data-header-actions-owner]')
+            ?.getAttribute('data-header-actions-owner') === this.headerActionsId))
+    );
   }
 
   toggleLeftDrawer() {

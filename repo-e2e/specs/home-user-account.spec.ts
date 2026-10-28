@@ -86,12 +86,31 @@ async function loginAsAccountUser(page: Page, username: string, password: string
 }
 
 async function openUserMenu(page: Page, username: string) {
-  const activator = page.getByRole('banner').getByRole('button', { name: username, exact: true });
+  const actions = page.getByTestId('header-actions');
+  const more = actions.getByTestId('header-actions-more');
+  const panel = actions.locator('.header-actions-panel');
+  // Login changes the URL before its destination layout necessarily finishes mounting.
+  await expect(actions).toBeVisible();
+  if (await more.isVisible()) {
+    if (!(await panel.isVisible())) await more.click();
+    await expect(more).toHaveAttribute('aria-expanded', 'true');
+  }
+  const activator = actions.getByRole('button', { name: 'Account', exact: true });
   await expect(activator).toBeVisible();
+  // The stable accessible name must not hide regressions in the personalized visible name.
+  await expect(activator).toHaveText(username);
   await activator.click();
-  const list = page.locator('.v-overlay-container').getByRole('list').filter({ hasText: 'Logout' });
-  await expect(list).toBeVisible();
-  return list;
+  const owner = await panel.getAttribute('id');
+  expect(owner).toBeTruthy();
+  const activeList = page
+    .locator(`.v-overlay--active [data-header-actions-owner="${owner}"]`)
+    .getByRole('list');
+  await expect(activeList).toBeVisible();
+  await expect(activeList).toContainText('Logout');
+  // Keep a stable locator after dismissal: the eager account menu owns the pending logout.
+  return page
+    .locator(`[data-header-actions-owner="${owner}"] .v-list`)
+    .filter({ hasText: 'Logout' });
 }
 
 test(
@@ -310,8 +329,11 @@ test(
       await page.goto('/', { waitUntil: 'load' });
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
       const list = await openUserMenu(page, profileName);
-      await expect(list.getByRole('listitem')).toHaveText(['Account Settings', 'Logout']);
-      await list.getByRole('listitem').filter({ hasText: 'Account Settings' }).click();
+      await expect(list.locator(':scope > .v-list-item')).toHaveText([
+        'Account Settings',
+        'Logout',
+      ]);
+      await list.getByRole('link', { name: 'Account Settings', exact: true }).click();
       await expect(page).toHaveURL(/\/home\/user\/account$/);
       await expect(page.getByRole('heading', { name: 'Account Settings' })).toBeVisible();
       await expect(page.getByRole('textbox', { name: 'User name', exact: true })).toHaveValue(
@@ -416,6 +438,9 @@ for (const flavor of ['web', 'admin'] as const) {
           /server responded with a status of 403/i,
         ]);
         const loginPath = flavor === 'admin' ? '/admin/login' : '/login';
+        // Establish compact geometry before mounting the authenticated header. A resize
+        // immediately after login can otherwise dismiss the panel just opened by the helper.
+        await page.setViewportSize({ width: 390, height: 900 });
         await page.goto(loginPath, { waitUntil: 'load' });
         await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', flavor);
         await page.getByLabel('Your Username').fill(account?.username ?? 'admin');
@@ -433,12 +458,42 @@ for (const flavor of ['web', 'admin'] as const) {
 
         await page.route(logoutRoute, rejectLogout);
         let list = await openUserMenu(page, account?.username ?? 'admin');
-        await expect(list.getByRole('listitem')).toHaveText(['Account Settings', 'Logout']);
-        let logout = list.getByRole('button', { name: 'Logout', exact: true });
+        await expect(list.locator(':scope > .v-list-item')).toHaveText([
+          'Account Settings',
+          'Logout',
+        ]);
+        let logout = list.getByRole('button', { name: 'Logout', exact: true, includeHidden: true });
         await logout.click();
         await expect.poll(() => rejectedRequests).toBe(1);
+        await expect(page.getByTestId('header-actions-more')).toHaveAttribute(
+          'aria-expanded',
+          'false',
+        );
+        await expect(
+          page.getByTestId('header-actions').locator('.header-actions-panel'),
+        ).toBeHidden();
+        await expect(list).toBeHidden();
+        // Crossing the breakpoint must not replace the ZButton that owns the pending logout.
+        const pendingLogout = await logout.elementHandle();
+        expect(pendingLogout).not.toBeNull();
+        try {
+          for (const width of [1024, 390]) {
+            await page.setViewportSize({ width, height: 900 });
+            // Resize dismissal runs in the browser's rendering step, not the viewport command.
+            await page.evaluate(
+              () => new Promise<void>(resolve => requestAnimationFrame(() => resolve())),
+            );
+            await expect(logout).toBeDisabled();
+            await expect(logout).toHaveAttribute('aria-busy', 'true');
+            expect(
+              await logout.evaluate((element, original) => element === original, pendingLogout),
+            ).toBe(true);
+          }
+        } finally {
+          await pendingLogout?.dispose();
+        }
         list = await openUserMenu(page, account?.username ?? 'admin');
-        logout = list.getByRole('button', { name: 'Logout', exact: true });
+        logout = list.getByRole('button', { name: 'Logout', exact: true, includeHidden: true });
         await expect(logout).toBeDisabled();
         await expect(logout).toHaveAttribute('aria-busy', 'true');
         expect(rejectedRequests).toBe(1);
@@ -457,7 +512,7 @@ for (const flavor of ['web', 'admin'] as const) {
           await expect(dialog).toHaveCount(0);
           if (attempt === 2) break;
           list = await openUserMenu(page, account?.username ?? 'admin');
-          logout = list.getByRole('button', { name: 'Logout', exact: true });
+          logout = list.getByRole('button', { name: 'Logout', exact: true, includeHidden: true });
           await expect(logout).toBeEnabled();
           const requestCount = rejectedRequests;
           await logout.click();
@@ -466,7 +521,7 @@ for (const flavor of ['web', 'admin'] as const) {
 
         list = await openUserMenu(page, account?.username ?? 'admin');
         const accountResponse = waitForApiResponse(page, 'GET', accountApiPath);
-        await list.getByRole('listitem').filter({ hasText: 'Account Settings' }).click();
+        await list.getByRole('link', { name: 'Account Settings', exact: true }).click();
         expect((await accountResponse).ok()).toBeTruthy();
         await expect(page.getByRole('heading', { name: 'Account Settings' })).toBeVisible();
         await page.unroute(logoutRoute, rejectLogout);
@@ -474,7 +529,7 @@ for (const flavor of ['web', 'admin'] as const) {
           await page.goto('/', { waitUntil: 'load' });
           await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
           list = await openUserMenu(page, account!.username);
-          logout = list.getByRole('button', { name: 'Logout', exact: true });
+          logout = list.getByRole('button', { name: 'Logout', exact: true, includeHidden: true });
           const logoutResponse = waitForApiResponse(page, 'POST', '/api/home/user/passport/logout');
           await logout.click();
           expect((await logoutResponse).ok()).toBeTruthy();
@@ -504,8 +559,8 @@ test(
     const pageErrors = collectPageErrors(page);
     await loginAsAdmin(page);
     const list = await openUserMenu(page, 'admin');
-    await expect(list.getByRole('listitem')).toHaveText(['Account Settings', 'Logout']);
-    await list.getByRole('listitem').filter({ hasText: 'Account Settings' }).click();
+    await expect(list.locator(':scope > .v-list-item')).toHaveText(['Account Settings', 'Logout']);
+    await list.getByRole('link', { name: 'Account Settings', exact: true }).click();
     await expect(page).toHaveURL(/\/home\/user\/account$/);
     await expect(page.getByRole('heading', { name: 'Account Settings' })).toBeVisible();
     expect(pageErrors).toEqual([]);

@@ -9,4 +9,10 @@ export default {
   ThemeBlue: 'Blue',
   Login: 'Login',
   AccountSettings: 'Account Settings',
+  MoreActions: 'More actions',
+  Language: 'Language',
+  ColorMode: 'Color mode',
+  Theme: 'Theme',
+  Account: 'Account',
+  NotLoggedIn: 'Not logged in',
 };

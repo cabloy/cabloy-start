@@ -9,4 +9,10 @@ export default {
   ThemeBlue: '蓝色',
   Login: '登录',
   AccountSettings: '账户设置',
+  MoreActions: '更多操作',
+  Language: '语言',
+  ColorMode: '明暗模式',
+  Theme: '主题',
+  Account: '账户',
+  NotLoggedIn: '未登录',
 };

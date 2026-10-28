@@ -1,7 +1,14 @@
 import type { Locator, Page, Request, Route } from '@playwright/test';
 
+import type { RegisteredAccount } from './helpers/cabloy-admin-api.ts';
+
 import { expect, test } from '../scripts/managedTest.ts';
-import { loginAsAdmin as loginAsAdminApi, requestApiOk } from './helpers/cabloy-admin-api.ts';
+import {
+  loginAsAdmin as loginAsAdminApi,
+  registerAccountUser,
+  removeAccountFixture,
+  requestApiOk,
+} from './helpers/cabloy-admin-api.ts';
 
 const studentResourceUrl =
   /\/admin\/rest\/resource\/training-student(?:%3A|:|%253A)student(?:[/?#]|$)/;
@@ -420,6 +427,118 @@ function collectPageErrors(page: Page) {
     errors.push(error);
   });
   return errors;
+}
+
+function collectHeaderConsoleErrors(page: Page) {
+  const errors: string[] = [];
+  page.on('console', message => {
+    if (
+      message.type() === 'error' ||
+      /hydration.*mismatch|mismatch.*hydration/i.test(message.text())
+    ) {
+      errors.push(message.text());
+    }
+  });
+  return errors;
+}
+
+function headerActions(page: Page, flavor: 'admin' | 'web') {
+  const actions = page.getByTestId('header-actions');
+  const more = actions.getByTestId('header-actions-more');
+  const panel = actions.locator(':scope > .header-actions-panel');
+  const owner = `home-layout${flavor}-header-actions`;
+  const overlay = page.locator(`.v-overlay--active [data-header-actions-owner="${owner}"]`);
+  const list = overlay.getByRole('list');
+  const action = (name: string) => panel.locator(`[data-header-action="${name}"]`);
+  const open = async () => {
+    if (!(await panel.isVisible())) await more.click();
+    await expect(more).toHaveAttribute('aria-expanded', 'true');
+    await expect(panel).toBeVisible();
+  };
+  const openMenu = async (name: string, keyboard = false) => {
+    if (await more.isVisible()) await open();
+    if (keyboard) await action(name).press('ArrowDown');
+    else await action(name).click();
+    await expect(list).toBeVisible();
+    await expect(overlay).toHaveCount(1);
+    return list;
+  };
+  const expectClosed = async () => {
+    await expect(more).toHaveAttribute('aria-expanded', 'false');
+    await expect(panel).toBeHidden();
+    await expect(overlay).toHaveCount(0);
+  };
+  return { actions, more, panel, owner, overlay, list, action, open, openMenu, expectClosed };
+}
+
+async function getHeaderGeometry(page: Page, flavor: 'admin' | 'web') {
+  await page.evaluate(() => document.fonts.ready.then(() => undefined));
+  return page.getByTestId('header-actions').evaluate(async (element, flavor) => {
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    const header = element.closest('.v-app-bar')!;
+    const panel = element.querySelector(':scope > .header-actions-panel')!;
+    const account = panel.querySelector('[data-header-action="account"]')!;
+    const nodes = [
+      header,
+      header.querySelector('.v-toolbar__content')!,
+      header.querySelector(flavor === 'admin' ? '.v-toolbar__extension' : '.v-tabs')!,
+      header.querySelector('.v-toolbar-title')!,
+      element,
+      element.querySelector('[data-testid="header-actions-more"]')!,
+      ...panel.querySelectorAll('[data-header-action]'),
+      account.querySelector('.v-avatar')!,
+      ...(flavor === 'web' ? [account.querySelector('.header-account-name')!] : []),
+    ];
+    return {
+      actionCount: panel.querySelectorAll('[data-header-action]').length,
+      boxes: nodes.map(node => {
+        const rect = node.getBoundingClientRect();
+        return rect.width && rect.height
+          ? { x: rect.x, y: rect.y, width: rect.width, height: rect.height }
+          : null;
+      }),
+    };
+  }, flavor);
+}
+
+function expectHeaderGeometryStable(
+  before: Awaited<ReturnType<typeof getHeaderGeometry>>,
+  after: Awaited<ReturnType<typeof getHeaderGeometry>>,
+  context: string,
+) {
+  expect(after.actionCount).toBe(before.actionCount);
+  expect(after.boxes).toHaveLength(before.boxes.length);
+  for (const [index, previous] of before.boxes.entries()) {
+    const current = after.boxes[index];
+    if (previous === null) {
+      expect(current, `${context} hidden node ${index}`).toBeNull();
+    } else {
+      expect(current, `${context} node ${index}`).not.toBeNull();
+      for (const key of ['x', 'y', 'width', 'height'] as const) {
+        expect(
+          Math.abs(current![key] - previous[key]),
+          `${context} node ${index} ${key}`,
+        ).toBeLessThanOrEqual(1);
+      }
+    }
+  }
+}
+
+async function expectNoHeaderOverflow(page: Page) {
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      ),
+    )
+    .toBeLessThanOrEqual(1);
+}
+
+async function expectHeaderPopupBounds(popup: Locator, width: number) {
+  const bounds = await popup.boundingBox();
+  expect(bounds).not.toBeNull();
+  expect(bounds!.x).toBeGreaterThanOrEqual(-1);
+  expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width + 1);
 }
 
 async function expectSiteEntryTables(page: Page, integratedTitle: string, standaloneTitle: string) {
@@ -1003,6 +1122,410 @@ test(
     expect(pageErrors).toEqual([]);
   },
 );
+
+for (const flavor of ['admin', 'web'] as const) {
+  const prefix = flavor === 'web' ? 'ATP-START-WEB-HEADER' : 'ATP-START-HEADER';
+  test(
+    `${prefix}-01: SSR header geometry survives compact and desktop hydration`,
+    { tag: [`@${flavor}`, '@ssr', '@layout'] },
+    async ({ page, request }, testInfo) => {
+      test.setTimeout(180_000);
+      const pageErrors = collectPageErrors(page);
+      const consoleErrors = collectHeaderConsoleErrors(page);
+      let account: RegisteredAccount | undefined;
+      try {
+        if (flavor === 'admin') await loginAsAdmin(page);
+        const header = headerActions(page, flavor);
+        for (const authenticated of flavor === 'web' ? [false, true] : [true]) {
+          if (flavor === 'web' && authenticated) {
+            account = await registerAccountUser(
+              request,
+              testInfo,
+              'e2e-fixture-header',
+              registered => {
+                account = registered;
+              },
+            );
+            // The API fixture does not share the browser's cookie jar: sign in through the UI.
+            await page.goto('/login', { waitUntil: 'load' });
+            await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
+            await page.getByLabel('Your Username').fill(account.username);
+            await page.getByLabel('Your Password').fill(account.password);
+            await expect(page.getByLabel('Please input captcha')).not.toHaveValue('');
+            await page.getByRole('button', { name: 'Login', exact: true }).click();
+            await expect(page).not.toHaveURL(/\/login(?:\?|$)/);
+          }
+          for (const width of [390, 1440]) {
+            await page.setViewportSize({ width, height: 900 });
+            let releaseScripts!: () => void;
+            const scriptsHeld = new Promise<void>(resolve => {
+              releaseScripts = resolve;
+            });
+            let heldScripts = 0;
+            const holdExternalScripts = async (route: Route) => {
+              if (route.request().resourceType() === 'script') {
+                heldScripts++;
+                await scriptsHeld;
+              }
+              await route.continue();
+            };
+            // CSS and inline theme/body-ready scripts must still execute before measuring SSR.
+            await page.route('**/*', holdExternalScripts);
+            try {
+              const response = await page.goto(flavor === 'admin' ? '/admin/' : '/', {
+                waitUntil: 'commit',
+              });
+              expect(response?.ok()).toBeTruthy();
+              expect(response?.headers()['cache-control']).toBe(
+                flavor === 'web' ? 'public, max-age=600' : 'private, no-store',
+              );
+              await expect(header.actions).toHaveCount(1);
+              await page.waitForFunction(() =>
+                Array.from(
+                  document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]'),
+                ).every(link => link.sheet !== null),
+              );
+              await expect.poll(() => heldScripts).toBeGreaterThan(0);
+              await expect(page.locator('html')).not.toHaveAttribute('data-zova-hydrated');
+              await expect(page.locator('body')).toBeVisible();
+              await expect(header.panel).toHaveAttribute('id', header.owner);
+              await expect(header.more).toHaveAttribute('aria-controls', header.owner);
+              await expect(header.more).toHaveAttribute('aria-label', 'More actions');
+              await expect(header.more).toHaveAttribute('aria-expanded', 'false');
+              const labels =
+                flavor === 'admin'
+                  ? [
+                      ['locale', 'Language'],
+                      ['color-mode', 'Color mode'],
+                      ['theme', 'Theme'],
+                      ['account', 'Account'],
+                    ]
+                  : [
+                      ['locale', 'Language'],
+                      ['color-mode', 'Color mode'],
+                      ['account', 'Account'],
+                    ];
+              await expect(header.panel.locator('[data-header-action]')).toHaveCount(labels.length);
+              for (const [action, label] of labels) {
+                await expect(header.action(action!)).toHaveAttribute('title', label!);
+                await expect(header.action(action!)).toHaveAttribute('aria-label', label!);
+                await expect(header.action(action!)).toHaveJSProperty('tagName', 'BUTTON');
+              }
+              if (flavor === 'web') {
+                // Public HTML must remain neutral even when the request has a signed-in cookie.
+                await expect(header.action('account').locator('.header-account-name')).toHaveText(
+                  '',
+                );
+                await expect(header.action('account')).toHaveText('');
+                if (account) expect(await response!.text()).not.toContain(account.username);
+              }
+              if (width < 1024) {
+                await expect(header.more).toBeVisible();
+                await expect(header.panel).toBeHidden();
+              } else {
+                await expect(header.more).toBeHidden();
+                await expect(header.panel).toBeVisible();
+                await expect(header.action('account').locator('.v-avatar')).toHaveCSS(
+                  'width',
+                  '24px',
+                );
+                if (flavor === 'web') {
+                  await expect(header.action('account').locator('.header-account-name')).toHaveCSS(
+                    'width',
+                    '128px',
+                  );
+                }
+              }
+              const before = await getHeaderGeometry(page, flavor);
+              expect(before.actionCount).toBe(labels.length);
+              expect(before.boxes[5] !== null).toBe(width < 1024);
+              expect(before.boxes.slice(6).every(box => box !== null)).toBe(width >= 1024);
+              releaseScripts();
+              await page.waitForLoadState('load');
+              await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', flavor);
+              if (flavor === 'web') {
+                await expect(header.action('account').locator('.header-account-name')).toHaveText(
+                  authenticated ? account!.username : 'Not logged in',
+                );
+              }
+              expectHeaderGeometryStable(
+                before,
+                await getHeaderGeometry(page, flavor),
+                `${flavor} ${authenticated ? 'signed-in' : 'anonymous'} ${width}px`,
+              );
+              await expect(header.more).toHaveAttribute('aria-expanded', 'false');
+              await expectNoHeaderOverflow(page);
+            } finally {
+              releaseScripts();
+              await page.unroute('**/*', holdExternalScripts);
+            }
+          }
+        }
+        if (flavor === 'web') {
+          const list = await header.openMenu('account');
+          await expect(list.locator(':scope > .v-list-item')).toHaveText([
+            'Account Settings',
+            'Logout',
+          ]);
+          const link = list.getByRole('link', { name: 'Account Settings', exact: true });
+          await expect(link).toHaveAttribute('href', '/home/user/account');
+          await link.click();
+          await expect(page).toHaveURL(/\/home\/user\/account$/);
+          await expect(
+            page.getByRole('heading', { name: 'Account Settings', exact: true }),
+          ).toBeVisible();
+        }
+        expect(consoleErrors).toEqual([]);
+        expect(pageErrors).toEqual([]);
+      } finally {
+        if (account) await removeAccountFixture(request, account);
+      }
+    },
+  );
+
+  test(
+    `${prefix}-02: 320px actions support localized navigation, themes and nested dismissal`,
+    { tag: [`@${flavor}`, '@flow', '@layout'] },
+    async ({ page }) => {
+      test.setTimeout(120_000);
+      const pageErrors = collectPageErrors(page);
+      const consoleErrors = collectHeaderConsoleErrors(page);
+      await page.setViewportSize({ width: 320, height: 900 });
+      if (flavor === 'admin') await loginAsAdmin(page);
+      else await page.goto('/en-us?headerProbe=one&headerProbe=two', { waitUntil: 'load' });
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', flavor);
+      const header = headerActions(page, flavor);
+      const appBar = page.getByRole('banner');
+      const before = await appBar.boundingBox();
+      const choose = async (action: string, label: string, keyboard = true) => {
+        const list = await header.openMenu(action, keyboard);
+        const leaf = list.getByRole('button', { name: label, exact: true });
+        await expect(leaf).toBeEnabled();
+        if (keyboard) {
+          await leaf.focus();
+          await leaf.press('Enter');
+        } else {
+          await leaf.click();
+        }
+        await header.expectClosed();
+        await expectNoHeaderOverflow(page);
+        expect(await appBar.boundingBox()).toEqual(before);
+      };
+      await expect(header.more).toHaveAccessibleName('More actions');
+      await header.expectClosed();
+      await header.open();
+      await expect(header.panel).toHaveCSS('position', 'absolute');
+      await expect(header.panel).toHaveCSS('width', '256px');
+      await expectHeaderPopupBounds(header.panel, 320);
+      const actions = header.panel.locator('[data-header-action]');
+      await expect(actions).toHaveCount(flavor === 'admin' ? 4 : 3);
+      for (const [action, label] of [
+        ['locale', 'Language'],
+        ['color-mode', 'Color mode'],
+        ...(flavor === 'admin' ? [['theme', 'Theme']] : []),
+      ]) {
+        await expect(header.action(action!)).toHaveText(label!);
+        await expect(header.action(action!)).toHaveAttribute('title', label!);
+      }
+      const boxes = await actions.evaluateAll(elements =>
+        elements.map(element => {
+          const { x, top, bottom } = element.getBoundingClientRect();
+          return { x, top, bottom };
+        }),
+      );
+      for (let index = 1; index < boxes.length; index++) {
+        expect(boxes[index]!.top).toBeGreaterThanOrEqual(boxes[index - 1]!.bottom - 1);
+        expect(Math.abs(boxes[index]!.x - boxes[0]!.x)).toBeLessThanOrEqual(1);
+      }
+      const account = header.action('account');
+      await expect(account.locator('.v-avatar')).toHaveCSS('width', '24px');
+      await expect(account.locator('.v-avatar')).toHaveCSS('height', '24px');
+      const labelLeft = await header
+        .action('locale')
+        .locator('.header-action-label')
+        .evaluate(element => element.getBoundingClientRect().left);
+      const accountLabelLeft = await account
+        .locator('.v-btn__content')
+        .evaluate(element => element.getBoundingClientRect().left);
+      expect(Math.abs(accountLabelLeft - labelLeft)).toBeLessThanOrEqual(1);
+      const iconLeft = await header
+        .action('locale')
+        .locator('svg')
+        .evaluate(element => element.getBoundingClientRect().left);
+      const avatarLeft = await account
+        .locator('.v-avatar')
+        .evaluate(element => element.getBoundingClientRect().left);
+      expect(Math.abs(avatarLeft - iconLeft)).toBeLessThanOrEqual(1);
+      await header.openMenu('locale');
+      await expectHeaderPopupBounds(header.overlay, 320);
+      await expectNoHeaderOverflow(page);
+      expect(await appBar.boundingBox()).toEqual(before);
+      // Focusing a teleported child must count as inside the owning header.
+      await header.list.getByRole('button', { name: 'Chinese', exact: true }).focus();
+      await expect(header.panel).toBeVisible();
+      await expect(header.more).toHaveAttribute('aria-expanded', 'true');
+      await page.keyboard.press('Escape');
+      await expect(header.overlay).toHaveCount(0);
+      await expect(header.panel).toBeVisible();
+      await expect(header.action('locale')).toBeFocused();
+      await page.keyboard.press('Escape');
+      await header.expectClosed();
+      await expect(header.more).toBeFocused();
+      await header.openMenu('locale');
+      await appBar.click({ position: { x: 1, y: 1 } });
+      await header.expectClosed();
+      await header.openMenu('locale');
+      await appBar.locator('.v-app-bar-nav-icon').focus();
+      await header.expectClosed();
+
+      const modeList = await header.openMenu('color-mode');
+      const initialMode = (await modeList
+        .getByRole('button', { disabled: true })
+        .textContent())!.trim();
+      await page.keyboard.press('Escape');
+      await choose('locale', 'Chinese', false);
+      await expect(header.more).toHaveAccessibleName('更多操作');
+      if (flavor === 'web') {
+        await expect(page).toHaveURL(url => url.pathname === '/zh-cn');
+        expect(JSON.parse(new URL(page.url()).searchParams.get('headerProbe')!)).toEqual([
+          'one',
+          'two',
+        ]);
+      }
+      await header.open();
+      await expect(header.action('locale')).toHaveText('语言');
+      await expect(header.action('color-mode')).toHaveText('明暗模式');
+      if (flavor === 'admin') await expect(header.action('theme')).toHaveText('主题');
+      await choose('locale', '英语');
+      await expect(header.more).toHaveAccessibleName('More actions');
+      if (flavor === 'web') {
+        await expect(page).toHaveURL(url => url.pathname === '/');
+        expect(JSON.parse(new URL(page.url()).searchParams.get('headerProbe')!)).toEqual([
+          'one',
+          'two',
+        ]);
+      }
+      const modes = initialMode === 'Dark' ? ['Light', 'Dark'] : ['Dark', 'Light'];
+      for (const mode of modes) {
+        await choose('color-mode', mode);
+        await expect(page.locator('body')).toHaveAttribute('data-theme', mode.toLowerCase());
+        await header.openMenu('color-mode');
+        await expect(header.list.getByRole('button', { name: mode, exact: true })).toBeDisabled();
+        await page.keyboard.press('Escape');
+      }
+      if (modes.at(-1) !== initialMode) await choose('color-mode', initialMode);
+      if (flavor === 'admin') {
+        await header.openMenu('theme');
+        const initialTheme = (await header.list
+          .getByRole('button', { disabled: true })
+          .textContent())!.trim();
+        const primary = () =>
+          appBar.evaluate(element =>
+            getComputedStyle(element).getPropertyValue('--v-theme-primary'),
+          );
+        const initialPrimary = await primary();
+        await page.keyboard.press('Escape');
+        const alternate = initialTheme === 'Blue' ? 'Orange' : 'Blue';
+        await choose('theme', alternate);
+        await expect.poll(primary).not.toBe(initialPrimary);
+        await header.openMenu('theme');
+        await expect(
+          header.list.getByRole('button', { name: alternate, exact: true }),
+        ).toBeDisabled();
+        await page.keyboard.press('Escape');
+        await choose('theme', initialTheme);
+        await expect.poll(primary).toBe(initialPrimary);
+      }
+      const accountList = await header.openMenu('account');
+      const destination = flavor === 'admin' ? 'Account Settings' : 'Login';
+      const link = accountList.getByRole('link', { name: destination, exact: true });
+      await expect(link).toHaveAttribute(
+        'href',
+        flavor === 'admin' ? '/home/user/account' : /\/login(?:\?|$)/,
+      );
+      await link.click();
+      await header.expectClosed();
+      await expect(page).toHaveURL(
+        flavor === 'admin' ? /\/home\/user\/account$/ : /\/login(?:\?|$)/,
+      );
+      await expect(page.getByRole('heading', { name: destination, exact: true })).toBeVisible();
+      await expectNoHeaderOverflow(page);
+      expect(consoleErrors).toEqual([]);
+      expect(pageErrors).toEqual([]);
+    },
+  );
+
+  test(
+    `${prefix}-03: 1023 to 1024 breakpoint retains one action tree and resets overlays`,
+    { tag: [`@${flavor}`, '@flow', '@layout'] },
+    async ({ page }) => {
+      const pageErrors = collectPageErrors(page);
+      const consoleErrors = collectHeaderConsoleErrors(page);
+      await page.setViewportSize({ width: 1023, height: 900 });
+      if (flavor === 'admin') await loginAsAdmin(page);
+      else await page.goto('/', { waitUntil: 'load' });
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', flavor);
+      const header = headerActions(page, flavor);
+      await expect(header.more).toBeVisible();
+      await header.expectClosed();
+      const originalPanel = await header.panel.elementHandle();
+      const originalAccount = await header.action('account').elementHandle();
+      expect(originalPanel).not.toBeNull();
+      expect(originalAccount).not.toBeNull();
+      try {
+        await header.openMenu('locale');
+        await page.setViewportSize({ width: 1024, height: 900 });
+        await expect(header.more).toBeHidden();
+        await expect(header.more).toHaveAttribute('aria-expanded', 'false');
+        await expect(header.panel).toBeVisible();
+        await expect(header.panel).toHaveCSS('position', 'static');
+        await expect(header.overlay).toHaveCount(0);
+        const desktop = await header.panel.locator('[data-header-action]').evaluateAll(elements =>
+          elements.map(element => {
+            const { x, y, height } = element.getBoundingClientRect();
+            return { x, y: y + height / 2 };
+          }),
+        );
+        for (let index = 1; index < desktop.length; index++) {
+          expect(Math.abs(desktop[index]!.y - desktop[0]!.y)).toBeLessThanOrEqual(1);
+          expect(desktop[index]!.x).toBeGreaterThan(desktop[index - 1]!.x);
+        }
+        await header.openMenu('account');
+        await page.setViewportSize({ width: 1023, height: 900 });
+        await expect(header.more).toBeVisible();
+        await header.expectClosed();
+        await header.openMenu('color-mode');
+        await page.setViewportSize({ width: 390, height: 900 });
+        await header.expectClosed();
+        expect(
+          await header.panel.evaluate((element, original) => element === original, originalPanel),
+        ).toBe(true);
+        expect(
+          await header
+            .action('account')
+            .evaluate((element, original) => element === original, originalAccount),
+        ).toBe(true);
+        await expect(header.actions).toHaveCount(1);
+        await expect(header.panel).toHaveCount(1);
+        await expect(header.panel.locator('[data-header-action]')).toHaveCount(
+          flavor === 'admin' ? 4 : 3,
+        );
+        await header.openMenu('account');
+        await expectHeaderPopupBounds(header.overlay, 390);
+        await page.keyboard.press('Escape');
+        await expect(header.panel).toBeVisible();
+        await page.keyboard.press('Escape');
+        await header.expectClosed();
+        await expectNoHeaderOverflow(page);
+        expect(consoleErrors).toEqual([]);
+        expect(pageErrors).toEqual([]);
+      } finally {
+        await originalPanel?.dispose();
+        await originalAccount?.dispose();
+      }
+    },
+  );
+}
 
 test(
   'ATP-START-TABLE-01: Student table submits server sorting and applies column metadata',
@@ -2975,12 +3498,11 @@ test(
       await waitForStudentDraft(page, createName);
       const authenticatedIdentity = await readModelPersistenceIdentity(page);
       expect(authenticatedIdentity.scope[2]).not.toBeNull();
-      await page.getByRole('banner').getByRole('button', { name: 'admin', exact: true }).click();
-      const userMenu = page
-        .locator('.v-overlay-container')
-        .getByRole('list')
-        .filter({ hasText: 'Logout' });
-      await expect(userMenu).toBeVisible();
+      const header = headerActions(page, 'admin');
+      if (await header.more.isVisible()) await header.open();
+      await expect(header.action('account')).toHaveText('admin');
+      const userMenu = await header.openMenu('account');
+      await expect(userMenu).toContainText('Logout');
       const outgoingProtectedRequests: string[] = [];
       const outgoingUnauthorizedResponses: string[] = [];
       let loggingOut = true;

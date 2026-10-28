@@ -18,4 +18,9 @@ export default {
   'Todo: CRUD': 'Todo: CRUD',
   'Docs': 'Docs',
   'AccountSettings': 'Account Settings',
+  'MoreActions': 'More actions',
+  'Language': 'Language',
+  'ColorMode': 'Color mode',
+  'Theme': 'Theme',
+  'Account': 'Account',
 };
