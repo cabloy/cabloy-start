@@ -10,10 +10,10 @@ import type {
   NextTableCellRender,
 } from 'zova-module-a-table';
 
-import { VNode } from 'vue';
-import { VBtnGroup } from 'vuetify/components';
+import { Comment, Fragment, isVNode, Text, VNode } from 'vue';
 import { BeanBase } from 'zova';
 import { TableCell } from 'zova-module-a-table';
+import { ZRowOperations } from 'zova-module-start-table';
 
 import { filterDetailsRowActions } from '../lib/detailsPermissions.ts';
 
@@ -70,13 +70,27 @@ export class TableCellActionOperationsRow extends BeanBase implements ITableCell
     const domActions: VNode[] = [];
     actionsAllowed.forEach((action, index) => {
       const actionOptions = Object.assign({ key: index }, action.options);
-      domActions.push($$table.cellRender(action.render!, actionOptions, renderContext));
+      const domAction = $$table.cellRender(action.render!, actionOptions, renderContext);
+      if (this._hasContent(domAction)) domActions.push(domAction);
     });
     if (domActions.length === 0) return;
     return (
-      <VBtnGroup class={options.class} variant="outlined" divided>
-        {domActions}
-      </VBtnGroup>
+      <ZRowOperations
+        compact={$$table.compact}
+        class={options.class}
+        slotDefault={() => <>{domActions}</>}
+      />
     );
+  }
+
+  private _hasContent(value: unknown): boolean {
+    if (value === undefined || value === null || typeof value === 'boolean') return false;
+    if (typeof value === 'string') return value.trim().length > 0;
+    if (Array.isArray(value)) return value.some(item => this._hasContent(item));
+    if (!isVNode(value)) return true;
+    if (value.type === Comment) return false;
+    if (value.type === Text || value.type === Fragment) return this._hasContent(value.children);
+    // Component renderers stay opaque: preserve their VNode and runtime ownership.
+    return true;
   }
 }

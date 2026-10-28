@@ -6,7 +6,12 @@ import { Row } from '@tanstack/table-core';
 import { VDataTableRow, VDataTableServer } from 'vuetify/components';
 import { BeanControllerBase, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
-import { BeanControllerTableBase, TableColumnIdSelection, ZTable } from 'zova-module-a-table';
+import {
+  BeanControllerTableBase,
+  ControllerTable,
+  TableColumnIdSelection,
+  ZTable,
+} from 'zova-module-a-table';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceBlockRecord {
@@ -14,20 +19,34 @@ declare module 'zova-module-a-openapi' {
   }
 }
 
-export interface ControllerBlockTableProps extends IResourceBlockOptionsBase {}
+export interface ControllerBlockTableProps extends IResourceBlockOptionsBase {
+  compactBreakpoint?: number | false;
+}
 
 @Controller()
 export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerBase {
-  static $propsDefault = {};
+  static $propsDefault = { compactBreakpoint: 768 };
   static $componentOptions: IComponentOptions = { inheritAttrs: false, deepExtendDefault: true };
 
-  tableRef: BeanControllerTableBase<TData>;
+  tableRef: ControllerTable<TData>;
+  containerWidth: number = 0;
+  private _container?: HTMLElement;
+  private _observer?: ResizeObserver;
+  private _mounted: boolean = false;
+  private _disposed: boolean = false;
   private cTable: string;
 
   @Use({ injectionScope: 'host' })
   $$renderContext: IJsxRenderContextPage;
 
   protected async __init__() {
+    this.$controllerMounted(() => {
+      this.$ssr.handleDirectOrOnHydrated(() => {
+        if (this._disposed) return;
+        this._mounted = true;
+        this._observeContainer();
+      });
+    });
     this.cTable = this.$style({
       $nest: {
         '&.v-data-table .v-table__wrapper > table > thead > tr > th.v-data-table__th--sortable:not(.v-data-table__th--sorted) .v-data-table-header__sort-icon':
@@ -42,11 +61,76 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
     return this.$$renderContext.$celScope.permissions;
   }
 
+  public get compact() {
+    const breakpoint = this.$props.compactBreakpoint;
+    return (
+      breakpoint !== false && this.containerWidth > 0 && this.containerWidth < (breakpoint ?? 768)
+    );
+  }
+
+  public get columnSizing() {
+    const sizing: Record<string, number> = {};
+    if (this.compact) {
+      for (const property of this.tableRef?.tableMeta?.properties ?? []) {
+        if (this.isOperationsColumn(property.key!)) sizing[property.key!] = 80;
+      }
+    }
+    return sizing;
+  }
+
+  public isOperationsColumn(key: string) {
+    const table = this.tableRef;
+    if (!table) return false;
+    const scope = table.getColumnScope(key);
+    const { render } = table.getColumnComponentPropsTop(key, scope, {});
+    const provider = table.getRenderProvider(render);
+    return (
+      provider === 'start-table.tableCell.actionOperationsRow' ||
+      provider === 'start-details.tableCell.actionOperationsRow'
+    );
+  }
+
+  private _setContainer(element: HTMLElement | undefined) {
+    if (element === this._container) return;
+    this._observer?.disconnect();
+    this._container = element;
+    this._observeContainer();
+  }
+
+  private _observeContainer() {
+    const container = this._container;
+    if (!this._mounted || this._disposed || !container) return;
+    this._observer?.disconnect();
+    const measure = () => {
+      if (this._disposed || container !== this._container) return;
+      this.containerWidth = container.clientWidth;
+    };
+    measure();
+    this._observer = new ResizeObserver(measure);
+    this._observer.observe(container);
+  }
+
+  protected __dispose__() {
+    this._disposed = true;
+    this._observer?.disconnect();
+    this._container = undefined;
+  }
+
   protected render() {
     const { $$page } = this.$$renderContext;
     return (
-      <div class={this.$props.class}>
+      <div
+        class={this.$props.class}
+        style={{ minWidth: 0, maxWidth: '100%' }}
+        data-table-compact={this.compact ? 'true' : 'false'}
+        ref={element => {
+          if (this.ctx.disposed) return;
+          this._setContainer?.((element as HTMLElement | null) ?? undefined);
+        }}
+      >
         <ZTable<TData>
+          compact={this.compact}
+          columnSizing={this.columnSizing}
           controllerRef={ref => {
             this.tableRef = ref;
             $$page.setTableRef(ref as unknown as BeanControllerTableBase<{}> | undefined);
@@ -80,6 +164,11 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
         const column = header.column;
         const columnDefHeader = column.columnDef.header;
         const rest = (column.columnDef.meta as any)?.rest;
+        const fixed = column.getIsPinned();
+        const width =
+          typeof rest?.width === 'number' || typeof this.columnSizing[column.id] === 'number'
+            ? column.getSize()
+            : undefined;
         return {
           title:
             typeof columnDefHeader === 'function'
@@ -87,9 +176,9 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
               : columnDefHeader,
           key: header.id === TableColumnIdSelection ? 'data-table-select' : header.id,
           align: rest?.align === 'left' ? 'start' : rest?.align === 'right' ? 'end' : rest?.align,
-          width: rest?.width,
-          minWidth: rest?.width,
-          fixed: rest?.fixed === 'left' ? 'start' : rest?.fixed === 'right' ? 'end' : undefined,
+          width,
+          minWidth: width,
+          fixed: fixed === 'left' ? 'start' : fixed === 'right' ? 'end' : undefined,
           sortable: column.getCanSort(),
         };
       });
@@ -177,6 +266,15 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
         return <VDataTableRow {...itemSlotProps.props} v-slots={slotsCell} />;
       },
     };
+    for (const header of headers) {
+      if (this.compact && this.isOperationsColumn(header.key!)) {
+        slots[`header.${header.key}`] = () => (
+          <span class="d-inline-block position-relative">
+            <span class="d-sr-only">{header.title}</span>
+          </span>
+        );
+      }
+    }
     return <VDataTableServer {...dataTableOptions} v-slots={slots}></VDataTableServer>;
   }
 }

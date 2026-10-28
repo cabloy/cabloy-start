@@ -1,5 +1,9 @@
 export default {
   Create: '创建',
+  Edit: '编辑',
+  Delete: '删除',
+  MoreActions: '更多操作',
+  RowActions: '行操作',
   DeleteConfirm: '您确认要删除本数据吗？',
   DeleteBulk: '批量删除',
   DeleteBulkConfirm: '您确认要删除所选的 %d 项数据吗？',

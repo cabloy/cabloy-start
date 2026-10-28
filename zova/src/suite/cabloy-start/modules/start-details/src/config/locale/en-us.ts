@@ -1,6 +1,7 @@
 export default {
   AddDetail: 'Add Detail',
   EditDetail: 'Edit Detail',
+  DeleteDetail: 'Delete Detail',
   ViewDetail: 'View Detail',
   Cancel: 'Cancel',
   OK: 'OK',

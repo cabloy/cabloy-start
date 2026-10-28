@@ -31,16 +31,19 @@ export class TableCellActionUpdate extends BeanBase implements ITableCellRender 
     renderContext: IJsxRenderContextTableCell,
     _next: NextTableCellRender,
   ) {
-    const { $host } = renderContext;
+    const { $host, $$table } = renderContext;
     return (
       <ZButton
         class={options.class}
         color={options.color}
-        icon={options.icon}
+        icon={$$table.compact ? undefined : options.icon}
+        prependIcon={$$table.compact ? options.icon : undefined}
+        text={$$table.compact ? this.scope.locale.Edit() : undefined}
+        aria-label={this.scope.locale.Edit()}
         onPerform={async () => {
           await $host.$performCommand('start-commands:edit', options, renderContext);
         }}
-      ></ZButton>
+      />
     );
   }
 }

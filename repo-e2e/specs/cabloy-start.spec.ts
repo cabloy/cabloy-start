@@ -1042,7 +1042,11 @@ test(
       const initial = await initialSelect;
       const initialUrl = new URL(initial.url());
       expect(initialUrl.searchParams.has('orders')).toBe(false);
-      await page.setViewportSize({ width: 800, height: 900 });
+      const tableBlock = page.locator('div[data-table-compact]').filter({
+        has: page.getByRole('columnheader', { name: 'Operations', exact: true }),
+      });
+      await expect(tableBlock).toHaveAttribute('data-table-compact', 'false');
+      expect(await tableBlock.evaluate(element => element.clientWidth)).toBeGreaterThanOrEqual(768);
 
       const nameHeader = page.getByRole('columnheader', { name: 'Student Name', exact: true });
       const levelHeader = page.getByRole('columnheader', { name: 'Training Stage', exact: true });
@@ -1063,25 +1067,6 @@ test(
       await expect(operationsHeader).toHaveCSS('min-width', '360px');
       await expect(operationsHeader).toHaveCSS('text-align', 'center');
       await expect(operationsHeader.locator('.v-data-table-header__sort-icon')).toHaveCount(0);
-
-      const footer = page.locator('.v-data-table-footer').first();
-      await expect(footer).toBeVisible();
-      const footerGeometry = await getTableFooterGeometry(footer);
-      expect(footerGeometry.footer.display).toBe('flex');
-      expect(footerGeometry.footer.flexWrap).toBe('wrap');
-      expect(footerGeometry.footer.height).toBeCloseTo(36);
-      expect(getVerticalBands(footerGeometry.regions)).toHaveLength(1);
-      expect(footerGeometry.select.width).toBeCloseTo(88);
-      expect(footerGeometry.select.height).toBeCloseTo(36);
-      expect(footerGeometry.info.width).toBeGreaterThanOrEqual(96);
-      expect(footerGeometry.pagination.display).toBe('flex');
-      expect(footerGeometry.pagination.alignItems).toBe('center');
-      expect(footerGeometry.pagination.height).toBeCloseTo(36);
-      expect(footerGeometry.buttons.length).toBeGreaterThanOrEqual(4);
-      for (const { width, height } of footerGeometry.buttons) {
-        expect(width).toBeGreaterThanOrEqual(36);
-        expect(height).toBeCloseTo(36);
-      }
 
       const bulkToolbar = page.getByRole('toolbar', { name: 'Bulk Actions' });
       await expect(bulkToolbar).toBeVisible();
@@ -1164,6 +1149,28 @@ test(
         element.scrollLeft = element.scrollWidth;
       });
       await expect(operationsHeader).toHaveCSS('position', 'sticky');
+
+      // Header widths and desktop row actions above require a genuinely wide container.
+      // Keep the footer's existing 800px/390px viewport geometry coverage independent.
+      await page.setViewportSize({ width: 800, height: 900 });
+      const footer = page.locator('.v-data-table-footer').first();
+      await expect(footer).toBeVisible();
+      const footerGeometry = await getTableFooterGeometry(footer);
+      expect(footerGeometry.footer.display).toBe('flex');
+      expect(footerGeometry.footer.flexWrap).toBe('wrap');
+      expect(footerGeometry.footer.height).toBeCloseTo(36);
+      expect(getVerticalBands(footerGeometry.regions)).toHaveLength(1);
+      expect(footerGeometry.select.width).toBeCloseTo(88);
+      expect(footerGeometry.select.height).toBeCloseTo(36);
+      expect(footerGeometry.info.width).toBeGreaterThanOrEqual(96);
+      expect(footerGeometry.pagination.display).toBe('flex');
+      expect(footerGeometry.pagination.alignItems).toBe('center');
+      expect(footerGeometry.pagination.height).toBeCloseTo(36);
+      expect(footerGeometry.buttons.length).toBeGreaterThanOrEqual(4);
+      for (const { width, height } of footerGeometry.buttons) {
+        expect(width).toBeGreaterThanOrEqual(36);
+        expect(height).toBeCloseTo(36);
+      }
 
       await page.setViewportSize({ width: 390, height: 900 });
       await expect
@@ -1430,6 +1437,318 @@ test(
         });
       }
     }
+  },
+);
+
+test(
+  'ATP-START-TABLE-04: compact Student row actions follow container width and survive dismissal and reload',
+  { tag: ['@admin', '@flow', '@layout', '@ssr'] },
+  async ({ page }) => {
+    test.setTimeout(120_000);
+    const wideViewport = { width: 1440, height: 900 };
+    await page.setViewportSize(wideViewport);
+    await loginAsAdmin(page);
+    await withDraftStudents(page, 1, async ([student], headers) => {
+      const effects = collectDraftEffects(page, true);
+      const profileWrites: string[] = [];
+      page.on('request', request => {
+        const path = new URL(request.url()).pathname;
+        if (request.method() !== 'GET' && path.startsWith('/api/layoutprofile/')) {
+          profileWrites.push(`${request.method()} ${path}`);
+        }
+      });
+      const loaded = waitForStudentSelect(page);
+      await openStudentListPage(page);
+      await loaded;
+      const listUrl = page.url();
+      const tableBlock = page.locator('div[data-table-compact]').filter({
+        has: page.getByRole('columnheader', { name: 'Operations', exact: true }),
+      });
+      const operationsHeader = tableBlock.getByRole('columnheader', {
+        name: 'Operations',
+        exact: true,
+      });
+      const nameHeader = tableBlock.getByRole('columnheader', {
+        name: 'Student Name',
+        exact: true,
+      });
+      const row = studentRow(page, student.name);
+      const trigger = row.getByRole('button', { name: 'More actions', exact: true });
+      const resolveActions = async () => {
+        const id = (await trigger.count())
+          ? await trigger.getAttribute('aria-controls')
+          : await row.locator('[data-row-actions-content]').getAttribute('id');
+        const popup = page.locator(`[id="${id}"]`);
+        const actions = popup.getByRole('group', {
+          name: 'Row actions',
+          exact: true,
+          includeHidden: true,
+        });
+        return {
+          popup,
+          actions,
+          summary: actions.getByRole('button', {
+            name: 'Summary',
+            exact: true,
+            includeHidden: true,
+          }),
+          forceDelete: actions.getByRole('button', {
+            name: 'Force Delete',
+            exact: true,
+            includeHidden: true,
+          }),
+        };
+      };
+      let { popup, actions, summary, forceDelete } = await resolveActions();
+      const expectNoDocumentOverflow = async () => {
+        const geometry = await page.evaluate(() => ({
+          clientWidth: document.documentElement.clientWidth,
+          scrollWidth: document.documentElement.scrollWidth,
+        }));
+        expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth + 1);
+      };
+      const expectActionIcons = async () => {
+        for (const name of ['Edit', 'Delete']) {
+          const icon = actions.getByRole('button', { name, exact: true }).locator('.v-icon svg');
+          await expect(icon).toBeVisible();
+          await expect(icon.locator('use')).toHaveAttribute('xlink:href', /^#.+/);
+        }
+      };
+      const openActions = async () => {
+        // The operations column deliberately remains inside the table's horizontal scroller.
+        await trigger.scrollIntoViewIfNeeded();
+        await trigger.click();
+        await expect(popup).toBeVisible();
+        await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+        await expect(actions).toBeVisible();
+        await expect(actions.getByRole('button', { name: 'Edit', exact: true })).toHaveText('Edit');
+        await expect(actions.getByRole('button', { name: 'Delete', exact: true })).toHaveText(
+          'Delete',
+        );
+        await expectActionIcons();
+        const layout = await actions.evaluate(element => {
+          const group = element.getBoundingClientRect();
+          return Array.from(element.querySelectorAll('button')).map(button => {
+            const rect = button.getBoundingClientRect();
+            const style = getComputedStyle(button);
+            return {
+              width: rect.width,
+              height: rect.height,
+              left: rect.left - group.left,
+              right: rect.right - group.right,
+              top: rect.top,
+              bottom: rect.bottom,
+              borderWidth: style.borderTopWidth,
+              radius: style.borderTopLeftRadius,
+              justifyContent: style.justifyContent,
+              textAlign: style.textAlign,
+            };
+          });
+        });
+        expect(layout).toHaveLength(4);
+        for (const [index, button] of layout.entries()) {
+          expect(button.width).toBeGreaterThanOrEqual(140);
+          expect(button.height).toBeGreaterThanOrEqual(36);
+          expect(Math.abs(button.left)).toBeLessThanOrEqual(1);
+          expect(Math.abs(button.right)).toBeLessThanOrEqual(1);
+          expect(button.borderWidth).toBe('0px');
+          expect(button.radius).toBe('4px');
+          expect(button.justifyContent).toBe('flex-start');
+          expect(button.textAlign).toBe('left');
+          if (index > 0) expect(button.top - layout[index - 1]!.bottom).toBeGreaterThanOrEqual(4);
+        }
+      };
+
+      await expect(tableBlock).toHaveAttribute('data-table-compact', 'false');
+      expect(await tableBlock.evaluate(element => element.clientWidth)).toBeGreaterThanOrEqual(768);
+      await expect(operationsHeader).toHaveCSS('min-width', '360px');
+      await expect(operationsHeader).toHaveCSS('position', 'sticky');
+      await expect(nameHeader).toHaveCSS('position', 'sticky');
+      await expect(actions).toHaveClass(/\bv-btn-group--horizontal\b/);
+      await expect(summary).toBeVisible();
+      await expect(actions.getByRole('button', { name: 'Edit', exact: true })).toHaveText('');
+      await expect(actions.getByRole('button', { name: 'Delete', exact: true })).toHaveText('');
+      await expectActionIcons();
+      await expect(trigger).toHaveCount(0);
+
+      // Resize only the owning block: a wide viewport must not force desktop operations.
+      const originalStyle = await tableBlock.getAttribute('style');
+      try {
+        await tableBlock.evaluate(element => {
+          (element as HTMLElement).style.width = '360px';
+        });
+        await expect.poll(() => tableBlock.evaluate(element => element.clientWidth)).toBe(360);
+        await expect(tableBlock).toHaveAttribute('data-table-compact', 'true');
+        expect(page.viewportSize()).toEqual(wideViewport);
+        await expect(operationsHeader).toHaveCSS('min-width', '80px');
+        await expect(operationsHeader).not.toHaveCSS('position', 'sticky');
+        await expect(nameHeader).not.toHaveCSS('position', 'sticky');
+        await expect(trigger).toBeVisible();
+        await expect(popup.locator('xpath=ancestor::div[contains(@class, "v-menu")]')).toHaveCount(
+          1,
+        );
+        await expect(popup).toBeHidden();
+        await expect(actions).toHaveClass(/\bv-btn-group--vertical\b/);
+
+        await trigger.scrollIntoViewIfNeeded();
+        await trigger.focus();
+        await trigger.press('Enter');
+        await expect(popup).toBeVisible();
+        await expect(summary).toBeFocused();
+        await page.keyboard.press('Escape');
+        await expect(popup).toBeHidden();
+        await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+        await expect(trigger).toBeFocused();
+
+        await openActions();
+        // Observe the button's capture phase, before its original onPerform handler runs.
+        await forceDelete.evaluate(element => {
+          element.addEventListener(
+            'click',
+            () => {
+              element.setAttribute(
+                'data-e2e-popup-open-at-action',
+                String(
+                  getComputedStyle(element).visibility !== 'hidden' &&
+                    element.getClientRects().length > 0,
+                ),
+              );
+            },
+            { capture: true, once: true },
+          );
+        });
+        await forceDelete.click();
+        await expect(forceDelete).toHaveAttribute('data-e2e-popup-open-at-action', 'false');
+        await expect(popup).toBeHidden();
+        const confirmation = page.getByRole('dialog');
+        await expect(
+          confirmation.getByText('Are you sure you want to permanently delete this student?', {
+            exact: true,
+          }),
+        ).toBeVisible();
+        // Closing the popup must not unmount the ZButton that owns the pending action.
+        await expect(forceDelete).toHaveAttribute('aria-busy', 'true');
+        await expect(forceDelete).toBeDisabled();
+        await tableBlock.evaluate((element, style) => {
+          if (style === null) element.removeAttribute('style');
+          else element.setAttribute('style', style);
+        }, originalStyle);
+        await expect(tableBlock).toHaveAttribute('data-table-compact', 'false');
+        await expect(forceDelete).toHaveAttribute('data-e2e-popup-open-at-action', 'false');
+        await expect(forceDelete).toHaveAttribute('aria-busy', 'true');
+        await expect(forceDelete).toBeDisabled();
+        await tableBlock.evaluate(element => {
+          (element as HTMLElement).style.width = '360px';
+        });
+        await expect(tableBlock).toHaveAttribute('data-table-compact', 'true');
+        await expect(forceDelete).toBeDisabled();
+        await confirmation.getByRole('button', { name: 'No', exact: true }).click();
+        await expect(confirmation).toBeHidden();
+        await expect(forceDelete).toBeEnabled();
+        await expect(forceDelete).not.toHaveAttribute('aria-busy', 'true');
+        await expect(row).toHaveCount(1);
+        expect(effects.mutations).toEqual([]);
+
+        await openActions();
+        await summary.focus();
+        await summary.press('Enter');
+        await expect(popup).toBeHidden();
+        const summaryDialog = page.getByRole('dialog');
+        await expect(summaryDialog.getByText('Summary', { exact: true })).toBeVisible();
+        await expect(summaryDialog).toContainText(student.name);
+        await page.keyboard.press('Escape');
+        await expect(summaryDialog).toBeHidden();
+
+        await openActions();
+        const tableWrapper = tableBlock.locator('.v-table__wrapper');
+        const scrollLeft = await tableWrapper.evaluate(element => element.scrollLeft);
+        expect(scrollLeft).toBeGreaterThan(0);
+        await tableWrapper.evaluate(element => {
+          element.scrollLeft = 0;
+        });
+        await expect(popup).toBeHidden();
+        await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+
+        await openActions();
+        // Still compact before and after a viewport resize: dismissal is not just a mode switch.
+        await page.setViewportSize({ width: 1400, height: 900 });
+        await expect(tableBlock).toHaveAttribute('data-table-compact', 'true');
+        await expect(popup).toBeHidden();
+        await page.setViewportSize(wideViewport);
+        await openActions();
+      } finally {
+        await tableBlock.evaluate((element, style) => {
+          if (style === null) element.removeAttribute('style');
+          else element.setAttribute('style', style);
+        }, originalStyle);
+      }
+      await expect(tableBlock).toHaveAttribute('data-table-compact', 'false');
+      await expect(trigger).toHaveCount(0);
+      await expect(row.locator('[data-row-actions-content]')).toHaveCount(1);
+      await expect(operationsHeader).toHaveCSS('min-width', '360px');
+      await expect(operationsHeader).toHaveCSS('position', 'sticky');
+      await expect(nameHeader).toHaveCSS('position', 'sticky');
+      await expect(actions).toHaveClass(/\bv-btn-group--horizontal\b/);
+      await expect(summary).toBeVisible();
+      await expectActionIcons();
+      expect(profileWrites).toEqual([]);
+
+      await page.setViewportSize({ width: 390, height: 900 });
+      await expect(tableBlock).toHaveAttribute('data-table-compact', 'true');
+      await openActions();
+      const workspace = studentDraftWorkspaceTabs(page).getByRole('tab', {
+        name: 'Student',
+        exact: true,
+      });
+      await workspace.hover();
+      await workspace.locator('.close').click();
+      await expect(workspace).toHaveCount(0);
+      await expect(tableBlock).toHaveCount(0);
+      await expect(page.locator('.v-menu.v-overlay--active')).toHaveCount(0);
+      // Reopen through the real menu with the drawer visible at the desktop breakpoint.
+      await page.setViewportSize(wideViewport);
+      await openStudentListPage(page);
+      await expect(tableBlock).toHaveAttribute('data-table-compact', 'false');
+      await expect(row).toHaveCount(1);
+      ({ popup, actions, summary, forceDelete } = await resolveActions());
+      await page.setViewportSize({ width: 390, height: 900 });
+      await expect(tableBlock).toHaveAttribute('data-table-compact', 'true');
+      await openActions();
+      await page.keyboard.press('Escape');
+      await expect(popup).toBeHidden();
+
+      for (const width of [390, 320]) {
+        await page.setViewportSize({ width, height: 900 });
+        const response = await page.reload({ waitUntil: 'load' });
+        expect(response?.ok()).toBeTruthy();
+        expect(await response!.text()).toContain('data-server-rendered');
+        await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+        await expect(page).toHaveURL(listUrl);
+        await expect(tableBlock).toHaveAttribute('data-table-compact', 'true');
+        ({ popup, actions, summary, forceDelete } = await resolveActions());
+        expect(await tableBlock.evaluate(element => element.clientWidth)).toBeLessThan(768);
+        await expect(operationsHeader).toHaveCSS('min-width', '80px');
+        await expect(operationsHeader).not.toHaveCSS('position', 'sticky');
+        await expect(nameHeader).not.toHaveCSS('position', 'sticky');
+        await expectNoDocumentOverflow();
+        await openActions();
+        const popupBounds = await popup.boundingBox();
+        expect(popupBounds).not.toBeNull();
+        expect(popupBounds!.x).toBeGreaterThanOrEqual(0);
+        expect(popupBounds!.x + popupBounds!.width).toBeLessThanOrEqual(width + 1);
+        await expectNoDocumentOverflow();
+        await page.keyboard.press('Escape');
+        await expect(popup).toBeHidden();
+        await expect(trigger).toBeFocused();
+      }
+      const unchanged = await page.request.get(`/api/training/student/${student.id}`, { headers });
+      expect(unchanged.ok()).toBeTruthy();
+      expect((await unchanged.json()).name).toBe(student.name);
+      expect(profileWrites).toEqual([]);
+      expect(effects.mutations).toEqual([]);
+      expect(effects.hydrationWarnings).toEqual([]);
+      expect(effects.pageErrors).toEqual([]);
+    });
   },
 );
 

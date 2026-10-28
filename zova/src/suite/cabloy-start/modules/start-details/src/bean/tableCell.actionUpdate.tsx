@@ -37,12 +37,15 @@ export class TableCellActionUpdate extends BeanBase implements ITableCellRender 
     renderContext: IJsxRenderContextTableCell,
     _next: NextTableCellRender,
   ) {
-    const { ctx, $celScope, cellContext } = renderContext;
+    const { ctx, $celScope, cellContext, $$table } = renderContext;
     return (
       <ZButton
         class={options.class}
         color={options.color}
-        icon={options.icon}
+        icon={$$table.compact ? undefined : options.icon}
+        prependIcon={$$table.compact ? options.icon : undefined}
+        text={$$table.compact ? this.scope.locale.EditDetail() : undefined}
+        aria-label={this.scope.locale.EditDetail()}
         onPerform={async () => {
           const $$details = $celScope.$$details;
           if (!$$details) throw new Error('should provide $$details in cell scope');
@@ -72,7 +75,7 @@ export class TableCellActionUpdate extends BeanBase implements ITableCellRender 
           } satisfies IDialogFormOptions);
           detailService.openDialogForm();
         }}
-      ></ZButton>
+      />
     );
   }
 }

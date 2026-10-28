@@ -31,12 +31,15 @@ export class TableCellActionDelete extends BeanBase implements ITableCellRender 
     renderContext: IJsxRenderContextTableCell,
     _optionsnext: NextTableCellRender,
   ) {
-    const { $host } = renderContext;
+    const { $host, $$table } = renderContext;
     return (
       <ZButton
         class={options.class}
         color={options.color}
-        icon={options.icon}
+        icon={$$table.compact ? undefined : options.icon}
+        prependIcon={$$table.compact ? options.icon : undefined}
+        text={$$table.compact ? this.scope.locale.Delete() : undefined}
+        aria-label={this.scope.locale.Delete()}
         onPerform={async () => {
           const confirmed = await $host.$performCommand('start-commands:confirm', {
             text: this.scope.locale.DeleteConfirm(),
@@ -44,7 +47,7 @@ export class TableCellActionDelete extends BeanBase implements ITableCellRender 
           if (!confirmed) return;
           await $host.$performCommand('start-commands:delete', options, renderContext);
         }}
-      ></ZButton>
+      />
     );
   }
 }
