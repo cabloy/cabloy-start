@@ -632,7 +632,7 @@ test(
       await expect(dialog).toBeVisible();
       const rolePicker = dialog.locator('.v-select');
       await rolePicker.click();
-      const options = page.locator('.v-overlay__content').filter({
+      const options = page.locator('.v-select__content').filter({
         has: page.locator('.v-list-item-title'),
       });
       await expect(options.getByText('Registered User', { exact: true })).toBeVisible();
@@ -1612,7 +1612,7 @@ test(
         await expect(replacementDialog).toBeVisible();
         const currentRolePicker = replacementDialog.locator('.v-select');
         await currentRolePicker.click();
-        const currentReplacementOptions = subjectPage.locator('.v-overlay__content').filter({
+        const currentReplacementOptions = subjectPage.locator('.v-select__content').filter({
           has: subjectPage.locator('.v-list-item-title'),
         });
         await expect(
@@ -1675,7 +1675,7 @@ test(
         await expect(unrelatedUserDialog).toBeVisible();
         const unrelatedUserRolePicker = unrelatedUserDialog.locator('.v-select');
         await unrelatedUserRolePicker.click();
-        const unrelatedUserOptions = subjectPage.locator('.v-overlay__content').filter({
+        const unrelatedUserOptions = subjectPage.locator('.v-select__content').filter({
           has: subjectPage.locator('.v-list-item-title'),
         });
         await unrelatedUserOptions.getByText(unrelatedRoleName, { exact: true }).click();
