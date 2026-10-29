@@ -1684,6 +1684,31 @@ test(
           )
           .toBe(true);
       };
+      const expectCloseContained = async (index: number) => {
+        await task(index).hover();
+        const icon = task(index).locator('.close');
+        await expect(icon).toBeVisible();
+        await expect(icon).toHaveCSS('top', '2px');
+        await expect(icon).toHaveCSS('right', '4px');
+        await expect
+          .poll(() =>
+            icon.evaluate(element => {
+              const icon = element.getBoundingClientRect();
+              const tab = element.closest('[role="tab"]')!.getBoundingClientRect();
+              const clip = element
+                .closest('.v-slide-group')!
+                .querySelector('.v-slide-group__container')!
+                .getBoundingClientRect();
+              return (
+                icon.top >= Math.max(tab.top, clip.top) &&
+                icon.bottom <= Math.min(tab.bottom, clip.bottom) &&
+                icon.left >= Math.max(tab.left, clip.left) &&
+                icon.right <= Math.min(tab.right, clip.right)
+              );
+            }),
+          )
+          .toBe(true);
+      };
       const close = async (index: number) => {
         await list
           .getByRole('button', { name: `Close tab: ${titles[index]}`, exact: true })
@@ -1699,6 +1724,7 @@ test(
       await expectStrip(false, 3);
       await expect(task(2)).toHaveAttribute('aria-selected', 'true');
       await expectActiveRevealed(2);
+      await expectCloseContained(2);
 
       // Viewport size is not the mode contract: this wrapper must remain >=240px,
       // with genuine scroll overflow and no Vuetify arrow affixes at the middle size.
@@ -1710,6 +1736,7 @@ test(
       await openMenu([0, 1, 2], 2);
       await choose(0);
       await expectActiveRevealed(0);
+      await expectCloseContained(0);
       const firstPosition = await container.evaluate(element => element.scrollLeft);
       const triggerBefore = (await more.boundingBox())!;
       await openMenu([0, 1, 2], 0);
