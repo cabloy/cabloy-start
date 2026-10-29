@@ -1166,6 +1166,7 @@ test(
 
 for (const flavor of ['admin', 'web'] as const) {
   const prefix = flavor === 'web' ? 'ATP-START-WEB-HEADER' : 'ATP-START-HEADER';
+  const accountAvatarSize = flavor === 'admin' ? '18px' : '24px';
   test(
     `${prefix}-01: SSR header geometry survives compact and desktop hydration`,
     { tag: [`@${flavor}`, '@ssr', '@layout'] },
@@ -1268,7 +1269,7 @@ for (const flavor of ['admin', 'web'] as const) {
                 await expect(header.panel).toBeVisible();
                 await expect(header.action('account').locator('.v-avatar')).toHaveCSS(
                   'width',
-                  '24px',
+                  accountAvatarSize,
                 );
                 if (flavor === 'web') {
                   await expect(header.action('account').locator('.header-account-name')).toHaveCSS(
@@ -1379,8 +1380,8 @@ for (const flavor of ['admin', 'web'] as const) {
         expect(Math.abs(boxes[index]!.x - boxes[0]!.x)).toBeLessThanOrEqual(1);
       }
       const account = header.action('account');
-      await expect(account.locator('.v-avatar')).toHaveCSS('width', '24px');
-      await expect(account.locator('.v-avatar')).toHaveCSS('height', '24px');
+      await expect(account.locator('.v-avatar')).toHaveCSS('width', accountAvatarSize);
+      await expect(account.locator('.v-avatar')).toHaveCSS('height', accountAvatarSize);
       const labelLeft = await header
         .action('locale')
         .locator('.header-action-label')
