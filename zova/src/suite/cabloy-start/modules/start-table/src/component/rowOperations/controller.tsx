@@ -184,14 +184,15 @@ export class ControllerRowOperations extends BeanControllerBase {
             default: () => <div ref={this._onMenuHostRef} />,
           }}
         />
-        {/* SSR and hydration start inline. Teleport moves, rather than remounts, the same
-            action subtree when the hydrated menu host becomes available or width changes. */}
+        {/* SSR and hydration retain actions inline, hidden while compact has no menu host.
+            Teleport moves, rather than remounts, the same subtree when the host is ready. */}
         <Teleport to={this._menuHost ?? 'body'} disabled={!compact || !this._menuHost}>
           <div
             ref={this._onActionsRef}
             id={this._id}
             data-row-actions-content
             class={compact ? [this._cActions, 'elevation-8'] : undefined}
+            style={{ display: compact && !this._menuHost ? 'none' : undefined }}
           >
             <VBtnGroup
               class={this.$props.class}

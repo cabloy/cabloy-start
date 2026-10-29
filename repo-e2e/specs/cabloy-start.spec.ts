@@ -12,6 +12,10 @@ import {
 
 const studentResourceUrl =
   /\/admin\/rest\/resource\/training-student(?:%3A|:|%253A)student(?:[/?#]|$)/;
+const mobileUserAgent =
+  'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1';
+const desktopUserAgent =
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36';
 
 interface IModelPersistenceIdentity {
   appName: string;
@@ -1011,6 +1015,43 @@ test(
     await expect(page.locator('body')).toBeVisible();
     await expect(page).not.toHaveTitle(/error/i);
     expect(pageErrors).toEqual([]);
+  },
+);
+
+test(
+  'ATP-START-SSR-03: public cache omits compact hints while no-store SSR retains them',
+  { tag: ['@web', '@ssr'] },
+  async ({ request }) => {
+    // The same cacheable URL must remain hint-free for mobile, desktop, then mobile requests.
+    for (const userAgent of [mobileUserAgent, desktopUserAgent, mobileUserAgent]) {
+      const response = await request.get('/', {
+        headers: { 'User-Agent': userAgent },
+      });
+      expect(response.ok()).toBeTruthy();
+      expect(response.headers()['cache-control']).toBe('public, max-age=600');
+      expect((response.headers().vary ?? '').toLowerCase().split(/\s*,\s*/)).not.toContain(
+        'user-agent',
+      );
+      const html = await response.text();
+      const state = html.match(/<script[^>]*id="ssr-state-init"[^>]*>([\s\S]*?)<\/script>/)?.[1];
+      expect(state).toBeTruthy();
+      expect(state).not.toContain('compactHint');
+    }
+
+    for (const compactHint of [true, false]) {
+      const response = await request.get('/demo/basic/component', {
+        headers: { 'User-Agent': compactHint ? mobileUserAgent : desktopUserAgent },
+      });
+      expect(response.ok()).toBeTruthy();
+      expect(response.headers()['cache-control']).toBe('no-cache, no-store, must-revalidate');
+      expect((response.headers().vary ?? '').toLowerCase().split(/\s*,\s*/)).not.toContain(
+        'user-agent',
+      );
+      const html = await response.text();
+      const state = html.match(/<script[^>]*id="ssr-state-init"[^>]*>([\s\S]*?)<\/script>/)?.[1];
+      expect(state).toBeTruthy();
+      expect(state?.match(/compactHint\s*:\s*(true|false)/)?.[1]).toBe(String(compactHint));
+    }
   },
 );
 
@@ -2271,6 +2312,245 @@ test(
       expect(effects.mutations).toEqual([]);
       expect(effects.hydrationWarnings).toEqual([]);
       expect(effects.pageErrors).toEqual([]);
+    });
+  },
+);
+
+test(
+  'ATP-START-TABLE-05: mobile-UA SSR starts compact before scripts and container width wins after hydration',
+  { tag: ['@admin', '@flow', '@ssr'] },
+  async ({ page, browser }) => {
+    test.setTimeout(120_000);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await loginAsAdmin(page);
+    await withDraftStudents(page, 1, async ([student]) => {
+      const loaded = waitForStudentSelect(page);
+      await openStudentListPage(page);
+      await loaded;
+      const listUrl = page.url();
+      const storageState = await page.context().storageState();
+      for (const scenario of [
+        { mobile: true, width: 390 },
+        { mobile: true, width: 1440 },
+        { mobile: false, width: 390 },
+      ]) {
+        const context = await browser.newContext({
+          baseURL: new URL(listUrl).origin,
+          storageState,
+          userAgent: scenario.mobile ? mobileUserAgent : desktopUserAgent,
+          viewport: { width: scenario.width, height: 900 },
+        });
+        try {
+          const ssrPage = await context.newPage();
+          const effects = collectDraftEffects(ssrPage, true);
+          let releaseScripts!: () => void;
+          const scriptsHeld = new Promise<void>(resolve => {
+            releaseScripts = resolve;
+          });
+          let heldScripts = 0;
+          const holdExternalScripts = async (route: Route) => {
+            if (route.request().resourceType() === 'script') {
+              heldScripts++;
+              await scriptsHeld;
+            }
+            await route.continue();
+          };
+          await ssrPage.route('**/*', holdExternalScripts);
+          try {
+            const response = await ssrPage.goto(listUrl, { waitUntil: 'commit' });
+            expect(response?.ok()).toBeTruthy();
+            expect(response?.headers()['cache-control']).toBe('private, no-store');
+            expect((response?.headers().vary ?? '').toLowerCase().split(/\s*,\s*/)).not.toContain(
+              'user-agent',
+            );
+            const tableBlock = ssrPage.locator('div[data-table-compact]').filter({
+              has: ssrPage.getByRole('columnheader', { name: 'Operations', exact: true }),
+            });
+            const row = studentRow(ssrPage, student.name);
+            const operationsHeader = tableBlock.getByRole('columnheader', {
+              name: 'Operations',
+              exact: true,
+            });
+            const operationsCell = row.locator('td').last();
+            const more = row.getByRole('button', { name: 'More actions', exact: true });
+            await expect(row).toHaveCount(1);
+            await ssrPage.waitForFunction(() =>
+              Array.from(
+                document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]'),
+              ).every(link => link.sheet !== null),
+            );
+            await expect.poll(() => heldScripts).toBeGreaterThan(0);
+            await expect(ssrPage.locator('html')).not.toHaveAttribute('data-zova-hydrated');
+            await expect(tableBlock).toHaveAttribute('data-table-compact', String(scenario.mobile));
+            if (scenario.mobile) {
+              for (const cell of [operationsHeader, operationsCell]) {
+                await expect(cell).toHaveCSS('width', '80px');
+              }
+              // Vuetify applies the column minimum to the header, not each body cell.
+              await expect(operationsHeader).toHaveCSS('min-width', '80px');
+              const heading = operationsHeader.locator('.d-sr-only');
+              await expect(heading).toHaveText('Operations');
+              await expect(heading).toHaveCSS('position', 'absolute');
+              await expect(heading).toHaveCSS('width', '1px');
+              await expect(more).toBeVisible();
+              await expect(more).toHaveAttribute('aria-expanded', 'false');
+              const content = row.locator('[data-row-actions-content]');
+              await expect(content).toHaveCount(1);
+              await expect(content).toBeHidden();
+              await expect(content.locator('button')).toHaveCount(4);
+              await expect(operationsCell.getByRole('button')).toHaveCount(1);
+            } else {
+              await expect(more).toHaveCount(0);
+              await expect(operationsCell.getByRole('button')).toHaveCount(4);
+            }
+
+            releaseScripts();
+            await ssrPage.waitForLoadState('load');
+            await expect(ssrPage.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+            const measuredCompact = scenario.width < 768;
+            await expect(tableBlock).toHaveAttribute('data-table-compact', String(measuredCompact));
+            if (measuredCompact) {
+              await expect(operationsHeader).toHaveCSS('min-width', '80px');
+              const id = await more.getAttribute('aria-controls');
+              expect(id).toBeTruthy();
+              const content = ssrPage.locator(`[id="${id}"]`);
+              await expect(content).toHaveCount(1);
+              await expect(content).toBeHidden();
+              await more.scrollIntoViewIfNeeded();
+              await more.click();
+              await expect(content).toBeVisible();
+              await expect(
+                content.getByRole('button', { name: 'Summary', exact: true }),
+              ).toBeVisible();
+              await ssrPage.keyboard.press('Escape');
+              await expect(content).toBeHidden();
+              await expect(more).toHaveAttribute('aria-expanded', 'false');
+            } else {
+              expect(
+                await tableBlock.evaluate(element => element.clientWidth),
+              ).toBeGreaterThanOrEqual(768);
+              await expect(operationsHeader).toHaveCSS('min-width', '360px');
+              await expect(more).toHaveCount(0);
+              await expect(operationsCell.getByRole('button')).toHaveCount(4);
+            }
+            expect(effects.hydrationWarnings).toEqual([]);
+            expect(effects.consoleErrors).toEqual([]);
+            expect(effects.pageErrors).toEqual([]);
+            expect(effects.mutations).toEqual([]);
+          } finally {
+            releaseScripts();
+            // Drain released handlers before closing their context, preserving the first failure.
+            await ssrPage.unrouteAll({ behavior: 'wait' });
+          }
+        } finally {
+          await context.close();
+        }
+      }
+    });
+  },
+);
+
+test(
+  'ATP-START-TABLE-06: nested details table uses the SSR hint then measures hidden and visible containers',
+  { tag: ['@admin', '@flow', '@ssr'] },
+  async ({ page, browser }) => {
+    test.setTimeout(120_000);
+    await loginAsAdmin(page);
+    await withDraftStudents(page, 1, async ([student], headers) => {
+      const recordName = `${student.name} compact record`;
+      const setup = await page.request.patch(`/api/training/student/${student.id}`, {
+        headers,
+        data: {
+          name: student.name,
+          mobile: '13812345678',
+          level: 1,
+          trainingRecords: [{ name: recordName, trainingTime: '2026-03-10T00:00:00.000Z' }],
+        },
+      });
+      expect(setup.ok()).toBeTruthy();
+      // withDraftStudents finally deletes the owned student and nested records through include.
+      const context = await browser.newContext({
+        baseURL: new URL(page.url()).origin,
+        storageState: await page.context().storageState(),
+        userAgent: mobileUserAgent,
+        viewport: { width: 390, height: 900 },
+      });
+      try {
+        const ssrPage = await context.newPage();
+        const effects = collectDraftEffects(ssrPage, true);
+        let releaseScripts!: () => void;
+        const scriptsHeld = new Promise<void>(resolve => {
+          releaseScripts = resolve;
+        });
+        let heldScripts = 0;
+        const holdExternalScripts = async (route: Route) => {
+          if (route.request().resourceType() === 'script') {
+            heldScripts++;
+            await scriptsHeld;
+          }
+          await route.continue();
+        };
+        await ssrPage.route('**/*', holdExternalScripts);
+        try {
+          const response = await ssrPage.goto(
+            `/admin/rest/resource/training-student%3Astudent/${student.id}/edit`,
+            { waitUntil: 'commit' },
+          );
+          expect(response?.ok()).toBeTruthy();
+          const row = ssrPage.locator('tbody tr').filter({ hasText: recordName });
+          const tableBlock = ssrPage.locator('div[data-table-compact]').filter({ has: row });
+          await expect(row).toHaveCount(1);
+          await expect.poll(() => heldScripts).toBeGreaterThan(0);
+          await expect(ssrPage.locator('html')).not.toHaveAttribute('data-zova-hydrated');
+          await expect(tableBlock).toHaveAttribute('data-table-compact', 'true');
+          const operationsHeader = tableBlock.getByRole('columnheader', {
+            name: 'Operations',
+            exact: true,
+            includeHidden: true,
+          });
+          await expect(operationsHeader).toHaveCSS('min-width', '80px');
+          await expect(operationsHeader.locator('.d-sr-only')).toHaveText('Operations');
+          const more = row.getByRole('button', {
+            name: 'More actions',
+            exact: true,
+            includeHidden: true,
+          });
+          await expect(more).toHaveCount(1);
+          await expect(row.locator('[data-row-actions-content]')).toBeHidden();
+          releaseScripts();
+          await ssrPage.waitForLoadState('load');
+          await expect(ssrPage.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+          // The inactive tab measures zero: the mobile hint must no longer own presentation.
+          await expect(tableBlock).toHaveAttribute('data-table-compact', 'false');
+          await ssrPage.getByRole('tab', { name: 'Student Training Records', exact: true }).click();
+          await expect(tableBlock).toHaveAttribute('data-table-compact', 'true');
+          await expect(operationsHeader).toHaveCSS('min-width', '80px');
+          await more.scrollIntoViewIfNeeded();
+          await more.click();
+          const id = await more.getAttribute('aria-controls');
+          expect(id).toBeTruthy();
+          const content = ssrPage.locator(`[id="${id}"]`);
+          await expect(content).toBeVisible();
+          await expect(
+            content.getByRole('button', { name: 'Edit Detail', exact: true }),
+          ).toBeVisible();
+          await ssrPage.keyboard.press('Escape');
+          await expect(content).toBeHidden();
+          await ssrPage.setViewportSize({ width: 1440, height: 900 });
+          await expect(tableBlock).toHaveAttribute('data-table-compact', 'false');
+          await expect(more).toHaveCount(0);
+          expect(effects.hydrationWarnings).toEqual([]);
+          expect(effects.consoleErrors).toEqual([]);
+          expect(effects.pageErrors).toEqual([]);
+          expect(effects.mutations).toEqual([]);
+        } finally {
+          releaseScripts();
+          // Do not let a failed first-paint assertion race released scripts against context.close.
+          await ssrPage.unrouteAll({ behavior: 'wait' });
+        }
+      } finally {
+        await context.close();
+      }
     });
   },
 );

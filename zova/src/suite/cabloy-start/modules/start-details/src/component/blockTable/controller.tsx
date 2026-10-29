@@ -6,7 +6,7 @@ import { Row } from '@tanstack/table-core';
 import { VDataTable, VDataTableRow } from 'vuetify/components';
 import { BeanControllerBase, Use } from 'zova';
 import { Controller } from 'zova-module-a-bean';
-import { BeanControllerTableBase, ControllerTable, ZTable } from 'zova-module-a-table';
+import { ControllerTable, ZTable } from 'zova-module-a-table';
 
 declare module 'zova-module-a-openapi' {
   export interface IResourceBlockRecord {
@@ -24,7 +24,7 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
   static $componentOptions: IComponentOptions = { inheritAttrs: false, deepExtendDefault: true };
 
   tableRef: ControllerTable<TData>;
-  containerWidth: number = 0;
+  containerWidth: number | undefined = undefined;
   private _container?: HTMLElement;
   private _observer?: ResizeObserver;
   private _mounted: boolean = false;
@@ -45,9 +45,9 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
 
   public get compact() {
     const breakpoint = this.$props.compactBreakpoint;
-    return (
-      breakpoint !== false && this.containerWidth > 0 && this.containerWidth < (breakpoint ?? 768)
-    );
+    if (breakpoint === false) return false;
+    if (this.containerWidth === undefined) return this.$ssr.state.compactHint === true;
+    return this.containerWidth > 0 && this.containerWidth < (breakpoint ?? 768);
   }
 
   public get columnSizing() {
@@ -60,8 +60,7 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
     return sizing;
   }
 
-  public isOperationsColumn(key: string) {
-    const table = this.tableRef;
+  public isOperationsColumn(key: string, table: ControllerTable<TData> = this.tableRef) {
     if (!table) return false;
     const scope = table.getColumnScope(key);
     const { render } = table.getColumnComponentPropsTop(key, scope, {});
@@ -129,7 +128,7 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
     );
   }
 
-  private _renderTable($$table: BeanControllerTableBase<TData>) {
+  private _renderTable($$table: ControllerTable<TData>) {
     const table = $$table.table;
     const headers: DataTableHeader[] = table.getFlatHeaders().map(header => {
       const column = header.column;
@@ -137,9 +136,11 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
       const rest = (column.columnDef.meta as any)?.rest;
       const fixed = column.getIsPinned();
       const width =
-        typeof rest?.width === 'number' || typeof this.columnSizing[column.id] === 'number'
-          ? column.getSize()
-          : undefined;
+        this.compact && this.isOperationsColumn(column.id, $$table)
+          ? 80
+          : typeof rest?.width === 'number' || typeof this.columnSizing[column.id] === 'number'
+            ? column.getSize()
+            : undefined;
       return {
         title:
           typeof columnDefHeader === 'function'
@@ -169,7 +170,7 @@ export class ControllerBlockTable<TData extends {} = {}> extends BeanControllerB
       },
     };
     for (const header of headers) {
-      if (this.compact && this.isOperationsColumn(header.key!)) {
+      if (this.compact && this.isOperationsColumn(header.key!, $$table)) {
         slots[`header.${header.key}`] = () => (
           <span class="d-inline-block position-relative">
             <span class="d-sr-only">{header.title}</span>
