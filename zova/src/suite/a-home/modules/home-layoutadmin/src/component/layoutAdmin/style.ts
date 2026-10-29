@@ -5,6 +5,7 @@ import { Style } from 'zova-module-a-bean';
 export class StyleLayoutAdmin extends BeanStyleBase {
   cTab: string;
   cHeader: string;
+  cTabItemsMenu: string;
 
   protected async __init__() {
     this.cHeader = this.$style({
@@ -13,6 +14,40 @@ export class StyleLayoutAdmin extends BeanStyleBase {
         '& .v-toolbar-title': { minWidth: 0, flexShrink: 1 },
         '& .header-navigation': { minWidth: 0, flex: '1 1 0' },
         '& .header-navigation .v-tabs': { minWidth: 0, maxWidth: '100%' },
+        '&:has(.tab-items) .v-toolbar-title': { flex: '0 1 auto', maxWidth: '10rem' },
+        '&:has(.tab-items) .v-toolbar__content > .v-spacer': { flexGrow: 0 },
+        '@media (width < 600px)': {
+          $nest: {
+            '&:has(.tab-items) .v-toolbar-title': { display: 'none' },
+          },
+        },
+        '& .tab-items': { display: 'flex', alignItems: 'center', minWidth: 0, height: '48px' },
+        '& .tab-items-scroll': { position: 'relative', minWidth: 0, flex: '1 1 0' },
+        '& .tab-items-scroll::before, & .tab-items-scroll::after': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          width: '16px',
+          zIndex: 1,
+          pointerEvents: 'none',
+          opacity: 0,
+        },
+        '& .tab-items-scroll::before': {
+          left: 0,
+          background: 'linear-gradient(to right, rgb(var(--v-theme-surface)), transparent)',
+        },
+        '& .tab-items-scroll::after': {
+          right: 0,
+          background: 'linear-gradient(to left, rgb(var(--v-theme-surface)), transparent)',
+        },
+        '& .tab-items-scroll.has-start::before, & .tab-items-scroll.has-end::after': { opacity: 1 },
+        '& .tab-items-more': { flex: '0 0 40px', width: '40px', height: '40px' },
+        '& .tab-items-more .v-btn__content': { fontSize: '20px' },
+        '& .tab-items.is-compact .v-tab': { minWidth: 0, maxWidth: '100%', paddingInline: '12px' },
+        '& .tab-items.is-compact .v-btn__content': { minWidth: 0, overflow: 'hidden' },
+        '& .tab-items.is-compact .v-slide-group__content': { maxWidth: '100%' },
+        '& .tab-items.is-compact .close': { display: 'none' },
         '& .header-actions': { position: 'relative', flexShrink: 0 },
         '& .header-actions-more': { display: 'none' },
         '& .header-actions-panel': { display: 'flex', alignItems: 'center' },
@@ -70,6 +105,22 @@ export class StyleLayoutAdmin extends BeanStyleBase {
             },
             '& .header-account > .v-btn__content': { minWidth: 0, flex: '1 1 0' },
           },
+        },
+      },
+    });
+    this.cTabItemsMenu = this.$style({
+      width: '22rem',
+      maxWidth: 'calc(100vw - 1rem)',
+      $nest: {
+        '& .tab-items-select': { minWidth: 0, flex: '1 1 0', height: 'auto', minHeight: '40px' },
+        '& .tab-items-select .v-btn__content': { minWidth: 0, flex: '1 1 0' },
+        '& .tab-items-label': {
+          minWidth: 0,
+          flex: '1 1 0',
+          whiteSpace: 'normal',
+          overflowWrap: 'anywhere',
+          textAlign: 'start',
+          paddingBlock: '8px',
         },
       },
     });

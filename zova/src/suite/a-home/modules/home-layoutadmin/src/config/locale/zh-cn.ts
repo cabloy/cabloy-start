@@ -23,4 +23,6 @@ export default {
   'ColorMode': '明暗模式',
   'Theme': '主题',
   'Account': '账户',
+  'AllTabs': '全部页签',
+  'CloseTab': '关闭页签：%s',
 };

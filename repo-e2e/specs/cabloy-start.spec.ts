@@ -1569,6 +1569,226 @@ for (const flavor of ['admin', 'web'] as const) {
 }
 
 test(
+  'ATP-START-TABS-01: task tabs reveal active drafts, compact by container width and switch or close through All tabs',
+  { tag: ['@admin', '@flow', '@layout'] },
+  async ({ page }, testInfo) => {
+    test.setTimeout(120_000);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await loginAsAdmin(page);
+    await withDraftStudents(page, 3, async students => {
+      const effects = collectDraftEffects(page);
+      const titles = students.map(
+        (student, index) =>
+          `${student.name} task ${index + 1} with a deliberately long unique unsaved tab title`,
+      );
+      for (const [index, student] of students.entries()) {
+        await openStudentDraftEdit(page, student.name, student.id);
+        await studentDraftNameInput(page).fill(titles[index]!);
+        await waitForStudentDraft(page, titles[index]!, student.id);
+      }
+
+      const items = page.getByTestId('tab-items');
+      const more = page.getByTestId('tab-items-more');
+      const list = page.getByTestId('tab-items-list');
+      const tabs = items.getByRole('tab');
+      const container = items.locator('.v-slide-group__container');
+      const task = (index: number) => items.getByRole('tab', { name: titles[index], exact: true });
+      const select = (index: number) =>
+        list.locator('.tab-items-select').filter({ hasText: titles[index]! });
+      const openMenu = async (remaining: number[], active?: number, keyboard = false) => {
+        await expect(more).toHaveAccessibleName('All tabs');
+        if (keyboard) {
+          await more.focus();
+          await more.press('Enter');
+        } else {
+          await more.click();
+        }
+        await expect(list).toBeVisible();
+        await expect(list).toHaveClass(/\bv-list\b/);
+        await expect(list.locator('.tab-items-select')).toHaveCount(remaining.length);
+        for (const index of remaining) {
+          const row = list.locator('.v-list-item').filter({
+            has: page.locator('.tab-items-select').filter({ hasText: titles[index]! }),
+          });
+          await expect(row).toHaveCount(1);
+          await expect(select(index)).toHaveJSProperty('tagName', 'BUTTON');
+          await expect(
+            row.getByRole('button', { name: `Close tab: ${titles[index]}`, exact: true }),
+          ).toBeEnabled();
+          if (index === active) await expect(select(index)).toHaveAttribute('aria-current', 'page');
+          else await expect(select(index)).not.toHaveAttribute('aria-current', 'page');
+        }
+        await expect(list.locator('.tab-items-select[aria-current="page"]')).toHaveCount(
+          active === undefined ? 0 : 1,
+        );
+        await expectHeaderPopupBounds(list, page.viewportSize()!.width);
+        const bounds = (await list.boundingBox())!;
+        expect(bounds.y).toBeGreaterThanOrEqual(-1);
+        expect(bounds.y + bounds.height).toBeLessThanOrEqual(page.viewportSize()!.height + 1);
+      };
+      const choose = async (index: number, keyboard = false) => {
+        if (keyboard) {
+          await select(index).focus();
+          await select(index).press('Enter');
+        } else {
+          await select(index).click();
+        }
+        await expect(list).toBeHidden();
+        await expect(page).toHaveURL(
+          new RegExp(`/training-student(?:%3A|:)student/${students[index]!.id}/edit(?:[?#]|$)`),
+        );
+        await expect(studentDraftNameInput(page)).toHaveValue(titles[index]!);
+        await expect(task(index)).toHaveAttribute('aria-selected', 'true');
+      };
+      const expectStrip = async (compact: boolean, count: number) => {
+        await expect(items).toHaveAttribute('data-compact', String(compact));
+        const width = await items.evaluate(element => element.getBoundingClientRect().width);
+        if (compact) expect(width).toBeLessThan(240);
+        else expect(width).toBeGreaterThanOrEqual(240);
+        await expect(tabs).toHaveCount(count);
+        await expect(items.locator('.v-slide-group__prev, .v-slide-group__next')).toHaveCount(0);
+        await expect(more).toBeVisible();
+        await expect
+          .poll(() =>
+            page.getByRole('banner').evaluate(element => {
+              const header = element.getBoundingClientRect();
+              const content = element.querySelector('.v-toolbar__content')!;
+              const items = element.querySelector('[data-testid="tab-items"]')!;
+              const more = element.querySelector('[data-testid="tab-items-more"]')!;
+              const boxes = [content, items, more].map(node => node.getBoundingClientRect());
+              return (
+                header.left >= -1 &&
+                header.right <= document.documentElement.clientWidth + 1 &&
+                content.scrollWidth <= content.clientWidth + 1 &&
+                boxes.every(
+                  box =>
+                    box.width > 0 && box.left >= header.left - 1 && box.right <= header.right + 1,
+                )
+              );
+            }),
+          )
+          .toBe(true);
+        await expectNoHeaderOverflow(page);
+      };
+      const expectActiveRevealed = async (index: number) => {
+        await expect
+          .poll(() =>
+            task(index).evaluate(element => {
+              const viewport = element
+                .closest('.v-slide-group')!
+                .querySelector('.v-slide-group__container')!;
+              const tab = element.getBoundingClientRect();
+              const clip = viewport.getBoundingClientRect();
+              return tab.left >= clip.left - 1 && tab.right <= clip.right + 1;
+            }),
+          )
+          .toBe(true);
+      };
+      const close = async (index: number) => {
+        await list
+          .getByRole('button', { name: `Close tab: ${titles[index]}`, exact: true })
+          .click();
+        // Closing is a real task-model operation: its exact persisted draft must disappear.
+        await expectNoStudentDraft(page, students[index]!.id);
+        await expect(task(index)).toHaveCount(0);
+        // Dismiss if the menu intentionally remains open for consecutive close actions.
+        if (await list.isVisible()) await page.keyboard.press('Escape');
+        await expect(list).toBeHidden();
+      };
+
+      await expectStrip(false, 3);
+      await expect(task(2)).toHaveAttribute('aria-selected', 'true');
+      await expectActiveRevealed(2);
+
+      // Viewport size is not the mode contract: this wrapper must remain >=240px,
+      // with genuine scroll overflow and no Vuetify arrow affixes at the middle size.
+      await page.setViewportSize({ width: 900, height: 900 });
+      await expectStrip(false, 3);
+      await expect
+        .poll(() => container.evaluate(element => element.scrollWidth - element.clientWidth))
+        .toBeGreaterThan(1);
+      await openMenu([0, 1, 2], 2);
+      await choose(0);
+      await expectActiveRevealed(0);
+      const firstPosition = await container.evaluate(element => element.scrollLeft);
+      const triggerBefore = (await more.boundingBox())!;
+      await openMenu([0, 1, 2], 0);
+      await choose(2);
+      await expectActiveRevealed(2);
+      await expect
+        .poll(async () =>
+          Math.abs((await container.evaluate(element => element.scrollLeft)) - firstPosition),
+        )
+        .toBeGreaterThan(1);
+      const triggerAfter = (await more.boundingBox())!;
+      for (const key of ['x', 'y', 'width', 'height'] as const) {
+        expect(Math.abs(triggerAfter[key] - triggerBefore[key])).toBeLessThanOrEqual(1);
+      }
+      await expectNoHeaderOverflow(page);
+
+      await page.setViewportSize({ width: 320, height: 900 });
+      await expectStrip(true, 1);
+      await expect(task(2)).toHaveAttribute('aria-selected', 'true');
+      await testInfo.attach('ATP-START-TABS-01-320px-header', {
+        body: await page.getByRole('banner').screenshot(),
+        contentType: 'image/png',
+      });
+      await openMenu([0, 1, 2], 2, true);
+      await testInfo.attach('ATP-START-TABS-01-320px-all-tabs', {
+        body: await list.screenshot(),
+        contentType: 'image/png',
+      });
+      await select(0).focus();
+      await page.keyboard.press('Escape');
+      await expect(list).toBeHidden();
+      await expect(more).toBeFocused();
+      await expect(studentDraftNameInput(page)).toHaveValue(titles[2]!);
+      await openMenu([0, 1, 2], 2, true);
+      await choose(0, true);
+      await expectStrip(true, 1);
+      await openMenu([0, 1, 2], 0);
+      await close(1);
+      await expect(studentDraftNameInput(page)).toHaveValue(titles[0]!);
+      await waitForStudentDraft(page, titles[0]!, students[0]!.id);
+      await waitForStudentDraft(page, titles[2]!, students[2]!.id);
+
+      // An active workspace anchor is not a secondary task. Compact mode must not
+      // display an arbitrary child, while All tabs still exposes every surviving task.
+      await studentDraftWorkspaceTabs(page)
+        .getByRole('tab', { name: 'Student', exact: true })
+        .click();
+      await expect(page).toHaveURL(studentResourceUrl);
+      await expectStrip(true, 0);
+      await openMenu([0, 2]);
+      await choose(0);
+      await expectStrip(true, 1);
+
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await expectStrip(false, 2);
+      await expectActiveRevealed(0);
+      await openMenu([0, 2], 0, true);
+      await page.keyboard.press('Escape');
+      await expect(list).toBeHidden();
+      await expect(more).toBeFocused();
+      await openMenu([0, 2], 0);
+      await close(0);
+      await expect(studentDraftNameInput(page)).toHaveValue(titles[2]!);
+      await expect(task(2)).toHaveAttribute('aria-selected', 'true');
+      await openMenu([2], 2);
+      await close(2);
+      await expect(page).toHaveURL(studentResourceUrl);
+      await expect(tabs).toHaveCount(0);
+      for (const student of students) await expectNoStudentDraft(page, student.id);
+      await expectNoHeaderOverflow(page);
+      expect(effects.mutations).toEqual([]);
+      expect(effects.hydrationWarnings).toEqual([]);
+      expect(effects.consoleErrors).toEqual([]);
+      expect(effects.pageErrors).toEqual([]);
+    });
+  },
+);
+
+test(
   'ATP-START-TABLE-01: Student table submits server sorting and applies column metadata',
   { tag: ['@admin', '@flow'] },
   async ({ page }) => {

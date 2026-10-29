@@ -1,6 +1,6 @@
 import type { ModelTabs, ModelTabsOptions } from 'zova-module-a-routertabs';
 
-import { provide, ref } from 'vue';
+import { nextTick, provide, ref } from 'vue';
 import { BeanControllerBase, Use, usePrepareArg } from 'zova';
 import { Controller } from 'zova-module-a-bean';
 import { $QueryEnsureLoaded } from 'zova-module-a-model';
@@ -53,12 +53,44 @@ export class ControllerLayoutAdmin extends BeanControllerBase {
   private _headerOutsideHandler?: (event: PointerEvent | FocusEvent) => void;
   private _headerKeydownHandler?: (event: KeyboardEvent) => void;
 
+  tabItemsWidth: number | undefined = undefined;
+  tabItemsOverflowStart = false;
+  tabItemsOverflowEnd = false;
+  tabItemsMenuOpen = false;
+  private _tabItemsElement?: HTMLDivElement;
+  private _tabItemsObserver?: ResizeObserver;
+  private _tabItemsMounted = false;
+  private readonly _tabItemsOnScroll = () => this.measureTabItems();
+
+  get tabItemsCompact() {
+    return this.tabItemsWidth !== undefined && this.tabItemsWidth < 240;
+  }
+
   protected async __init__() {
+    this.$controllerMounted(() => {
+      this.$ssr.handleDirectOrOnHydrated(() => {
+        if (this.ctx.disposed) return;
+        this._tabItemsMounted = true;
+        this.observeTabItems();
+      });
+    });
+    this.$watch(
+      () => [
+        this.$$modelTabs?.tabKeyCurrent,
+        this.$$modelTabs?.tabCurrent?.items,
+        this.tabItemsCompact,
+      ],
+      ([tabKey], [previousTabKey]) => {
+        if (tabKey !== previousTabKey) this.tabItemsMenuOpen = false;
+        void nextTick(() => this.observeTabItems());
+      },
+    );
     // viewport
     if (process.env.CLIENT) {
       this._windowResizeHandler = () => {
         this.viewportWidth = document.documentElement.clientWidth;
         this.closeHeaderActions();
+        this.tabItemsMenuOpen = false;
       };
       this._windowResizeHandler();
       window.addEventListener('resize', this._windowResizeHandler);
@@ -66,6 +98,11 @@ export class ControllerLayoutAdmin extends BeanControllerBase {
         if (!this.isHeaderActionsTarget(event.target)) this.closeHeaderActions();
       };
       this._headerKeydownHandler = event => {
+        if (event.key === 'Escape' && !event.defaultPrevented && this.tabItemsMenuOpen) {
+          event.preventDefault();
+          this.closeTabItemsMenu();
+          return;
+        }
         if (
           event.key === 'Escape' &&
           !event.defaultPrevented &&
@@ -116,7 +153,50 @@ export class ControllerLayoutAdmin extends BeanControllerBase {
     await this._initTabs();
   }
 
+  setTabItemsElement(element?: HTMLDivElement) {
+    if (element === this._tabItemsElement) return;
+    this._tabItemsObserver?.disconnect();
+    this._tabItemsElement?.removeEventListener('scroll', this._tabItemsOnScroll, true);
+    this._tabItemsElement = element;
+    element?.addEventListener('scroll', this._tabItemsOnScroll, true);
+    this.observeTabItems();
+  }
+
+  closeTabItemsMenu() {
+    this.tabItemsMenuOpen = false;
+    void nextTick(() => {
+      this._tabItemsElement
+        ?.querySelector<HTMLButtonElement>('[data-testid="tab-items-more"]')
+        ?.focus();
+    });
+  }
+
+  private observeTabItems() {
+    const element = this._tabItemsElement;
+    if (!this._tabItemsMounted || this.ctx.disposed || !element) return;
+    this._tabItemsObserver?.disconnect();
+    this._tabItemsObserver = new ResizeObserver(() => this.measureTabItems());
+    this._tabItemsObserver.observe(element);
+    const content = element.querySelector('.v-slide-group__content');
+    if (content) this._tabItemsObserver.observe(content);
+    this.measureTabItems();
+  }
+
+  private measureTabItems() {
+    const element = this._tabItemsElement;
+    if (this.ctx.disposed || !element) return;
+    this.tabItemsWidth = element.clientWidth;
+    const container = element.querySelector('.v-slide-group__container');
+    const content = element.querySelector('.v-slide-group__content');
+    const bounds = container?.getBoundingClientRect();
+    const items = content?.getBoundingClientRect();
+    this.tabItemsOverflowStart = !!bounds && !!items && items.left < bounds.left - 1;
+    this.tabItemsOverflowEnd = !!bounds && !!items && items.right > bounds.right + 1;
+  }
+
   protected __dispose__() {
+    this._tabItemsMounted = false;
+    this.setTabItemsElement(undefined);
     this._headerActionsElement = undefined;
     if (this._headerOutsideHandler) {
       document.removeEventListener('pointerdown', this._headerOutsideHandler);

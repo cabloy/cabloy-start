@@ -23,4 +23,6 @@ export default {
   'ColorMode': 'Color mode',
   'Theme': 'Theme',
   'Account': 'Account',
+  'AllTabs': 'All tabs',
+  'CloseTab': 'Close tab: %s',
 };
