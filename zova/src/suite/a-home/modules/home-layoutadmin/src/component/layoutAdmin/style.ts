@@ -100,7 +100,7 @@ export class StyleLayoutAdmin extends BeanStyleBase {
             '& .header-action-label': { display: 'inline' },
             '& .header-account-name': { width: 'auto', minWidth: 0, flex: '1 1 0' },
             '& .header-account > .v-btn__prepend': {
-              flex: '0 0 24px',
+              flex: '0 0 18px',
               marginInline: '0 16px',
             },
             '& .header-account > .v-btn__content': { minWidth: 0, flex: '1 1 0' },

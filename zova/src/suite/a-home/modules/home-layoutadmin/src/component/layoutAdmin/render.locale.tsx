@@ -20,7 +20,7 @@ export class RenderLocale extends BeanRenderBase {
             aria-label={this.scope.locale.Language()}
             title={this.scope.locale.Language()}
           >
-            <ZIcon name="::language" width={24} />
+            <ZIcon name="::language" width={18} />
             <span class="header-action-label">{this.scope.locale.Language()}</span>
           </VBtn>
         );

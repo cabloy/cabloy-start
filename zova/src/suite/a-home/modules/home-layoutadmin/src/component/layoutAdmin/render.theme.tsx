@@ -35,7 +35,7 @@ export class RenderTheme extends BeanRenderBase {
             aria-label={this.scope.locale.ColorMode()}
             title={this.scope.locale.ColorMode()}
           >
-            <ZIcon name="::dark-theme" width={24} />
+            <ZIcon name="::dark-theme" width={18} />
             <span class="header-action-label">{this.scope.locale.ColorMode()}</span>
           </VBtn>
         );
@@ -86,7 +86,7 @@ export class RenderTheme extends BeanRenderBase {
             aria-label={this.scope.locale.Theme()}
             title={this.scope.locale.Theme()}
           >
-            <ZIcon name=":outline:theme-outline" width={24} />
+            <ZIcon name=":outline:theme-outline" width={18} />
             <span class="header-action-label">{this.scope.locale.Theme()}</span>
           </VBtn>
         );
