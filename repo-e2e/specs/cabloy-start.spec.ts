@@ -2434,6 +2434,7 @@ test(
               height: rect.height,
               left: rect.left - group.left,
               right: rect.right - group.right,
+              labelLeft: button.querySelector('.v-btn__content')!.getBoundingClientRect().left,
               top: rect.top,
               bottom: rect.bottom,
               borderWidth: style.borderTopWidth,
@@ -2449,6 +2450,7 @@ test(
           expect(button.height).toBeGreaterThanOrEqual(36);
           expect(Math.abs(button.left)).toBeLessThanOrEqual(1);
           expect(Math.abs(button.right)).toBeLessThanOrEqual(1);
+          expect(Math.abs(button.labelLeft - layout[0]!.labelLeft)).toBeLessThanOrEqual(1);
           expect(button.borderWidth).toBe('0px');
           expect(button.radius).toBe('4px');
           expect(button.justifyContent).toBe('flex-start');

@@ -89,11 +89,21 @@ export class ControllerRowOperations extends BeanControllerBase {
           minWidth: 0,
           minHeight: '36px',
           flexShrink: 0,
+          display: 'grid',
+          gridTemplateColumns: '24px minmax(0, 1fr)',
+          columnGap: '8px',
           justifyContent: 'flex-start',
           textAlign: 'left',
           paddingInline: '12px',
           border: 0,
           borderRadius: '4px',
+        },
+        '& > .v-btn-group .v-btn__prepend': {
+          marginInline: 0,
+        },
+        '& > .v-btn-group .v-btn__content': {
+          gridColumn: 2,
+          justifyContent: 'flex-start',
         },
       },
     });
