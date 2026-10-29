@@ -2005,6 +2005,93 @@ test(
 );
 
 test(
+  'ATP-START-TABLE-07: direct SSR Student locale changes preserve SVG icons and row action targets',
+  { tag: ['@admin', '@flow', '@layout', '@ssr'] },
+  async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await loginAsAdmin(page);
+    await withDraftStudents(page, 2, async students => {
+      const effects = collectDraftEffects(page);
+      const response = await page.goto('/admin/rest/resource/training-student%3Astudent', {
+        waitUntil: 'load',
+      });
+      expect(response?.ok()).toBeTruthy();
+      const html = await response!.text();
+      for (const student of students) expect(html).toContain(student.name);
+      expect(html).not.toMatch(/id="[^"]+-teleport"/);
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+      for (const student of students) await expect(studentRow(page, student.name)).toBeVisible();
+      const sprite = await page.locator('#zova-svg-container').elementHandle();
+      expect(sprite).not.toBeNull();
+      const header = headerActions(page, 'admin');
+      const expectIcons = async () => {
+        expect(await sprite!.evaluate(element => element.isConnected)).toBe(true);
+        for (const icon of [
+          page.getByRole('banner').locator('.v-app-bar-nav-icon svg'),
+          header.action('locale').locator('svg'),
+          header.action('color-mode').locator('svg'),
+          header.action('theme').locator('svg'),
+          studentRow(page, students[0]!.name).locator('button.v-btn--icon.text-primary svg'),
+        ]) {
+          await expect(icon).toBeVisible();
+          await expect
+            .poll(() =>
+              icon.evaluate(element => {
+                const use = element.querySelector('use');
+                const href = use?.getAttribute('href') ?? use?.getAttribute('xlink:href');
+                const symbol = href?.startsWith('#')
+                  ? document.getElementById(href.slice(1))
+                  : null;
+                const bounds = (element as SVGGraphicsElement).getBBox();
+                return !!symbol?.isConnected && bounds.width > 0 && bounds.height > 0;
+              }),
+            )
+            .toBe(true);
+        }
+      };
+      const expectTargets = async () => {
+        const ids = await page
+          .locator('[data-row-actions-content]')
+          .evaluateAll(elements => elements.map(element => `${element.id}-teleport`));
+        expect(ids.length).toBeGreaterThanOrEqual(students.length);
+        expect(new Set(ids).size).toBe(ids.length);
+        for (const id of ids) await expect(page.locator(`[id="${id}"]`)).toHaveCount(1);
+        const parkingIds = await page
+          .locator('body > div[id$="-teleport"]')
+          .evaluateAll(elements => elements.map(element => element.id));
+        expect(parkingIds.toSorted()).toEqual(ids.toSorted());
+      };
+      await expectIcons();
+      await expectTargets();
+      for (const [language, field, action] of [
+        ['Chinese', '学生姓名', '摘要'],
+        ['英语', 'Student Name', 'Summary'],
+      ]) {
+        const menu = await header.openMenu('locale');
+        await menu.getByRole('button', { name: language, exact: true }).click();
+        await expect(page.getByLabel(field!, { exact: true })).toBeVisible();
+        await expect(header.overlay).toHaveCount(0);
+        for (const student of students) {
+          await expect(
+            studentRow(page, student.name).getByRole('button', { name: action, exact: true }),
+          ).toBeEnabled();
+        }
+        await expectIcons();
+        await expectTargets();
+      }
+      await page.goto('/admin/', { waitUntil: 'load' });
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+      await expect(page.locator('body > div[id$="-teleport"]')).toHaveCount(0);
+      expect(effects.mutations).toEqual([]);
+      expect(effects.hydrationWarnings).toEqual([]);
+      expect(effects.consoleErrors).toEqual([]);
+      expect(effects.pageErrors).toEqual([]);
+    });
+  },
+);
+
+test(
   'ATP-START-TABLE-04: compact Student row actions follow container width and survive dismissal and reload',
   { tag: ['@admin', '@flow', '@layout', '@ssr'] },
   async ({ page }) => {

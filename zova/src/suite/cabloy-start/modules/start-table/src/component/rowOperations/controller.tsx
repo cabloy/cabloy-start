@@ -21,6 +21,7 @@ export class ControllerRowOperations extends BeanControllerBase {
   private _id: string;
   private _actionsRef?: HTMLDivElement;
   private _menuHost?: HTMLDivElement;
+  private _teleportTarget?: HTMLElement;
   private _open = false;
   private _disposed = false;
   private _focusFrame?: number;
@@ -44,6 +45,29 @@ export class ControllerRowOperations extends BeanControllerBase {
     this._onModelValue = value => this._setOpen(value);
     this._onResize = () => this._setOpen(false);
     this._id = this.$composable(useId);
+    const targetId = `${this._id}-teleport`;
+    if (process.env.SERVER) {
+      const context = this.$ssr.context as typeof this.$ssr.context & {
+        teleports?: Record<string, string>;
+      };
+      // Actions stay inline on the server; client-owned parking targets avoid orphaned SSR IDs.
+      context.onRendered(() => {
+        if (context.teleports) delete context.teleports[`#${targetId}`];
+      });
+    }
+    if (process.env.CLIENT) {
+      this._teleportTarget = document.getElementById(targetId) ?? undefined;
+      if (!this._teleportTarget) {
+        const target = document.createElement('div');
+        target.id = targetId;
+        // Disabled Teleport hydration adopts two anchors; this parking target is client-owned.
+        if (this.$ssr.isRuntimeSsrPreHydration) {
+          target.append(document.createTextNode(''), document.createTextNode(''));
+        }
+        document.body.appendChild(target);
+        this._teleportTarget = target;
+      }
+    }
     this._cActions = this.$style({
       padding: '0.5rem',
       minWidth: 'min(160px, calc(100vw - 16px))',
@@ -85,6 +109,8 @@ export class ControllerRowOperations extends BeanControllerBase {
     this._setActionsRef(undefined);
     this._disposed = true;
     this._menuHost = undefined;
+    this._teleportTarget?.remove();
+    this._teleportTarget = undefined;
   }
 
   private _setActionsRef(element?: HTMLDivElement) {
@@ -186,7 +212,10 @@ export class ControllerRowOperations extends BeanControllerBase {
         />
         {/* SSR and hydration retain actions inline, hidden while compact has no menu host.
             Teleport moves, rather than remounts, the same subtree when the host is ready. */}
-        <Teleport to={this._menuHost ?? 'body'} disabled={!compact || !this._menuHost}>
+        <Teleport
+          to={this._menuHost ?? `#${this._id}-teleport`}
+          disabled={!compact || !this._menuHost}
+        >
           <div
             ref={this._onActionsRef}
             id={this._id}
