@@ -16,6 +16,8 @@ export default {
   StudentDeleteForce: '永久删除学生',
   StudentName: '学生姓名',
   StudentSelect: '查询学生列表',
+  StudentGroup: '学生分组统计',
+  StudentAggregate: '学生统计',
   StudentSummary: '查看学生摘要',
   StudentUpdate: '更新学生',
   StudentView: '查看学生',

@@ -1,5 +1,9 @@
 import type { TableIdentity } from 'table-identity';
-import type { IQueryParams } from 'vona-module-a-orm';
+import type {
+  IQueryParams,
+  TypeAnalysisAggregateParams,
+  TypeAnalysisGroupParams,
+} from 'vona-module-a-orm';
 import type { IRbacScopeAccess, IRbacScopeOwnerValues } from 'vona-module-a-rbac';
 import type { IDecoratorControllerOptions } from 'vona-module-a-web';
 
@@ -10,11 +14,14 @@ import { Passport } from 'vona-module-a-user';
 import { Arg, Controller, Web } from 'vona-module-a-web';
 import { z } from 'zod';
 
+import type { studentAnalysis } from '../lib/studentAnalysis.ts';
 import type { ModelStudent } from '../model/student.ts';
 
 import { $locale } from '../.metadata/locales.ts';
+import { DtoStudentAggregateRes } from '../dto/studentAggregateRes.tsx';
 import { DtoStudentCreate } from '../dto/studentCreate.tsx';
 import { DtoStudentDeleteBulk } from '../dto/studentDeleteBulk.tsx';
+import { DtoStudentGroupResItem } from '../dto/studentGroupResItem.tsx';
 import { DtoStudentSelectReq } from '../dto/studentSelectReq.tsx';
 import { DtoStudentSelectRes } from '../dto/studentSelectRes.tsx';
 import { DtoStudentSummary } from '../dto/studentSummary.tsx';
@@ -51,6 +58,34 @@ export class ControllerStudent extends BeanBase {
     @Arg.rbacScopeCurrent() rbacScopeCurrent: IRbacScopeAccess,
   ): Promise<DtoStudentSelectRes> {
     return await this.scope.service.student.select({
+      ...params,
+      where: rbacScopeCurrent.where(params?.where),
+    });
+  }
+
+  @Web.get('group', { summary: $locale('StudentGroup') })
+  @Api.body(v.array(DtoStudentGroupResItem))
+  @Passport.rbac({ dataScope: true, actionInherit: 'select' })
+  async group(
+    @Arg.filter(DtoStudentSelectReq, { mode: 'group' })
+    params: TypeAnalysisGroupParams<typeof studentAnalysis>,
+    @Arg.rbacScopeCurrent() rbacScopeCurrent: IRbacScopeAccess,
+  ): Promise<DtoStudentGroupResItem[]> {
+    return await this.scope.service.student.group({
+      ...params,
+      where: rbacScopeCurrent.where(params?.where),
+    });
+  }
+
+  @Web.get('aggregate', { summary: $locale('StudentAggregate') })
+  @Api.body(DtoStudentAggregateRes)
+  @Passport.rbac({ dataScope: true, actionInherit: 'select' })
+  async aggregate(
+    @Arg.filter(DtoStudentSelectReq, { mode: 'aggregate' })
+    params: TypeAnalysisAggregateParams<typeof studentAnalysis>,
+    @Arg.rbacScopeCurrent() rbacScopeCurrent: IRbacScopeAccess,
+  ): Promise<DtoStudentAggregateRes> {
+    return await this.scope.service.student.aggregate({
       ...params,
       where: rbacScopeCurrent.where(params?.where),
     });

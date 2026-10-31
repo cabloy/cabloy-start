@@ -568,6 +568,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/training/student/group': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Group Students */
+    get: operations['TrainingStudent_group'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/training/student/aggregate': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Aggregate Students */
+    get: operations['TrainingStudent_aggregate'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/training/student/{id}': {
     parameters: {
       query?: never;
@@ -1598,6 +1632,7 @@ export interface components {
       | undefined;
     'home-user.dto.accountCurrent': {
       name: string;
+      displayName?: string | undefined;
       avatar?: string | undefined;
       locale?: unknown;
       tz?: string | undefined;
@@ -1607,7 +1642,7 @@ export interface components {
     };
     'home-user.dto.accountProfileUpdate': {
       /** @description Display name */
-      name: string;
+      displayName?: string | undefined;
       /**
        * Avatar
        * @description Absolute HTTPS avatar URL or API delivery URL
@@ -1675,6 +1710,7 @@ export interface components {
     'home-user.dto.passportUser': {
       id: number | string;
       name: string;
+      displayName?: string | undefined;
       avatar?: string | undefined;
       email?: string | undefined;
       mobile?: string | undefined;
@@ -2257,6 +2293,16 @@ export interface components {
           signed?: boolean;
         }
       | undefined;
+    'training-student.dto.studentGroupResItem': {
+      /** @description Training Stage */
+      level?: 1 | 2 | 3 | undefined;
+      count_all?: string | undefined;
+      count_imageId?: string | undefined;
+    };
+    'training-student.dto.studentAggregateRes': {
+      count_all?: string | undefined;
+      count_imageId?: string | undefined;
+    };
     /** @description View Student */
     'training-student.dto.studentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_1587266c819c8b70731e8ba64e7460d7f2809951':
       | {
@@ -4531,6 +4577,87 @@ export interface operations {
             code: string;
             message: string;
             data: number | string;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  TrainingStudent_group: {
+    parameters: {
+      query?: {
+        columns?: string[] | undefined;
+        where?:
+          | {
+              [key: string]: unknown;
+            }
+          | undefined;
+        orders?: string | string[][] | undefined;
+        pageNo?: number;
+        pageSize?: number;
+        createdAt?: string | undefined;
+        name?: string | undefined;
+        level?: number | undefined;
+        aggrs?: {
+          count?: ('*' | 'imageId')[] | undefined;
+        };
+        groups?: 'level'[];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['training-student.dto.studentGroupResItem'][];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  TrainingStudent_aggregate: {
+    parameters: {
+      query?: {
+        columns?: string[] | undefined;
+        where?:
+          | {
+              [key: string]: unknown;
+            }
+          | undefined;
+        orders?: string | string[][] | undefined;
+        pageNo?: number;
+        pageSize?: number;
+        createdAt?: string | undefined;
+        name?: string | undefined;
+        level?: number | undefined;
+        aggrs?: {
+          count?: ('*' | 'imageId')[] | undefined;
+        };
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['training-student.dto.studentAggregateRes'];
           };
         };
       };

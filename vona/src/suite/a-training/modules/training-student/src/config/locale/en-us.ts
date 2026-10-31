@@ -16,6 +16,8 @@ export default {
   StudentDeleteForce: 'Permanently Delete Student',
   StudentName: 'Student Name',
   StudentSelect: 'List Students',
+  StudentGroup: 'Group Students',
+  StudentAggregate: 'Aggregate Students',
   StudentSummary: 'View Student Summary',
   StudentUpdate: 'Update Student',
   StudentView: 'View Student',

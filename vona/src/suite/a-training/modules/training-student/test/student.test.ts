@@ -667,6 +667,8 @@ The stored value must round-trip exactly through the API, model, and summary res
         const actions = [
           'create',
           'select',
+          'group',
+          'aggregate',
           'view',
           'update',
           'summary',

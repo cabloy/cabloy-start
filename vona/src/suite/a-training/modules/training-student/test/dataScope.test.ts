@@ -125,6 +125,15 @@ describe('dataScope.test.ts', { concurrency: false }, () => {
           );
           assert.equal(result, undefined);
           assert.equal(error?.code, 403);
+          for (const action of ['group', 'aggregate'] as const) {
+            await assert.rejects(
+              () =>
+                app.bean.executor.performAction('get', `/training/student/${action}`, {
+                  innerAccess: false,
+                }),
+              (error: { code?: number }) => error.code === 403,
+            );
+          }
 
           const [forgedCapabilityResult, forgedCapabilityError] = await catchError(() =>
             app.bean.executor.performAction('post', '/training/student', {
@@ -172,6 +181,32 @@ describe('dataScope.test.ts', { concurrency: false }, () => {
             list.list.some(item => String(item.id) === foreignStudentId),
             false,
           );
+
+          // Only a select grant is assigned: inherited analysis actions must apply its
+          // department predicate before computing metrics, even with a forged raw where.
+          for (const [where, groups, aggregate] of [
+            [
+              { id: [scopedStudentId, foreignStudentId] },
+              [{ level: 1, count_all: '1' }],
+              { count_all: '1', count_imageId: '0' },
+            ],
+            [{ id: foreignStudentId }, [], { count_all: '0', count_imageId: '0' }],
+          ] as const) {
+            assert.deepEqual(
+              await app.bean.executor.performAction('get', '/training/student/group', {
+                innerAccess: false,
+                query: { where },
+              }),
+              groups,
+            );
+            assert.deepEqual(
+              await app.bean.executor.performAction('get', '/training/student/aggregate', {
+                innerAccess: false,
+                query: { where },
+              }),
+              aggregate,
+            );
+          }
 
           const scoped = await app.bean.executor.performAction('get', '/training/student/:id', {
             innerAccess: false,
