@@ -151,6 +151,9 @@ describe('accountOpenapi.test.ts', () => {
             const property = resolve(schemaResolved.properties?.[field] as SchemaObject);
             assert.deepEqual(property.type, ['string', 'null']);
           }
+          const avatar = resolve(schemaResolved.properties?.avatar as SchemaObject);
+          assert.equal(avatar.maxLength, 255);
+          assert.equal(avatar.description, 'Absolute HTTP(S) avatar URL or API delivery URL');
           assert.equal(schemaResolved?.properties?.avatarImageId, undefined);
           assert.equal(schemaResolved?.properties?.avatarFileId, undefined);
         }
