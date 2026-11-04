@@ -126,7 +126,7 @@ export interface IRbacPolicyGrantColumnData {
 export class ModelRbacPolicy extends BeanModelBase {
   catalog() {
     return this.$useStateData<ApiApiAdminRbacRbacPolicycatalogResponseBody>({
-      queryKey: ['catalog'],
+      queryKey: ['catalog', this.app.meta.locale.current],
       queryFn: async () => {
         return await this.scope.api.adminRbacRbacPolicy.catalog();
       },
