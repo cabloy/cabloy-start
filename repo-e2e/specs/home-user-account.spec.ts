@@ -9,6 +9,9 @@ import {
   removeAccountFixture,
 } from './helpers/cabloy-admin-api.ts';
 
+// Account credentials and refresh responses must not enter retained failure artifacts.
+test.use({ trace: 'off', video: 'off', screenshot: 'off' });
+
 const accountPath = '/home/user/account';
 const passwordSetPath = '/home/user/password-set';
 const passwordResetPath = '/home/user/password-reset';
@@ -83,6 +86,15 @@ async function loginAsAccountUser(page: Page, username: string, password: string
   const loginResponse = waitForApiResponse(page, 'POST', passportLoginApiPath);
   await page.getByRole('button', { name: 'Login', exact: true }).click();
   expect((await loginResponse).ok()).toBeTruthy();
+}
+
+async function loginAccountFromPage(page: Page, account: RegisteredAccount, returnTo: string) {
+  await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
+  const accountResponse = waitForApiResponse(page, 'GET', accountApiPath);
+  await loginAsAccountUser(page, account.username, account.password);
+  expect((await accountResponse).ok()).toBeTruthy();
+  await expect(page).toHaveURL(returnTo);
+  await expect(page.getByRole('heading', { name: 'Account Settings' })).toBeVisible();
 }
 
 async function openUserMenu(page: Page, username: string) {
@@ -297,10 +309,7 @@ test(
       const pageErrors = collectPageErrors(page);
       const consoleErrors = collectConsoleErrors(page);
       await page.goto('/login?returnTo=%2Fhome%2Fuser%2Faccount', { waitUntil: 'load' });
-      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
-      await loginAsAccountUser(page, account.username, account.password);
-      await expect(page).toHaveURL(accountPath);
-      await expect(page.getByRole('heading', { name: 'Account Settings' })).toBeVisible();
+      await loginAccountFromPage(page, account, accountPath);
 
       const username = page.getByRole('textbox', { name: 'User name', exact: true });
       await expect(username).toHaveValue(account.username);
@@ -566,3 +575,151 @@ test(
     expect(pageErrors).toEqual([]);
   },
 );
+
+test.describe('Account errorExpired recovery', () => {
+  for (const scenario of ['missing refresh credentials', 'refresh 401', 'real refresh'] as const) {
+    test(
+      `errorExpired: ${scenario}`,
+      { tag: ['@account', '@web', '@flow'] },
+      async ({ page, request }, testInfo) => {
+        let account: RegisteredAccount | undefined;
+        const missingRefresh = scenario === 'missing refresh credentials';
+        const realRefresh = scenario === 'real refresh';
+        const returnTo = `${accountPath}?recovery=${scenario.replaceAll(' ', '-')}`;
+        const refreshPath = '/api/home/user/passport/refreshAuthToken';
+        const pageErrors = collectPageErrors(page);
+        const consoleErrors = collectConsoleErrors(page, [
+          /server responded with a status of 401/i,
+        ]);
+        let refreshRequests = 0;
+        const origin = new URL(testInfo.project.use.baseURL!).origin;
+        page.on('request', outgoing => {
+          const url = new URL(outgoing.url());
+          if (
+            url.origin === origin &&
+            url.pathname === refreshPath &&
+            outgoing.method() === 'POST' &&
+            !outgoing.headers()['x-vona-openapi-schema']
+          ) {
+            refreshRequests++;
+          }
+        });
+        try {
+          account = await registerAccountUser(
+            request,
+            testInfo,
+            'e2e-fixture-home-account',
+            registered => {
+              account = registered;
+            },
+          );
+          await page.goto(`/login?${new URLSearchParams({ returnTo })}`, {
+            waitUntil: 'load',
+          });
+          await loginAccountFromPage(page, account, returnTo);
+          expect(refreshRequests).toBe(0);
+          expect(
+            await page.evaluate(missing => {
+              const jwt = localStorage.getItem('jwt');
+              const expires = localStorage.getItem('expireTime');
+              if (
+                !jwt ||
+                !JSON.parse(jwt)?.refreshToken ||
+                !expires ||
+                typeof JSON.parse(expires) !== 'number' ||
+                localStorage.getItem('passport') === null
+              ) {
+                return false;
+              }
+              if (missing) {
+                localStorage.removeItem('jwt');
+              } else {
+                // Retain genuine credentials; expire only the browser's persisted deadline.
+                localStorage.setItem('expireTime', JSON.stringify(Date.now() - 60_000));
+              }
+              return true;
+            }, missingRefresh),
+          ).toBe(true);
+          expect((await page.context().cookies()).some(cookie => cookie.name === 'token')).toBe(
+            true,
+          );
+          if (!missingRefresh && !realRefresh) {
+            await page.route(
+              url => url.origin === origin && url.pathname === refreshPath,
+              async route => {
+                if (
+                  route.request().method() !== 'POST' ||
+                  route.request().headers()['x-vona-openapi-schema']
+                ) {
+                  await route.fallback();
+                  return;
+                }
+                await route.fulfill({
+                  status: 401,
+                  contentType: 'application/json',
+                  headers: { 'cache-control': 'no-store' },
+                  body: JSON.stringify({ code: 401, message: 'Unauthorized' }),
+                });
+              },
+            );
+          }
+          const refreshResponse = missingRefresh
+            ? undefined
+            : waitForApiResponse(page, 'POST', refreshPath, false);
+          await page.goto(`/home/base/errorExpired?${new URLSearchParams({ returnTo })}`, {
+            waitUntil: 'load',
+          });
+          if (refreshResponse) {
+            expect((await refreshResponse).status()).toBe(realRefresh ? 200 : 401);
+          }
+          if (realRefresh) {
+            await expect(page).toHaveURL(returnTo);
+            await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
+            await expect(page.getByRole('heading', { name: 'Account Settings' })).toBeVisible();
+            expect(
+              await page.evaluate(() => {
+                const expires = localStorage.getItem('expireTime');
+                return !!expires && JSON.parse(expires) > Date.now();
+              }),
+            ).toBe(true);
+            expect((await page.context().cookies()).some(cookie => cookie.name === 'token')).toBe(
+              true,
+            );
+            expect(refreshRequests).toBe(1);
+          } else {
+            const expectRecoveryLogin = async () => {
+              await expect(page.getByRole('heading', { name: 'Login', exact: true })).toBeVisible();
+              const url = new URL(page.url());
+              expect(url.pathname).toBe('/login');
+              expect(url.searchParams.get('returnTo')).toBe(returnTo);
+              await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
+            };
+            await expectRecoveryLogin();
+            await expect
+              .poll(async () => {
+                return (await page.context().cookies()).some(cookie => cookie.name === 'token');
+              })
+              .toBe(false);
+            expect(
+              await page.evaluate(() => {
+                return ['jwt', 'passport', 'expireTime'].every(
+                  key => localStorage.getItem(key) === null,
+                );
+              }),
+            ).toBe(true);
+            expect(refreshRequests).toBe(missingRefresh ? 0 : 1);
+            await page.reload({ waitUntil: 'load' });
+            await expectRecoveryLogin();
+            expect(refreshRequests).toBe(missingRefresh ? 0 : 1);
+            await loginAccountFromPage(page, account, returnTo);
+            expect(refreshRequests).toBe(missingRefresh ? 0 : 1);
+          }
+          expect(pageErrors).toEqual([]);
+          expect(consoleErrors).toEqual([]);
+        } finally {
+          if (account) await removeAccountFixture(request, account);
+        }
+      },
+    );
+  }
+});
