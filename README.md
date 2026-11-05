@@ -35,9 +35,9 @@ npm run init
 Cabloy is available through two complete project baselines, each maintained in its own repository:
 
 - **[Cabloy Basic](https://github.com/cabloy/cabloy)** — the public framework and reference edition, licensed under [MIT](https://github.com/cabloy/cabloy/blob/main/LICENSE), with a DaisyUI + Tailwind CSS UI layer and an e-commerce-oriented demonstration suite.
-- **[Cabloy Start](https://github.com/cabloy/cabloy-start)** — a public starter edition, licensed under [MIT](https://github.com/cabloy/cabloy-start/blob/main/LICENSE), with a Vuetify UI layer and built-in system-management and authorization demonstrations.
+- **[Cabloy Start](https://github.com/cabloy/cabloy-start)** — a public starter edition, licensed under [MIT](https://github.com/cabloy/cabloy-start/blob/main/LICENSE), with a Vuetify UI layer.
 
-Both editions share Cabloy’s Vona + Zova architecture, CLI-first workflows, bidirectional type synchronization, and AI Spec-Driven Development model. They differ primarily in their default UI layer, included demonstration suites, and out-of-the-box application baseline.
+Both editions share Cabloy’s Vona + Zova architecture, CLI-first workflows, bidirectional type synchronization, and AI Spec-Driven Development model. They differ primarily in their default UI layer, included suites, and out-of-the-box application baseline.
 
 For fuller guidance on choosing an edition and working in an existing checkout, see [Cabloy Editions](https://cabloy.com/editions/overview).
 
@@ -65,7 +65,6 @@ For fuller guidance on choosing an edition and working in an existing checkout, 
 | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------ | ------------ |
 | Student Training Management | Master–detail forms, nested detail records, image uploads, and file uploads. Cabloy Start additionally demonstrates data-scope-based RBAC. | ✅           | ✅           |
 | E-commerce                  | A complete Admin site, Web site, personal center, payment flows, Markdown editing, and related capabilities.                               | ✅           | —            |
-| System Management           | User management, role management, department management, RBAC authorization, and menu authorization.                                       | —            | ✅           |
 
 Included demonstration suites give AI vibe coding agents high-quality, project-native code examples. They improve development efficiency while reducing token use. For production deployments, set `PROJECT_DISABLED_SUITES` to a comma-separated list of unneeded suite names to disable them; see the [Environment and Config Guide](https://cabloy.com/frontend/environment-config-guide#built-in-env-variables).
 

@@ -72,11 +72,13 @@ Do not include unrelated generated output, build artifacts, environment files, c
 
 ## Documentation
 
-Canonical public Cabloy documentation is published at [cabloy.com](https://cabloy.com). Discuss proposed public-documentation changes in an issue or pull request rather than treating this repository's copied `repo-docs/` tree as a separate canonical source.
+Canonical shared Cabloy documentation is published at [cabloy.com](https://cabloy.com). Discuss proposed shared-documentation changes in an issue or pull request rather than treating this repository's copied `repo-docs/` tree as a separate canonical source.
+
+Independently delivered suite guidance belongs in the owning suite's README and `docs/`. For the fullstack `cabloy-admin` suite, use [its README](vona/src/suite/cabloy-admin/README.md) as the documentation entry point.
 
 ## License and contribution rights
 
-Cabloy Start project-owned content is licensed under the root [MIT License](./LICENSE). [LICENSES.md](./LICENSES.md) explains project-owned license inheritance and third-party notice boundaries.
+Cabloy Start project-owned content follows the root [MIT License](./LICENSE) unless explicitly excluded by [LICENSES.md](./LICENSES.md) or covered by its own applicable license or notice. The `cabloy-admin` suite README and `docs/` use independent commercial authorization; consult their documented scope before contributing.
 
 Submit only material that you have the right to contribute. Preserve required copyright, license, attribution, and third-party notices for any included code, media, fonts, generated material, or copied snippets.
 
