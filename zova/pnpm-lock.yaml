@@ -368,21 +368,6 @@ importers:
       zova-module-a-zova:
         specifier: workspace:^
         version: link:src/suite-vendor/a-zova/modules/a-zova
-      zova-module-admin-department:
-        specifier: workspace:^
-        version: link:src/suite/cabloy-admin/modules/admin-department
-      zova-module-admin-menu:
-        specifier: workspace:^
-        version: link:src/suite/cabloy-admin/modules/admin-menu
-      zova-module-admin-rbac:
-        specifier: workspace:^
-        version: link:src/suite/cabloy-admin/modules/admin-rbac
-      zova-module-admin-role:
-        specifier: workspace:^
-        version: link:src/suite/cabloy-admin/modules/admin-role
-      zova-module-admin-user:
-        specifier: workspace:^
-        version: link:src/suite/cabloy-admin/modules/admin-user
       zova-module-demo-basic:
         specifier: workspace:^
         version: link:src/suite/a-demo/modules/demo-basic
@@ -1861,77 +1846,6 @@ importers:
       '@date-io/luxon':
         specifier: ^3.2.0
         version: 3.2.0(luxon@3.7.2)
-    devDependencies:
-      clean-package:
-        specifier: ^2.2.0
-        version: 2.2.0
-      rimraf:
-        specifier: ^6.1.3
-        version: 6.1.3
-
-  src/suite/cabloy-admin:
-    dependencies:
-      zova-module-admin-department:
-        specifier: ^5.0.0
-        version: link:modules/admin-department
-      zova-module-admin-menu:
-        specifier: ^5.0.0
-        version: link:modules/admin-menu
-      zova-module-admin-rbac:
-        specifier: ^5.0.0
-        version: link:modules/admin-rbac
-      zova-module-admin-role:
-        specifier: ^5.0.0
-        version: link:modules/admin-role
-      zova-module-admin-user:
-        specifier: ^5.0.0
-        version: link:modules/admin-user
-
-  src/suite/cabloy-admin/modules/admin-department:
-    devDependencies:
-      clean-package:
-        specifier: ^2.2.0
-        version: 2.2.0
-      rimraf:
-        specifier: ^6.1.3
-        version: 6.1.3
-
-  src/suite/cabloy-admin/modules/admin-menu:
-    devDependencies:
-      clean-package:
-        specifier: ^2.2.0
-        version: 2.2.0
-      rimraf:
-        specifier: ^6.1.3
-        version: 6.1.3
-
-  src/suite/cabloy-admin/modules/admin-rbac:
-    dependencies:
-      zova-module-admin-department:
-        specifier: ^5.0.0
-        version: link:../admin-department
-    devDependencies:
-      clean-package:
-        specifier: ^2.2.0
-        version: 2.2.0
-      rimraf:
-        specifier: ^6.1.3
-        version: 6.1.3
-
-  src/suite/cabloy-admin/modules/admin-role:
-    devDependencies:
-      clean-package:
-        specifier: ^2.2.0
-        version: 2.2.0
-      rimraf:
-        specifier: ^6.1.3
-        version: 6.1.3
-
-  src/suite/cabloy-admin/modules/admin-user:
-    dependencies:
-      zova-module-admin-role:
-        specifier: workspace:^
-        version: link:../admin-role
     devDependencies:
       clean-package:
         specifier: ^2.2.0
