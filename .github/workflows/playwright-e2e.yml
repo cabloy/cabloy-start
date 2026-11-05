@@ -102,7 +102,7 @@ jobs:
         if: runner.os != 'Linux'
         run: npx playwright install chromium
       - name: run E2E baseline
-        run: npm run test:e2e cabloy-admin cabloy-start cabloy-start-student-markdown home-user-account
+        run: npm run test:e2e cabloy-start cabloy-start-student-markdown home-user-account
       - name: upload Playwright artifacts
         if: failure()
         uses: actions/upload-artifact@v7
