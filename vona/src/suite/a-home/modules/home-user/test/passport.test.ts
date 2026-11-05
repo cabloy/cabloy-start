@@ -22,14 +22,33 @@ function createPassport(): IPassport {
   } as IPassport;
 }
 
+async function withPassportFixture(
+  fn: () => Promise<void>,
+  options?: Parameters<typeof app.bean.executor.mockCtx>[1],
+) {
+  await app.bean.executor.mockCtx(async () => {
+    const findOne = mock.method(app.bean.auth, 'findOne', async () => ({
+      id: 'passport-response-auth',
+      profileId: 'passport-response-profile',
+      authProvider: { id: 1, providerName: 'auth-simple:simple', clientName: 'default' },
+    }));
+    try {
+      await fn();
+    } finally {
+      findOne.mock.restore();
+    }
+  }, options);
+}
+
 const jwt = {
   accessToken: 'passport-response-access',
   refreshToken: 'passport-response-refresh',
+  expiresIn: 3600,
 };
 
 describe('passport.test.ts', { concurrency: false }, () => {
   it('current returns the authoritative request instance, not persisted passport identities', async () => {
-    await app.bean.executor.mockCtx(async () => {
+    await withPassportFixture(async () => {
       const passport = createPassport();
       app.ctx.state.passport = passport;
       const instanceId = app.ctx.instance.id;
@@ -39,15 +58,71 @@ describe('passport.test.ts', { concurrency: false }, () => {
       assert.ok(result);
       assert.equal(result.instanceId, instanceId);
       assert.equal(result.user.id, passport.user!.id);
+      assert.equal(result.user.name, passport.user!.name);
       assert.equal(result.user.displayName, passport.user!.displayName);
-      assert.equal(result.auth, passport.auth);
-      assert.equal(result.roles, passport.roles);
+      assert.deepEqual(Object.keys(result.auth).sort(), ['authProvider', 'id', 'profileId']);
+      assert.equal(result.auth.id, passport.auth!.id);
+      assert.deepEqual(result.roles, []);
+      assert.equal('instanceId' in result.auth, false);
       assert.equal('instanceId' in result.user, false);
     });
   });
 
+  it('current reloads nonempty roles through the safe persisted projection', async () => {
+    await withPassportFixture(async () => {
+      const modelRole = app.scope('home-user').model.role;
+      const role = await modelRole.insert({
+        name: `passport-response-role-${crypto.randomUUID()}`,
+        title: 'Passport response role',
+        titleLocales: { 'zh-cn': '通行证响应角色' },
+        siteIds: ['admin'],
+        builtin: false,
+      });
+      try {
+        const passport = createPassport();
+        const untrustedRole = {
+          ...role,
+          name: 'Untrusted passport role',
+          title: 'Untrusted passport role title',
+          instanceId: 'untrusted-role-instance',
+          privateMetadata: { secret: 'untrusted-role-secret' },
+        };
+        passport.roles = [untrustedRole];
+        app.ctx.state.passport = passport;
+
+        const result = await app.bean._getBean(ControllerPassport).current();
+        assert.ok(result);
+        assert.equal(result.roles.length, 1);
+        const projectedRole = result.roles[0];
+        assert.equal(projectedRole.id, role.id);
+        assert.equal(projectedRole.name, role.name);
+        assert.equal(projectedRole.title, role.title);
+        assert.deepEqual(projectedRole.titleLocales, role.titleLocales);
+        assert.deepEqual(projectedRole.siteIds, role.siteIds);
+        assert.equal(projectedRole.builtin, false);
+        const safeColumns = [
+          'id',
+          'createdAt',
+          'updatedAt',
+          'deleted',
+          'iid',
+          'name',
+          'title',
+          'titleLocales',
+          'siteIds',
+          'builtin',
+        ];
+        assert.ok(Object.keys(projectedRole).every(key => safeColumns.includes(key)));
+        assert.equal('instanceId' in projectedRole, false);
+        assert.equal('privateMetadata' in projectedRole, false);
+      } finally {
+        await modelRole.deleteById(role.id);
+      }
+    });
+  });
+
   it('current returns explicit null when the request has no instance', async () => {
-    await app.bean.executor.mockCtx(
+    await withPassportFixture(
       async () => {
         app.ctx.state.passport = createPassport();
         assert.equal(app.ctx.instance, undefined);
@@ -61,7 +136,7 @@ describe('passport.test.ts', { concurrency: false }, () => {
   });
 
   it('current preserves the absent-passport and incomplete-passport behavior', async () => {
-    await app.bean.executor.mockCtx(async () => {
+    await withPassportFixture(async () => {
       const controller = app.bean._getBean(ControllerPassport);
       for (const passport of [undefined, {}, { user: createPassport().user }, { auth: jwt }]) {
         app.ctx.state.passport = passport as IPassport | undefined;
@@ -70,9 +145,22 @@ describe('passport.test.ts', { concurrency: false }, () => {
     });
   });
 
+  it('Passport/JWT assembly rejects a missing JWT or incomplete Passport with 401', async () => {
+    await withPassportFixture(async () => {
+      const service = app.scope('home-user').service.passport;
+      const unauthorized = (error: { code?: number }) => error.code === 401;
+      app.ctx.state.passport = createPassport();
+      await assert.rejects(() => service.combineDtoPassportJwt(), unauthorized);
+      for (const passport of [undefined, {}, { user: createPassport().user }, { auth: jwt }]) {
+        app.ctx.state.passport = passport as IPassport | undefined;
+        await assert.rejects(() => service.combineDtoPassportJwt(jwt), unauthorized);
+      }
+    });
+  });
+
   it('every Passport/JWT response uses the same authoritative instance projection', async () => {
     for (const instanceName of ['', null] as const) {
-      await app.bean.executor.mockCtx(
+      await withPassportFixture(
         async () => {
           app.ctx.state.passport = createPassport();
           const controller = app.bean._getBean(ControllerPassport);
