@@ -1114,26 +1114,19 @@ test(
 );
 
 test(
-  'ATP-START-FLOW-02: admin can access system management resources',
+  'ATP-START-FLOW-02: admin can access system management metrics',
   { tag: ['@admin', '@smoke'] },
   async ({ page }) => {
     const pageErrors = collectPageErrors(page);
     await loginAsAdmin(page);
 
     await expect(page.getByText('System Management', { exact: true })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'User', exact: true })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Role', exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Metrics', exact: true })).toBeVisible();
 
-    await page.getByRole('link', { name: 'User', exact: true }).click();
-    await expect(page).toHaveURL(
-      /\/admin\/rest\/resource\/admin-user(?:%3A|:|%253A)user(?:[/?#]|$)/,
-    );
-
-    await page.goto('/admin/', { waitUntil: 'load' });
-    await page.getByRole('link', { name: 'Role', exact: true }).click();
-    await expect(page).toHaveURL(
-      /\/admin\/rest\/resource\/admin-role(?:%3A|:|%253A)role(?:[/?#]|$)/,
-    );
+    await page.getByRole('link', { name: 'Metrics', exact: true }).click();
+    await expect(page).toHaveURL(/\/admin\/start\/metrics\/dashboard(?:[/?#]|$)/);
+    await expect(page.getByText('Current worker runtime snapshot', { exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Refresh', exact: true })).toBeVisible();
     expect(pageErrors).toEqual([]);
   },
 );

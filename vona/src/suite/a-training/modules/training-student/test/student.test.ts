@@ -200,6 +200,9 @@ describe('student.test.ts', { concurrency: false }, () => {
             },
           });
           studentIds.push(studentId);
+          const student = await app.scope('training-student').model.student.getById(studentId);
+          assert.equal(student?.departmentId, null);
+          assert.equal(String(student?.userIdOwner), String(app.bean.passport.currentUser!.id));
         }
         const ascending: DtoStudentSelectRes = await app.bean.executor.performAction(
           'get',
