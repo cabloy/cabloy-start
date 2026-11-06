@@ -298,9 +298,25 @@ Prefer the narrowest useful checks first, then broader checks when needed.
 
 Typical shared checks include:
 
-- root scripts such as `npm run tsc`, `npm run test`, `npm run build`
+- root scripts such as `npm run tsc` and `npm run test`
 - command help or discovery output from `npm run vona` / `npm run zova`
 - targeted build/dev/typecheck flows for the affected side
+
+For frontend build verification in Cabloy Basic and Cabloy Start:
+
+1. Detect the edition and resolve the affected flavors, paired root wrappers and output paths from the active scripts. Directory isolation is shared by both editions; edition detection selects concrete commands and artifacts, not capability support.
+2. Prefer ordinary paired root commands such as `npm run build:zova:admin`, `npm run build:zova:web`, or `npm run build:zova` for the default pairs. Use the active repository's directory-isolated runner for application SSR/REST/SPA builds; `build:zova:isolated` is a compatibility alias, not a separate opt-in mode. Basic's Commerce wrappers and four-pair `build:zova:all` are edition-specific examples, not Start's artifact list; resolve suite wrappers and aggregate membership from the current manifest.
+3. Builds use live prepared source/dependencies without automatic installation or shared metadata generation. Run `npm run deps:zova` explicitly when needed, then keep source, dependencies and metadata stable for the entire build. Only one application-build invocation is supported per checkout. Coordinate shared preparation/publication; directory-level isolation does not sandbox arbitrary hooks or provide hot deployment of live Vona integrated SSR. See [Frontend build isolation](../../../repo-docs/reference/repo-scripts.md#frontend-build-isolation) for owned runtime roots, process ownership and Windows requirements.
+4. Run `npm run deps:vona` separately when backend consumers need synchronization, then perform the relevant integrated checks. If backend build verification is needed, follow with `npm run build:vona` rather than repeating frontend builds through `npm run build`.
+
+Keep individual `build:ssr:*` scripts SSR-only, individual `build:rest:*` scripts REST-only, SPA scripts SPA-only, and paired batches paired. Confirm any shorthand's selected flavor from the active manifest rather than assuming Basic's `build:spa` → `admin` mapping. Public REST CLI builds route through the app manifest's `build:isolated` coordinator; the internal leaf does not recurse. This standard applies to application builds in both editions, not module/library `:bin:buildModule`; dev/typecheck preparation remains unchanged.
+
+### Adding flavor and application-build scripts
+
+1. Confirm the edition and whether a distinct deployment/configuration boundary needs a new flavor; a new business suite alone does not. For an independent SSR Site, follow `cabloy-contract-loop` Mode E and the [canonical flavor setup](../../../repo-docs/fullstack/ssr-site-and-flavor-setup.md#_3-add-durable-scripts-and-root-wrappers).
+2. In both Basic and Start, author root wrappers in root `package.json` and nested scripts in `zova/package.original.json`; synchronize only `scripts` into working `zova/package.json`, preserving its generated dependency closure. Do not run `init` or install dependencies just to synchronize script changes.
+3. Reuse the existing runner/app `build:isolated` hook with the required operation. Keep SSR-only, REST-only and SPA scripts distinct; root SSR/REST wrappers and multi-flavor pair batches use one runner invocation, not concatenated leaf builds. Do not add build-time `prerun`, dependency installation or shared metadata generation; dev preparation remains unchanged.
+4. Add only required build modes and deliberate aggregate membership. A suite-specific wrapper does not imply adding its flavors to `build:zova:all`; default aggregates represent the edition's approved delivery set. Validate referenced commands and manifest script agreement. The runner accepts valid flavor names without a per-suite whitelist; the flavor still needs its own configuration and prepared inputs. In either edition, inspect the active repository's script mappings, flavor names and output paths instead of copying another edition's concrete values.
 
 ## Response pattern
 

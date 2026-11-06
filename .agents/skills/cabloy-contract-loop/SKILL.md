@@ -19,8 +19,8 @@ In that situation:
 
 1. run the normal sync or regeneration flow first
 2. identify every affected flavor from the active repository’s root wrappers and lower-level Zova scripts, then run each matching paired SSR/REST build before `npm run deps:vona`
-   - `npm run build:zova:admin` and `npm run build:zova:web` are representative default wrappers only
-   - an independently named site must use its own source-confirmed paired root wrapper; do not relabel or assume a default wrapper refreshed it
+   - in both Cabloy Basic and Cabloy Start, use directory-isolated application builds; prefer source-confirmed paired root wrappers such as `npm run build:zova:admin`, `npm run build:zova:web`, or `npm run build:zova`, resolving their exact flavor selection from the active manifest
+   - an independently named site must use its own source-confirmed flavor and paired build; do not relabel or assume a default Admin/Web build refreshed it
 3. do not treat `build:rest:*` alone as sufficient, because the SSR bundle and rest output must move together
 4. run `npm run deps:vona` after the required flavor builds
 5. if the generated `.zova-rest` artifacts already contain the expected changes but Vona still sees stale types, delete `vona/node_modules` and reinstall dependencies
@@ -38,7 +38,7 @@ Do not keep debugging source-level contract or renderer changes until the local 
 - Cursor payloads are not Claude hook payloads. When Cursor imports `.claude/settings.json`, the Claude bridge recognizes Cursor and returns without work, leaving the native Cursor adapter as the single Agent gate
 - `postToolUse` injects `additional_context` into the agent turn; `afterTabFileEdit` is side-effect only and still runs the shared reverse auto-sync when the edited file matches
 - Codex handles every matching entry in one `apply_patch` call and runs at most one high-confidence reverse auto-sync for that patch. Explicit Delete entries use path-only evidence; an unreadable Add or Update target is reported as an inspection failure, never reinterpreted as a delete
-- for high-confidence reverse-chain source edits on the Zova side, the hook auto-runs `npm run build:zova:admin` and then `npm run deps:vona`
+- for high-confidence reverse-chain source edits on the Zova side, the hook auto-runs the edition-specific Admin wrapper `npm run build:zova:admin`, then `npm run deps:vona`; both editions should route the paired build through their isolation coordinator, with the actual command mapping confirmed from the active repository; affected Web or independent-site flavors still require deliberate builds
 - forward-chain detections remain reminder-only, so backend contract changes still require deliberate regeneration and verification
 - consumer-side reverse signals remain reminder-only, so do not assume every reverse-chain case auto-syncs itself
 
@@ -121,6 +121,8 @@ Before proposing implementation, inspect the active repository rather than infer
 5. the expected SSR release directory and flavor-specific `zova-rest-*` package.
 
 The independent identity tuple—flavor, site ID, public path, bundle path, REST package, Vona site module, and root paired-build wrapper—must be selected together. The root wrapper must build both SSR and REST output before `npm run deps:vona`; `build:rest:*` alone is not enough. Default Basic or Start Admin/Web wrappers are validated specimens, not a command template for a differently named site.
+
+In both Cabloy Basic and Cabloy Start, implement the root wrapper as one directory-isolated runner invocation for the pair, not a sequence of SSR-only and REST-only scripts: separate invocations publish separately. Author nested scripts in `zova/package.original.json` and synchronize the working manifest's scripts without replacing its generated dependencies. A business suite does not itself require a new flavor, and a new flavor does not automatically belong in `build:zova:all`. Resolve the active repository's coordinator, script mappings, flavor names and output paths; these concrete values may differ, but isolation support is shared.
 
 Read [Independent SSR Site and Flavor Setup](../../../repo-docs/fullstack/ssr-site-and-flavor-setup.md) for the canonical setup and evidence procedure.
 
@@ -245,10 +247,13 @@ Typical examples in Cabloy Basic include:
 - `cd zova && npm run build:rest:cabloyBasicAdmin`
 - `cd zova && npm run build:rest:cabloyBasicWeb`
 
-Important Cabloy Basic reverse-sync rule:
+Important reverse-sync rule for Cabloy Basic and Cabloy Start:
 
-- if Vona consumes newly added or changed Zova Admin render/action/metadata, do **not** stop at `build:rest:cabloyBasicAdmin`
-- run `npm run build:zova:admin` from the repo root instead, then run `npm run deps:vona`
+- if Vona consumes newly added or changed Zova Admin render/action/metadata, do **not** stop at a REST-only `build:rest:*` command
+- run the source-confirmed paired root wrapper for every affected flavor, then run `npm run deps:vona`; Basic examples are `npm run build:zova:admin` or `npm run build:zova` for both default pairs, not fixed flavor selections for Start or an independent site
+- use directory-isolated application builds in both editions; `build:zova:isolated` is a compatibility alias. Builds consume live prepared `zova/` source/dependencies without automatic installation or shared metadata generation: run `npm run deps:zova` explicitly when needed, then keep source, dependencies and metadata stable throughout compilation
+- support only one application-build invocation per checkout and coordinate shared preparation/publication; this is not an arbitrary-hook sandbox or live Vona integrated SSR hot deployment; see [Frontend build isolation](../../../repo-docs/reference/repo-scripts.md#frontend-build-isolation) for owned roots, process ownership and Windows requirements
+- keep individual nested SSR-only and REST-only scripts within those boundaries and paired batches paired. Public REST CLI builds delegate through the app manifest's `build:isolated` script, while the internal leaf compiles without recursion. Dev/typecheck preparation and module/library builds are unchanged
 - treat this as a JS-bundle-plus-rest-output handoff, not a rest-types-only refresh
 - the current repo safeguard may auto-run those two commands for high-confidence Zova reverse-source edits, but only as a convenience layer on top of the contract-loop model
 - if the change was consumer-side, low-confidence, cross-edition, happened outside a supported platform hook path, or used an untrusted/discovery-disabled hook, run the reverse sync flow deliberately yourself
@@ -320,7 +325,7 @@ Typical checks may include:
 - OpenAPI inspection
 - `npm run test`
 - `npm run tsc`
-- `npm run build`
+- `npm run build:vona` when backend build verification is needed, after any required frontend build and dependency synchronization
 
 ### Frontend-side verification
 
@@ -328,7 +333,7 @@ Typical checks may include:
 
 - SDK or metadata regeneration success
 - `npm run tsc:zova`
-- `npm run build:zova`
+- in Basic, the ordinary paired root wrapper for each affected flavor, such as `npm run build:zova:admin`, `npm run build:zova:web`, or `npm run build:zova` for both; in Start, the source-confirmed build commands from the active repository
 - flavor-specific or route-specific checks
 - schema-driven consumer alignment
 

@@ -14,6 +14,8 @@ Root `npm run init` runs `scripts/init.ts`, which restores each generated worksp
 
 Run root `npm run init` deliberately after a fresh clone, recovery of generated workspace state, or a framework upgrade. Do not treat it as an automatic follow-up for narrow changes.
 
+For Zova scripts-only changes, author `zova/package.original.json` and synchronize only its `scripts` field into the existing generated manifest, preserving the dependency closure; no initialization or reinstall is needed for that synchronization. The canonical [new-flavor script procedure](/fullstack/ssr-site-and-flavor-setup#_3-add-durable-scripts-and-root-wrappers) includes root/nested JSON examples and the synchronization command. A new suite is not automatically part of `build:zova:all`; default shipped-artifact membership must be explicit.
+
 ## Cabloy Basic entrypoints
 
 Cabloy Basic exposes these shared root scripts:
@@ -37,6 +39,7 @@ Cabloy Basic exposes these shared root scripts:
 - `npm run build:zova:commerce`
 - `npm run build:zova:commerce:web`
 - `npm run build:zova:commerce:admin`
+- `npm run build:zova:isolated -- <flavor> [<flavor> ...]`
 - `npm run start`
 - `npm run start:one`
 - `npm run test`
@@ -51,7 +54,44 @@ Cabloy Basic exposes these shared root scripts:
 - `npm run docs:build`
 - `npm run docs:preview`
 
-`npm run init` prepares all Cabloy Basic SSR and REST artifacts with `npm run build:zova:all`, which sequentially builds the Basic and Commerce flavor batches before Vona initialization. Use `build:zova` or `build:zova:commerce` for focused artifact refreshes; use `build:zova:all` only when every shipped Basic flavor must be prepared.
+`npm run init` deliberately prepares dependencies and metadata, then builds all Cabloy Basic SSR and REST artifacts with `npm run build:zova:all` before Vona initialization. That build processes all four shipped flavors sequentially in one runner invocation. Use `build:zova` or `build:zova:commerce` for focused artifact refreshes; use `build:zova:all` only when every shipped Basic flavor must be prepared.
+
+## Frontend build isolation {#frontend-build-isolation}
+
+<span id="frontend-build-isolation-in-cabloy-basic"></span>
+
+Directory-isolated Zova application builds are a shared capability and the default workflow in **Cabloy Basic and Cabloy Start**, covering supported SSR, REST and SPA application build entrypoints. Detect the edition to select its actual scripts, flavors and output paths, not to decide whether isolation applies. Prefer the ordinary root command for the affected SSR/REST pair:
+
+```bash
+npm run build:zova:web
+npm run build:zova:admin
+npm run build:zova
+```
+
+The command family and isolated workflow are shared; artifact selection is edition-specific:
+
+| Root command       | Cabloy Basic                                         | Cabloy Start                                                        |
+| ------------------ | ---------------------------------------------------- | ------------------------------------------------------------------- |
+| `build:zova:web`   | `cabloyBasicWeb` SSR/REST pair                       | `cabloyStartWeb` SSR/REST pair                                      |
+| `build:zova:admin` | `cabloyBasicAdmin` SSR/REST pair                     | `cabloyStartAdmin` SSR/REST pair                                    |
+| `build:zova`       | Both Basic pairs                                     | Both Start pairs                                                    |
+| `build:zova:all`   | All four Basic/Commerce pairs, one runner invocation | Alias for `build:zova`; do not infer Basic's four-pair artifact set |
+
+In Basic, `build:zova:commerce` builds both Commerce pairs; its `:web` and `:admin` wrappers select one pair. Basic's `build` and `build:docker` build all four pairs before their existing Vona build. In both editions, `build:zova:isolated -- <flavor> [<flavor> ...]` remains a compatibility alias, not an opt-in isolation mode. Resolve additional suite wrappers from the active manifest; the shared capability does not imply identical suite availability, UI, assets or published artifact sets.
+
+Inside `zova/`, individual `build:ssr:*` scripts remain **SSR-only** and individual `build:rest:*` scripts remain **REST-only**; a paired batch builds both artifacts. Nested `build` is SSR-only, and `build:spa` builds SPA for `admin`. The shared runner is `scripts/buildZovaIsolated.ts`; nested entrypoints delegate once to the app manifest's `build:isolated` coordinator with `--operation pair|ssr|rest|spa`, and bare flavor arguments default to `pair`. A public `:bin:buildRest` invocation also delegates through that coordinator for REST-only output; the runner's validated private REST leaf compiles directly without delegating again. Inspect the active root and Zova manifests for the exact flavor and batch script map when adapting commands or adding a flavor in either edition. Isolation covers supported application builds, not arbitrary raw Quasar/dependency commands or the separate module/library `:bin:buildModule` publication pipeline.
+
+Builds use the live, prepared `zova/` source and installed dependencies. They isolate generated directories, not source or dependencies: each run owns sibling `zova/.quasar-build-<id>`, `zova/.zova-build-<id>` and `zova/.zova-rest-build-<id>` directories, plus `zova/.tsconfig.rest-build-<id>.json` beside the project tsconfig for REST declaration compilation. REST entries remain under `.zova-rest-build-<id>/entry`; private build outputs live under `.quasar-build-<id>/output`. The `run/zova-build-<id>` control root holds run state, output plans and publication staging. One application build can run alongside one Zova standalone SSR development server without compilation reusing or deleting its standard `.quasar`, `.zova` or `.zova-rest` directories. Development commands and their identity/ports are unchanged.
+
+Keep source, installed dependencies and generated metadata stable for the entire build, not only startup. Coordinate source edits, dependency installation/generation, metadata preparation and contract regeneration before starting; these inputs remain shared with development. Application builds no longer run build-only `prerun`, install dependencies or repair shared metadata. Run `npm run deps:zova` explicitly when preparation is needed; missing prerequisites fail with that preparation instruction. Dev/typecheck preparation is unchanged. Allow disk space for owned generated directories, private build artifacts and publication staging, rather than a copied workspace or dependency tree.
+
+For `pair`, each flavor compiles SSR then REST before publishing either artifact. SSR-only, REST-only and SPA operations compile and publish only the selected artifact type; REST generates fresh flavor-specific private runtime without a dummy SSR build. Batches remain sequential under one build lock; if a later flavor fails, earlier successfully published pairs remain published. Standard dist/release names and configured build-copy destinations are preserved; resolve their actual flavor names and paths from the active edition and site configuration rather than copying Basic destinations into Start. Publication stages complete directories and keeps previous outputs for rollback on a handled replacement failure; it is not a crash-atomic deployment transaction.
+
+After a frontend refresh, run `npm run deps:vona` when Vona consumes the changed REST contract. Artifact publication and dependency synchronization remain shared handoff steps: this isolation does **not** promise seamless replacement of artifacts used by an already running Vona integrated SSR process. Directory-level generated isolation is not a sandbox for arbitrary custom hooks or other writes to shared source, dependencies or external paths.
+
+The runner uses POSIX process groups on macOS/Linux and the existing native Windows Job Object guardian on Windows. Native Windows additionally requires PowerShell 7 (`pwsh.exe` on `PATH`), alongside the repository's Node.js and pnpm requirements; the guardian compiles its checked-in native helper at runtime. The runner accepts a build result only after confirming that its owned process tree has exited.
+
+Only one application-build invocation is supported per checkout; ordinary and compatibility entrypoints share the same lock. A second invocation fails rather than adopting another run's lock or cleaning its files. Coordinate shared preparation/publication and keep live build inputs stable throughout compilation. Interrupted builds with uncertain child shutdown retain their owned generated directories, control root and lock for inspection; do not delete another process's lock or owned directories to bypass a conflict. Windows file-sharing restrictions can also prevent replacing artifacts used by a live consumer; such failures are reported rather than bypassed with destructive retries.
 
 ## TypeScript toolchains in Cabloy Basic
 
@@ -86,7 +126,7 @@ Root `npm run tsc` runs `tsc:zova`, then `tsc:vona`; these are the only root `ts
 
 In both nested workspaces, `npm run tsc` delegates to `npm run tsc:native`. Native and legacy checks first run `npm run prerun`, then invoke the selected compiler with incremental caching disabled. Root workspace aliases delegate to these scripts too, so dependency and generated metadata preparation is not bypassed. Each workspace's `prerun` runs only its `:tools:deps` command; it does not call `tsc`, avoiding recursive script execution. Preparation may refresh generated metadata or dependency manifests and install changed dependencies, while the compiler step itself emits no declarations or build-info files.
 
-Zova development and build entrypoints call `npm run prerun` before Quasar or REST emission to prepare dependencies and generated metadata without automatically running a typecheck. Run `npm run tsc`, `npm run tsc:native`, or `npm run tsc:legacy` explicitly inside the Zova workspace when source typechecking is needed. The former multi-project Vona CLI command `:bin:tsc` has been removed; use the project checking scripts instead. Module publication configurations retain their existing compiler selection. REST emission uses tsdown 0.23.1 with an explicit JavaScript-only pass (`dts: false`) followed by a declaration-only pass (`dts.generator: 'tsgo'`). The frontend CLI and fullstack workflows require Node.js `>=24.11.0`. Classic TypeScript remains installed for compiler-JavaScript-API consumers, including SWC configuration loading, Rollup integration, and OpenAPI generation; the REST emitter retains the `@typescript/native-preview` dependency name as an npm alias for stable `typescript@7.0.2`, preserving its declaration plugin's compiler lookup.
+Nested Zova development entrypoints still call `npm run prerun` to prepare dependencies and generated metadata without automatically running a typecheck. Application build entrypoints instead use live prepared source/dependencies and the same directory-isolated runner described in [Frontend build isolation](#frontend-build-isolation), without automatic installation or shared metadata generation; run `npm run deps:zova` explicitly when preparation is needed. Run `npm run tsc`, `npm run tsc:native`, or `npm run tsc:legacy` explicitly inside the Zova workspace when source typechecking is needed. The former multi-project Vona CLI command `:bin:tsc` has been removed; use the project checking scripts instead. Module publication configurations retain their existing compiler selection. REST emission uses tsdown 0.23.1 with an explicit JavaScript-only pass (`dts: false`) followed by a declaration-only pass (`dts.generator: 'tsgo'`). The frontend CLI and fullstack workflows require Node.js `>=24.11.0`. Classic TypeScript remains installed for compiler-JavaScript-API consumers, including SWC configuration loading, Rollup integration, and OpenAPI generation; the REST emitter retains the `@typescript/native-preview` dependency name as an npm alias for stable `typescript@7.0.2`, preserving its declaration plugin's compiler lookup.
 
 The native alias is installed at the repository root, not in either nested workspace. Run `pnpm install` at the root after updating the checkout; a missing alias fails with an installation diagnostic rather than silently selecting the legacy compiler. Do not use a bare root `tsc`/`pnpm exec tsc` to choose a compiler, because both packages declare the same binary name.
 

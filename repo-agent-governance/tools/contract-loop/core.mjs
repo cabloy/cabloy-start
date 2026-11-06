@@ -41,7 +41,10 @@ export const EDITION_CONFIGS = {
     id: 'basic',
     label: 'Cabloy Basic',
     reverseVonaContentMarkers: ['zova-rest-cabloy-basic-admin'],
-    reverseAutoSyncCommands: REVERSE_AUTO_SYNC_COMMANDS,
+    reverseAutoSyncCommands: [
+      { args: ['run', 'build:zova:admin'], display: 'npm run build:zova:admin' },
+      { args: ['run', 'deps:vona'], display: 'npm run deps:vona' },
+    ],
     reverseWebBuildCommand: 'npm run build:zova:web',
   },
   start: {

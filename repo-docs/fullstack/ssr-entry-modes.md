@@ -52,7 +52,7 @@ npm run dev:zova:web    # http://localhost:9000/
 npm run dev:zova:admin  # http://localhost:9000/admin/
 ```
 
-For the other Cabloy Basic site URLs and the quick command comparison, see [Fullstack Quickstart](/fullstack/quickstart#3-start-vona-integrated-ssr). For Cabloy Start, keep the same entry-mode distinction but use the scripts, flavors, sites, and effective ports in the active Start checkout; do not copy Basic-specific flavor names or site paths blindly.
+For the other Cabloy Basic site URLs and the quick command comparison, see [Fullstack Quickstart](/fullstack/quickstart#_3-start-vona-integrated-ssr). For Cabloy Start, keep the same entry-mode distinction but use the scripts, flavors, sites, and effective ports in the active Start checkout; do not copy Basic-specific flavor names or site paths blindly.
 
 ## Which entry should you use?
 
@@ -63,6 +63,14 @@ For the other Cabloy Basic site URLs and the quick command comparison, see [Full
 | Verify release output or integrated browser acceptance                | Built SSR/REST artifacts, synchronized Vona dependencies, then the Vona entry | The intended built fullstack path is exercised, rather than just the Zova development server. |
 
 Direct access to `9000` cannot replace validation at `7102`. Before acceptance or deployment checks, build the required SSR/REST artifacts and synchronize them with Vona. For build and deployment steps, follow [SSR Build and Deploy Guide](/frontend/ssr-build-deploy-guide); for the Basic browser acceptance workflow, see [Frontend Scripts](/frontend/scripts#vona-integrated-ssr-browser-acceptance).
+
+## Build while using the development entry
+
+Directory-isolated application builds are a shared capability and the default build workflow in Cabloy Basic and Cabloy Start. Prefer ordinary root wrappers such as `npm run build:zova:web` or `npm run build:zova:admin` for the active edition's SSR/REST pair; `build:zova:isolated` is a compatibility alias, not an opt-in isolation mode. Nested SSR-only, REST-only and SPA scripts use the same isolated coordinator while preserving their selected artifact type. Actual flavors, suite wrappers and published output paths remain edition-specific.
+
+Isolated builds consume live prepared `zova/` source/dependencies with owned sibling `.quasar-build-<id>`, `.zova-build-<id>` and `.zova-rest-build-<id>` generated directories and a `run/zova-build-<id>` control root. One build can coexist with one Zova standalone SSR dev server without compilation reusing or deleting its standard runtime and hot-reload directories. No port or environment-identity change is required.
+
+Source, dependencies and generated metadata remain shared: run `npm run deps:zova` explicitly when preparation is needed, then keep these inputs stable throughout the build. Isolated builds do not automatically install dependencies or regenerate shared metadata. Only one application-build invocation is supported per checkout; coordinate shared preparation/publication. Paired builds publish neither artifact until both compile; single-artifact builds publish only their selected output. This shared handoff is not hot deployment of a live Vona integrated SSR consumer, nor a sandbox for arbitrary hooks. Run `npm run deps:vona` separately when needed, then verify the Vona entry. See [Frontend build isolation](/reference/repo-scripts#frontend-build-isolation) for preparation, disk cost, process ownership, failure handling and scope.
 
 ## Do not confuse an entry mode with an SSR site
 
