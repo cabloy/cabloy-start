@@ -1,6 +1,6 @@
 {
   "name": "vona-module-a-core",
-  "version": "5.1.76",
+  "version": "5.1.77",
   "gitHead": "a79189b882c17af5911573896a781bbb0046d37d",
   "description": "",
   "keywords": [
@@ -57,8 +57,8 @@
   "devDependencies": {
     "@cabloy/cli": "workspace:^",
     "@swc-node/register": "^1.12.1",
-    "@swc/core": "^1.15.26",
-    "@swc/helpers": "^0.5.21",
+    "@swc/core": "^1.16.22",
+    "@swc/helpers": "^0.5.24",
     "@types/babel__core": "^7.20.5",
     "@types/babel__traverse": "^7.28.0",
     "@types/koa": "^3.0.2",
