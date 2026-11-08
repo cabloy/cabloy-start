@@ -116,8 +116,10 @@ export async function cleanTestClaim(
       session = await (options.prepare ?? prepareCleanupProcess)(claim, claimPath);
     if (!options.isInactive) return skip('process inactivity inspector unavailable');
     const evidence = await options.isInactive(claim);
-    if (!(typeof evidence === 'boolean' ? evidence : evidence.inactive))
-      return skip('live or uncertain process ownership');
+    if (!(typeof evidence === 'boolean' ? evidence : evidence.inactive)) {
+      const reason = typeof evidence === 'boolean' ? undefined : evidence.reason;
+      return skip(`live or uncertain process ownership${reason ? `: ${reason}` : ''}`);
+    }
     sequenceStarted = true;
     claim.status = 'cleaning';
     claim.cleanup.processes = true;
@@ -198,7 +200,7 @@ export async function reapExpiredTestClaims(
   if (!Number.isSafeInteger(ttl) || ttl <= 0)
     throw new Error('Test claim TTL must be a positive safe integer');
   const now = options.now ?? Date.now();
-  if (!Number.isFinite(now)) throw new Error('Invalid test claim cleanup clock');
+  if (!Number.isFinite(now)) throw new TypeError('Invalid test claim cleanup clock');
   const warn = options.warn ?? (() => {});
   const directory = path.join(projectPath, TEST_CLAIM_DIRECTORY);
   // Legacy roots cannot prove remote ownership and are never adopted/deleted.
