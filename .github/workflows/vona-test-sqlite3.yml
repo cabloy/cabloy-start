@@ -92,6 +92,9 @@ jobs:
           throw 'Redis did not become ready'
       - name: init
         run: npm run init
+      - name: run MCP no-listener qualification gate
+        run: npm run test:mcp:no-listener
+        working-directory: vona
       - run: npm run test
         working-directory: vona
       - run: npm run build -- --flavor=ci
