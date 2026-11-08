@@ -2468,7 +2468,7 @@ importers:
         specifier: ^5.0.5
         version: link:modules/a-telemetry
       vona-module-a-testutils:
-        specifier: ^5.0.0
+        specifier: ^5.0.1
         version: link:modules/a-testutils
       vona-module-a-upload:
         specifier: workspace:^
