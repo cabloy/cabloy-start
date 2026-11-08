@@ -128,10 +128,17 @@ test('daily checks and CI use single-project workspace defaults', () => {
           name.startsWith('build:ssr:') ||
           name.startsWith('build:rest:')
         ) {
-          assert.ok(
-            (command as string).startsWith('npm run build:isolated -- '),
-            `${name} must use the isolated runner without automatic preparation or typecheck`,
+          assert.doesNotMatch(
+            command as string,
+            /build:isolated|\btsc\b/,
+            `${name} must remain an ordinary build without an automatic typecheck`,
           );
+          if (!name.endsWith('Batch')) {
+            assert.ok(
+              (command as string).startsWith('npm run prerun && '),
+              `${name} must prepare before an ordinary build`,
+            );
+          }
         }
       }
     }

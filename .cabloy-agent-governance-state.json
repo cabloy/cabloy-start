@@ -11,11 +11,11 @@
     },
     {
       "target": ".agents/skills/cabloy-backend-scaffold/references/follow-up-checklist.md",
-      "sha256": "7a90333f6adba04b804bd889536226ea94b24110d6e4ec86028095d38a5f4526"
+      "sha256": "fde023fdb14d7086e04ac2540a4e3f6ea7fdbbbde825b60d5ce68def767c8126"
     },
     {
       "target": ".agents/skills/cabloy-backend-scaffold/SKILL.md",
-      "sha256": "c27742ac71138c1271d575f0b1d3cb30682229e750956b017b437be410daa0ce"
+      "sha256": "41cff2d4d7588555d2094e07bb582c84c6b96ea38e09c20df1ddeff2b62be74e"
     },
     {
       "target": ".agents/skills/cabloy-contract-loop/evals/evals.json",
@@ -31,11 +31,11 @@
     },
     {
       "target": ".agents/skills/cabloy-contract-loop/references/verification-checklist.md",
-      "sha256": "4677ad0f79d3725deb7421d160f94a87f5f8422c8f963411e76aa2bddd4830d0"
+      "sha256": "0506a7545f89a71dd90f02189c39981b73408f3596f20701f40738f559ed051f"
     },
     {
       "target": ".agents/skills/cabloy-contract-loop/SKILL.md",
-      "sha256": "614385fa4d4814775d49ba0bf13048d38207b69d879e4e9a42807f97e9a85876"
+      "sha256": "b25952bec7b5ff11fd0ff4a59cd941a223fbbe3006db42744e67cf9d406cf14f"
     },
     {
       "target": ".agents/skills/cabloy-domain-planning/SKILL.md",
@@ -59,7 +59,7 @@
     },
     {
       "target": ".agents/skills/cabloy-master-detail/SKILL.md",
-      "sha256": "ec828440c4169b2c0235531744ded554db24a71b18082c2b96788c25e4c23ded"
+      "sha256": "740c0b69a384ae8edcbbdb21196ff79fec123fbaf8cde4fa8c8ffaf26b38a73f"
     },
     {
       "target": ".agents/skills/cabloy-module-removal/SKILL.md",
@@ -111,7 +111,7 @@
     },
     {
       "target": ".agents/skills/cabloy-spec-execution/SKILL.md",
-      "sha256": "cc739f11ae129235375a461b7376d639af967e1c659d4735a03b0973ff53dbdd"
+      "sha256": "06a38cc771fd6754b56c59598d4f31fe7b3087583688ff8f58fa6019d5aff7ea"
     },
     {
       "target": ".agents/skills/cabloy-spec-generation/evals/evals.json",
@@ -135,7 +135,7 @@
     },
     {
       "target": ".agents/skills/cabloy-spec-generation/references/repo-specs-document-set.md",
-      "sha256": "0a8c64f3b0c055790d9fb2b267954dbbd0c2473a2ea0e5b2c8be2348a9956459"
+      "sha256": "df25780ae9bf59c10f7ef045683b75f8d07974831901ad5f145498111d1e50b5"
     },
     {
       "target": ".agents/skills/cabloy-spec-generation/references/traceability-and-status-rules.md",
@@ -143,7 +143,7 @@
     },
     {
       "target": ".agents/skills/cabloy-spec-generation/SKILL.md",
-      "sha256": "e5ac7ec1da55538d893f987156631b148b1482722528b883f5a0f97e5a75eb9a"
+      "sha256": "a7ba3a3851f1c471db19c8d905e668e43df2bcf83f376aee8ed6b636232328b8"
     },
     {
       "target": ".agents/skills/cabloy-workflow/evals/evals.json",
@@ -159,7 +159,7 @@
     },
     {
       "target": ".agents/skills/cabloy-workflow/SKILL.md",
-      "sha256": "7efc6d93f7da7c8dc23f5cf959d949798e8ca653f31fcd58cafe2cd74e244af0"
+      "sha256": "303cbbd74a9f8150982be46df5d44888572e95353ec33a9a7f4eb134443bd762"
     },
     {
       "target": ".agents/skills/cabloy-worktree-environment/evals/evals.json",
@@ -203,11 +203,11 @@
     },
     {
       "target": ".claude/skills/cabloy-backend-scaffold/references/follow-up-checklist.md",
-      "sha256": "7a90333f6adba04b804bd889536226ea94b24110d6e4ec86028095d38a5f4526"
+      "sha256": "fde023fdb14d7086e04ac2540a4e3f6ea7fdbbbde825b60d5ce68def767c8126"
     },
     {
       "target": ".claude/skills/cabloy-backend-scaffold/SKILL.md",
-      "sha256": "c27742ac71138c1271d575f0b1d3cb30682229e750956b017b437be410daa0ce"
+      "sha256": "41cff2d4d7588555d2094e07bb582c84c6b96ea38e09c20df1ddeff2b62be74e"
     },
     {
       "target": ".claude/skills/cabloy-contract-loop/evals/evals.json",
@@ -223,11 +223,11 @@
     },
     {
       "target": ".claude/skills/cabloy-contract-loop/references/verification-checklist.md",
-      "sha256": "4677ad0f79d3725deb7421d160f94a87f5f8422c8f963411e76aa2bddd4830d0"
+      "sha256": "0506a7545f89a71dd90f02189c39981b73408f3596f20701f40738f559ed051f"
     },
     {
       "target": ".claude/skills/cabloy-contract-loop/SKILL.md",
-      "sha256": "614385fa4d4814775d49ba0bf13048d38207b69d879e4e9a42807f97e9a85876"
+      "sha256": "b25952bec7b5ff11fd0ff4a59cd941a223fbbe3006db42744e67cf9d406cf14f"
     },
     {
       "target": ".claude/skills/cabloy-domain-planning/SKILL.md",
@@ -251,7 +251,7 @@
     },
     {
       "target": ".claude/skills/cabloy-master-detail/SKILL.md",
-      "sha256": "ec828440c4169b2c0235531744ded554db24a71b18082c2b96788c25e4c23ded"
+      "sha256": "740c0b69a384ae8edcbbdb21196ff79fec123fbaf8cde4fa8c8ffaf26b38a73f"
     },
     {
       "target": ".claude/skills/cabloy-module-removal/SKILL.md",
@@ -303,7 +303,7 @@
     },
     {
       "target": ".claude/skills/cabloy-spec-execution/SKILL.md",
-      "sha256": "cc739f11ae129235375a461b7376d639af967e1c659d4735a03b0973ff53dbdd"
+      "sha256": "06a38cc771fd6754b56c59598d4f31fe7b3087583688ff8f58fa6019d5aff7ea"
     },
     {
       "target": ".claude/skills/cabloy-spec-generation/evals/evals.json",
@@ -327,7 +327,7 @@
     },
     {
       "target": ".claude/skills/cabloy-spec-generation/references/repo-specs-document-set.md",
-      "sha256": "0a8c64f3b0c055790d9fb2b267954dbbd0c2473a2ea0e5b2c8be2348a9956459"
+      "sha256": "df25780ae9bf59c10f7ef045683b75f8d07974831901ad5f145498111d1e50b5"
     },
     {
       "target": ".claude/skills/cabloy-spec-generation/references/traceability-and-status-rules.md",
@@ -335,7 +335,7 @@
     },
     {
       "target": ".claude/skills/cabloy-spec-generation/SKILL.md",
-      "sha256": "e5ac7ec1da55538d893f987156631b148b1482722528b883f5a0f97e5a75eb9a"
+      "sha256": "a7ba3a3851f1c471db19c8d905e668e43df2bcf83f376aee8ed6b636232328b8"
     },
     {
       "target": ".claude/skills/cabloy-workflow/evals/evals.json",
@@ -351,7 +351,7 @@
     },
     {
       "target": ".claude/skills/cabloy-workflow/SKILL.md",
-      "sha256": "7efc6d93f7da7c8dc23f5cf959d949798e8ca653f31fcd58cafe2cd74e244af0"
+      "sha256": "303cbbd74a9f8150982be46df5d44888572e95353ec33a9a7f4eb134443bd762"
     },
     {
       "target": ".claude/skills/cabloy-worktree-environment/evals/evals.json",
@@ -391,7 +391,7 @@
     },
     {
       "target": ".cursor/rules/cabloy-governance.mdc",
-      "sha256": "4370eb2bb70269290360543a35920758ac1d4b5c8fd72b33089f897b19ceedab"
+      "sha256": "47aed749b4cac63f41e336b517400e86f7b3aa170d59e570bbf3c33d8968bedd"
     },
     {
       "target": ".cursor/skills/cabloy-backend-scaffold/evals/evals.json",
@@ -403,11 +403,11 @@
     },
     {
       "target": ".cursor/skills/cabloy-backend-scaffold/references/follow-up-checklist.md",
-      "sha256": "7a90333f6adba04b804bd889536226ea94b24110d6e4ec86028095d38a5f4526"
+      "sha256": "fde023fdb14d7086e04ac2540a4e3f6ea7fdbbbde825b60d5ce68def767c8126"
     },
     {
       "target": ".cursor/skills/cabloy-backend-scaffold/SKILL.md",
-      "sha256": "c27742ac71138c1271d575f0b1d3cb30682229e750956b017b437be410daa0ce"
+      "sha256": "41cff2d4d7588555d2094e07bb582c84c6b96ea38e09c20df1ddeff2b62be74e"
     },
     {
       "target": ".cursor/skills/cabloy-contract-loop/evals/evals.json",
@@ -423,11 +423,11 @@
     },
     {
       "target": ".cursor/skills/cabloy-contract-loop/references/verification-checklist.md",
-      "sha256": "4677ad0f79d3725deb7421d160f94a87f5f8422c8f963411e76aa2bddd4830d0"
+      "sha256": "0506a7545f89a71dd90f02189c39981b73408f3596f20701f40738f559ed051f"
     },
     {
       "target": ".cursor/skills/cabloy-contract-loop/SKILL.md",
-      "sha256": "614385fa4d4814775d49ba0bf13048d38207b69d879e4e9a42807f97e9a85876"
+      "sha256": "b25952bec7b5ff11fd0ff4a59cd941a223fbbe3006db42744e67cf9d406cf14f"
     },
     {
       "target": ".cursor/skills/cabloy-domain-planning/SKILL.md",
@@ -451,7 +451,7 @@
     },
     {
       "target": ".cursor/skills/cabloy-master-detail/SKILL.md",
-      "sha256": "ec828440c4169b2c0235531744ded554db24a71b18082c2b96788c25e4c23ded"
+      "sha256": "740c0b69a384ae8edcbbdb21196ff79fec123fbaf8cde4fa8c8ffaf26b38a73f"
     },
     {
       "target": ".cursor/skills/cabloy-module-removal/SKILL.md",
@@ -503,7 +503,7 @@
     },
     {
       "target": ".cursor/skills/cabloy-spec-execution/SKILL.md",
-      "sha256": "cc739f11ae129235375a461b7376d639af967e1c659d4735a03b0973ff53dbdd"
+      "sha256": "06a38cc771fd6754b56c59598d4f31fe7b3087583688ff8f58fa6019d5aff7ea"
     },
     {
       "target": ".cursor/skills/cabloy-spec-generation/evals/evals.json",
@@ -527,7 +527,7 @@
     },
     {
       "target": ".cursor/skills/cabloy-spec-generation/references/repo-specs-document-set.md",
-      "sha256": "0a8c64f3b0c055790d9fb2b267954dbbd0c2473a2ea0e5b2c8be2348a9956459"
+      "sha256": "df25780ae9bf59c10f7ef045683b75f8d07974831901ad5f145498111d1e50b5"
     },
     {
       "target": ".cursor/skills/cabloy-spec-generation/references/traceability-and-status-rules.md",
@@ -535,7 +535,7 @@
     },
     {
       "target": ".cursor/skills/cabloy-spec-generation/SKILL.md",
-      "sha256": "e5ac7ec1da55538d893f987156631b148b1482722528b883f5a0f97e5a75eb9a"
+      "sha256": "a7ba3a3851f1c471db19c8d905e668e43df2bcf83f376aee8ed6b636232328b8"
     },
     {
       "target": ".cursor/skills/cabloy-workflow/evals/evals.json",
@@ -551,7 +551,7 @@
     },
     {
       "target": ".cursor/skills/cabloy-workflow/SKILL.md",
-      "sha256": "7efc6d93f7da7c8dc23f5cf959d949798e8ca653f31fcd58cafe2cd74e244af0"
+      "sha256": "303cbbd74a9f8150982be46df5d44888572e95353ec33a9a7f4eb134443bd762"
     },
     {
       "target": ".cursor/skills/cabloy-worktree-environment/evals/evals.json",
@@ -575,11 +575,11 @@
     },
     {
       "target": "AGENTS.md",
-      "sha256": "3cb3f0cfd3bf1169ff182308c67d882a2a8e44f5e158c1c96006f59ab2cdd5d3"
+      "sha256": "e7f496ddf62f1f06474e88d86293ff82a849c6ce5702a1a2ba438deb90168328"
     },
     {
       "target": "CLAUDE.md",
-      "sha256": "3cb3f0cfd3bf1169ff182308c67d882a2a8e44f5e158c1c96006f59ab2cdd5d3"
+      "sha256": "e7f496ddf62f1f06474e88d86293ff82a849c6ce5702a1a2ba438deb90168328"
     }
   ]
 }
