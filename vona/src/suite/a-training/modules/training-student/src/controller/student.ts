@@ -9,7 +9,7 @@ import type { IDecoratorControllerOptions } from 'vona-module-a-web';
 
 import { BeanBase } from 'vona';
 import { Core } from 'vona-module-a-core';
-import { Api, Resource, v } from 'vona-module-a-openapiutils';
+import { Api, Mcp, Resource, v } from 'vona-module-a-openapiutils';
 import { Passport } from 'vona-module-a-user';
 import { Arg, Controller, Web } from 'vona-module-a-web';
 import { z } from 'zod';
@@ -35,6 +35,10 @@ export interface IControllerOptionsStudent extends IDecoratorControllerOptions {
 })
 @Resource()
 export class ControllerStudent extends BeanBase {
+  @Mcp.tool({
+    description: $locale('StudentCreateDescription'),
+    readOnly: false,
+  })
   @Web.post('', { summary: $locale('StudentCreate') })
   @Api.body(v.tableIdentity())
   @Passport.rbac({ dataScope: true })
@@ -49,6 +53,10 @@ export class ControllerStudent extends BeanBase {
     ).id;
   }
 
+  @Mcp.tool({
+    description: $locale('StudentSelectDescription'),
+    readOnly: true,
+  })
   @Web.get('', { summary: $locale('StudentSelect') })
   @Api.body(DtoStudentSelectRes)
   @Core.serializer()
@@ -63,6 +71,10 @@ export class ControllerStudent extends BeanBase {
     });
   }
 
+  @Mcp.tool({
+    description: $locale('StudentGroupDescription'),
+    readOnly: true,
+  })
   @Web.get('group', { summary: $locale('StudentGroup') })
   @Api.body(v.array(DtoStudentGroupResItem))
   @Passport.rbac({ dataScope: true, actionInherit: 'select' })
@@ -77,6 +89,10 @@ export class ControllerStudent extends BeanBase {
     });
   }
 
+  @Mcp.tool({
+    description: $locale('StudentAggregateDescription'),
+    readOnly: true,
+  })
   @Web.get('aggregate', { summary: $locale('StudentAggregate') })
   @Api.body(DtoStudentAggregateRes)
   @Passport.rbac({ dataScope: true, actionInherit: 'select' })
@@ -91,6 +107,10 @@ export class ControllerStudent extends BeanBase {
     });
   }
 
+  @Mcp.tool({
+    description: $locale('StudentViewDescription'),
+    readOnly: true,
+  })
   @Web.get(':id', { summary: $locale('StudentView') })
   @Api.body(v.optional(), v.object(DtoStudentView))
   @Core.serializer()
@@ -104,6 +124,10 @@ export class ControllerStudent extends BeanBase {
     return data;
   }
 
+  @Mcp.tool({
+    description: $locale('StudentUpdateDescription'),
+    readOnly: false,
+  })
   @Web.patch(':id', { summary: $locale('StudentUpdate') })
   @Api.body(z.null())
   @Passport.rbac({ dataScope: true })
@@ -124,6 +148,13 @@ export class ControllerStudent extends BeanBase {
     });
   }
 
+  @Mcp.tool({
+    description: $locale('StudentSummaryDescription'),
+    readOnly: true,
+    output: {
+      pick: ['id', 'name', 'level', 'levelTitle', 'descriptionLength', 'summaryText'],
+    },
+  })
   @Web.get('summary/:id', { summary: $locale('StudentSummary') })
   @Api.body(v.optional(), v.object(DtoStudentSummary))
   @Core.serializer()
@@ -137,6 +168,10 @@ export class ControllerStudent extends BeanBase {
     return await this.scope.service.student.summary(id);
   }
 
+  @Mcp.tool({
+    description: $locale('StudentDeleteDescription'),
+    readOnly: false,
+  })
   @Web.delete(':id', { summary: $locale('StudentDelete') })
   @Api.body(z.null())
   @Passport.rbac({ dataScope: true })

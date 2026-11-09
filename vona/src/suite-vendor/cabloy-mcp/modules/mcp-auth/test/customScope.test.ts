@@ -150,6 +150,7 @@ async function withFixture(operation: (fixture: Fixture) => Promise<void>) {
       ),
       actionKey: request.action.actionKey,
       action: request.action,
+      terms: [{ dataScope: 'mine', ownerId: String(app.bean.passport.currentUser!.id) }],
     };
   });
   try {

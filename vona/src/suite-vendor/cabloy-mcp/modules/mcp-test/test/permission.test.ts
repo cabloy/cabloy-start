@@ -18,7 +18,7 @@ describe('permission.test.ts', { concurrency: false }, () => {
   });
   after(() => release?.());
 
-  it('checks fresh guards without terms, retrieval events or matcher projection', async t => {
+  it('checks fresh scoped guards without retrieval events or matcher projection', async t => {
     if (!app.meta.modules['training-student']) {
       t.skip('training-student is not active');
       return;
@@ -40,7 +40,8 @@ describe('permission.test.ts', { concurrency: false }, () => {
       const action = app.bean.rbacCatalog.getCatalog().get(`${controller}#group`);
       assert.ok(action);
       assert.equal(action.actionInheritKey, `${controller}#select`);
-      assert.equal(Boolean(action.options.dataScope), false);
+      assert.equal(action.options.dataScope, true);
+      let terms: IRbacPolicyDecision['terms'];
       let allowed = true;
       const policyCalls: string[] = [];
       const off = app.scope('a-rbac').event.resolvePolicy.on((request, next) => {
@@ -56,6 +57,7 @@ describe('permission.test.ts', { concurrency: false }, () => {
           allowed,
           actionKey: request.action.actionKey,
           action: request.action,
+          terms,
         };
       });
       const retrieval = t.mock.method(permission, 'retrievePermissionAction', async () => {
@@ -65,8 +67,9 @@ describe('permission.test.ts', { concurrency: false }, () => {
         throw new Error('guard-only checks must not emit permission retrieval events');
       });
       try {
-        // Preserve the existing projection contract: a no-terms decision still denies there.
+        // Scoped Actions reject allowed decisions without effective scope terms.
         assert.equal(await (permission as any)._evaluatePermissionAction(action.route), false);
+        terms = [{ dataScope: 'mine', ownerId: userId }];
         const projection = t.mock.method(app.bean.rbacScope, 'current', async () => {
           throw new Error('guard-only checks must not project a matcher');
         });

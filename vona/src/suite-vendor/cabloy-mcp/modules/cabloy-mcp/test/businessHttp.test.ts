@@ -20,6 +20,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { isDeepStrictEqual } from 'node:util';
 import { acquireTestLock, app } from 'vona-mock';
 import { BeanExecutor } from 'vona-module-a-executor';
+import { BeanRbacScope } from 'vona-module-a-rbac';
 import {
   closeMcpTransport,
   fixtureIngressLimits,
@@ -330,8 +331,32 @@ function allowStudentAction(
       allowed: request.action.action === action,
       actionKey: request.action.actionKey,
       action: request.action,
+      terms: [{ dataScope: 'all' }],
     };
   });
+}
+
+function mockStudentCreateOwnerValues(t: TestContext) {
+  const prototype = BeanRbacScope.prototype as any;
+  const original = prototype.prepareDefaultOwnerValues;
+  return t.mock.method(
+    prototype,
+    'prepareDefaultOwnerValues',
+    async function (this: BeanRbacScope) {
+      const route = this.ctx.route;
+      if (
+        fixtureUserId !== undefined &&
+        this.ctx.get('x-mcp-test-owner') === requestOwner &&
+        this.ctx.instanceName === '' &&
+        String(this.bean.passport.currentUser?.id) === fixtureUserId &&
+        route?.controllerBeanFullName === 'training-student.controller.student' &&
+        route.action === 'create'
+      ) {
+        return { departmentId: null, userIdOwner: fixtureUserId };
+      }
+      return await original.call(this);
+    },
+  );
 }
 
 // The root managed test runner owns this listener and disposable instance state.
@@ -779,11 +804,12 @@ describe('businessHttp.test.ts', { concurrency: false, timeout: 60000 }, () => {
       if (broken && request.action.action === 'summary') {
         throw new Error('private discovery failure detail');
       }
-      // Ordinary non-data-scoped admission deliberately has no matcher terms.
+      // This exact test identity receives an explicit all-data scope for approved Actions.
       return {
         allowed: granted.includes(request.policyActionKey),
         actionKey: request.action.actionKey,
         action: request.action,
+        terms: [{ dataScope: 'all' }],
       };
     });
     const states = [
@@ -871,7 +897,6 @@ describe('businessHttp.test.ts', { concurrency: false, timeout: 60000 }, () => {
             ],
             'each list freshly checks registered Actions in order, skipping mutations only on read scope',
           );
-          const levelDescription = '1=Foundation Track; 2=Progress Track; 3=Advanced Workshop';
           for (const tool of tools) {
             if (tool.name === studentDeleteName) continue;
             assert.ok(tool.description, `${tool.name} describes its existing Action contract`);
@@ -881,7 +906,7 @@ describe('businessHttp.test.ts', { concurrency: false, timeout: 60000 }, () => {
                 tool.name === studentCreateName ? schema : schema.properties.body,
                 schema.components?.schemas ?? {},
               );
-              assert.equal(body.properties.level.description, levelDescription);
+              assert.ok(body.properties.level.title);
             }
             if ([studentViewName, studentSummaryName, studentSelectName].includes(tool.name)) {
               const schema = tool.outputSchema;
@@ -889,7 +914,7 @@ describe('businessHttp.test.ts', { concurrency: false, timeout: 60000 }, () => {
                 tool.name === studentSelectName
                   ? resolveSchema(schema.properties.list.items, schema.components?.schemas ?? {})
                   : schema;
-              assert.equal(student.properties.level.description, levelDescription);
+              assert.ok(student.properties.level.title);
             }
           }
           const createTool = tools.find((tool: any) => tool.name === studentCreateName);
@@ -1024,6 +1049,7 @@ describe('businessHttp.test.ts', { concurrency: false, timeout: 60000 }, () => {
             request.policyActionKey === 'training-student.controller.student#select'),
         actionKey: request.action.actionKey,
         action: request.action,
+        terms: [{ dataScope: 'all' }],
       };
     });
     const select = t.mock.method(ServiceStudent.prototype, 'select');
@@ -1315,6 +1341,7 @@ describe('businessHttp.test.ts', { concurrency: false, timeout: 60000 }, () => {
         { instanceName: '' },
       );
     };
+    const ownerValues = mockStudentCreateOwnerValues(t);
     try {
       // Broader OAuth scope is not an ordinary business permission.
       assertDenied(await call(), 'create without current create permission');
@@ -1516,11 +1543,12 @@ describe('businessHttp.test.ts', { concurrency: false, timeout: 60000 }, () => {
       } finally {
         create.mock.restore();
         observed.mock.restore();
+        ownerValues.mock.restore();
       }
     }
   });
 
-  it('creates a basic-fields-only student, updates its root and independently authorizes serialized MCP view', async () => {
+  it('creates a basic-fields-only student, updates its root and independently authorizes serialized MCP view', async t => {
     if (trainingDisabled) return;
     const suffix = randomUUID().slice(0, 8);
     const studentData = {
@@ -1537,6 +1565,7 @@ describe('businessHttp.test.ts', { concurrency: false, timeout: 60000 }, () => {
     let studentId: string | undefined;
     const contentIds = new Set<string>();
     let off = () => {};
+    const ownerValues = mockStudentCreateOwnerValues(t);
     try {
       off = allowStudentAction('create');
       const response = await send(
@@ -1583,6 +1612,7 @@ describe('businessHttp.test.ts', { concurrency: false, timeout: 60000 }, () => {
       assert.equal(Object.hasOwn(student.content, 'descriptionMarkdown'), false);
       assert.deepEqual(student.trainingRecords, []);
     } finally {
+      ownerValues.mock.restore();
       off();
       await app.bean.executor.mockCtx(
         async () => {
@@ -1688,6 +1718,8 @@ describe('businessHttp.test.ts', { concurrency: false, timeout: 60000 }, () => {
             name: fixture.name,
             mobile: '13812345678',
             level: 1,
+            departmentId: null,
+            userIdOwner: fixtureUserId!,
             content: { descriptionMarkdown: `Original ${fixture.name}` },
             trainingRecords: [
               {
@@ -2084,7 +2116,7 @@ describe('businessHttp.test.ts', { concurrency: false, timeout: 60000 }, () => {
       }
       off();
       off = allowStudentAction('update');
-      // Null acknowledges completion, not existence. Admission must precede every nested write.
+      // Missing/deleted/foreign roots fail closed before nested writes.
       for (const id of [missingRoot.id!, deletedRoot.id!, foreignRoot.id!]) {
         const counts = writeCounts();
         const absentBody = {
@@ -2097,7 +2129,7 @@ describe('businessHttp.test.ts', { concurrency: false, timeout: 60000 }, () => {
             },
           ],
         };
-        assertNull(await call({ params: { id }, body: absentBody }));
+        assertDenied(await call({ params: { id }, body: absentBody }));
         assert.deepEqual(
           writeCounts(),
           counts,
@@ -2681,6 +2713,7 @@ describe('businessHttp.test.ts', { concurrency: false, timeout: 60000 }, () => {
       normalized.total = String(normalized.total);
       normalized.list = normalized.list.map((row: Record<string, unknown>) => {
         row.id = String(row.id);
+        row.userIdOwner = String(row.userIdOwner);
         // The existing optional identity schema normalizes absent SQL values away.
         if (row.imageId === null) delete row.imageId;
         else if (row.imageId !== undefined) row.imageId = String(row.imageId);
@@ -2737,6 +2770,7 @@ describe('businessHttp.test.ts', { concurrency: false, timeout: 60000 }, () => {
     const normalizeView = (serialized: Record<string, unknown>) => {
       const normalized = JSON.parse(JSON.stringify(serialized));
       normalized.id = String(normalized.id);
+      normalized.userIdOwner = String(normalized.userIdOwner);
       // Preserve the select regression's measured optional-identity normalization.
       if (normalized.imageId === null) delete normalized.imageId;
       else if (normalized.imageId !== undefined) normalized.imageId = String(normalized.imageId);
@@ -2832,7 +2866,12 @@ describe('businessHttp.test.ts', { concurrency: false, timeout: 60000 }, () => {
           );
           imageId = String(image.id);
           const training = app.scope('training-student');
-          const student = await training.service.student.create({ ...studentData, imageId });
+          const student = await training.service.student.create({
+            ...studentData,
+            imageId,
+            departmentId: null,
+            userIdOwner: userId,
+          } as DtoStudentCreate);
           studentId = String(student.id);
           const role = await app.scope('home-user').model.role.getByName('systemAdmin');
           assert.ok(role, 'existing shared systemAdmin role is read-only');
@@ -2903,6 +2942,7 @@ describe('businessHttp.test.ts', { concurrency: false, timeout: 60000 }, () => {
             request.policyActionKey === `${controllerBeanFullName}#${viewOnly ? 'view' : 'select'}`,
           actionKey: request.action.actionKey,
           action: request.action,
+          terms: [{ dataScope: 'all' }],
         };
       });
       try {

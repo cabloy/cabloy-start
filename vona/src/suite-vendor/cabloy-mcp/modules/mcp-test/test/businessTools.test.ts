@@ -150,7 +150,12 @@ async function withStudentToolPermissions(fn: () => Promise<void>) {
           ? 'view'
           : 'select';
       assert.equal(request.policyActionKey, `${controller}#${inherited}`);
-      return { allowed: true, actionKey: request.action.actionKey, action: request.action };
+      return {
+        allowed: true,
+        actionKey: request.action.actionKey,
+        action: request.action,
+        terms: [{ dataScope: 'mine', ownerId: String(passport.user!.id) }],
+      };
     });
     try {
       await app.bean.passport.setCurrent(passport);
@@ -600,7 +605,8 @@ describe('businessTools.test.ts', { concurrency: false, timeout: 60000 }, () => 
         assert.ok(!select.inputSchema.required?.includes('level'));
         const selectCheck = fromJsonSchema(select.inputSchema)['~standard'];
         assert.equal((await selectCheck.validate({})).issues, undefined);
-        for (const level of [1, 2, 3]) {
+        // Query filters accept numbers independently of the stored level enum.
+        for (const level of [0, 1, 1.5, 2, 3, 4]) {
           assert.equal((await selectCheck.validate({ level })).issues, undefined);
         }
         const ormQuery = app.util.getModuleConfigRaw('a-orm')?.rest?.query;
@@ -654,7 +660,7 @@ describe('businessTools.test.ts', { concurrency: false, timeout: 60000 }, () => 
           assert.ok(selectItem.properties[field], `full select output retains ${field}`);
         }
         assert.equal(selectItem.properties.mobile.type, 'string');
-        assert.ok(selectItem.properties.level.description);
+        assert.ok(selectItem.properties.level.title);
         assert.equal(
           select.inputSchema.properties.level.description,
           selectItem.properties.level.description,
@@ -662,11 +668,11 @@ describe('businessTools.test.ts', { concurrency: false, timeout: 60000 }, () => 
         assert.equal(select.inputSchema.properties.level.title, selectItem.properties.level.title);
         assert.equal(
           select.inputSchema.properties.level.rest.form.render,
-          'basic-select:formFieldSelect',
+          'start-select:formFieldSelect',
         );
         assert.ok(!selectItem.required.includes('imageId'));
         for (const args of [
-          ...[null, '1', 1.5, 0, 4].map(level => ({ level })),
+          ...[null, '1'].map(level => ({ level })),
           { pageNo: 0 },
           { pageSize: '1' },
           { where: 'not-an-object' },
@@ -825,13 +831,13 @@ describe('businessTools.test.ts', { concurrency: false, timeout: 60000 }, () => 
         const recordCreate = resolve(studentCreate.properties.trainingRecords.items);
         const subjectCreate = resolve(recordCreate.properties.trainingRecordSubjects.items);
         for (const schema of [recordCreate, subjectCreate]) {
-          assert.equal(schema.rest?.blocks?.[0]?.render, 'basic-details:blockForm');
+          assert.equal(schema.rest?.blocks?.[0]?.render, 'start-details:blockForm');
         }
         const subjectsField = recordCreate.properties.trainingRecordSubjects;
         const subjectsOriginal = component(DtoDetailRecordMutate).properties.trainingRecordSubjects;
         assert.ok(subjectsField.title);
         assert.deepEqual(subjectsField.title, subjectsOriginal.title);
-        assert.equal(subjectsField.rest?.form?.render, 'basic-details:formFieldDetails');
+        assert.equal(subjectsField.rest?.form?.render, 'start-details:formFieldDetails');
         assert.equal(subjectsField.rest?.order, 1008);
         assert.ok(subjectsField.rest?.onEffect);
         assert.deepEqual(subjectsField.rest.onEffect, subjectsOriginal.rest.onEffect);
@@ -1711,6 +1717,16 @@ describe('businessTools.test.ts', { concurrency: false, timeout: 60000 }, () => 
             filtered.result.structuredContent,
             mode === 'group' ? { result: raw } : raw,
           );
+          for (const level of [1.5, 4]) {
+            const numericFilter = await call({ ...filters, level });
+            assert.equal(numericFilter.error, undefined);
+            assert.notEqual(numericFilter.result.isError, true);
+            assert.deepEqual(action.mock.calls.at(-1)!.arguments, [
+              'get',
+              `/training/student/${mode}`,
+              { query: { ...defaults, ...filters, level }, innerAccess: false },
+            ]);
+          }
           const calls = action.mock.callCount();
           for (const args of [
             { groups: ['mobile'] },
@@ -1719,8 +1735,8 @@ describe('businessTools.test.ts', { concurrency: false, timeout: 60000 }, () => 
             { aggrs: { sum: ['level'] } },
             { aggrs: {} },
             { aggrs: '{"count":["*"]}' },
-            { level: 1.5 },
-            { level: 4 },
+            { level: null },
+            { level: '2' },
             { iid: 'injected' },
             { innerAccess: true },
           ]) {
@@ -1763,6 +1779,8 @@ describe('businessTools.test.ts', { concurrency: false, timeout: 60000 }, () => 
         deleted: false,
         iid: 0,
         name: '__MCP complete view__',
+        departmentId: null,
+        userIdOwner: 'mcp-student-contract-user',
         mobile: '138****5678',
         level: 2,
         imageId: '456',
