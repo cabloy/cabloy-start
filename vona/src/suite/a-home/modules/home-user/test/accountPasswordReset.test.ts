@@ -1,3 +1,5 @@
+import type { INewCtxOptions } from 'vona-module-a-executor';
+
 import assert from 'node:assert';
 import { after, before, describe, it } from 'node:test';
 import { createHash } from 'vona';
@@ -248,34 +250,35 @@ describe('accountPasswordReset.test.ts', { concurrency: false }, () => {
     }
   });
 
-  it('uses the canonical host for an exact same-origin consumer without a whitelist entry', async () => {
+  it('uses the request host for an exact same-origin consumer without a whitelist entry', async () => {
     let fixture: IAccountPasswordResetFixture | undefined;
     let restoreConfig: (() => void) | undefined;
-    const serve = app.config.server.serve;
-    const servePrevious = { ...serve };
+    const req = {
+      headers: { host: 'canonical.example.test' },
+      method: 'GET',
+      socket: { encrypted: false },
+      url: '/',
+    };
     try {
       fixture = await createFixture({ simpleAuth: true });
       restoreConfig = await configurePasswordReset([]);
-      (serve as any).host = 'canonical.example.test';
 
-      const sameOriginConsumerUrl = await app.bean.executor.mockCtx(async () => {
-        return `${app.ctx.protocol}://${app.util.host}/home/user/password-reset`;
-      });
-      const issued = await issuePasswordResetLink(fixture, sameOriginConsumerUrl);
+      const sameOriginConsumerUrl = 'http://canonical.example.test/home/user/password-reset';
+      const issued = await issuePasswordResetLink(fixture, sameOriginConsumerUrl, req);
       assert.equal(issued.origin, new URL(sameOriginConsumerUrl).origin);
       assert.equal(issued.path, '/home/user/password-reset');
       assert.equal(issued.search, `?token=${issued.token}`);
 
       await clearPasswordResetState(fixture.userId);
       await clearPasswordResetRecipientCooldown(fixture.email);
-      const requestOriginConsumerUrl = await app.bean.executor.mockCtx(async () => {
-        return `${app.ctx.protocol}://origin.internal.test/home/user/password-reset`;
-      });
-      await requestPasswordReset(fixture.email, requestOriginConsumerUrl);
+      await requestPasswordReset(
+        fixture.email,
+        'http://origin.internal.test/home/user/password-reset',
+        req,
+      );
       await assertNoPasswordResetState(fixture.userId);
       await assertNoPasswordResetRecipientCooldown(fixture.email);
     } finally {
-      Object.assign(serve, servePrevious);
       restoreConfig?.();
       if (fixture) await removeFixture(fixture);
     }
@@ -546,44 +549,53 @@ async function removeFixture(fixture: IAccountPasswordResetFixture): Promise<voi
   });
 }
 
-async function requestPasswordReset(email: string, consumerUrl = passwordResetConsumerUrl) {
-  return await requestPasswordResetWithCaptcha(email, true, consumerUrl);
+async function requestPasswordReset(
+  email: string,
+  consumerUrl = passwordResetConsumerUrl,
+  req?: INewCtxOptions['req'],
+) {
+  return await requestPasswordResetWithCaptcha(email, true, consumerUrl, req);
 }
 
 async function requestPasswordResetWithCaptcha(
   email: string,
   valid: boolean,
   consumerUrl = passwordResetConsumerUrl,
+  req?: INewCtxOptions['req'],
 ) {
-  return await app.bean.executor.mockCtx(async () => {
-    const captcha = await app.bean.captcha.create('captcha-simple:simple');
-    const captchaKeys = [captcha.id];
-    try {
-      const captchaData = await app.bean.captcha.getCaptchaData(captcha.id);
-      if (captchaData) captchaKeys.push(captchaData.token);
-      if (!captcha.token) throw new Error('password-reset CAPTCHA token not found');
-      return await app.bean.executor.performAction('post', passwordResetRequestPath, {
-        innerAccess: false,
-        onions: {
-          interceptor: {
-            'a-ratelimit:rateLimit': { enable: false },
+  return await app.bean.executor.mockCtx(
+    async () => {
+      const captcha = await app.bean.captcha.create('captcha-simple:simple');
+      const captchaKeys = [captcha.id];
+      try {
+        const captchaData = await app.bean.captcha.getCaptchaData(captcha.id);
+        if (captchaData) captchaKeys.push(captchaData.token);
+        if (!captcha.token) throw new Error('password-reset CAPTCHA token not found');
+        return await app.bean.executor.performAction('post', passwordResetRequestPath, {
+          innerAccess: false,
+          onions: {
+            interceptor: {
+              'a-ratelimit:rateLimit': { enable: false },
+            },
           },
-        },
-        body: {
-          email,
-          consumerUrl,
-          captcha: { id: captcha.id, token: valid ? captcha.token : `${captcha.token}!` },
-        },
-      });
-    } finally {
-      await app.scope('a-captcha').cacheRedis.captcha.mdel(captchaKeys);
-    }
-  });
+          body: {
+            email,
+            consumerUrl,
+            captcha: { id: captcha.id, token: valid ? captcha.token : `${captcha.token}!` },
+          },
+        });
+      } finally {
+        await app.scope('a-captcha').cacheRedis.captcha.mdel(captchaKeys);
+      }
+    },
+    { req },
+  );
 }
 
 async function issuePasswordResetLink(
   fixture: IAccountPasswordResetFixture,
   consumerUrl = passwordResetConsumerUrl,
+  req?: INewCtxOptions['req'],
 ) {
   let text: unknown;
   const mail = app.bean.mail;
@@ -592,7 +604,7 @@ async function issuePasswordResetLink(
     text = options.text;
   };
   try {
-    await requestPasswordReset(fixture.email, consumerUrl);
+    await requestPasswordReset(fixture.email, consumerUrl, req);
   } finally {
     mail.send = send;
   }
