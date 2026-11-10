@@ -20,8 +20,6 @@ export default async function (_app: VonaApplication) {
         isolate: true,
         isolateClient: 'isolateTest',
       },
-      'policyInvalidationTest': { password: '', title: '' },
-      'policyInvalidationPeerTest': { password: '', title: '' },
     },
   };
 
