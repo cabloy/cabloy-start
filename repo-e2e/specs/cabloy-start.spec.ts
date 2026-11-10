@@ -8,6 +8,7 @@ import {
   registerAccountUser,
   removeAccountFixture,
   requestApiOk,
+  runCleanup,
 } from './helpers/cabloy-admin-api.ts';
 
 const studentResourceUrl =
@@ -1905,12 +1906,30 @@ test(
         expect(height).toBeCloseTo(36);
       }
 
+      // Public query capabilities enable ID sorting without a per-entity opt-in.
+      const idHeader = page.getByRole('columnheader', { name: 'ID', exact: true });
+      await expect(idHeader).toHaveClass(/\bv-data-table__th--sortable\b/);
+      await expect(page.getByRole('columnheader', { name: 'Mobile', exact: true })).not.toHaveClass(
+        /\bv-data-table__th--sortable\b/,
+      );
+      const idResponse = waitForStudentSelect(page, false);
+      await idHeader.click();
+      const idSorted = await idResponse;
+      expect(idSorted.ok()).toBeTruthy();
+      expect(JSON.parse(new URL(idSorted.url()).searchParams.get('orders')!)).toEqual([
+        { field: 'id', direction: 'asc' },
+      ]);
+      expect((await idSorted.json()).code).toBe(0);
+
       const descendingResponse = waitForStudentSelect(page, false);
       await nameHeader.click();
       const descending = await descendingResponse;
       expect(descending.status()).toBe(200);
       const descendingUrl = new URL(descending.url());
-      expect(JSON.parse(descendingUrl.searchParams.get('orders')!)).toEqual([['name', 'desc']]);
+      expect(JSON.parse(descendingUrl.searchParams.get('orders')!)).toEqual([
+        { field: 'name', direction: 'desc' },
+      ]);
+      expect((await descending.json()).code).toBe(0);
       await expect(nameHeader).toHaveClass(/\bv-data-table__th--sorted\b/);
       await expect(nameHeader).toHaveAttribute('aria-sort', 'descending');
       await expect(nameHeader.locator('.v-data-table-header__sort-icon')).toHaveCSS('opacity', '1');
@@ -1920,7 +1939,10 @@ test(
       const ascending = await ascendingResponse;
       expect(ascending.status()).toBe(200);
       const ascendingUrl = new URL(ascending.url());
-      expect(JSON.parse(ascendingUrl.searchParams.get('orders')!)).toEqual([['name', 'asc']]);
+      expect(JSON.parse(ascendingUrl.searchParams.get('orders')!)).toEqual([
+        { field: 'name', direction: 'asc' },
+      ]);
+      expect((await ascending.json()).code).toBe(0);
       await expect(nameHeader).toHaveAttribute('aria-sort', 'ascending');
       await expect(nameHeader.locator('.v-data-table-header__sort-icon')).toHaveCSS('opacity', '1');
 
@@ -1935,7 +1957,10 @@ test(
       const levelAscending = await levelAscendingResponse;
       expect(levelAscending.status()).toBe(200);
       const levelAscendingUrl = new URL(levelAscending.url());
-      expect(JSON.parse(levelAscendingUrl.searchParams.get('orders')!)).toEqual([['level', 'asc']]);
+      expect(JSON.parse(levelAscendingUrl.searchParams.get('orders')!)).toEqual([
+        { field: 'level', direction: 'asc' },
+      ]);
+      expect((await levelAscending.json()).code).toBe(0);
       await expect(levelHeader).toHaveAttribute('aria-sort', 'ascending');
 
       // Returning to the same descending query may use the warmed query cache.
@@ -2880,6 +2905,204 @@ test(
         }
       } finally {
         await context.close();
+      }
+    });
+  },
+);
+
+test(
+  'ATP-START-QUERY-01: Student canonical predicates and named filters remain conjunctive',
+  { tag: ['@admin', '@flow'] },
+  async ({ page }) => {
+    await loginAsAdmin(page);
+    await withDraftStudents(page, 2, async (students, headers) => {
+      const where = {
+        and: [
+          { field: 'id', op: 'in', value: students.map(student => String(student.id)) },
+          {
+            or: students.map(student => ({ field: 'name', op: 'eq', value: student.name })),
+          },
+          { not: { field: 'name', op: 'eq', value: students[1]!.name } },
+        ],
+      };
+      for (const name of [undefined, students[0]!.name, students[1]!.name]) {
+        const response = await page.request.get('/api/training/student', {
+          headers,
+          params: {
+            where: JSON.stringify(where),
+            orders: JSON.stringify([{ field: 'id', direction: 'asc' }]),
+            ...(name === undefined ? {} : { name }),
+          },
+        });
+        expect(response.ok()).toBeTruthy();
+        const body = await response.json();
+        const expectedIds = name === students[1]!.name ? [] : [String(students[0]!.id)];
+        expect(String(body.total)).toBe(String(expectedIds.length));
+        expect(body.list.map((item: { id: string | number }) => String(item.id))).toEqual(
+          expectedIds,
+        );
+      }
+    });
+  },
+);
+
+test(
+  'ATP-START-QUERY-02: Training Record preserves joined filters, public sorting and paging',
+  { tag: ['@admin', '@flow'] },
+  async ({ page }) => {
+    test.setTimeout(120_000);
+    page.setDefaultTimeout(10_000);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await loginAsAdmin(page);
+    const pageErrors = collectPageErrors(page);
+    await withDraftStudents(page, 2, async (students, headers) => {
+      const prefix = `Record Query E2E ${Date.now()}`;
+      const records: { id: string | number; name: string; studentId: string | number }[] = [];
+      const waitForRecordSelect = () =>
+        page.waitForResponse(response => {
+          const request = response.request();
+          return (
+            request.method() === 'GET' &&
+            new URL(response.url()).pathname === '/api/training/record' &&
+            !request.headers()['x-vona-openapi-schema']
+          );
+        });
+      try {
+        for (let index = 0; index < 21; index++) {
+          const name = `${prefix} ${String(index).padStart(2, '0')}`;
+          const studentId = students[index % 2]!.id;
+          const created = await page.request.post('/api/training/record', {
+            headers,
+            data: { name, studentId },
+          });
+          expect(created.ok()).toBeTruthy();
+          const body = await created.json();
+          expect(body.code).toBe(0);
+          expect(['string', 'number']).toContain(typeof body.data);
+          records.push({ id: body.data, name, studentId });
+        }
+
+        // SSR may prepare the initial list without a browser GET: wait on hydration instead.
+        const navigation = await page.goto('/admin/rest/resource/training-record%3Arecord', {
+          waitUntil: 'load',
+        });
+        expect(navigation?.ok()).toBeTruthy();
+        await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+        const name = page.getByLabel('Training Record Name', { exact: true });
+        const student = page.getByLabel('Student', { exact: true });
+        const search = page.getByRole('button', { name: 'Search', exact: true });
+        const rows = page.locator('tbody tr').filter({ hasText: prefix });
+        const footer = page.locator('.v-data-table-footer');
+        await expect(name).toBeVisible();
+        await expect(student).toBeVisible();
+        await name.fill(prefix);
+        const filtered = waitForRecordSelect();
+        await search.click();
+        const filteredResponse = await filtered;
+        expect(filteredResponse.ok()).toBeTruthy();
+        const filteredBody = await filteredResponse.json();
+        expect(filteredBody.code).toBe(0);
+        expect(String(filteredBody.data.total)).toBe('21');
+        expect(filteredBody.data.list).toHaveLength(20);
+        const firstIds = filteredBody.data.list.map((item: { id: string | number }) =>
+          String(item.id),
+        );
+        await expect(rows).toHaveCount(20);
+        await expect(footer.locator('.v-data-table-footer__info')).toHaveText('1-20 of 21');
+
+        const paged = waitForRecordSelect();
+        await footer.getByRole('button', { name: 'Next page', exact: true }).click();
+        const pagedResponse = await paged;
+        expect(pagedResponse.ok()).toBeTruthy();
+        const pagedUrl = new URL(pagedResponse.url());
+        expect(pagedUrl.searchParams.get('pageNo')).toBe('2');
+        expect(pagedUrl.searchParams.get('name')).toBe(prefix);
+        const pagedBody = await pagedResponse.json();
+        expect(pagedBody.code).toBe(0);
+        expect(String(pagedBody.data.total)).toBe('21');
+        expect(pagedBody.data.list).toHaveLength(1);
+        const lastId = String(pagedBody.data.list[0].id);
+        expect(firstIds).not.toContain(lastId);
+        expect([...firstIds, lastId].toSorted()).toEqual(
+          records.map(record => String(record.id)).toSorted(),
+        );
+        await expect(rows).toHaveCount(1);
+        await expect(footer.locator('.v-data-table-footer__info')).toHaveText('21-21 of 21');
+
+        await student.fill(students[0]!.name);
+        const joined = waitForRecordSelect();
+        await search.click();
+        const joinedResponse = await joined;
+        expect(joinedResponse.ok()).toBeTruthy();
+        const joinedUrl = new URL(joinedResponse.url());
+        expect(joinedUrl.searchParams.get('name')).toBe(prefix);
+        expect(joinedUrl.searchParams.get('studentId')).toBe(students[0]!.name);
+        expect(joinedUrl.searchParams.get('pageNo') ?? '1').toBe('1');
+        const joinedBody = await joinedResponse.json();
+        expect(joinedBody.code).toBe(0);
+        expect(String(joinedBody.data.total)).toBe('11');
+        expect(
+          joinedBody.data.list.map((item: { id: string | number }) => String(item.id)).toSorted(),
+        ).toEqual(
+          records
+            .filter(record => record.studentId === students[0]!.id)
+            .map(record => String(record.id))
+            .toSorted(),
+        );
+        await expect(rows).toHaveCount(11);
+
+        // Returning to a warmed query need not issue another HTTP request.
+        await student.fill('');
+        await search.click();
+        await expect(rows).toHaveCount(20);
+        await expect(footer.locator('.v-data-table-footer__info')).toHaveText('1-20 of 21');
+        const studentHeader = page.getByRole('columnheader', { name: 'Student', exact: true });
+        await expect(studentHeader).toHaveClass(/\bv-data-table__th--sortable\b/);
+        const orderedStudents = students.toSorted((left, right) =>
+          left.name < right.name ? -1 : left.name > right.name ? 1 : 0,
+        );
+        for (const direction of ['asc', 'desc'] as const) {
+          const sorted = waitForRecordSelect();
+          await studentHeader.click();
+          const sortedResponse = await sorted;
+          expect(sortedResponse.ok()).toBeTruthy();
+          const sortedUrl = new URL(sortedResponse.url());
+          expect(sortedUrl.searchParams.get('name')).toBe(prefix);
+          expect(sortedUrl.searchParams.get('pageNo') ?? '1').toBe('1');
+          expect(JSON.parse(sortedUrl.searchParams.get('orders')!)).toEqual([
+            { field: 'studentName', direction },
+          ]);
+          const sortedBody = await sortedResponse.json();
+          expect(sortedBody.code).toBe(0);
+          expect(String(sortedBody.data.total)).toBe('21');
+          expect(sortedBody.data.list).toHaveLength(20);
+          const studentOrder = direction === 'asc' ? orderedStudents : orderedStudents.toReversed();
+          const expectedStudentIds = studentOrder.flatMap(student =>
+            records
+              .filter(record => record.studentId === student.id)
+              .map(record => String(record.studentId)),
+          );
+          expect(
+            sortedBody.data.list.map((item: { studentId: string | number }) =>
+              String(item.studentId),
+            ),
+          ).toEqual(expectedStudentIds.slice(0, 20));
+          await expect(studentHeader).toHaveAttribute(
+            'aria-sort',
+            direction === 'asc' ? 'ascending' : 'descending',
+          );
+          await expect(rows).toHaveCount(20);
+        }
+        expect(pageErrors).toEqual([]);
+      } finally {
+        await runCleanup(
+          records.toReversed().map(record => async () => {
+            const removed = await page.request.delete(`/api/training/record/${record.id}`, {
+              headers,
+            });
+            expect(removed.ok()).toBeTruthy();
+          }),
+        );
       }
     });
   },

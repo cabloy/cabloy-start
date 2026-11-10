@@ -1,21 +1,20 @@
 import type { TableIdentity } from 'table-identity';
-import type { IQueryParams } from 'vona-module-a-orm';
+import type { TypeQueryInput } from 'vona-module-a-orm';
 import type { IRbacScopeAccess } from 'vona-module-a-rbac';
 import type { IDecoratorControllerOptions } from 'vona-module-a-web';
 
 import { BeanBase } from 'vona';
 import { Core } from 'vona-module-a-core';
 import { Api, Resource, v } from 'vona-module-a-openapiutils';
+import { $compileQuery } from 'vona-module-a-orm';
 import { Passport } from 'vona-module-a-user';
 import { Arg, Controller, Web } from 'vona-module-a-web';
 import { z } from 'zod';
 
-import type { ModelRecord } from '../model/record.ts';
-
 import { $locale } from '../.metadata/locales.ts';
 import { DtoRecordBulkDelete } from '../dto/recordBulkDelete.ts';
 import { DtoRecordCreate } from '../dto/recordCreate.tsx';
-import { DtoRecordSelectReq } from '../dto/recordSelectReq.tsx';
+import { DtoRecordSelectReq, recordQuery } from '../dto/recordSelectReq.tsx';
 import { DtoRecordSelectRes } from '../dto/recordSelectRes.tsx';
 import { DtoRecordUpdate } from '../dto/recordUpdate.tsx';
 import { DtoRecordView } from '../dto/recordView.tsx';
@@ -53,13 +52,14 @@ export class ControllerRecord extends BeanBase {
   @Core.serializer()
   @Passport.rbac({ dataScope: true })
   async select(
-    @Arg.filter(DtoRecordSelectReq) params: IQueryParams<ModelRecord>,
+    @Arg.filter(DtoRecordSelectReq) params: TypeQueryInput<typeof recordQuery>,
     @Arg.rbacScopeCurrent() rbacScopeCurrent: IRbacScopeAccess,
   ): Promise<DtoRecordSelectRes> {
-    return await this.scope.service.record.select({
-      ...params,
-      where: rbacScopeCurrent.where(params?.where),
-    });
+    return await this.scope.service.record.select(
+      $compileQuery(this.scope.model.record, recordQuery, params, {
+        scopeWhere: rbacScopeCurrent.where(),
+      }),
+    );
   }
 
   @Web.get(':id', { summary: $locale('RecordView') })

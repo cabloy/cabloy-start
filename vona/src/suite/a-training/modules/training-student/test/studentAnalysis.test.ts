@@ -1,5 +1,7 @@
 import type { TableIdentity } from 'table-identity';
+import type { ISchemaObjectExtensionField } from 'vona-module-a-openapi';
 
+import { ZodMetadata } from '@cabloy/zod-openapi';
 import assert from 'node:assert';
 import { randomUUID } from 'node:crypto';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
@@ -8,6 +10,7 @@ import path from 'node:path';
 import { describe, it } from 'node:test';
 import { app } from 'vona-mock';
 import { $schema } from 'vona-module-a-openapiutils';
+import { prepareAnalysisFilter } from 'vona-module-a-web';
 
 import { DtoStudentAggregateRes } from '../src/dto/studentAggregateRes.tsx';
 import { DtoStudentGroupResItem } from '../src/dto/studentGroupResItem.tsx';
@@ -39,13 +42,50 @@ async function readAnalysis(query: Record<string, unknown>) {
 }
 
 describe('studentAnalysis.test.ts', { concurrency: false }, () => {
-  it('preserves select and infers optional analysis response supersets', async () => {
+  it('emits public query controls and optional analysis response supersets', async () => {
     await app.bean.executor.mockCtx(async () => {
-      assert.equal($schema(DtoStudentSelectReq).safeParse({}).success, true);
+      const request = $schema(DtoStudentSelectReq);
+      const metadata = ZodMetadata.getOpenapiMetadata(
+        prepareAnalysisFilter(DtoStudentSelectReq).schema,
+      ) as ISchemaObjectExtensionField | undefined;
+      assert.deepEqual(metadata?.filter?.capabilities?.query?.orderable, [
+        'id',
+        'name',
+        'level',
+        'createdAt',
+      ]);
+      assert.equal(request.safeParse({}).success, true);
+      assert.equal(request.safeParse({ name: 'Student', level: 2, pageSize: 1 }).success, true);
       assert.equal(
-        $schema(DtoStudentSelectReq).safeParse({ name: 'Student', level: 2, pageSize: 1 }).success,
+        request.safeParse({
+          where: { field: 'level', op: 'gte', value: 2 },
+          orders: [{ field: 'level', direction: 'desc' }],
+          pageNo: 2,
+          pageSize: 1,
+        }).success,
         true,
       );
+      assert.equal(
+        prepareAnalysisFilter(DtoStudentSelectReq).schema.safeParse({ columns: ['name'] }).success,
+        false,
+      );
+      const requestDocument = await app.bean.openapi.generateJsonOfClass(
+        DtoStudentSelectReq,
+        'V31',
+      );
+      const requestComponent = Object.values(requestDocument.components!.schemas!).find(
+        item => !('$ref' in item) && Object.hasOwn(item.properties ?? {}, 'pageSize'),
+      );
+      assert.ok(requestComponent && !('$ref' in requestComponent));
+      assert.deepEqual(Object.keys(requestComponent.properties ?? {}).sort(), [
+        'createdAt',
+        'level',
+        'name',
+        'orders',
+        'pageNo',
+        'pageSize',
+        'where',
+      ]);
       for (const [DtoClass, fields] of [
         [DtoStudentGroupResItem, ['count_all', 'count_imageId', 'level']],
         [DtoStudentAggregateRes, ['count_all', 'count_imageId']],
@@ -132,15 +172,17 @@ describe('studentAnalysis.test.ts', { concurrency: false }, () => {
           groups: [{ level: 1, count_all: '2' }],
           aggregate: { count_all: '2', count_imageId: '1' },
         });
+        // Canonical predicates and named filters are always composed with AND.
         assert.deepEqual(
-          await readAnalysis({
-            name,
-            columns: ['name'],
-            orders: 'level,desc',
-            pageNo: 2,
-            pageSize: 1,
-          }),
-          initial,
+          await readAnalysis({ name, level: 1, where: { field: 'level', op: 'eq', value: 2 } }),
+          empty,
+        );
+        assert.deepEqual(
+          await readAnalysis({ name, where: { field: 'level', op: 'eq', value: 2 } }),
+          {
+            groups: [{ level: 2, count_all: '1' }],
+            aggregate: { count_all: '1', count_imageId: '0' },
+          },
         );
         const selected = await app.bean.executor.performAction('get', '/training/student', {
           innerAccess: false,
@@ -160,6 +202,16 @@ describe('studentAnalysis.test.ts', { concurrency: false }, () => {
           }),
           { count_imageId: '1' },
         );
+
+        const internalSelected = await student.service.student.select({
+          where: { name: { _startsWith_: name } },
+          orders: [['createdAt', 'desc']],
+          limit: 1,
+          offset: 1,
+        });
+        assert.equal(internalSelected.total, '3');
+        assert.equal(internalSelected.list.length, 1);
+        assert.equal(internalSelected.list[0].level, 1);
 
         // Concrete HTTP URLs verify routing ahead of /:id and JSON query control parsing.
         for (const [action, controls, expected] of [
@@ -228,6 +280,29 @@ describe('studentAnalysis.test.ts', { concurrency: false }, () => {
             (error: { code?: number }) => error.code === 422,
           );
         }
+        for (const action of ['group', 'aggregate'] as const) {
+          for (const controls of [
+            { columns: ['name'] },
+            { orders: [{ field: 'level', direction: 'desc' }] },
+            { pageNo: 2 },
+            { pageSize: 1 },
+            { where: { level: { _gte_: 2 } } },
+            { limit: 1 },
+            { offset: 1 },
+            { include: { content: true } },
+            { unknownFilter: 'not-ignored' },
+          ]) {
+            await assert.rejects(
+              () =>
+                app.bean.executor.performAction('get', `/training/student/${action}`, {
+                  innerAccess: false,
+                  query: { name, ...controls },
+                }),
+              (error: { code?: number }) => error.code === 422,
+              `${action}: ${JSON.stringify(controls)}`,
+            );
+          }
+        }
         await assert.rejects(
           () => student.service.student.group({ groups: ['name'] } as never),
           (error: { code?: number }) => error.code === 422,
@@ -266,6 +341,133 @@ describe('studentAnalysis.test.ts', { concurrency: false }, () => {
           if (imageId !== undefined) await app.bean.image.delete(imageId);
         } finally {
           if (directory) await rm(directory, { recursive: true, force: true });
+          await app.bean.passport.signout();
+        }
+      }
+    });
+  });
+
+  it('public predicates cannot expand Student or Record RBAC scope', async () => {
+    await app.bean.executor.mockCtx(async () => {
+      await app.bean.passport.signinMock();
+      const context = app.ctx;
+      const ownerId = String(app.bean.passport.currentUser!.id);
+      const name = `Scope-${randomUUID()}`;
+      const ids: TableIdentity[] = [];
+      const recordIds: TableIdentity[] = [];
+      let off: (() => void) | undefined;
+      try {
+        for (const [index, level] of [1, 2].entries()) {
+          const id = await app.bean.executor.performAction('post', '/training/student', {
+            innerAccess: false,
+            body: { name: `${name}-${index}`, mobile: '13812345678', level },
+          });
+          ids.push(id);
+          recordIds.push(
+            await app.bean.executor.performAction('post', '/training/record', {
+              innerAccess: false,
+              body: {
+                studentId: id,
+                name: `${name}-${index}`,
+                subjectCount: 0,
+                totalScore: 0,
+                averageScore: 0,
+              },
+            }),
+          );
+        }
+        // Both rows exist in this instance; only one is owned by the granted identity.
+        await app.scope('training-student').model.student.updateById(ids[1], { userIdOwner: '0' });
+        await app
+          .scope('training-record')
+          .model.record.updateById(recordIds[1], { userIdOwner: '0' });
+        assert.notEqual(ownerId, '0');
+        app.bean.passport.current!.roles = [];
+        assert.equal(await app.bean.passport.isSystemAdmin(), false);
+        const policyActions: string[] = [];
+        off = app.scope('a-rbac').event.resolvePolicy.on((request, next) => {
+          if (
+            app.ctx.ctxCaller !== context ||
+            String(app.bean.passport.currentUser?.id) !== ownerId ||
+            ![
+              'training-student.controller.student#select',
+              'training-student.controller.student#group',
+              'training-student.controller.student#aggregate',
+              'training-record.controller.record#select',
+            ].includes(request.action.actionKey)
+          ) {
+            return next();
+          }
+          assert.equal(request.action.options.dataScope, true);
+          policyActions.push(request.action.actionKey);
+          return {
+            allowed: true,
+            actionKey: request.action.actionKey,
+            action: request.action,
+            terms: [{ dataScope: 'mine' as const, ownerId }],
+          };
+        });
+        const visible = {
+          groups: [{ level: 1, count_all: '1' }],
+          aggregate: { count_all: '1', count_imageId: '0' },
+        };
+        const both = {
+          or: ids.map(id => ({ field: 'id', op: 'eq', value: String(id) })),
+        };
+        const selected = await app.bean.executor.performAction('get', '/training/student', {
+          innerAccess: false,
+          query: { name, where: both },
+        });
+        assert.equal(selected.total, '1');
+        assert.deepEqual(
+          selected.list.map((item: any) => String(item.id)),
+          [String(ids[0])],
+        );
+        assert.deepEqual(await readAnalysis({ name, where: both }), visible);
+        const outside = { field: 'id', op: 'eq', value: String(ids[1]) };
+        const excluded = await app.bean.executor.performAction('get', '/training/student', {
+          innerAccess: false,
+          query: { name, where: outside },
+        });
+        assert.equal(excluded.total, '0');
+        assert.deepEqual(excluded.list, []);
+        assert.deepEqual(await readAnalysis({ name, where: outside }), {
+          groups: [],
+          aggregate: { count_all: '0', count_imageId: '0' },
+        });
+        for (const [where, expected] of [
+          [
+            { or: ids.map(id => ({ field: 'studentId', op: 'eq', value: String(id) })) },
+            recordIds.slice(0, 1),
+          ],
+          [{ field: 'studentId', op: 'eq', value: String(ids[1]) }, []],
+        ] as const) {
+          const records = await app.bean.executor.performAction('get', '/training/record', {
+            innerAccess: false,
+            query: { studentId: name, where },
+          });
+          assert.equal(records.total, String(expected.length));
+          assert.deepEqual(
+            records.list.map((item: any) => String(item.id)),
+            expected.map(String),
+          );
+        }
+        assert.deepEqual([...new Set(policyActions)].toSorted(), [
+          'training-record.controller.record#select',
+          'training-student.controller.student#aggregate',
+          'training-student.controller.student#group',
+          'training-student.controller.student#select',
+        ]);
+      } finally {
+        off?.();
+        try {
+          for (const id of recordIds.toReversed()) {
+            await app
+              .scope('training-record')
+              .model.record.deleteById(id, { disableDeleted: true });
+          }
+          await dropStudents(ids);
+        } finally {
           await app.bean.passport.signout();
         }
       }

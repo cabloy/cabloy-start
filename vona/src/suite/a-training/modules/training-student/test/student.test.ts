@@ -148,6 +148,8 @@ describe('student.test.ts', { concurrency: false }, () => {
       const component = Object.values(apiJson.components!.schemas as any).find(item => {
         return (item as any).properties?._operationsRow;
       }) as any;
+      assert.equal(component.properties.id.rest.table.width, 70);
+      assert.equal(component.properties.id.rest.table.enableSorting, undefined);
       assert.deepEqual(
         {
           align: component.properties.name.rest.table.align,
@@ -155,7 +157,7 @@ describe('student.test.ts', { concurrency: false }, () => {
           fixed: component.properties.name.rest.table.fixed,
           enableSorting: component.properties.name.rest.table.enableSorting,
         },
-        { align: 'left', width: 240, fixed: 'left', enableSorting: true },
+        { align: 'left', width: 240, fixed: 'left', enableSorting: undefined },
       );
       assert.deepEqual(
         {
@@ -163,7 +165,7 @@ describe('student.test.ts', { concurrency: false }, () => {
           width: component.properties.level.rest.table.width,
           enableSorting: component.properties.level.rest.table.enableSorting,
         },
-        { align: 'center', width: 140, enableSorting: true },
+        { align: 'center', width: 140, enableSorting: undefined },
       );
       assert.deepEqual(
         {
@@ -171,7 +173,7 @@ describe('student.test.ts', { concurrency: false }, () => {
           width: component.properties.createdAt.rest.table.width,
           enableSorting: component.properties.createdAt.rest.table.enableSorting,
         },
-        { align: 'center', width: 180, enableSorting: true },
+        { align: 'center', width: 180, enableSorting: undefined },
       );
       assert.deepEqual(
         {
@@ -207,12 +209,18 @@ describe('student.test.ts', { concurrency: false }, () => {
         const ascending: DtoStudentSelectRes = await app.bean.executor.performAction(
           'get',
           '/training/student',
-          { innerAccess: false, query: { orders: [['name', 'asc']] } },
+          {
+            innerAccess: false,
+            query: { name: '__StudentSort', orders: [{ field: 'name', direction: 'asc' }] },
+          },
         );
         const descending: DtoStudentSelectRes = await app.bean.executor.performAction(
           'get',
           '/training/student',
-          { innerAccess: false, query: { orders: [['name', 'desc']] } },
+          {
+            innerAccess: false,
+            query: { name: '__StudentSort', orders: [{ field: 'name', direction: 'desc' }] },
+          },
         );
         const ascendingIndexes = names.map(name =>
           ascending.list.findIndex(item => item.name === name),
@@ -230,6 +238,36 @@ describe('student.test.ts', { concurrency: false }, () => {
         );
         assert.equal(ascendingIndexes[0] < ascendingIndexes[1], true);
         assert.equal(descendingIndexes[0] > descendingIndexes[1], true);
+
+        const canonical: DtoStudentSelectRes = await app.bean.executor.performAction(
+          'get',
+          '/training/student',
+          {
+            innerAccess: false,
+            query: {
+              name: '__StudentSort',
+              where: { field: 'id', op: 'eq', value: String(studentIds[0]) },
+            },
+          },
+        );
+        assert.equal(canonical.total, '1');
+        assert.deepEqual(
+          canonical.list.map(item => String(item.id)),
+          [String(studentIds[0])],
+        );
+        const conflicting: DtoStudentSelectRes = await app.bean.executor.performAction(
+          'get',
+          '/training/student',
+          {
+            innerAccess: false,
+            query: {
+              name: names[1],
+              where: { field: 'id', op: 'eq', value: String(studentIds[0]) },
+            },
+          },
+        );
+        assert.equal(conflicting.total, '0');
+        assert.deepEqual(conflicting.list, []);
       } finally {
         for (const studentId of studentIds.reverse()) {
           await app
@@ -239,6 +277,42 @@ describe('student.test.ts', { concurrency: false }, () => {
             .scope('training-student')
             .model.student.deleteById(studentId, { disableDeleted: true });
         }
+        await app.bean.passport.signout();
+      }
+    });
+  });
+
+  it('action:student:rejects legacy and internal public query controls', async () => {
+    await app.bean.executor.mockCtx(async () => {
+      await app.bean.passport.signinMock();
+      try {
+        for (const query of [
+          { where: { level: { _gte_: 2 } } },
+          { where: {} },
+          { where: { field: 'mobile', op: 'eq', value: '13812345678' } },
+          { where: { field: 'level', op: 'lt', value: 2 } },
+          { orders: 'name,desc' },
+          { orders: [['name', 'desc']] },
+          { orders: [{ field: 'name', order: 'desc' }] },
+          { columns: ['name'] },
+          { limit: 1 },
+          { offset: 1 },
+          { joins: [] },
+          { include: { content: true } },
+          { userIdOwner: 'other-owner' },
+          { unknownFilter: 'ignored-before' },
+        ]) {
+          await assert.rejects(
+            () =>
+              app.bean.executor.performAction('get', '/training/student', {
+                innerAccess: false,
+                query,
+              }),
+            (error: { code?: number }) => error.code === 422,
+            JSON.stringify(query),
+          );
+        }
+      } finally {
         await app.bean.passport.signout();
       }
     });

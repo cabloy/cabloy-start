@@ -24,7 +24,7 @@ export interface IEntityOptionsStudent extends IDecoratorEntityOptions {}
     deleted: $makeMetadata(ZovaRender.visible(false)),
     createdAt: $makeMetadata(
       ZovaRender.order(-2, 'max'),
-      ZovaRender.column({ align: 'center', width: 180, enableSorting: true }),
+      ZovaRender.column({ align: 'center', width: 180 }),
       ZovaRender.field('start-date:formFieldDate'),
       ZovaRender.cell('start-date:date'),
     ),
@@ -45,7 +45,6 @@ export class EntityStudent extends EntityBase {
       align: 'left',
       width: 240,
       fixed: 'left',
-      enableSorting: true,
       sortDescFirst: true,
     }),
     ZovaRender.cell('start-table:actionView'),
@@ -96,7 +95,7 @@ export class EntityStudent extends EntityBase {
     v.title($locale('Level')),
     v.required(),
     ZovaRender.order(5),
-    ZovaRender.column({ align: 'center', width: 140, enableSorting: true }),
+    ZovaRender.column({ align: 'center', width: 140 }),
     ZovaRender.field('training-student:formFieldLevel', {
       items: studentLevelItems,
       placeholder: $locale('Level'),

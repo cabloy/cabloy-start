@@ -14,7 +14,7 @@ import { getTargetDecoratorRules } from 'vona-module-a-openapiutils';
 import { $Dto } from 'vona-module-a-orm';
 
 import { DtoDetailRecordSubjectResItem } from '../src/dto/detailRecordSubjectResItem.tsx';
-import { DtoRecordSelectReq } from '../src/dto/recordSelectReq.tsx';
+import { DtoRecordSelectReq, recordQuery } from '../src/dto/recordSelectReq.tsx';
 import { DtoRecordSelectResItem } from '../src/dto/recordSelectResItem.tsx';
 import { DtoRecordUpdate } from '../src/dto/recordUpdate.tsx';
 import { DtoRecordView } from '../src/dto/recordView.tsx';
@@ -75,13 +75,12 @@ describe('record.test.ts', { concurrency: false }, () => {
         | ISchemaObjectExtensionField
         | undefined;
       assert.equal(selectReqRules.studentId?.type, 'optional');
-      assert.deepEqual(studentIdMetadata?.filter, {
-        table: 'trainingStudent',
-        joinType: 'innerJoin',
-        joinOn: ['studentId', 'trainingStudent.id'],
-        originalName: 'name',
-        op: '_includesI_',
+      assert.equal(studentIdMetadata?.filter, undefined);
+      assert.deepEqual(recordQuery.conveniences.studentId, {
+        field: 'studentName',
+        op: 'containsI',
       });
+      assert.equal(recordQuery.bindings.studentName?.field, 'name');
 
       const controller = app.bean.onion.controller
         .getOnionsEnabledCached()
@@ -130,7 +129,17 @@ describe('record.test.ts', { concurrency: false }, () => {
           'id',
           'name',
         ]);
-        assert.equal(component.properties.studentId.rest.table.enableSorting, true);
+        for (const field of [
+          'id',
+          'name',
+          'studentId',
+          'subjectCount',
+          'totalScore',
+          'averageScore',
+          'createdAt',
+        ]) {
+          assert.equal(component.properties[field]?.rest?.table?.enableSorting, undefined);
+        }
       }
     });
   });
@@ -234,6 +243,45 @@ describe('record.test.ts', { concurrency: false }, () => {
           filteredSelectRes.list.every((item: any) => item.student?.name.includes('tude')),
           true,
         );
+
+        const canonicalSelectRes: any = await app.bean.executor.performAction(
+          'get',
+          '/training/record',
+          {
+            innerAccess: false,
+            query: {
+              studentId: 'tude',
+              where: { field: 'studentId', op: 'eq', value: String(studentId) },
+              orders: [{ field: 'studentName', direction: 'asc' }],
+            },
+          },
+        );
+        assert.equal(canonicalSelectRes.total, '1');
+        assert.deepEqual(
+          canonicalSelectRes.list.map((item: any) => String(item.id)),
+          [String(recordId)],
+        );
+        const conflictingSelectRes: any = await app.bean.executor.performAction(
+          'get',
+          '/training/record',
+          {
+            innerAccess: false,
+            query: {
+              studentId: '__ReplacementStudent__',
+              where: { field: 'studentId', op: 'eq', value: String(studentId) },
+            },
+          },
+        );
+        assert.equal(conflictingSelectRes.total, '0');
+        assert.deepEqual(conflictingSelectRes.list, []);
+        const internalSelected = await app.scope('training-record').service.record.select({
+          where: { studentId },
+          orders: [['name', 'asc']],
+          limit: 1,
+          offset: 0,
+        });
+        assert.equal(internalSelected.total, '1');
+        assert.equal(String(internalSelected.list[0].id), String(recordId));
 
         assert.equal(recordItem!.dossierFiles?.length, 1);
         assert.equal(recordItem!.dossierFiles?.[0]?.filename, 'attendance.txt');
@@ -444,6 +492,41 @@ describe('record.test.ts', { concurrency: false }, () => {
           await fse.remove(dossierFilePathAssessment);
           await app.bean.passport.signout();
         }
+      }
+    });
+  });
+
+  it('action:record:rejects legacy and internal public query controls', async () => {
+    await app.bean.executor.mockCtx(async () => {
+      await app.bean.passport.signinMock();
+      try {
+        for (const query of [
+          { where: { studentId: 1 } },
+          { where: { field: 'studentId', op: 'containsI', value: '1' } },
+          { where: { field: 'student.name', op: 'containsI', value: 'Student' } },
+          { orders: 'name,desc' },
+          { orders: [['name', 'desc']] },
+          { orders: [{ field: 'name', order: 'desc' }] },
+          { columns: ['name'] },
+          { limit: 1 },
+          { offset: 1 },
+          { joins: [{ table: 'trainingStudent' }] },
+          { include: { student: true } },
+          { studentName: 'Student' },
+          { userIdOwner: 'other-owner' },
+        ]) {
+          await assert.rejects(
+            () =>
+              app.bean.executor.performAction('get', '/training/record', {
+                innerAccess: false,
+                query,
+              }),
+            (error: { code?: number }) => error.code === 422,
+            JSON.stringify(query),
+          );
+        }
+      } finally {
+        await app.bean.passport.signout();
       }
     });
   });
