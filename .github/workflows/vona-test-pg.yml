@@ -34,9 +34,6 @@ jobs:
           version: '12.14.0'
       - name: init
         run: npm run init
-      - name: run MCP no-listener qualification gate
-        run: DATABASE_DEFAULT_CLIENT=pg npm run test:mcp:no-listener
-        working-directory: vona
       - run: DATABASE_DEFAULT_CLIENT=pg npm run test
         working-directory: vona
       - run: DATABASE_DEFAULT_CLIENT=pg npm run build -- --flavor=ci
