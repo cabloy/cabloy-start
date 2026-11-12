@@ -2,7 +2,7 @@
 
 <Badge type="info" text="Basic" />
 
-This guide explains how an MCP client connects to Cabloy Basic's authenticated shared `/mcp` endpoint. The authorization server uses RFC 7591 Dynamic Client Registration (DCR), existing Cabloy login, explicit consent and authorization code exchange with PKCE. Static configuration clients are not supported.
+This guide explains how an MCP client connects to Cabloy Basic's authenticated shared `/mcp` endpoint. The authorization server uses RFC 7591 Dynamic Client Registration (DCR), existing Cabloy login, explicit consent and authorization code exchange with PKCE. Static OAuth client registrations are not supported. Clients that cannot perform OAuth but can send a Bearer header may instead use [personal MCP access tokens](https://github.com/cabloy/cabloy/blob/main/vona/src/suite-vendor/cabloy-mcp/docs/access-tokens.md), managed separately under Account → Security.
 
 Read [MCP Integration Guide](/mcp/mcp-guide) for endpoint ownership and admission, and [MCP Controller Tools](/mcp/mcp-controller-tools) for Action mapping and business examples. The [independent local test launcher](/mcp/mcp-commerce-local) is anonymous and rejects credentials; do not send OAuth tokens to it.
 
@@ -34,7 +34,7 @@ Backend `mcp-auth` owns client registrations, authorization state, personal scop
 
 Ordinary Cabloy login, refresh, temporary and OAuth credentials are not MCP tokens, and MCP credentials cannot become ordinary login credentials. Configured TTL values and OAuth `expires_in` use seconds; an `expiresAt` timestamp uses epoch milliseconds.
 
-Shared/role/nested scopes, a generalized scope policy engine, Client ID Metadata Documents (CIMD), remembered consent, general management UI, public registration update/delete endpoints and `offline_access` are not supported.
+Shared/role/nested scopes, a generalized scope policy engine, Client ID Metadata Documents (CIMD), remembered consent, management UI beyond personal scopes/authorizations/access tokens, public registration update/delete endpoints and `offline_access` are not supported.
 
 ## Endpoints and authority
 
@@ -48,9 +48,9 @@ Shared/role/nested scopes, a generalized scope policy engine, Client ID Metadata
 | Shared MCP resource                       | `/mcp`                                        |
 | Consent page inside the selected SSR Site | `/cabloy/mcp/consent`                         |
 
-Both issuer and protected resource are the exact **`${origin}/mcp`** identifier, including the `/mcp` path. `origin` comes from the **root backend** `server.serve.protocol` and `server.serve.host`, not `config.modules['mcp-auth']`, request Host or proxy headers.
+Both issuer and protected resource are the exact **`${origin}/mcp`** identifier, including the `/mcp` path. `getMcpIssuer(...)` obtains `origin` through `app.util.getAbsoluteUrl()`: `AppUtil` uses the current context's effective `server.serve.protocol` and `server.serve.host` when present, otherwise root config, not `config.modules['mcp-auth']`. MCP URL validation still enforces the supported scheme, loopback-HTTP policy and exact origin shape.
 
-Production requires the explicit trusted public serve pair. Nonproduction may use the existing requestless `AppUtil` fallback `http://localhost:<SERVER_LISTEN_PORT>` when no public serve pair is configured. Incoming request values must not establish authority. The ingress validates Host against the canonical authority and reuses existing automatic instance routing in a fresh selector-free context. Authorization-server endpoints reject instance selectors. Shared `/mcp` permits recognized singleton selectors only when they equal the server-derived instance, then strips them before dispatch; mismatches are rejected. Selectors cannot establish or change instance authority. There is no separate MCP resource/instance registry or cross-origin AS/resource federation.
+Production requires the explicit trusted public serve pair (`SERVER_SERVE_PROTOCOL` / `SERVER_SERVE_HOST`); each empty effective field throws even when a request origin is available. In `dev/test`, each field resolves from configured value, then request context, then the requestless `http` and `localhost:<SERVER_LISTEN_PORT>` fallback (or `localhost` without a port). Raw ingress does not create a context for origin resolution: without an ambient context, `AppUtil` uses configured values or the requestless fallback. It validates the single incoming Host against the resolved authority rather than adopting it as authority. Once configured or issued, authority bindings remain exact: `localhost` and `127.0.0.1` are not interchangeable; keep the same scheme, host and port throughout registration, authorization and token use. Production Host validation against configured authority is unchanged. Ingress reuses existing automatic instance routing in a fresh selector-free context. Authorization-server endpoints reject instance selectors. Shared `/mcp` permits recognized singleton selectors only when they equal the server-derived instance, then strips them before dispatch; mismatches are rejected. Selectors cannot establish or change instance authority. There is no separate MCP resource/instance registry or cross-origin AS/resource federation.
 
 Recognized dev/test/prod modes use the same authenticated, permission-checked boundary. Unknown modes, not-ready, closing, disabled state and invalid required authority configuration fail closed. The resource integration is enabled by default; only literal `CABLOY_MCP_ENABLED=false` disables its environment-derived default, while ordinary application overrides remain supported. This resource gate does not itself disable `mcp-auth` registration, authorization, token exchange or authorization-server discovery; those endpoints enforce their own readiness, shutdown and authority/configuration checks.
 
@@ -142,7 +142,7 @@ Before login, custom validation checks syntax only. Authenticated resolution che
 
 Before using the flow, ensure:
 
-- The trusted root serve pair or nonproduction requestless fallback establishes authority. Do not author `mcp-auth.issuer` or `mcp-auth.resources`.
+- The effective serve pair establishes authority; in `dev/test` only, unset fields may use the validated request origin or requestless fallback described above. Keep the resulting origin exact throughout the flow. Do not author `mcp-auth.issuer` or `mcp-auth.resources`.
 - Automatic instance routing resolves an enabled instance after Host validation, without client selectors.
 - An enabled SSR Site's built flavor contains the shared consent page and ordinary role admission permits the intended user.
 - Registration limits and an operational policy for AS-owned client records are appropriate.
@@ -173,7 +173,7 @@ Set `MCP_AUTH_SSR_SITE` or override `config.modules['mcp-auth'].ssrSite` to sele
 
 ### Existing databases and authority changes
 
-`mcp-auth` currently keeps `vonaModule.fileVersion: 1`. Its current version-1 schema includes personal scopes, requested/effective scope bindings and refresh grant fields. Editing that path does not replay an already-applied version 1: an existing v1 database needs a separately approved upgrade or disposable-data strategy. Fresh isolated tests initialize the current schema; they do not upgrade a development database. `npm run db:reset` is destructive and requires explicit approval, never an automatic troubleshooting step.
+`mcp-auth` currently keeps `vonaModule.fileVersion: 1`. Its current version-1 schema includes personal scopes, requested/effective scope bindings, refresh grant fields and personal access-token issuance/name fields with nullable OAuth client bindings. Editing that path does not replay an already-applied version 1: an existing v1 database needs a separately approved upgrade or disposable-data strategy. Fresh isolated tests initialize the current schema; they do not upgrade a development database. `npm run db:reset` is destructive and requires explicit approval, never an automatic troubleshooting step.
 
 Old origin-only issuer values differ from the exact `${origin}/mcp` issuer. Grants, codes and access tokens carrying the old issuer fail exact comparison and require fresh authorization. Do not rewrite them, relax matching or reset a database to preserve them.
 
@@ -260,13 +260,13 @@ MCP reuses Passport's auth-token lifecycle through static JWT client selection. 
 
 The adapter reloads current user, auth ownership/provider and roles. Its fixed `options: { stateless: false, strategy: 'reissue' }` retains stateful grant validation regardless of ordinary session/provider overrides. Other clients retain existing auth/session behavior.
 
-Verification is read-only: access requires the current generation, while refresh can pass an otherwise valid older generation into reissue for replay-family revocation. Generation 0 creation activates the grant; later generations rotate it atomically with validated resource/scope operation input. The existing authorization row is the family, storing only the current nonce digest rather than plaintext credentials or a second identity/history store.
+Verification is read-only: access requires the current generation, while refresh can pass an otherwise valid older generation into reissue for replay-family revocation. For OAuth, generation 0 creation activates the grant; later generations rotate it atomically with validated resource/scope operation input. Personal issuance creates an explicitly personal, generation-1 active row and signs only the existing `mcpAccess` client; it never signs a refresh credential or replaces the browser Passport. Personal validation retains the same current-state/account/resource/instance/scope checks, excluding only inapplicable OAuth client/redirect checks. The existing authorization row is the family, storing only the current nonce digest rather than plaintext credentials or a second identity/history store.
 
 The selected `passportAuthTokenClient` survives the MCP Passport handoff and clears with current state. Ordinary signin, refresh, temporary-token and OAuth helpers reject conversion from attached MCP authority. See [Auth Guide](/backend/auth-guide#auth-token-lifecycle-and-adapter-selection) and [JWT Guide](/backend/jwt-guide#explicit-pairs-and-scoped-passport-flows).
 
 ## Troubleshooting without weakening the boundary
 
-- **Registration unavailable:** check trusted root authority, Host, automatic routing and ingress readiness. No static client, authored issuer/resource registry or registration switch is required.
+- **Registration unavailable:** check effective serve configuration, exact Host/origin binding, automatic routing and ingress readiness. No static client, authored issuer/resource registry or registration switch is required.
 - **Consent route missing or Site admission denied:** verify the selected Site's paired SSR/REST artifacts contain the page and ordinary role admission is appropriate. The server does not probe or choose a more permissive Site. Follow the [contract-loop workflow](/fullstack/contract-loop-playbook) when rebuilding changed frontend artifacts.
 - **Login does not return to consent:** preserve the internal pending URL, not the OAuth callback; do not add another cookie or identity bridge.
 - **Consent API origin mismatch:** check explicit Site/module overrides first. Vona integrated SSR normally supplies runtime API origins; see [Runtime API origins](/fullstack/ssr-entry-modes#runtime-api-origins-in-vona-integrated-ssr). Do not change environment values merely to match an isolated test listener.

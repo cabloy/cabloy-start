@@ -3341,7 +3341,7 @@ importers:
         specifier: workspace:^
         version: link:modules/cabloy-mcp
       vona-module-mcp-auth:
-        specifier: ^5.0.5
+        specifier: ^5.0.6
         version: link:modules/mcp-auth
 
   src/suite-vendor/cabloy-mcp/modules/cabloy-mcp:

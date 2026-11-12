@@ -143,6 +143,14 @@ export function validateMcpAuthConfig(config: IMcpAuthConfig): IMcpAuthConfig {
   for (const ttl of [config.pendingTtl, config.codeTtl, config.tokenTtl]) {
     if (!Number.isSafeInteger(ttl) || ttl <= 0 || ttl > 86400) invalid();
   }
+  // Personal grants have no product cap, only safely representable finite deadlines.
+  if (
+    !Number.isSafeInteger(config.personalTokenTtl) ||
+    config.personalTokenTtl <= 0 ||
+    !Number.isSafeInteger(Date.now() + config.personalTokenTtl * 1000)
+  ) {
+    invalid();
+  }
   if (
     !Number.isSafeInteger(config.refreshTokenTtl) ||
     config.refreshTokenTtl <= 0 ||
@@ -169,15 +177,10 @@ export function getMcpAuthConfig(app: VonaApplication): IMcpAuthConfig {
   return validateMcpAuthConfig(app.config.modules['mcp-auth']);
 }
 
-/** Use the backend public origin, never request or proxy headers, as authority. */
+/** Share the framework public origin, including its nonproduction request fallback. */
 export function getMcpIssuer(app: VonaApplication): string {
   const config = getMcpAuthConfig(app);
-  const { protocol, host } = app.config.server.serve;
-  if (app.meta.isProd && (!protocol || !host)) {
-    throw new OAuthError('temporarily_unavailable', 503);
-  }
-  const port = app.meta.env.SERVER_LISTEN_PORT;
-  const origin = `${protocol || 'http'}://${host || (port ? `localhost:${port}` : 'localhost')}`;
+  const origin = app.util.getAbsoluteUrl();
   const url = configuredUrl(origin, config.allowLoopbackHttp);
   if (url.origin !== origin) throw new OAuthError('server_error', 503);
   return `${origin}/mcp`;
