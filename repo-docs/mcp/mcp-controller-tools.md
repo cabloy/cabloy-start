@@ -47,8 +47,9 @@ See [CRUD Workflow](/backend/crud-workflow#generated-mcp-metadata-and-required-d
 | `description` | Action-scoped text or locale metadata. Falls back to that Action's OpenAPI description, summary, then Controller/Action identity. A class-level description is not inherited.                                                                                   |
 | `readOnly`    | Action-local read classification. If absent, infers `true` for GET and `false` for other methods; no Controller default applies.                                                                                                                                |
 | `output.pick` | Top-level object response field allowlist, applied to runtime validation/projection and the advertised schema closure. It does not alter the HTTP DTO.                                                                                                          |
+| `discovery`   | Optional `{ input?: string[][]; output?: string[][] }` paths that compact selected object/array schemas in tool declarations only. Full contracts remain available through `cabloy_tool_contract`.                                                              |
 
-All four options are Action-local; no option is inherited from the Controller. `output.pick` is only the decorated Action's allowlist, not a merge with class defaults. Invalid names, duplicate names and unknown projection fields are configuration errors, not reasons to publish unvalidated output.
+All options are Action-local; no option is inherited from the Controller. `output.pick` is only the decorated Action's allowlist, not a merge with class defaults. Invalid names, duplicate names and unknown projection fields are configuration errors, not reasons to publish unvalidated output.
 
 The Student examples use default names such as `training-student_student_summary`, derived from `training-student.controller.student`. Clients must refresh discovery after a name change. A personal scope bound to the old exact name does not automatically admit the renamed tool; update the preset and authorize again.
 
@@ -69,7 +70,7 @@ Unknown top-level arguments and unknown fields in location objects are rejected.
 
 Object results become `structuredContent` directly. Array and scalar results use `{ "result": value }`; a declared null result becomes `{ "result": null }`. JSON text content represents that same structured object. Results are validated; failed validation never falls back to raw Action output.
 
-An `undefined` result or a missing object resource represented by `null` returns an error tool result with safe text `Resource not found`. Authorization, unexpected Action and output-validation failures return `Action failed`, without raw exceptions or private data. Invalid arguments are protocol errors; reviewed public-query validation failures may include bounded `queryCode` / `path` diagnostics, never SQL, operand values or a hidden-field catalog.
+An `undefined` result or a missing object resource represented by `null` returns an error tool result with safe text `Resource not found`. Authorization, unexpected Action and output-validation failures return `Action failed`, without raw exceptions or private data. Invalid arguments remain protocol errors. Reviewed public-query validation failures include bounded `queryCode` / `path` diagnostics and a fixed `hint` directing the caller to `cabloy_tool_contract` with the failed tool's exact server name and `section: 'query'`. Retrieve the current contract and correct the arguments while preserving the intended filters; do not drop constraints to bypass validation. The hint is general guidance, not a diagnosis of the precise cause or an automatic retry. These errors never include SQL, operand values or a hidden-field catalog; ordinary argument, authorization and unexpected Action failures do not receive query repair hints.
 
 ### Action contract extraction
 
@@ -88,16 +89,122 @@ See [OpenAPI Guide](/backend/openapi-guide#generate-an-action-contract-for-mcp-j
 
 ### Public query arguments
 
-For query-enabled Actions, use the same policy-bound [public query contract](/backend/public-query-guide) as HTTP and generated UI clients. Read the discovered tool's actual `inputSchema`: its finite field/operator/value alternatives and query capabilities define the advanced surface, independently of the named UI filters. Not every list Action exposes advanced controls.
+For query-enabled Actions, use the same policy-bound [public query contract](/backend/public-query-guide) as HTTP and generated UI clients. MCP uses a **compact discovery contract**: the formal tool keeps `where` as an object with its original optionality and a short description, rather than advertising the complete recursive predicate graph. This is a discovery representation, not a new query language or a relaxation of validation. The full native predicate, operand, policy and budget checks still run before ordinary guarded Action execution. Not every list Action exposes advanced controls.
+
+The mapper preserves the selected business description and appends centrally owned guidance to policy-bound query tools. It directs clients to `cabloy_tool_contract` with `section: 'query'` for the exact target, recommends one `where.or` call for alternatives, and explains that named filters add AND constraints. This applies to actual select/group/aggregate bindings, not all read-only tools or Actions named `select`. Shared guidance is in English; localized business descriptions remain intact. Refresh discovery after deployment. A client without an installed skill can follow the tool description, retrieve the contract and successfully execute the business query; a skill is not required for that workflow.
+
+### Compact selected declaration schemas
+
+Use `discovery` only to keep a large declaration manageable. It is explicit, declaration-only compaction, **not redaction**: the selected full public schema remains retrievable, input/output validators remain complete, and business arguments and returned data do not become smaller. Use `output.pick` when the intended contract actually excludes output fields.
+
+```ts
+@Mcp.tool({
+  readOnly: true,
+  discovery: { output: [['list', 'items']] },
+})
+```
+
+Each path is a nonempty array of segments in the **final MCP contract**, after flat/grouped argument mapping and output projection/wrapping. Traverse object property names; a terminal `items` selects an array's item schema. For example, `['list', 'items']` selects the object item schema of a paged result's `list` array. It is not a wildcard or a JSON Pointer, and cannot continue into properties of an array item.
+
+Only selected object/array schemas can be compacted. Root paths, scalar targets, union/ambiguous targets, missing paths, duplicate or overlapping selections are invalid. An explicit selection does not automatically cover other Actions or descendants through array traversal. A flat object body has no artificial `body` prefix; `['body']` is valid only when the final MCP arguments actually have that grouped property. The effect fixture's grouped `['body']` selection is a test example, not a blanket mutation setting.
+
+Policy-bound `where` compaction is automatic and independent of these explicit paths. Neither mechanism changes the native predicate language, validators, guards or data scope. The helper's overview reports the effective compact paths, including each bound query's `argumentPath` plus `['where']`.
+
+### Retrieve one tool's contract
+
+`cabloy_tool_contract` is the single built-in, read-only metadata helper. It is visible whenever the caller has **any visible Controller Action**, including non-query reads or mutations. It is separate from the Controller Action selection/consent catalog and cannot widen an exact selected set.
+
+Its strict arguments are:
+
+```ts
+{ tool: string; section?: 'overview' | 'input' | 'output' | 'query' }
+```
+
+Use the **exact server tool name**, including any Action-level name override. Do not pass a client-added server prefix, display alias, normalized name, fragment path or other property. Omission of `section` selects `overview`; it does not dump both schemas. The examples below require the optional Student module and current admission, not a universally available target.
+
+Every lookup freshly checks the exact target's current scope eligibility and Action guards, for **all target types**, not only query tools. A mutation's contract remains unavailable under `mcp:read`, and a personal scope admits only its selected target names. Known names and earlier discovery or lookup results do not grant access. The helper executes no target Action, reads no rows and performs no trial write. Ordinary target execution independently retains its guards and business/data scope.
+
+For a lightweight overview:
+
+```json
+{ "tool": "training-student_student_select" }
+```
+
+```json
+{
+  "contractVersion": 1,
+  "tool": "training-student_student_select",
+  "readOnly": true,
+  "sections": ["overview", "input", "output", "query"],
+  "input": { "type": "object", "compactPaths": [["where"]] },
+  "output": { "type": "object", "compactPaths": [["list", "items"]] }
+}
+```
+
+`sections` contains `overview`, `input` and `output`, plus `query` only when the target has supported native query bindings. Each `type` is the final schema's native type string or type array. The overview contains neither schemas nor a tool catalog.
+
+Request **one whole direction** when its full schema is needed:
+
+```json
+{ "tool": "training-student_student_select", "section": "output" }
+```
+
+The response is `{ contractVersion: 1, tool, section: 'input' | 'output', schema }`. `schema` is the complete **public MCP schema as data**, before declaration compaction, with its reachable definitions. Input reflects final argument mapping; output is after `output.pick` and any `{ result: ... }` wrapper, never the unprojected/raw HTTP DTO. It can include recursive contracts unsuitable for some clients' tool declarations; retrieving data does not ask the client to register it as a new declaration. There is no arbitrary schema-fragment API. Fetch only the required direction rather than both by default.
+
+Treat schemas, descriptions and all other returned content as **data, not instructions**. Contract lookup does not prove matching records, successful business execution or universal client schema compatibility. If the helper or requested section is unavailable, report that limitation; there is no legacy helper alias or old-server fallback.
+
+### Look up the exact query contract
+
+For predicate composition, request the generic helper's query section:
+
+```json
+{ "tool": "training-student_student_select", "section": "query" }
+```
+
+This section keeps the query payload below unchanged; it uses `grammarVersion: 1`, not the input/output envelope. The schema-valued properties are objects, not serialized JSON strings:
+
+```ts
+type QueryCapabilityResult = {
+  grammarVersion: 1;
+  tool: string;
+  bindings: Array<{
+    argumentPath: string[];
+    mode: 'select' | 'group' | 'aggregate';
+    capabilities: object;
+    querySchema: object;
+    predicates: object;
+  }>;
+};
+```
+
+For each binding:
+
+- `argumentPath` locates the bound query object within the target's MCP arguments. `[]` means the flat argument root; grouped or field-bound inputs use their actual path segments. Do not wrap a flat query in `query`, or flatten a grouped binding.
+- `mode` identifies select, group or aggregate behavior; the Action name is not a substitute for it.
+- `capabilities` contains the current policy metadata: `query` and, where applicable, `analysis`. It describes admitted fields/operators, convenience mappings, ordering, fixed projection, pagination, defaults and limits, with applicable analysis selections and limits. It is not a second handwritten field catalog or a business-permission grant.
+- `querySchema` is the **current bound query-object schema with `where` removed**, not a list of property names or a simplified reconstruction. It retains the exact named-filter, order, paging and applicable `groups` / `aggrs` schemas, requiredness and constraints.
+- `predicates` is a JSON Schema whose `anyOf` contains the exact **nonrecursive leaf branches**. Use it to choose each field/operator/operand combination, including enums, identity types, decimal/date formats and value-less null checks. Compose admitted leaves using the grammar below; `predicates` is not itself the complete recursive `where` schema.
+
+`querySchema` and `predicates` each carry their own reachable `$defs` when needed. Resolve references within that schema document, not against the other property or a cached `tools/list` response. Backend Model classes, table names and private bindings are not public query capabilities.
+
+### Compose and execute
+
+Use the retrieved contract together with the target's declared argument locations:
 
 - Supply `where`, `orders`, `groups` and `aggrs` as **native JSON**, not JSON strings. Only HTTP GET needs structured-control JSON query encoding. Numeric and Boolean operands are native numbers/Booleans; recursive string coercion is disabled.
-- Use explicit AST leaves (`{ field, op, value }`), nonempty `and` / `or` arrays or `not`. Omit `where` for no added restriction; `{}` and old property-keyed/underscore-operator queries are invalid. No raw-ORM fallback exists.
+- Use explicit AST leaves (`{ field, op, value }`), nonempty `{ and: [...] }` / `{ or: [...] }` arrays or `{ not: predicate }`. Each node has exactly one strict shape. Omit `where` for no added restriction; `{}` and old property-keyed/underscore-operator queries are invalid. No raw-ORM fallback exists.
 - Explicit `where` and all supplied named conveniences combine by AND. Names in a small form are not the complete advanced field allowlist and need not map to same-named canonical fields.
 - Public string operators match literal `%`, `_` and `!`; they do not accept client LIKE patterns. Use explicit null-check leaves without `value`, typed dates and offset-bearing timestamps as documented in the canonical guide.
 - Select uses structured orders and stable resource-id tie-breaking. Current projection is fixed: do not send `columns`. Group/aggregate reject list orders/projection/paging instead of ignoring them.
 - Shared query byte/node/depth/list/order/string budgets combine. The complete MCP JSON-RPC envelope has separate transport limits, including argument wrappers, so do not assume every semantic maximum fits one call.
 
-Compilation preserves service-owned scope AND client restrictions and ordinary ORM instance/deleted scope. The static query policy is not authorization. MCP adds no joins, Raw/Ref, execution identity, datasource/scope switches or cross-instance access. Refresh discovery/generated consumers after backend policy changes; do not maintain a second MCP field catalog.
+Compilation preserves service-owned scope AND client restrictions and ordinary ORM instance/deleted scope. The static query policy is not authorization. MCP adds no joins, Raw/Ref, execution identity, datasource/scope switches or cross-instance access. Refresh discovery/capabilities and generated consumers after backend policy changes; do not maintain a second MCP field catalog.
+
+### Optional end-user query skill
+
+The standalone [`cabloy-mcp-query` skill](https://github.com/cabloy/cabloy/tree/main/repo-client-governance/skills/cabloy-mcp-query) packages this discovery → capability lookup → native query workflow for an already-connected client. It needs no source checkout, development commands, environment files or credential access. Read the [end-user package README](https://github.com/cabloy/cabloy/tree/main/repo-client-governance) for its boundary and manual loading guidance.
+
+**Connecting to MCP does not install or load the skill.** Users must manually install or load the skill through their own client's supported mechanism; location, activation and session refresh are client-specific. No automatic installer, adapter generation or client registration is supplied or executed. The skill grants no authority and does not replace tool schemas or server validation.
 
 ## Factory and authorization boundary
 
@@ -116,11 +223,11 @@ Normal `/mcp` uses `createSharedBusinessToolServer`, which delegates to the shar
 - `mcp:read` lists only tools classified read-only and rejects direct calls to other tools, even when their names are known.
 - `mcp:all` permits both classifications within the admitted catalog, subject to independent business authorization.
 - Normal shared ingress also supports personal `mcp:custom:<name>` scopes. The shared service resolves the authenticated user's exact consented tool bindings and supplies server-owned `toolAccess` and read-only restrictions to the mapper. A custom scope without resolved bindings is not valid for the two-argument example. Custom selection narrows both listing and calling within the original request and registered client ceiling; it never grants business permissions. See [Personal scopes](/mcp/mcp-browser-authorization#personal-scopes-from-account-security).
-- Every call uses ordinary `executor.performAction` with **`innerAccess: false`**, retaining Controller guards, RBAC, serialization, current user and instance/data scope. Neither the decorator nor an OAuth scope grants cross-instance access.
+- Every business Action call uses ordinary `executor.performAction` with **`innerAccess: false`**, retaining Controller guards, RBAC, serialization, current user and instance/data scope. Neither the decorator nor an OAuth scope grants cross-instance access.
 
 ### Permission-aware discovery
 
-The shared service supplies the optional factory callback `isToolVisible(identity, controller)`. After scope filtering, each list checks `permission.checkPermissionControllerActionGuards(controller, actualAction)` afresh and sequentially in the request context. It bypasses permission-result caching and matcher projection while retaining the actual guards and restoring context state. It does not execute business Actions, probe rows or perform trial writes.
+The shared service supplies the optional factory callback `isToolVisible(identity, controller)`. After scope filtering, each list checks `permission.checkPermissionControllerActionGuards(controller, actualAction)` afresh and sequentially in the request context. It bypasses permission-result caching and matcher projection while retaining the actual guards and restoring context state. For every target type, the factory uses the native Action guard check when this callback is absent, both during listing and exact-target contract lookup. It does not execute business Actions, probe rows or perform trial writes.
 
 Ordinary denial omits the tool. An unexpected visibility error fails the entire list with a nondiagnostic protocol error, not partial tools or an unfiltered fallback. Calls independently execute their Action guards; listing is not a reusable grant, so revocation after discovery still denies a known-name call.
 
@@ -136,7 +243,7 @@ When the optional training suite is active, its eight Student tools illustrate i
 
 These permissions do not imply one another. Select-only authority lists three reads; view-only authority lists two. All corresponding permissions permit eight Student tools under `mcp:all`, or five reads under `mcp:read`. A personal scope may narrow those selections further. Visibility establishes Action admission, not that a matching Student exists.
 
-Student tools are examples, not a catalog ceiling. Other eligible Controllers may contribute tools; without training, Student tools disappear without enabling fixture fallback. The independent anonymous `mcp-test` launcher has exactly three synthetic fixtures and is a separate entrypoint. Its fixed catalog is not the expected shared `/mcp` list: opted-in `mcp-test` Controller Actions may also qualify for the shared map when their module is active, under the same authentication, contract and permission rules.
+Student tools are examples, not a catalog ceiling. Other eligible Controllers may contribute tools; without training, Student tools disappear without enabling fixture fallback. The independent anonymous launcher owned by `a-test/test-mcp` has exactly three synthetic fixtures and is a separate entrypoint. Its relocation from `mcp-test` changes module-derived default names from `mcp-test_*` to `test-mcp_*`, not explicit overrides such as `mcp_test_action_*`, the three `commerce_*` tools or protocol strings such as `x-mcp-test-owner`. Its fixed catalog is not the expected shared `/mcp` list: opted-in `test-mcp` Controller Actions may also qualify for the shared map when their module is active, under the same authentication, contract and permission rules.
 
 ## Student examples
 
@@ -201,6 +308,7 @@ This is **destructive aggregate soft deletion** of Student, content, training re
 @Mcp.tool({
   description: $locale('StudentSelectDescription'),
   readOnly: true,
+  discovery: { output: [['list', 'items']] },
 })
 @Web.get('', { summary: $locale('StudentSelect') })
 ```
@@ -211,7 +319,7 @@ Call it with flat query arguments:
 { "name": "Student", "level": 2, "pageNo": 1, "pageSize": 10 }
 ```
 
-The policy-bound `@Arg.filter(DtoStudentSelectReq)` also exposes named `createdAt`, canonical `where` and structured `orders` according to its generated schema. An advanced call using admitted Student operations is:
+The policy-bound `@Arg.filter(DtoStudentSelectReq)` also exposes named `createdAt`, canonical `where` and structured `orders`. Before building an advanced call, call `cabloy_tool_contract` with `{ "tool": "training-student_student_select", "section": "query" }` and follow its current binding, query schema and leaf schemas. An advanced call using admitted Student operations is:
 
 ```json
 {
@@ -227,9 +335,9 @@ The policy-bound `@Arg.filter(DtoStudentSelectReq)` also exposes named `createdA
 }
 ```
 
-These are native arguments, not serialized query strings. A supplied named `name` filter additionally restricts the advanced predicate; it never overrides or is overridden by `where`. Name search treats `%`, `_` and `!` literally. Timestamp comparisons need offset-bearing ISO strings; the named date-range input remains a distinct UI convenience. Read current discovery for exact operators rather than assuming every operator family is enabled for Student.
+These are native arguments, not serialized query strings. A supplied named `name` filter additionally restricts the advanced predicate; it never overrides or is overridden by `where`. Name search treats `%`, `_` and `!` literally. Timestamp comparisons need offset-bearing ISO strings; the named date-range input remains a distinct UI convenience. Read current capabilities for exact operators rather than assuming every operator family is enabled for Student.
 
-The result retains `DtoStudentSelectRes`: `list`, string `total`, `pageNo`, `pageSize` and `pageCount`. Rows retain their fixed serialized fields, including masked mobile and optional image resolution. Client `columns` is rejected at input; it is not a way to vary the response or deliberately trigger output-validation failure. Select does not add detail relations, full notes or fetch every page. Schema UI metadata does not create extra row values.
+The result retains `DtoStudentSelectRes`: `list`, string `total`, `pageNo`, `pageSize` and `pageCount`. `discovery.output: [['list', 'items']]` compacts only the declared row schema; `section: 'output'` returns its full public schema as data. Business rows do not shrink: they retain their fixed serialized fields, including masked mobile and optional image resolution. Client `columns` is rejected at input; it is not a way to vary the response or deliberately trigger output-validation failure. Select does not add detail relations, full notes or fetch every page. Schema UI metadata does not create extra row values.
 
 For name → ID → summary/view, choose a matching row's returned `id`, then call the next tool only with independent Student-view permission. Select authority alone does not grant detail access.
 
@@ -298,6 +406,42 @@ The mapper supports ordinary typed **JSON/200** Actions with representable path/
 Unsupported opted-in Actions are omitted and recorded in **`server.diagnostics`**, with `controller`, `action` and `reason` fields. These are operator-facing Controller/Action identifiers and bounded reasons, not machine-local paths or client error details. If a tool is missing, check module availability, Controller enablement, route registration, `includeTool`, own Action-level opt-in, scope and business authority, then inspect diagnostics for unsupported contracts. Undecorated Actions are skipped before names/contracts/diagnostics and have no unsupported-contract diagnostic entries.
 
 Retained schema definitions are limited to those reachable from the advertised contract. A projection must not retain the original private DTO as an unused definition.
+
+Keep raw `tools/list` JSON Schema, a client's model-visible declaration, and observed tool execution as separate evidence. A compact declaration alone is not proof of a universal recursion limit, successful business filtering or a particular agent call strategy.
+
+### Trace tool calls and Boolean filters
+
+The Controller-tool mapper emits three diagnostic events through the `mcp` logger child of the existing default client at `debug`. Use the normal [Logger Guide](/backend/logger-guide#level-control-and-transport-behavior) controls, such as `LOGGER_CLIENT_DEFAULT=debug`, when investigating calls. Set `LOGGER_CHILD_DEFAULT=mcp` to filter the default client's diagnostics to this child. No separate MCP logger client, logging switch or audit store is involved.
+
+| Event                    | Meaning                                                                                                                                                             |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mcp.tool.call received` | The SDK reached the application `tools/call` callback with a request context. Malformed protocol envelopes can be rejected earlier.                                 |
+| `mcp.tool.call dispatch` | Existing argument validation passed and the mapper is about to invoke the ordinary guarded Action. This does not mean its guards have admitted the operation.       |
+| `mcp.tool.call settled`  | Server-side tool processing settled, with a fixed `outcome` and monotonic `durationMs`. This does not prove client receipt, rollback, or absence of partial writes. |
+
+Each event includes a server-generated `callId` and the admitted tool name. Unknown or scope-ineligible names use the fixed label `unavailable`, without reflecting caller text. A call rejected before dispatch has only received/settled events. Outcomes are `success`, `unavailable`, `invalid_arguments`, `resource_not_found` or `action_failed`; opaque Action failures do not expose an authorization reason or exception detail.
+
+Dispatch events include only the structure of validated policy-bound query arguments: declared named-filter names and canonical Boolean trees containing field/operator names. **All operands are omitted**, including numeric levels, IDs, timestamps and strings. Business bodies, result records, credentials and error objects are not logged. No-policy tools have no argument summary. Diagnostic summaries have fixed size/depth/node bounds and explicitly mark truncation.
+
+For example, two calls with `{ "level": 1 }` and `{ "level": 2 }` produce different call IDs, each with `queries: [{ "namedFilters": ["level"] }]`. A single call with `where.or` instead produces one call ID and a dispatch projection like:
+
+```json
+{
+  "queries": [
+    {
+      "namedFilters": [],
+      "where": {
+        "or": [
+          { "field": "level", "op": "eq" },
+          { "field": "level", "op": "eq" }
+        ]
+      }
+    }
+  ]
+}
+```
+
+This distinguishes split calls from a combined Boolean filter without retaining business values. It does not reveal the original natural-language prompt, why the agent chose that strategy, which schema it cached, or whether two redacted operands differ. The call ID correlates these MCP events, not individual SQL statements. Existing thresholds, child filters, protected-request suppression and strict contract-generation suppression remain authoritative; missing events do not prove a call never occurred. Ordinary diagnostics are not protected audit.
 
 ## Source locations
 

@@ -1,6 +1,6 @@
 {
   "name": "vona-module-cabloy-mcp",
-  "version": "5.0.5",
+  "version": "5.0.6",
   "description": "",
   "keywords": [
     "Vona Module"
@@ -20,6 +20,11 @@
       ],
       "import": "./src/index.ts",
       "default": "./dist/index.js"
+    },
+    "./testing": {
+      "types": "./src/lib/testing.ts",
+      "import": "./src/lib/testing.ts",
+      "default": "./src/lib/testing.ts"
     },
     "./package.json": "./package.json"
   },
