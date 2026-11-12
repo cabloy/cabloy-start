@@ -1,0 +1,117 @@
+export default {
+  AuthorizeMcpAccess: 'Authorize MCP access',
+  LoadingAuthorizationRequest: 'Loading authorization request…',
+  AuthorizationRequestUnavailable:
+    'This authorization request is invalid, expired, or no longer available. Start again from the application.',
+  AuthorizationConsentHelp:
+    'Review the application and the access it is requesting before continuing.',
+  Application: 'Application',
+  Resource: 'Resource',
+  RequestedScopes: 'Requested scopes',
+  RequestExpires: 'Request expires',
+  AuthorizationReadScopeHelp:
+    'mcp:read allows read-only MCP tools. Your existing account permissions still apply.',
+  AuthorizationAllScopeHelp:
+    'mcp:all allows all MCP capabilities, including changes to data, within your existing account permissions. It does not grant administrator access.',
+  Deny: 'Deny',
+  Approve: 'Approve',
+  McpAuthorizations: 'MCP authorizations',
+  McpAuthorizationsHelp: 'Manage applications authorized to use MCP with your account.',
+  McpAuthorizationsRetention:
+    'Expired and revoked records may be automatically removed. This is not a permanent history.',
+  McpAuthorizationsEmpty: 'You have no saved MCP authorizations.',
+  McpAuthorizationsLoading: 'Loading MCP authorizations…',
+  McpAuthorizationsLoadFailed: 'MCP authorizations could not be loaded. Please try again.',
+  McpAuthorizationRevokeConfirm:
+    'Revoke this authorization? The application will no longer be able to use its access token, refresh token, or authorization code.',
+  McpAuthorizationDeleteConfirm:
+    'Delete this authorization record? Its tokens and authorization code will stop working. The application registration and your sign-in account will not be deleted.',
+  McpAuthorizationStatus: 'Authorization status',
+  McpAuthorizationCodeReady: 'Awaiting token exchange',
+  McpAuthorizationTokenActive: 'Issued (check expiry below)',
+  McpAuthorizationDenied: 'Denied',
+  McpAuthorizationRevoked: 'Revoked',
+  McpAuthorizationPending: 'Awaiting consent',
+  McpAuthorizationCreated: 'Created',
+  McpAuthorizationAccessExpires: 'Access token expires',
+  McpAuthorizationRefreshExpires: 'Refresh authorization expires',
+  McpAuthorizationRefreshDisabled: 'Refresh not enabled',
+  McpAuthorizationNotIssued: 'Not issued',
+  McpAuthorizationClientId: 'Client ID',
+  McpAuthorizationsPage: 'Page %d of %d · %s records',
+  Refresh: 'Refresh',
+  Retry: 'Retry',
+  Revoke: 'Revoke',
+  Delete: 'Delete',
+  Previous: 'Previous',
+  Next: 'Next',
+  Save: 'Save',
+  Cancel: 'Cancel',
+  Edit: 'Edit',
+  McpPersonalScopes: 'MCP scopes',
+  McpManageScopes: 'Manage scopes',
+  McpPersonalScopesHelp: 'Choose reusable sets of tools for your own MCP authorizations.',
+  McpScopeCreate: 'Create scope',
+  McpScopeEdit: 'Edit scope',
+  McpScopeNameHelp:
+    'Use 1–100 letters (A–Z, a–z), digits, underscores, or hyphens. Surrounding whitespace is trimmed and case is preserved. For example, test becomes mcp:custom:test.',
+  McpScopeTools: 'Tools',
+  McpScopeToolsHelp: 'Select exact tools by name, controller, and action.',
+  McpScopeToolSearch: 'Search tools',
+  McpScopeSelectedTools: 'Selected tools: %s',
+  McpScopeNoTools: 'No tools available.',
+  McpScopeOtherTools: 'Other tools',
+  McpToolReadOnly: 'Read-only',
+  McpToolWrites: 'May change data',
+  McpToolMissing: 'Unavailable in current catalog',
+  McpScopeMissingToolsHelp:
+    'Some selected tools are no longer available. Remove them before saving; a reused tool name does not replace its original action.',
+  McpScopeAccessChangeWarning:
+    'Renaming changes the scope identifier. Changing the name or tool selection revokes existing authorizations using this scope. Editing only the description does not.',
+  McpScopeAccessChangeConfirm:
+    'Change the name or tools in this scope? Existing authorizations using it will be revoked, including their tokens and authorization codes.',
+  McpScopeDeleteConfirm:
+    'Delete this scope? Existing authorizations using it will be revoked, including their tokens and authorization codes.',
+  McpScopesLoading: 'Loading personal MCP scopes…',
+  McpScopesLoadFailed: 'Personal scopes or the tool catalog could not be loaded. Please try again.',
+  McpScopesEmpty: 'You have no personal MCP scopes yet.',
+  McpEffectiveScope: 'Scope to grant',
+  McpEffectiveScopeHelp:
+    'Choose one scope within the requested and application limits. The application receives only the selected scope.',
+  McpScopeOutsideRequested: 'This option exceeds the requested scope.',
+  McpScopeOutsideClient: 'This option exceeds the application’s registered scope.',
+  McpScopeUnavailable: 'One or more tools in this scope are no longer available.',
+  McpScopeNotAllowed: 'This option is not available for this authorization request.',
+  McpScopeNoAllowedOption:
+    'No scope can be granted for this request. Deny it and start a new request from the application.',
+  McpGrantedScope: 'Granted scope',
+  Close: 'Close',
+  McpAccessTokens: 'MCP access tokens',
+  McpAccessTokensHelp: 'Create a personal access token to connect an MCP client with your account.',
+  McpAccessTokenRetention:
+    'Expired and revoked tokens remain listed until you delete them. Tokens cannot be edited or refreshed.',
+  McpAccessTokenCreate: 'Create access token',
+  McpAccessTokenCreated: 'Access token created',
+  McpAccessTokenCreateFailed:
+    'The access token could not be created. Check the form and try again.',
+  McpAccessTokenScopeHelp:
+    'mcp:read allows read-only tools. Choose one of your personal scopes for a specific set of tools. Your account permissions still apply.',
+  McpAccessTokenLifetimeDays: 'Lifetime (days)',
+  McpAccessTokenExpiryHelp:
+    'Duration in days, starting at creation. The default is 7 days; there is no product maximum.',
+  McpAccessTokenOneTimeHelp:
+    'Copy this token now and keep it secure. It is shown only once and cannot be recovered after closing this dialog. Anyone with the token can use the granted access.',
+  McpAccessTokenSecret: 'Access token',
+  McpAccessTokenResource: 'MCP server URL',
+  McpAccessTokenCopySecret: 'Copy token',
+  McpAccessTokenCopyResource: 'Copy server URL',
+  McpAccessTokenDeleteConfirm:
+    'Delete this access token? It will stop working immediately. This cannot be undone.',
+  McpAccessTokenActive: 'Active',
+  McpAccessTokenExpired: 'Expired',
+  McpAccessTokenRevoked: 'Revoked',
+  McpAccessTokensLoading: 'Loading MCP access tokens…',
+  McpAccessTokensLoadFailed:
+    'The token list could not be updated. Retry to load the latest records.',
+  McpAccessTokensEmpty: 'You have no personal MCP access tokens yet.',
+};
