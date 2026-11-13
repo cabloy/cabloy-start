@@ -1482,8 +1482,9 @@ for (const flavor of ['admin', 'web'] as const) {
       await link.click();
       await header.expectClosed();
       await expect(page).toHaveURL(
-        flavor === 'admin' ? /\/home\/user\/account$/ : /\/login(?:\?|$)/,
+        flavor === 'admin' ? '/admin/home/user/account' : /\/login(?:\?|$)/,
       );
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', flavor);
       await expect(page.getByRole('heading', { name: destination, exact: true })).toBeVisible();
       await expectNoHeaderOverflow(page);
       expect(consoleErrors).toEqual([]);

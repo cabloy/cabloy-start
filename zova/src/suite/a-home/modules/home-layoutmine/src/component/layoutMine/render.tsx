@@ -49,7 +49,10 @@ export class RenderLayoutMine extends BeanRenderBase {
             {this.scope.locale.PersonalCenter()}
           </ZButton>
           <div
-            ref={ref => this.setHeaderActionsElement((ref as HTMLDivElement | null) ?? undefined)}
+            ref={ref => {
+              if (!this.ctx.disposed)
+                this.setHeaderActionsElement?.((ref as HTMLDivElement | null) ?? undefined);
+            }}
             class="header-actions"
             data-testid="header-actions"
           >
