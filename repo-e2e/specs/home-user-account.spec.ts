@@ -7,9 +7,11 @@ import {
   loginAsAccount,
   registerAccountUser,
   removeAccountFixture,
+  requestApi,
+  runCleanup,
 } from './helpers/cabloy-admin-api.ts';
 
-// Account credentials and refresh responses must not enter retained failure artifacts.
+// Account credentials, refresh responses, and one-time MCP secrets must not enter failure artifacts.
 test.use({ trace: 'off', video: 'off', screenshot: 'off' });
 
 const accountPath = '/home/user/account';
@@ -20,6 +22,47 @@ const passportRegisterApiPath = '/api/home/user/passport/register';
 const passportCurrentApiPath = '/api/home/user/passport/current';
 const accountApiPath = '/api/home/user/account/current';
 const accountProfileApiPath = '/api/home/user/account/profile';
+const accessTokensPath = '/cabloy/mcp/accessTokens';
+const accessTokenApiPath = '/api/mcp/auth/accessToken';
+const minePages = [
+  { title: 'Account Settings', path: accountPath },
+  { title: 'MCP scopes', path: '/cabloy/mcp/scopes' },
+  { title: 'MCP authorizations', path: '/cabloy/mcp/authorizations' },
+  { title: 'MCP access tokens', path: accessTokensPath },
+] as const;
+
+async function expectNoHorizontalOverflow(page: Page) {
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      ),
+    )
+    .toBeLessThanOrEqual(1);
+}
+
+async function expectTokenSecretAbsent(page: Page, secret: string) {
+  // Keep assertions boolean-only so a failure cannot retain the credential or input values.
+  await expect
+    .poll(() =>
+      page.evaluate(value => {
+        const inputs = Array.from(
+          document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea'),
+          input => input.value,
+        );
+        return (
+          !document.querySelector('[data-testid="mcp-access-token-reveal"]') &&
+          !document.documentElement.outerHTML.includes(value) &&
+          !JSON.stringify({
+            inputs,
+            local: { ...localStorage },
+            session: { ...sessionStorage },
+          }).includes(value)
+        );
+      }, secret),
+    )
+    .toBe(true);
+}
 
 function waitForApiResponse(page: Page, method: string, pathname: string, requireOk = true) {
   return page.waitForResponse(response => {
@@ -392,18 +435,214 @@ test(
       const pageErrors = collectPageErrors(page);
       const consoleErrors = collectConsoleErrors(page);
       await page.goto('/login?returnTo=%2Fhome%2Fuser%2Faccount', { waitUntil: 'load' });
-      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
-      await loginAsAccountUser(page, account.username, account.password);
-      await expect(page).toHaveURL(accountPath);
+      await loginAccountFromPage(page, account, accountPath);
       const response = await page.reload({ waitUntil: 'load' });
       expect(response?.ok()).toBeTruthy();
-      expect(await response!.text()).toContain('Account Settings');
+      const html = await response!.text();
+      expect(html).toContain('Account Settings');
+      expect(html).toContain('data-testid="layout-mine"');
+      expect(html).toContain('data-testid="mine-navigation"');
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
+      await expect(page.getByTestId('layout-mine')).toBeVisible();
       await expect(page.getByRole('heading', { name: 'Account Settings' })).toBeVisible();
+      const navigation = page.getByTestId('mine-navigation');
+      await expect(navigation.getByRole('link')).toHaveText(minePages.map(item => item.title));
+      for (const item of minePages) {
+        await expect(
+          navigation.getByRole('link', { name: item.title, exact: true }),
+        ).toHaveAttribute('href', item.path);
+      }
+      await expect(
+        navigation.getByRole('link', { name: 'Account Settings', exact: true }),
+      ).toHaveAttribute('aria-current', 'page');
+      await expect(navigation.locator('[aria-current="page"]')).toHaveCount(1);
+      for (const item of minePages.slice(1)) {
+        const link = navigation.getByRole('link', { name: item.title, exact: true });
+        await link.click();
+        await expect(page).toHaveURL(item.path);
+        await expect(page.getByRole('heading', { name: item.title, exact: true })).toBeVisible();
+        await expect(link).toHaveAttribute('aria-current', 'page');
+        await expect(navigation.locator('[aria-current="page"]')).toHaveCount(1);
+        const reloaded = await page.reload({ waitUntil: 'load' });
+        expect(reloaded?.ok()).toBeTruthy();
+        const reloadedHtml = await reloaded!.text();
+        expect(reloadedHtml).toContain('data-testid="layout-mine"');
+        expect(reloadedHtml).toContain('data-testid="mine-navigation"');
+        await expect(page).toHaveURL(item.path);
+        await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
+        await expect(page.getByRole('heading', { name: item.title, exact: true })).toBeVisible();
+        await expect(link).toHaveAttribute('aria-current', 'page');
+        await expect(navigation.locator('[aria-current="page"]')).toHaveCount(1);
+      }
+      await expectNoHorizontalOverflow(page);
+
+      const headerActions = page.getByTestId('header-actions');
+      const more = headerActions.getByTestId('header-actions-more');
+      const panel = headerActions.locator('.header-actions-panel');
+      const toggle = page.getByTestId('mine-menu-toggle');
+      await expect(more).toBeHidden();
+      await expect(panel).toBeVisible();
+      await page.setViewportSize({ width: 390, height: 844 });
+      await expect(navigation).toBeHidden();
+      await expect(toggle).toBeVisible();
+      await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+      await expect(more).toBeVisible();
+      await expect(more).toHaveAttribute('aria-expanded', 'false');
+      await expect(panel).toBeHidden();
+      await expectNoHorizontalOverflow(page);
+
+      const list = await openUserMenu(page, account.username);
+      await expectNoHorizontalOverflow(page);
+      const accountButton = headerActions.getByRole('button', { name: 'Account', exact: true });
+      // VMenu teleports its list outside the header; Escape must close only that overlay first.
+      await list.getByRole('link', { name: 'Account Settings', exact: true }).focus();
+      await page.keyboard.press('Escape');
+      await expect(list).toBeHidden();
+      await expect(accountButton).toHaveAttribute('aria-expanded', 'false');
+      await expect(accountButton).toBeFocused();
+      await expect(panel).toBeVisible();
+      await expect(more).toHaveAttribute('aria-expanded', 'true');
+      await accountButton.press('Escape');
+      await expect(panel).toBeHidden();
+      await expect(more).toHaveAttribute('aria-expanded', 'false');
+      await expect(more).toBeFocused();
+      const heading = page.getByRole('heading', { name: 'MCP access tokens', exact: true });
+      await more.click();
+      await expect(panel).toBeVisible();
+      await expectNoHorizontalOverflow(page);
+      await heading.click({ position: { x: 0, y: 0 } });
+      await expect(panel).toBeHidden();
+      await expect(more).toHaveAttribute('aria-expanded', 'false');
+
+      await toggle.click();
+      await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+      await expect(navigation).toBeVisible();
+      await expectNoHorizontalOverflow(page);
+      await more.click();
+      await expect(panel).toBeVisible();
+      await expect(navigation).toBeHidden();
+      await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+      await toggle.click();
+      await expect(navigation).toBeVisible();
+      await expect(panel).toBeHidden();
+      await expect(more).toHaveAttribute('aria-expanded', 'false');
+      await navigation.getByRole('link', { name: 'Account Settings', exact: true }).click();
+      await expect(page).toHaveURL(accountPath);
+      await expect(page.getByRole('heading', { name: 'Account Settings' })).toBeVisible();
+      await expect(navigation).toBeHidden();
+      await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+      await expectNoHorizontalOverflow(page);
       expect(pageErrors).toEqual([]);
       expect(consoleErrors).toEqual([]);
     } finally {
       if (account) await removeAccountFixture(request, account);
+    }
+  },
+);
+
+test(
+  'ATP-MINE-TOKEN-01: Browser Back clears the one-time token reveal before revisiting Mine',
+  { tag: ['@account', '@web', '@flow'] },
+  async ({ page, request }, testInfo) => {
+    let account: RegisteredAccount | undefined;
+    let tokenId: number | string | undefined;
+    const name = `e2e-fixture-mine-token-${testInfo.workerIndex}-${crypto.randomUUID()}`;
+    try {
+      account = await registerAccountUser(
+        request,
+        testInfo,
+        'e2e-fixture-home-account',
+        registered => {
+          account = registered;
+        },
+      );
+      const pageErrors = collectPageErrors(page);
+      const consoleErrors = collectConsoleErrors(page);
+      await page.goto('/login?returnTo=%2Fhome%2Fuser%2Faccount', { waitUntil: 'load' });
+      await loginAccountFromPage(page, account, accountPath);
+      const navigation = page.getByTestId('mine-navigation');
+      await navigation.getByRole('link', { name: 'MCP access tokens', exact: true }).click();
+      await expect(page).toHaveURL(accessTokensPath);
+      await page.getByTestId('mcp-access-token-create').click();
+      await expect(page.getByTestId('mcp-access-token-create-form')).toBeVisible();
+      // Vuetify test IDs belong to the field wrappers, not their native input elements.
+      await page.getByTestId('mcp-access-token-name').locator('input').fill(name);
+      const created = waitForApiResponse(page, 'POST', `${accessTokenApiPath}/createMine`);
+      await page.getByTestId('mcp-access-token-create-submit').click();
+      const response = await created;
+      // Browser JSON mutations use the standard response envelope; fixture GETs return raw data.
+      const token = (await response.json()).data as {
+        id: number | string;
+        accessToken: string;
+      };
+      tokenId = token.id;
+      expect(tokenId != null).toBe(true);
+      expect(typeof token.accessToken === 'string' && token.accessToken.length > 0).toBe(true);
+      expect(response.headers()['cache-control']).toContain('no-store');
+      // Boolean-only assertions avoid retaining the reveal dialog's accessibility snapshot.
+      await expect.poll(() => page.getByTestId('mcp-access-token-reveal').isVisible()).toBe(true);
+      expect(
+        await page
+          .getByTestId('mcp-access-token-secret')
+          .locator('textarea:not([aria-hidden="true"])')
+          .evaluate(
+            (input: HTMLTextAreaElement, secret) => input.readOnly && input.value === secret,
+            token.accessToken,
+          ),
+      ).toBe(true);
+
+      // Leave the modal open: browser history, not its Close action, must clear the secret.
+      await page.goBack({ waitUntil: 'load' });
+      await expectTokenSecretAbsent(page, token.accessToken);
+      await expect(page).toHaveURL(accountPath);
+      await expect(page.getByRole('heading', { name: 'Account Settings' })).toBeVisible();
+      await navigation.getByRole('link', { name: 'MCP access tokens', exact: true }).click();
+      await expectTokenSecretAbsent(page, token.accessToken);
+      await expect(page).toHaveURL(accessTokensPath);
+      const row = page.getByTestId('mcp-access-token-row').filter({ hasText: name });
+      await expect(row).toHaveCount(1);
+      await expect(row).toHaveAttribute('data-mcp-access-token-id', String(tokenId));
+      await expect(row).toContainText('mcp:read');
+      const reloaded = await page.reload({ waitUntil: 'load' });
+      expect(reloaded?.ok()).toBeTruthy();
+      expect((await reloaded!.text()).includes(token.accessToken)).toBe(false);
+      await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
+      await expectTokenSecretAbsent(page, token.accessToken);
+      await expect(row).toBeVisible();
+      expect(pageErrors).toEqual([]);
+      expect(consoleErrors).toEqual([]);
+    } finally {
+      if (account) {
+        const fixture = account;
+        await runCleanup([
+          async () => {
+            // Recover the exact named token if creation succeeded before its response was read.
+            const mineResponse = await requestApi(request, 'GET', `${accessTokenApiPath}/mine`, {
+              accessToken: fixture.accessToken,
+              params: { pageNo: 1, pageSize: 100 },
+            });
+            expect(mineResponse.ok()).toBe(true);
+            const mine = (await mineResponse.json()) as {
+              list: Array<{ id: number | string; name: string }>;
+            };
+            const owned = mine.list.filter(item =>
+              tokenId === undefined ? item.name === name : String(item.id) === String(tokenId),
+            );
+            for (const item of owned) {
+              const deleted = await requestApi(
+                request,
+                'DELETE',
+                `${accessTokenApiPath}/deleteMine/${item.id}`,
+                {
+                  accessToken: fixture.accessToken,
+                },
+              );
+              expect(deleted.ok()).toBe(true);
+            }
+          },
+          async () => removeAccountFixture(request, fixture),
+        ]);
+      }
     }
   },
 );
@@ -570,8 +809,33 @@ test(
     const list = await openUserMenu(page, 'admin');
     await expect(list.locator(':scope > .v-list-item')).toHaveText(['Account Settings', 'Logout']);
     await list.getByRole('link', { name: 'Account Settings', exact: true }).click();
-    await expect(page).toHaveURL(/\/home\/user\/account$/);
+    await expect(page).toHaveURL('/admin/home/user/account');
     await expect(page.getByRole('heading', { name: 'Account Settings' })).toBeVisible();
+    await expect(page.getByTestId('layout-mine')).toBeVisible();
+    const navigation = page.getByTestId('mine-navigation');
+    await expect(navigation.getByRole('link')).toHaveText(minePages.map(item => item.title));
+    for (const item of minePages) {
+      await expect(navigation.getByRole('link', { name: item.title, exact: true })).toHaveAttribute(
+        'href',
+        `/admin${item.path}`,
+      );
+    }
+    const scopes = navigation.getByRole('link', { name: 'MCP scopes', exact: true });
+    await scopes.click();
+    await expect(page).toHaveURL('/admin/cabloy/mcp/scopes');
+    await expect(page.getByRole('heading', { name: 'MCP scopes', exact: true })).toBeVisible();
+    await expect(scopes).toHaveAttribute('aria-current', 'page');
+    await expect(navigation.locator('[aria-current="page"]')).toHaveCount(1);
+    const response = await page.reload({ waitUntil: 'load' });
+    expect(response?.ok()).toBeTruthy();
+    const html = await response!.text();
+    expect(html).toContain('data-testid="layout-mine"');
+    expect(html).toContain('data-testid="mine-navigation"');
+    await expect(page).toHaveURL('/admin/cabloy/mcp/scopes');
+    await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
+    await expect(navigation).toBeVisible();
+    await expect(scopes).toHaveAttribute('aria-current', 'page');
+    await expect(page.getByRole('heading', { name: 'MCP scopes', exact: true })).toBeVisible();
     expect(pageErrors).toEqual([]);
   },
 );

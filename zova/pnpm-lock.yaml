@@ -395,6 +395,9 @@ importers:
       zova-module-home-layoutempty:
         specifier: workspace:^
         version: link:src/suite/a-home/modules/home-layoutempty
+      zova-module-home-layoutmine:
+        specifier: workspace:^
+        version: link:src/suite/a-home/modules/home-layoutmine
       zova-module-home-layoutweb:
         specifier: workspace:^
         version: link:src/suite/a-home/modules/home-layoutweb
@@ -1666,6 +1669,9 @@ importers:
       zova-module-home-layoutempty:
         specifier: workspace:^
         version: link:modules/home-layoutempty
+      zova-module-home-layoutmine:
+        specifier: ^5.0.0
+        version: link:modules/home-layoutmine
       zova-module-home-layoutweb:
         specifier: workspace:^
         version: link:modules/home-layoutweb
@@ -1745,6 +1751,25 @@ importers:
         version: 6.1.3
 
   src/suite/a-home/modules/home-layoutempty:
+    devDependencies:
+      clean-package:
+        specifier: ^2.2.0
+        version: 2.2.0
+      rimraf:
+        specifier: ^6.1.3
+        version: 6.1.3
+
+  src/suite/a-home/modules/home-layoutmine:
+    dependencies:
+      zova-module-home-base:
+        specifier: ^5.0.0
+        version: link:../home-base
+      zova-module-start-button:
+        specifier: ^5.0.0
+        version: link:../../../cabloy-start/modules/start-button
+      zova-module-start-image:
+        specifier: ^5.0.0
+        version: link:../../../cabloy-start/modules/start-image
     devDependencies:
       clean-package:
         specifier: ^2.2.0
