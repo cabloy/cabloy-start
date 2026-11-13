@@ -63,7 +63,6 @@ export class StyleLayoutMine extends BeanStyleBase {
         '& .header-action-label': { display: 'none' },
         '& .header-account-name': {
           display: 'block',
-          width: '8rem',
           height: '1.5rem',
           lineHeight: '1.5rem',
           overflow: 'hidden',

@@ -436,13 +436,50 @@ test(
       const consoleErrors = collectConsoleErrors(page);
       await page.goto('/login?returnTo=%2Fhome%2Fuser%2Faccount', { waitUntil: 'load' });
       await loginAccountFromPage(page, account, accountPath);
+      await page.evaluate(() => {
+        const passport = JSON.parse(localStorage.getItem('passport')!);
+        passport.user.displayName = 'stale-local-display-name';
+        localStorage.setItem('passport', JSON.stringify(passport));
+      });
       const response = await page.reload({ waitUntil: 'load' });
       expect(response?.ok()).toBeTruthy();
       const html = await response!.text();
       expect(html).toContain('Account Settings');
       expect(html).toContain('data-testid="layout-mine"');
       expect(html).toContain('data-testid="mine-navigation"');
+      expect(response!.headers()['cache-control']).toBe('private, no-store');
+      expect(html).not.toContain('stale-local-display-name');
+      const serverUser = await page.evaluate(html => {
+        const document = new DOMParser().parseFromString(html, 'text/html');
+        const activator = document.querySelector('[data-header-action="account"]');
+        return {
+          displayName: activator?.querySelector('.header-account-name')?.textContent,
+          hasAvatar: !!activator?.querySelector('.v-avatar'),
+        };
+      }, html);
+      expect(serverUser.displayName).toBe(account.username);
+      expect(serverUser.hasAvatar).toBe(true);
       await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'web');
+      const userActivator = page
+        .getByTestId('header-actions')
+        .locator('[data-header-action="account"]');
+      await expect(userActivator.locator('.header-account-name')).toHaveText(account.username);
+      await expect(userActivator).not.toContainText('stale-local-display-name');
+      await expect
+        .poll(() =>
+          userActivator.locator('.v-avatar img').evaluate(image => ({
+            complete: (image as HTMLImageElement).complete,
+            naturalWidth: (image as HTMLImageElement).naturalWidth,
+          })),
+        )
+        .toMatchObject({ complete: true, naturalWidth: expect.any(Number) });
+      await expect
+        .poll(() =>
+          userActivator
+            .locator('.v-avatar img')
+            .evaluate(image => (image as HTMLImageElement).naturalWidth),
+        )
+        .toBeGreaterThan(0);
       await expect(page.getByTestId('layout-mine')).toBeVisible();
       await expect(page.getByRole('heading', { name: 'Account Settings' })).toBeVisible();
       const navigation = page.getByTestId('mine-navigation');
