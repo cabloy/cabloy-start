@@ -1476,6 +1476,11 @@ export interface components {
           }
         | undefined;
       siteIds: string[];
+      /**
+       * @description MCP Access
+       * @default false
+       */
+      mcpAccess?: boolean;
       /** @default false */
       builtin?: boolean;
     };

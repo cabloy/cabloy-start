@@ -1,20 +1,4 @@
 export interface paths {
-  '/api/auth/mock/authorize': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['AuthMock_authorize'];
-    put?: never;
-    post: operations['AuthMock_authorizePost'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   '/api/captcha/create': {
     parameters: {
       query?: never;
@@ -584,6 +568,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/training/student/group': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Group Students */
+    get: operations['TrainingStudent_group'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/training/student/aggregate': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Aggregate Students */
+    get: operations['TrainingStudent_aggregate'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/training/student/{id}': {
     parameters: {
       query?: never;
@@ -648,534 +666,6 @@ export interface paths {
     put?: never;
     /** Bulk Delete Students */
     post: operations['TrainingStudent_deleteBulk'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/department': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['AdminDepartment_select'];
-    put?: never;
-    post: operations['AdminDepartment_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/department/tree': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['AdminDepartment_tree'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/department/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['AdminDepartment_view'];
-    put?: never;
-    post?: never;
-    delete: operations['AdminDepartment_delete'];
-    options?: never;
-    head?: never;
-    patch: operations['AdminDepartment_update'];
-    trace?: never;
-  };
-  '/api/admin/department/{departmentId}/memberships': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['AdminDepartment_selectMemberships'];
-    put?: never;
-    post: operations['AdminDepartment_createMembership'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/department/{departmentId}/memberships/{membershipId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    delete: operations['AdminDepartment_deleteMembership'];
-    options?: never;
-    head?: never;
-    patch: operations['AdminDepartment_updateMembership'];
-    trace?: never;
-  };
-  '/api/admin/department/{departmentId}/memberships/{membershipId}/primary': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put: operations['AdminDepartment_updateMembershipPrimary'];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/department/{id}/manager': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put: operations['AdminDepartment_updateManager'];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/department/{id}/move': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put: operations['AdminDepartment_move'];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/department/{id}/reorder': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put: operations['AdminDepartment_reorder'];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/department/{id}/activation': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put: operations['AdminDepartment_updateActivation'];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/menu/roleMenu/catalog': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['AdminMenuRoleMenu_catalog'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/menu/roleMenu/roles/{roleId}/configuration': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['AdminMenuRoleMenu_roleConfiguration'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/menu/roleMenu': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: operations['AdminMenuRoleMenu_create'];
-    delete: operations['AdminMenuRoleMenu_delete'];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/menu/roleMenu/batch': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put: operations['AdminMenuRoleMenu_batch'];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/rbac/rbacGrant': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['AdminRbacRbacGrant_select'];
-    put?: never;
-    post: operations['AdminRbacRbacGrant_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/rbac/rbacGrant/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['AdminRbacRbacGrant_view'];
-    put?: never;
-    post?: never;
-    delete: operations['AdminRbacRbacGrant_delete'];
-    options?: never;
-    head?: never;
-    patch: operations['AdminRbacRbacGrant_update'];
-    trace?: never;
-  };
-  '/api/admin/rbac/rbacGrantDepartment': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['AdminRbacRbacGrantDepartment_select'];
-    put?: never;
-    post: operations['AdminRbacRbacGrantDepartment_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/rbac/rbacGrantDepartment/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['AdminRbacRbacGrantDepartment_view'];
-    put?: never;
-    post?: never;
-    delete: operations['AdminRbacRbacGrantDepartment_delete'];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/rbac/rbacPolicy/catalog': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['AdminRbacRbacPolicy_catalog'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/rbac/rbacPolicy/roles/{roleId}/configuration': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['AdminRbacRbacPolicy_roleConfiguration'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/role': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['AdminRole_select'];
-    put?: never;
-    post: operations['AdminRole_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/role/membership-select': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['AdminRole_selectMembershipCandidates'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/role/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['AdminRole_view'];
-    put?: never;
-    post?: never;
-    delete: operations['AdminRole_delete'];
-    options?: never;
-    head?: never;
-    patch: operations['AdminRole_update'];
-    trace?: never;
-  };
-  '/api/admin/role/system-admin/fresh-proof': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: operations['AdminRole_issueSystemAdminFreshProof'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/role/system-admin/revoke/{userId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: operations['AdminRole_revokeSystemAdmin'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/role/system-admin/account-status/{userId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put: operations['AdminRole_updateSystemAdminAccountStatus'];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/role/system-admin/activation/{userId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put: operations['AdminRole_updateSystemAdminActivation'];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/user': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['AdminUser_select'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/user/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['AdminUser_view'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch: operations['AdminUser_update'];
-    trace?: never;
-  };
-  '/api/admin/user/activate/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: operations['AdminUser_activate'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/user/account-status/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put: operations['AdminUser_updateAccountStatus'];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/user/{userId}/roles': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put: operations['AdminUser_replaceUserRoles'];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/admin/user/system-admin/grant/{userId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: operations['AdminUser_grantSystemAdmin'];
     delete?: never;
     options?: never;
     head?: never;
@@ -1454,6 +944,235 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/mcp/auth/accessToken/mine': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['McpAuthAccessToken_mine'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/mcp/auth/accessToken/createMine': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['McpAuthAccessToken_createMine'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/mcp/auth/accessToken/deleteMine/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete: operations['McpAuthAccessToken_deleteMine'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/mcp/auth/summary': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['Authorization_summary'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/mcp/auth/decision': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['Authorization_decision'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/mcp/auth/authorizationGrant/mine': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['McpAuthAuthorizationGrant_mine'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/mcp/auth/authorizationGrant/revokeMine/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['McpAuthAuthorizationGrant_revokeMine'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/mcp/auth/authorizationGrant/deleteMine/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete: operations['McpAuthAuthorizationGrant_deleteMine'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/mcp/auth/customScope/mine': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List personal MCP scopes */
+    get: operations['McpAuthCustomScope_mine'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/mcp/auth/customScope/catalog': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Available MCP tools */
+    get: operations['McpAuthCustomScope_catalog'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/mcp/auth/customScope/createMine': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Create personal MCP scope */
+    post: operations['McpAuthCustomScope_createMine'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/mcp/auth/customScope/updateMine/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Update personal MCP scope */
+    post: operations['McpAuthCustomScope_updateMine'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/mcp/auth/customScope/deleteMine/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** Delete personal MCP scope */
+    delete: operations['McpAuthCustomScope_deleteMine'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/cabloy/mcp/accessTokenTest/read': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['CabloyMcpAccessTokenTest_read'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1463,6 +1182,12 @@ export interface components {
       provider: string;
       token?: unknown;
       payload?: unknown;
+      /** @enum {string} */
+      status?: 'accepted' | 'rejected' | 'unknown' | 'limited';
+      serverNow?: number;
+      expiresAt?: number;
+      resendAt?: number;
+      retryAt?: number;
     };
     'a-menu.dto.menus': {
       menus?: components['schemas']['a-menu.dto.menuItem'][] | undefined;
@@ -1614,6 +1339,7 @@ export interface components {
       | undefined;
     'home-user.dto.accountCurrent': {
       name: string;
+      displayName?: string | undefined;
       avatar?: string | undefined;
       locale?: unknown;
       tz?: string | undefined;
@@ -1623,10 +1349,10 @@ export interface components {
     };
     'home-user.dto.accountProfileUpdate': {
       /** @description Display name */
-      name: string;
+      displayName?: string | undefined;
       /**
        * Avatar
-       * @description Absolute HTTPS avatar URL or API delivery URL
+       * @description Absolute HTTP(S) avatar URL or API delivery URL
        */
       avatar?: string | undefined;
       /** @description Locale */
@@ -1682,6 +1408,7 @@ export interface components {
     };
     'home-user.dto.passport_2d063d28bc7243bed02ebd8bddf1212a93c6305b':
       | {
+          instanceId: number | string | undefined;
           user: components['schemas']['home-user.dto.passportUser'];
           auth: components['schemas']['a-auth.dto.auth'];
           roles: components['schemas']['home-user.entity.role'][];
@@ -1690,6 +1417,7 @@ export interface components {
     'home-user.dto.passportUser': {
       id: number | string;
       name: string;
+      displayName?: string | undefined;
       avatar?: string | undefined;
       email?: string | undefined;
       mobile?: string | undefined;
@@ -1748,6 +1476,11 @@ export interface components {
           }
         | undefined;
       siteIds: string[];
+      /**
+       * @description MCP Access
+       * @default false
+       */
+      mcpAccess?: boolean;
       /** @default false */
       builtin?: boolean;
     };
@@ -1756,6 +1489,7 @@ export interface components {
       jwt: components['schemas']['a-jwt.dto.jwtToken'];
     };
     'home-user.dto.passport': {
+      instanceId: number | string | undefined;
       user: components['schemas']['home-user.dto.passportUser'];
       auth: components['schemas']['a-auth.dto.auth'];
       roles: components['schemas']['home-user.entity.role'][];
@@ -1938,6 +1672,85 @@ export interface components {
       /** @default true */
       signed?: boolean;
     };
+    /** @description Recursive Boolean predicate: use explicit leaves { field, op, value }, nonempty { and: [...] } / { or: [...] } groups, or { not: predicate }. Field-value maps such as { fieldName: value } are not supported inside where. The isNull and isNotNull operators omit value; in and notIn require nonempty value arrays. Use only fields, operators and value types admitted by this schema and respect its query limits. Omit where for no added restriction. Supplied named filters combine with where by AND. */
+    'TrainingRecordSelectQueryPredicate_5d7645eb449dede52c248d2b353769a1eb9528c6':
+      | {
+          /** @enum {string} */
+          field: 'name';
+          /** @enum {string} */
+          op: 'eq' | 'containsI';
+          value: string;
+        }
+      | {
+          /** @enum {string} */
+          field: 'studentId';
+          /** @enum {string} */
+          op: 'eq';
+          value: string;
+        }
+      | {
+          /** @enum {string} */
+          field: 'studentName';
+          /** @enum {string} */
+          op: 'containsI';
+          value: string;
+        }
+      | {
+          /** @enum {string} */
+          field: 'createdAt';
+          /** @enum {string} */
+          op: 'gte' | 'lt' | 'lte';
+          /** Format: date-time */
+          value: Date;
+        }
+      | {
+          and: components['schemas']['TrainingRecordSelectQueryPredicate'][];
+        }
+      | {
+          or: components['schemas']['TrainingRecordSelectQueryPredicate'][];
+        }
+      | {
+          not: components['schemas']['TrainingRecordSelectQueryPredicate'];
+        };
+    'TrainingRecordSelectQueryPredicate':
+      | {
+          /** @enum {string} */
+          field: 'name';
+          /** @enum {string} */
+          op: 'eq' | 'containsI';
+          value: string;
+        }
+      | {
+          /** @enum {string} */
+          field: 'studentId';
+          /** @enum {string} */
+          op: 'eq';
+          value: string;
+        }
+      | {
+          /** @enum {string} */
+          field: 'studentName';
+          /** @enum {string} */
+          op: 'containsI';
+          value: string;
+        }
+      | {
+          /** @enum {string} */
+          field: 'createdAt';
+          /** @enum {string} */
+          op: 'gte' | 'lt' | 'lte';
+          /** Format: date-time */
+          value: Date;
+        }
+      | {
+          and: components['schemas']['TrainingRecordSelectQueryPredicate'][];
+        }
+      | {
+          or: components['schemas']['TrainingRecordSelectQueryPredicate'][];
+        }
+      | {
+          not: components['schemas']['TrainingRecordSelectQueryPredicate'];
+        };
     /** @description View Student Training Record */
     'training-record.dto.recordView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_79ca06e0fa89c8f250537d4a0b8a8cc1e39df05a':
       | {
@@ -2103,13 +1916,6 @@ export interface components {
             /** @description Student Training Record Details */
             trainingRecordSubjects?:
               | {
-                  /**
-                   * @description Deleted
-                   * @default false
-                   */
-                  deleted?: boolean | undefined;
-                  /** @description ID */
-                  id?: number | string | undefined;
                   /** @description Subject Name */
                   name: string;
                   /** @description Subject Score */
@@ -2271,6 +2077,109 @@ export interface components {
           signed?: boolean;
         }
       | undefined;
+    /** @description Recursive Boolean predicate: use explicit leaves { field, op, value }, nonempty { and: [...] } / { or: [...] } groups, or { not: predicate }. Field-value maps such as { fieldName: value } are not supported inside where. The isNull and isNotNull operators omit value; in and notIn require nonempty value arrays. Use only fields, operators and value types admitted by this schema and respect its query limits. Omit where for no added restriction. Supplied named filters combine with where by AND. */
+    'TrainingStudentSelectQueryPredicate_52faf9b0777604cfccabc1d562ef60a2e5b2deb9':
+      | {
+          /** @enum {string} */
+          field: 'id';
+          /** @enum {string} */
+          op: 'eq';
+          value: string;
+        }
+      | {
+          /** @enum {string} */
+          field: 'id';
+          /** @enum {string} */
+          op: 'in';
+          value: string[];
+        }
+      | {
+          /** @enum {string} */
+          field: 'name';
+          /** @enum {string} */
+          op: 'eq' | 'containsI' | 'startsWith';
+          value: string;
+        }
+      | {
+          /** @enum {string} */
+          field: 'level';
+          /** @enum {string} */
+          op: 'eq' | 'gte';
+          value: 1 | 2 | 3;
+        }
+      | {
+          /** @enum {string} */
+          field: 'createdAt';
+          /** @enum {string} */
+          op: 'gte' | 'lt' | 'lte';
+          /** Format: date-time */
+          value: Date;
+        }
+      | {
+          and: components['schemas']['TrainingStudentSelectQueryPredicate'][];
+        }
+      | {
+          or: components['schemas']['TrainingStudentSelectQueryPredicate'][];
+        }
+      | {
+          not: components['schemas']['TrainingStudentSelectQueryPredicate'];
+        };
+    'TrainingStudentSelectQueryPredicate':
+      | {
+          /** @enum {string} */
+          field: 'id';
+          /** @enum {string} */
+          op: 'eq';
+          value: string;
+        }
+      | {
+          /** @enum {string} */
+          field: 'id';
+          /** @enum {string} */
+          op: 'in';
+          value: string[];
+        }
+      | {
+          /** @enum {string} */
+          field: 'name';
+          /** @enum {string} */
+          op: 'eq' | 'containsI' | 'startsWith';
+          value: string;
+        }
+      | {
+          /** @enum {string} */
+          field: 'level';
+          /** @enum {string} */
+          op: 'eq' | 'gte';
+          value: 1 | 2 | 3;
+        }
+      | {
+          /** @enum {string} */
+          field: 'createdAt';
+          /** @enum {string} */
+          op: 'gte' | 'lt' | 'lte';
+          /** Format: date-time */
+          value: Date;
+        }
+      | {
+          and: components['schemas']['TrainingStudentSelectQueryPredicate'][];
+        }
+      | {
+          or: components['schemas']['TrainingStudentSelectQueryPredicate'][];
+        }
+      | {
+          not: components['schemas']['TrainingStudentSelectQueryPredicate'];
+        };
+    'training-student.dto.studentGroupResItem': {
+      /** @description Training Stage */
+      level?: 1 | 2 | 3 | undefined;
+      count_all?: string | undefined;
+      count_imageId?: string | undefined;
+    };
+    'training-student.dto.studentAggregateRes': {
+      count_all?: string | undefined;
+      count_imageId?: string | undefined;
+    };
     /** @description View Student */
     'training-student.dto.studentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_1587266c819c8b70731e8ba64e7460d7f2809951':
       | {
@@ -2521,749 +2430,6 @@ export interface components {
     'training-student.dto.studentDeleteBulk': {
       ids: (number | string)[];
     };
-    'admin-department.dto.departmentCreate': {
-      /** @description Department Name */
-      name: string;
-      /** @description Parent Department */
-      parentId?: number | string | undefined;
-    };
-    'admin-department.dto.departmentSelectRes': {
-      list: components['schemas']['admin-department.dto.departmentSelectResItem'][];
-      total: string;
-      pageCount: number;
-      pageSize: number;
-      pageNo: number;
-    };
-    'admin-department.dto.departmentSelectResItem': {
-      /**
-       * Format: date-time
-       * @description Created At
-       */
-      createdAt: Date;
-      /**
-       * Format: date-time
-       * @description Updated At
-       */
-      updatedAt: Date;
-      /**
-       * @description Deleted
-       * @default false
-       */
-      deleted?: boolean;
-      /**
-       * @description Instance ID
-       * @default 0
-       */
-      iid?: number;
-      /** @description ID */
-      id: number | string;
-      /** @description Department Name */
-      name: string;
-      /** @description Parent Department */
-      parentId?: number | string | undefined;
-      /** @description Enabled */
-      enabled: boolean;
-      /** @description Sort Order */
-      sortOrder: number;
-      managerId?: number | string | undefined;
-      parent?: {
-        /** @description ID */
-        id: number | string;
-        /** @description Department Name */
-        name: string;
-      };
-      /** @description Operations */
-      _operationsRow?: unknown;
-    };
-    'admin-department.dto.departmentTree': {
-      list: components['schemas']['admin-department.dto.departmentTreeItem'][];
-    };
-    'admin-department.dto.departmentTreeItem': {
-      id: number | string;
-      /** @description Department Name */
-      name: string;
-      /** @description Parent Department */
-      parentId?: number | string | undefined;
-      /** @description Enabled */
-      enabled: boolean;
-      /** @description Sort Order */
-      sortOrder: number;
-      children: unknown[];
-    };
-    'admin-department.dto.departmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_79c0532d32be8f81d66d76995fbc84629567c463':
-      | {
-          /**
-           * Format: date-time
-           * @description Created At
-           */
-          createdAt: Date;
-          /**
-           * Format: date-time
-           * @description Updated At
-           */
-          updatedAt: Date;
-          /**
-           * @description Deleted
-           * @default false
-           */
-          deleted?: boolean;
-          /**
-           * @description Instance ID
-           * @default 0
-           */
-          iid?: number;
-          /** @description ID */
-          id: number | string;
-          /** @description Department Name */
-          name: string;
-          /** @description Parent Department */
-          parentId?: number | string | undefined;
-          /** @description Enabled */
-          enabled: boolean;
-          /** @description Sort Order */
-          sortOrder: number;
-          managerId?: number | string | undefined;
-          parent?: {
-            /** @description ID */
-            id: number | string;
-            /** @description Department Name */
-            name: string;
-          };
-        }
-      | undefined;
-    'admin-department.dto.departmentUpdate': {
-      /** @description Department Name */
-      name: string;
-    };
-    'admin-department.dto.departmentMembershipSelectRes': {
-      list: components['schemas']['admin-department.dto.departmentMembershipSummary'][];
-    };
-    'admin-department.dto.departmentMembershipSummary': {
-      /** @description ID */
-      id: number | string;
-      /** @description User */
-      userId: number | string;
-      /** @description Position */
-      position?: string | undefined;
-      /** @description Enabled */
-      enabled: boolean;
-      primary: boolean;
-      user?: {
-        /** @description ID */
-        id: number | string;
-        /** @description User Name */
-        name: string;
-        /** @description Avatar */
-        avatar?: string | undefined;
-      };
-      /** @description Department Manager */
-      manager: boolean;
-      /** @description Operations */
-      _operationsRow?: unknown;
-    };
-    'admin-department.dto.departmentMembershipCreate': {
-      /** @description User */
-      userId: number | string;
-      /** @description Position */
-      position?: string | undefined;
-    };
-    'admin-department.dto.departmentMembershipUpdate': {
-      /** @description Position */
-      position?: string | undefined;
-      /** @description Enabled */
-      enabled?: boolean | undefined;
-      /** @description Department Manager */
-      managerMembershipId?: number | string | undefined;
-    };
-    'admin-department.dto.departmentMembershipDelete_2d063d28bc7243bed02ebd8bddf1212a93c6305b':
-      | {
-          /** @description Department Manager */
-          managerMembershipId?: number | string | undefined;
-        }
-      | undefined;
-    'admin-department.dto.departmentMembershipPrimary': {
-      /** @description Default Department */
-      primary: boolean;
-    };
-    'admin-department.dto.departmentManagerUpdate': {
-      /** @description Department Manager */
-      membershipId: number | string | undefined;
-    };
-    'admin-department.dto.departmentMove': {
-      /** @description Parent Department */
-      parentId: number | string | undefined;
-    };
-    'admin-department.dto.departmentReorder': {
-      /** @description Place Before Department */
-      beforeId: number | string | undefined;
-    };
-    'admin-department.dto.departmentActivation': {
-      enabled: boolean;
-    };
-    'admin-menu.dto.roleMenuCatalogRes': {
-      revision: string;
-      list: components['schemas']['admin-menu.dto.roleMenuCatalogSite'][];
-    };
-    'admin-menu.dto.roleMenuCatalogSite': {
-      ssrSiteName: string;
-      title: string;
-      menus: components['schemas']['admin-menu.dto.roleMenuCatalogMenu'][];
-      groups: components['schemas']['admin-menu.dto.roleMenuCatalogGroup'][];
-    };
-    'admin-menu.dto.roleMenuCatalogMenu': {
-      ssrMenuName: string;
-      onionName: string;
-      configurable: boolean;
-      title?: string | undefined;
-      description?: string | undefined;
-      icon?: string | undefined;
-      order?: number | undefined;
-      group?: string | string[] | undefined;
-      separator?: boolean | undefined;
-    };
-    'admin-menu.dto.roleMenuCatalogGroup': {
-      ssrMenuGroupName: string;
-      onionName: string;
-      title?: string | undefined;
-      description?: string | undefined;
-      icon?: string | undefined;
-      order?: number | undefined;
-      group?: string | string[] | undefined;
-      collapsed?: boolean | undefined;
-    };
-    'admin-menu.dto.roleMenuRoleConfigurationRes': {
-      revision: string;
-      roleId: number | string;
-      list: components['schemas']['admin-menu.dto.roleMenuRoleConfigurationSite'][];
-    };
-    'admin-menu.dto.roleMenuRoleConfigurationSite': {
-      ssrSiteName: string;
-      title: string;
-      menus: components['schemas']['admin-menu.dto.roleMenuRoleConfigurationMenu'][];
-      groups: components['schemas']['admin-menu.dto.roleMenuCatalogGroup'][];
-    };
-    'admin-menu.dto.roleMenuRoleConfigurationMenu': {
-      ssrMenuName: string;
-      onionName: string;
-      configurable: boolean;
-      enabled: boolean;
-      title?: string | undefined;
-      description?: string | undefined;
-      icon?: string | undefined;
-      order?: number | undefined;
-      group?: string | string[] | undefined;
-      separator?: boolean | undefined;
-    };
-    'admin-menu.dto.roleMenuCreate': {
-      roleId: number | string;
-      ssrSiteName: string;
-      ssrMenuName: string;
-    };
-    'admin-menu.dto.roleMenuBatch': {
-      roleId: number | string;
-      creates: components['schemas']['admin-menu.dto.roleMenuBatchItem'][];
-      deletes: components['schemas']['admin-menu.dto.roleMenuBatchItem'][];
-    };
-    'admin-menu.dto.roleMenuBatchItem': {
-      ssrSiteName: string;
-      ssrMenuName: string;
-    };
-    'admin-menu.dto.roleMenuDelete': {
-      roleId: number | string;
-      ssrSiteName: string;
-      ssrMenuName: string;
-    };
-    'admin-rbac.dto.rbacGrantCreate': {
-      /** @description Role */
-      roleId: number | string;
-      /** @description Action Key */
-      actionKey: string;
-      /**
-       * @description Data Scope
-       * @enum {string}
-       */
-      dataScope:
-        | 'all'
-        | 'customDepartments'
-        | 'ownDepartment'
-        | 'ownDepartmentAndDescendants'
-        | 'mine';
-      /** @description Enabled */
-      enabled: boolean;
-      /** @description Description */
-      description?: string | undefined;
-    };
-    'admin-rbac.dto.rbacGrantSelectRes': {
-      list: components['schemas']['admin-rbac.dto.rbacGrantSelectResItem'][];
-      total: string;
-      pageCount: number;
-      pageSize: number;
-      pageNo: number;
-    };
-    'admin-rbac.dto.rbacGrantSelectResItem': {
-      /**
-       * Format: date-time
-       * @description Created At
-       */
-      createdAt: Date;
-      /**
-       * Format: date-time
-       * @description Updated At
-       */
-      updatedAt: Date;
-      /**
-       * @description Deleted
-       * @default false
-       */
-      deleted?: boolean;
-      /**
-       * @description Instance ID
-       * @default 0
-       */
-      iid?: number;
-      /** @description ID */
-      id: number | string;
-      /** @description Role */
-      roleId: number | string;
-      /** @description Action Key */
-      actionKey: string;
-      /**
-       * @description Data Scope
-       * @enum {string}
-       */
-      dataScope:
-        | 'all'
-        | 'customDepartments'
-        | 'ownDepartment'
-        | 'ownDepartmentAndDescendants'
-        | 'mine';
-      /** @description Enabled */
-      enabled: boolean;
-      /** @description Description */
-      description?: string | undefined;
-      /** @description Operations */
-      _operationsRow?: unknown;
-    };
-    'admin-rbac.dto.rbacGrantView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_5926519498397908989ce559e2153fbb3976fa24':
-      | {
-          /**
-           * Format: date-time
-           * @description Created At
-           */
-          createdAt: Date;
-          /**
-           * Format: date-time
-           * @description Updated At
-           */
-          updatedAt: Date;
-          /**
-           * @description Deleted
-           * @default false
-           */
-          deleted?: boolean;
-          /**
-           * @description Instance ID
-           * @default 0
-           */
-          iid?: number;
-          /** @description ID */
-          id: number | string;
-          /** @description Role */
-          roleId: number | string;
-          /** @description Action Key */
-          actionKey: string;
-          /**
-           * @description Data Scope
-           * @enum {string}
-           */
-          dataScope:
-            | 'all'
-            | 'customDepartments'
-            | 'ownDepartment'
-            | 'ownDepartmentAndDescendants'
-            | 'mine';
-          /** @description Enabled */
-          enabled: boolean;
-          /** @description Description */
-          description?: string | undefined;
-        }
-      | undefined;
-    'admin-rbac.dto.rbacGrantUpdate': {
-      /** @description Enabled */
-      enabled?: boolean | undefined;
-      /** @description Description */
-      description?: string | undefined;
-    };
-    'admin-rbac.dto.rbacGrantDepartmentCreate': {
-      /** @description RBAC Grant */
-      rbacGrantId: number | string;
-      /** @description Department */
-      departmentId: number | string;
-    };
-    'admin-rbac.dto.rbacGrantDepartmentSelectRes': {
-      list: components['schemas']['admin-rbac.dto.rbacGrantDepartmentSelectResItem'][];
-      total: string;
-      pageCount: number;
-      pageSize: number;
-      pageNo: number;
-    };
-    'admin-rbac.dto.rbacGrantDepartmentSelectResItem': {
-      /**
-       * Format: date-time
-       * @description Created At
-       */
-      createdAt: Date;
-      /**
-       * Format: date-time
-       * @description Updated At
-       */
-      updatedAt: Date;
-      /**
-       * @description Deleted
-       * @default false
-       */
-      deleted?: boolean;
-      /**
-       * @description Instance ID
-       * @default 0
-       */
-      iid?: number;
-      /** @description ID */
-      id: number | string;
-      /** @description RBAC Grant */
-      rbacGrantId: number | string;
-      /** @description Department */
-      departmentId: number | string;
-      /** @description Operations */
-      _operationsRow?: unknown;
-    };
-    'admin-rbac.dto.rbacGrantDepartmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_2b19dd6ac97292072af39de37b6db9e79a486789':
-      | {
-          /**
-           * Format: date-time
-           * @description Created At
-           */
-          createdAt: Date;
-          /**
-           * Format: date-time
-           * @description Updated At
-           */
-          updatedAt: Date;
-          /**
-           * @description Deleted
-           * @default false
-           */
-          deleted?: boolean;
-          /**
-           * @description Instance ID
-           * @default 0
-           */
-          iid?: number;
-          /** @description ID */
-          id: number | string;
-          /** @description RBAC Grant */
-          rbacGrantId: number | string;
-          /** @description Department */
-          departmentId: number | string;
-        }
-      | undefined;
-    'admin-rbac.dto.rbacPolicyCatalogRes': {
-      revision: string;
-      list: components['schemas']['admin-rbac.dto.rbacPolicyCatalogResItem'][];
-    };
-    'admin-rbac.dto.rbacPolicyCatalogResItem': {
-      controllerBeanFullName: string;
-      controllerSummary?: string | undefined;
-      action: string;
-      actionSummary?: string | undefined;
-      actionKey: string;
-      dataScopes: (
-        | 'all'
-        | 'customDepartments'
-        | 'ownDepartment'
-        | 'ownDepartmentAndDescendants'
-        | 'mine'
-      )[];
-    };
-    'admin-rbac.dto.rbacPolicyRoleConfigurationRes': {
-      revision: string;
-      roleId: number | string;
-      list: components['schemas']['admin-rbac.dto.rbacPolicyRoleConfigurationAction'][];
-    };
-    'admin-rbac.dto.rbacPolicyRoleConfigurationAction': {
-      actionKey: string;
-      dataScopes: components['schemas']['admin-rbac.dto.rbacPolicyRoleConfigurationScope'][];
-    };
-    'admin-rbac.dto.rbacPolicyRoleConfigurationScope': {
-      /** @enum {string} */
-      dataScope:
-        | 'all'
-        | 'customDepartments'
-        | 'ownDepartment'
-        | 'ownDepartmentAndDescendants'
-        | 'mine';
-      enabled: boolean;
-      customDepartmentsConfigured?: boolean | undefined;
-    };
-    'admin-role.dto.roleView': {
-      /** @description ID */
-      id: number | string;
-      /** @description Role Name */
-      name: string;
-      /** @description Role Title */
-      title: string;
-      /** @description Role Locales */
-      titleLocales?:
-        | {
-            [key: string]: string;
-          }
-        | undefined;
-      /** @description Site IDs */
-      siteIds: string[];
-      /**
-       * @description Built-in
-       * @default false
-       */
-      builtin?: boolean;
-      sites?: components['schemas']['home-base.dto.siteCatalogSelectResItem'][] | undefined;
-    };
-    'admin-role.dto.roleCreate': {
-      /** @description Role Name */
-      name: string;
-      /** @description Role Title */
-      title: string;
-      /** @description Role Locales */
-      titleLocales?:
-        | {
-            [key: string]: string;
-          }
-        | undefined;
-      /** @description Site IDs */
-      siteIds: string[];
-    };
-    'admin-role.dto.roleSelectRes': {
-      list: components['schemas']['admin-role.dto.roleSelectResItem'][];
-      total: string;
-      pageCount: number;
-      pageSize: number;
-      pageNo: number;
-    };
-    'admin-role.dto.roleSelectResItem': {
-      /** @description ID */
-      id: number | string;
-      /** @description Role Name */
-      name: string;
-      /** @description Role Title */
-      title: string;
-      /** @description Role Locales */
-      titleLocales?:
-        | {
-            [key: string]: string;
-          }
-        | undefined;
-      /** @description Site IDs */
-      siteIds: string[];
-      /**
-       * @description Built-in
-       * @default false
-       */
-      builtin?: boolean;
-      sites?: components['schemas']['home-base.dto.siteCatalogSelectResItem'][] | undefined;
-      /** @description Operations */
-      _operationsRow?: unknown;
-    };
-    'admin-role.dto.roleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_dfa5393c924ec7673aadfc44138eb510ba67ff8c':
-      | {
-          /** @description ID */
-          id: number | string;
-          /** @description Role Name */
-          name: string;
-          /** @description Role Title */
-          title: string;
-          /** @description Role Locales */
-          titleLocales?:
-            | {
-                [key: string]: string;
-              }
-            | undefined;
-          /** @description Site IDs */
-          siteIds: string[];
-          /**
-           * @description Built-in
-           * @default false
-           */
-          builtin?: boolean;
-          sites?: components['schemas']['home-base.dto.siteCatalogSelectResItem'][] | undefined;
-        }
-      | undefined;
-    'admin-role.dto.roleUpdate': {
-      /** @description Role Name */
-      name?: string | undefined;
-      /** @description Role Title */
-      title?: string | undefined;
-      /** @description Role Locales */
-      titleLocales?:
-        | {
-            [key: string]: string;
-          }
-        | undefined;
-      /** @description Site IDs */
-      siteIds?: string[] | undefined;
-    };
-    'admin-role.dto.systemAdminFreshProofIssueRes': {
-      proof: string;
-      /** Format: date-time */
-      expiresAt: Date;
-    };
-    'admin-role.dto.systemAdminFreshProofIssue': {
-      password: string;
-    };
-    'admin-role.dto.systemAdminRevoke': {
-      reason: string;
-      freshProof: string;
-    };
-    'admin-role.dto.systemAdminAccountStatus': {
-      /** @enum {string} */
-      accountStatus: 'active' | 'disabled';
-      reason: string;
-      freshProof: string;
-    };
-    'admin-role.dto.systemAdminActivation': {
-      activated: boolean;
-      reason: string;
-      freshProof: string;
-    };
-    'admin-user.dto.userSelectRes': {
-      list: components['schemas']['admin-user.dto.userSelectResItem'][];
-      total: string;
-      pageCount: number;
-      pageSize: number;
-      pageNo: number;
-    };
-    'admin-user.dto.userSelectResItem': {
-      /** @description ID */
-      id: number | string;
-      /** @description User Name */
-      name: string;
-      /** @description Avatar */
-      avatar?: string | undefined;
-      /** @description Email */
-      email?: string | undefined;
-      /** @description Mobile */
-      mobile?: string | undefined;
-      /**
-       * @description Identity Activated
-       * @default false
-       */
-      activated?: boolean;
-      /**
-       * @description Account Status
-       * @default active
-       * @enum {string}
-       */
-      accountStatus?: 'active' | 'disabled';
-      /** @description Locale */
-      locale?: string | undefined;
-      /** @description Time Zone */
-      tz?: string | undefined;
-      /** @description Operations */
-      _operationsRow?: unknown;
-    };
-    'admin-user.dto.userView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_40af9fcb058b9199af19862859aa4705bac1c6ba':
-      | {
-          /** @description ID */
-          id: number | string;
-          /** @description User Name */
-          name: string;
-          /** @description Avatar */
-          avatar?: string | undefined;
-          /** @description Email */
-          email?: string | undefined;
-          /** @description Mobile */
-          mobile?: string | undefined;
-          /**
-           * @description Identity Activated
-           * @default false
-           */
-          activated?: boolean;
-          /**
-           * @description Account Status
-           * @default active
-           * @enum {string}
-           */
-          accountStatus?: 'active' | 'disabled';
-          /** @description Locale */
-          locale?: string | undefined;
-          /** @description Time Zone */
-          tz?: string | undefined;
-          /** @description Roles */
-          roles: components['schemas']['admin-user.dto.userRoleSummary'][];
-          /** @description Department Memberships */
-          departmentMemberships: components['schemas']['admin-user.dto.userDepartmentMembershipSummary'][];
-          _roles?: components['schemas']['admin-user.dto.userRoleSummary'][] | undefined;
-          _departmentMemberships?:
-            | components['schemas']['admin-user.dto.userDepartmentMembershipSummary'][]
-            | undefined;
-        }
-      | undefined;
-    'admin-user.dto.userRoleSummary': {
-      id: number | string;
-      /** @description Role Name */
-      name: string;
-      /** @description Role Title */
-      title: string;
-      systemAdmin: boolean;
-    };
-    'admin-user.dto.userDepartmentMembershipSummary': {
-      /** @description ID */
-      id: number | string;
-      /** @description Department */
-      departmentId: number | string;
-      /** @description Position */
-      position?: string | undefined;
-      /** @description Enabled */
-      enabled: boolean;
-      /** @description Default Department */
-      primary: boolean;
-      department?: {
-        /** @description ID */
-        id: number | string;
-        /** @description Department Name */
-        name: string;
-      };
-    };
-    'admin-user.dto.userUpdate': {
-      /** @description User Name */
-      name?: string | undefined;
-      /** @description Avatar */
-      avatar?: string | undefined;
-      /**
-       * Format: email
-       * @description Email
-       */
-      email?: string | undefined;
-      /** @description Mobile */
-      mobile?: string | undefined;
-      /** @description Locale */
-      locale?: string | undefined;
-      /** @description Time Zone */
-      tz?: string | undefined;
-    };
-    'admin-user.dto.userAccountStatusUpdate': {
-      /**
-       * @description Account Status
-       * @enum {string}
-       */
-      accountStatus: 'active' | 'disabled';
-    };
-    'admin-role.dto.userRoleReplace': {
-      /** @description Roles */
-      roleIds: (number | string)[];
-    };
-    'admin-role.dto.systemAdminGrant': {
-      reason: string;
-      freshProof: string;
-    };
     'start-metrics.dto.metricsSnapshot': {
       enabled: boolean;
       runtime: components['schemas']['start-metrics.dto.metricsRuntime'];
@@ -3453,6 +2619,173 @@ export interface components {
       /** @enum {string} */
       outcome: 'succeeded' | 'failed' | 'cancelled';
     };
+    'mcp-auth.dto.accessTokenMineRes': {
+      list: components['schemas']['mcp-auth.dto.accessToken'][];
+      total: string;
+      pageCount: number;
+      pageSize: number;
+      pageNo: number;
+    };
+    'mcp-auth.dto.accessToken': {
+      /**
+       * Format: date-time
+       * @description Created At
+       */
+      createdAt: Date;
+      /** @description ID */
+      id: number | string;
+      /** @default  */
+      name?: string;
+      scope: string;
+      tokenExpiresAt: number;
+      /** @enum {string} */
+      status: 'active' | 'expired' | 'revoked';
+    };
+    'mcp-auth.dto.accessTokenCreateRes': {
+      /** @description ID */
+      id: number | string;
+      resource: string;
+      scope: string;
+      tokenExpiresAt: number;
+      accessToken: string;
+    };
+    'mcp-auth.dto.accessTokenCreate': {
+      /** @description Name */
+      name: string;
+      /**
+       * Scope
+       * @description Choose mcp:read, mcp:all, or one of your current personal MCP scopes.
+       * @default mcp:read
+       */
+      scope?: string;
+      /**
+       * Lifetime (seconds)
+       * @description A positive whole number of seconds. Defaults to seven days; no product maximum.
+       * @default 604800
+       */
+      expiresIn?: number;
+    };
+    'mcp-auth.dto.authorizationSummary': {
+      clientName: string;
+      resource: string;
+      scope: string;
+      options: components['schemas']['mcp-auth.dto.mcpScopeOption'][];
+      expiresAt: number;
+    };
+    'mcp-auth.dto.mcpScopeOption': {
+      scope: string;
+      name: string;
+      description: string;
+      tools: components['schemas']['mcp-auth.dto.mcpScopeTool'][];
+      allowed: boolean;
+      /** @enum {string|null} */
+      reason?:
+        | 'outside_requested_scope'
+        | 'outside_client_scope'
+        | 'tools_unavailable'
+        | null
+        | undefined;
+    };
+    'mcp-auth.dto.mcpScopeTool': {
+      name: string;
+      controller: string;
+      action: string;
+      controllerSummary: string;
+      summary: string;
+      description: string;
+      readOnly: boolean;
+      available: boolean;
+    };
+    'mcp-auth.dto.authorizationRedirect': {
+      redirectUrl: string;
+    };
+    'mcp-auth.dto.authorizationDecision': {
+      request: string;
+      allow: boolean;
+      scope?: ('mcp:all' | 'mcp:read') | string | undefined;
+    };
+    'mcp-auth.dto.authorizationGrantMineRes': {
+      list: components['schemas']['mcp-auth.dto.authorizationGrant'][];
+      total: string;
+      pageCount: number;
+      pageSize: number;
+      pageNo: number;
+    };
+    'mcp-auth.dto.authorizationGrant': {
+      /**
+       * Format: date-time
+       * @description Created At
+       */
+      createdAt: Date;
+      /** @description ID */
+      id: number | string;
+      resource: string;
+      scope: string;
+      /** @default  */
+      requestedScope?: string;
+      /** @enum {string} */
+      state: 'pending' | 'codeReady' | 'tokenActive' | 'denied' | 'revoked';
+      expiresAt: number;
+      tokenExpiresAt: number;
+      /** @default false */
+      refreshEnabled?: boolean;
+      /** @default 0 */
+      refreshExpiresAt?: number;
+      clientId: string;
+      clientName: string;
+    };
+    'mcp-auth.dto.customScopeMineRes': {
+      list: components['schemas']['mcp-auth.dto.customScopeView'][];
+    };
+    'mcp-auth.dto.customScopeView': {
+      /**
+       * Format: date-time
+       * @description Created At
+       */
+      createdAt: Date;
+      /**
+       * Format: date-time
+       * @description Updated At
+       */
+      updatedAt: Date;
+      /** @description ID */
+      id: number | string;
+      scope: string;
+      /**
+       * Name
+       * @description Use 1–100 letters, digits, underscores or hyphens. Names are case-sensitive; test becomes mcp:custom:test.
+       */
+      name: string;
+      /** @description Description */
+      description: string;
+      /** @description Tools */
+      tools: components['schemas']['mcp-auth.dto.mcpToolIdentity'][];
+    };
+    'mcp-auth.dto.mcpToolIdentity': {
+      name: string;
+      controller: string;
+      action: string;
+    };
+    'mcp-auth.dto.mcpTool': {
+      name: string;
+      controller: string;
+      action: string;
+      controllerSummary: string;
+      summary: string;
+      description: string;
+      readOnly: boolean;
+    };
+    'mcp-auth.dto.customScopeCreate_1ff20af69286149eb0b25291d9450172f7bd0054': {
+      /**
+       * Name
+       * @description Use 1–100 letters, digits, underscores or hyphens. Names are case-sensitive; test becomes mcp:custom:test.
+       */
+      name: string;
+      /** @description Description */
+      description: string;
+      /** @description Tools */
+      tools: components['schemas']['mcp-auth.dto.mcpToolIdentity'][];
+    };
   };
   responses: never;
   parameters: never;
@@ -3462,61 +2795,6 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-  AuthMock_authorize: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: unknown;
-          };
-        };
-      };
-    };
-  };
-  AuthMock_authorizePost: {
-    parameters: {
-      query: {
-        redirect_uri: string;
-        state: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': {
-          username: string;
-        };
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: unknown;
-          };
-        };
-      };
-    };
-  };
   Captcha_create: {
     parameters: {
       query?: never;
@@ -3528,6 +2806,7 @@ export interface operations {
       content: {
         'application/json': {
           scene: string;
+          payload?: unknown;
         };
       };
     };
@@ -3556,8 +2835,9 @@ export interface operations {
     requestBody: {
       content: {
         'application/json': {
-          id: string;
+          id?: string | undefined;
           scene: string;
+          payload?: unknown;
         };
       };
     };
@@ -4369,18 +3649,21 @@ export interface operations {
   TrainingRecord_select: {
     parameters: {
       query?: {
-        columns?: string[] | undefined;
-        where?:
-          | {
-              [key: string]: unknown;
-            }
-          | undefined;
-        orders?: string | string[][] | undefined;
-        pageNo?: number;
-        pageSize?: number;
         createdAt?: string | undefined;
         name?: string | undefined;
         studentId?: string | undefined;
+        /** @description Recursive Boolean predicate: use explicit leaves { field, op, value }, nonempty { and: [...] } / { or: [...] } groups, or { not: predicate }. Field-value maps such as { fieldName: value } are not supported inside where. The isNull and isNotNull operators omit value; in and notIn require nonempty value arrays. Use only fields, operators and value types admitted by this schema and respect its query limits. Omit where for no added restriction. Supplied named filters combine with where by AND. */
+        where?: components['schemas']['TrainingRecordSelectQueryPredicate_5d7645eb449dede52c248d2b353769a1eb9528c6'];
+        orders?:
+          | {
+              /** @enum {string} */
+              field: 'id' | 'name' | 'studentId' | 'studentName' | 'createdAt';
+              /** @enum {string} */
+              direction: 'asc' | 'desc';
+            }[]
+          | undefined;
+        pageNo?: number | undefined;
+        pageSize?: number | undefined;
       };
       header?: never;
       path?: never;
@@ -4544,18 +3827,21 @@ export interface operations {
   TrainingStudent_select: {
     parameters: {
       query?: {
-        columns?: string[] | undefined;
-        where?:
-          | {
-              [key: string]: unknown;
-            }
-          | undefined;
-        orders?: string | string[][] | undefined;
-        pageNo?: number;
-        pageSize?: number;
         createdAt?: string | undefined;
         name?: string | undefined;
-        level?: number | undefined;
+        level?: 1 | 2 | 3 | undefined;
+        /** @description Recursive Boolean predicate: use explicit leaves { field, op, value }, nonempty { and: [...] } / { or: [...] } groups, or { not: predicate }. Field-value maps such as { fieldName: value } are not supported inside where. The isNull and isNotNull operators omit value; in and notIn require nonempty value arrays. Use only fields, operators and value types admitted by this schema and respect its query limits. Omit where for no added restriction. Supplied named filters combine with where by AND. */
+        where?: components['schemas']['TrainingStudentSelectQueryPredicate_52faf9b0777604cfccabc1d562ef60a2e5b2deb9'];
+        orders?:
+          | {
+              /** @enum {string} */
+              field: 'id' | 'name' | 'level' | 'createdAt';
+              /** @enum {string} */
+              direction: 'asc' | 'desc';
+            }[]
+          | undefined;
+        pageNo?: number | undefined;
+        pageSize?: number | undefined;
       };
       header?: never;
       path?: never;
@@ -4600,6 +3886,73 @@ export interface operations {
             code: string;
             message: string;
             data: number | string;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  TrainingStudent_group: {
+    parameters: {
+      query?: {
+        createdAt?: string | undefined;
+        name?: string | undefined;
+        level?: 1 | 2 | 3 | undefined;
+        /** @description Recursive Boolean predicate: use explicit leaves { field, op, value }, nonempty { and: [...] } / { or: [...] } groups, or { not: predicate }. Field-value maps such as { fieldName: value } are not supported inside where. The isNull and isNotNull operators omit value; in and notIn require nonempty value arrays. Use only fields, operators and value types admitted by this schema and respect its query limits. Omit where for no added restriction. Supplied named filters combine with where by AND. */
+        where?: components['schemas']['TrainingStudentSelectQueryPredicate_52faf9b0777604cfccabc1d562ef60a2e5b2deb9'];
+        aggrs?: {
+          count?: ('*' | 'imageId')[] | undefined;
+        };
+        groups?: 'level'[];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['training-student.dto.studentGroupResItem'][];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  TrainingStudent_aggregate: {
+    parameters: {
+      query?: {
+        createdAt?: string | undefined;
+        name?: string | undefined;
+        level?: 1 | 2 | 3 | undefined;
+        /** @description Recursive Boolean predicate: use explicit leaves { field, op, value }, nonempty { and: [...] } / { or: [...] } groups, or { not: predicate }. Field-value maps such as { fieldName: value } are not supported inside where. The isNull and isNotNull operators omit value; in and notIn require nonempty value arrays. Use only fields, operators and value types admitted by this schema and respect its query limits. Omit where for no added restriction. Supplied named filters combine with where by AND. */
+        where?: components['schemas']['TrainingStudentSelectQueryPredicate_52faf9b0777604cfccabc1d562ef60a2e5b2deb9'];
+        aggrs?: {
+          count?: ('*' | 'imageId')[] | undefined;
+        };
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['training-student.dto.studentAggregateRes'];
           };
         };
       };
@@ -4750,1403 +4103,6 @@ export interface operations {
     requestBody: {
       content: {
         'application/json': components['schemas']['training-student.dto.studentDeleteBulk'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminDepartment_select: {
-    parameters: {
-      query?: {
-        columns?: string[] | undefined;
-        where?:
-          | {
-              [key: string]: unknown;
-            }
-          | undefined;
-        orders?: string | string[][] | undefined;
-        pageNo?: number;
-        pageSize?: number;
-        createdAt?: Date;
-        name?: string | undefined;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['admin-department.dto.departmentSelectRes'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminDepartment_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-department.dto.departmentCreate'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: number | string;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminDepartment_tree: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['admin-department.dto.departmentTree'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminDepartment_view: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: components['schemas']['admin-department.dto.departmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_79c0532d32be8f81d66d76995fbc84629567c463'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminDepartment_delete: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminDepartment_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-department.dto.departmentUpdate'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminDepartment_selectMemberships: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        departmentId: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['admin-department.dto.departmentMembershipSelectRes'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminDepartment_createMembership: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        departmentId: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-department.dto.departmentMembershipCreate'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: number | string;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminDepartment_deleteMembership: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        departmentId: number | string;
-        membershipId: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        'application/json': components['schemas']['admin-department.dto.departmentMembershipDelete_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminDepartment_updateMembership: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        departmentId: number | string;
-        membershipId: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-department.dto.departmentMembershipUpdate'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminDepartment_updateMembershipPrimary: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        departmentId: number | string;
-        membershipId: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-department.dto.departmentMembershipPrimary'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminDepartment_updateManager: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-department.dto.departmentManagerUpdate'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminDepartment_move: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-department.dto.departmentMove'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminDepartment_reorder: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-department.dto.departmentReorder'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminDepartment_updateActivation: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-department.dto.departmentActivation'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminMenuRoleMenu_catalog: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['admin-menu.dto.roleMenuCatalogRes'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminMenuRoleMenu_roleConfiguration: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        roleId: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['admin-menu.dto.roleMenuRoleConfigurationRes'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminMenuRoleMenu_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-menu.dto.roleMenuCreate'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminMenuRoleMenu_delete: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-menu.dto.roleMenuDelete'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminMenuRoleMenu_batch: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-menu.dto.roleMenuBatch'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminRbacRbacGrant_select: {
-    parameters: {
-      query?: {
-        columns?: string[] | undefined;
-        where?:
-          | {
-              [key: string]: unknown;
-            }
-          | undefined;
-        orders?: string | string[][] | undefined;
-        pageNo?: number;
-        pageSize?: number;
-        createdAt?: string | undefined;
-        actionKey?: string | undefined;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['admin-rbac.dto.rbacGrantSelectRes'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminRbacRbacGrant_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-rbac.dto.rbacGrantCreate'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: number | string;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminRbacRbacGrant_view: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: components['schemas']['admin-rbac.dto.rbacGrantView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_5926519498397908989ce559e2153fbb3976fa24'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminRbacRbacGrant_delete: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminRbacRbacGrant_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-rbac.dto.rbacGrantUpdate'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminRbacRbacGrantDepartment_select: {
-    parameters: {
-      query?: {
-        columns?: string[] | undefined;
-        where?:
-          | {
-              [key: string]: unknown;
-            }
-          | undefined;
-        orders?: string | string[][] | undefined;
-        pageNo?: number;
-        pageSize?: number;
-        createdAt?: string | undefined;
-        departmentId?: number | string | undefined;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['admin-rbac.dto.rbacGrantDepartmentSelectRes'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminRbacRbacGrantDepartment_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-rbac.dto.rbacGrantDepartmentCreate'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: number | string;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminRbacRbacGrantDepartment_view: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: components['schemas']['admin-rbac.dto.rbacGrantDepartmentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_2b19dd6ac97292072af39de37b6db9e79a486789'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminRbacRbacGrantDepartment_delete: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminRbacRbacPolicy_catalog: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['admin-rbac.dto.rbacPolicyCatalogRes'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminRbacRbacPolicy_roleConfiguration: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        roleId: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['admin-rbac.dto.rbacPolicyRoleConfigurationRes'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminRole_select: {
-    parameters: {
-      query?: {
-        columns?: string[] | undefined;
-        where?:
-          | {
-              [key: string]: unknown;
-            }
-          | undefined;
-        orders?: string | string[][] | undefined;
-        pageNo?: number;
-        pageSize?: number;
-        createdAt?: Date;
-        name?: string | undefined;
-        title?: string | undefined;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['admin-role.dto.roleSelectRes'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminRole_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-role.dto.roleCreate'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['admin-role.dto.roleView'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminRole_selectMembershipCandidates: {
-    parameters: {
-      query?: {
-        columns?: string[] | undefined;
-        where?:
-          | {
-              [key: string]: unknown;
-            }
-          | undefined;
-        orders?: string | string[][] | undefined;
-        pageNo?: number;
-        pageSize?: number;
-        createdAt?: Date;
-        name?: string | undefined;
-        title?: string | undefined;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['admin-role.dto.roleSelectRes'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminRole_view: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: components['schemas']['admin-role.dto.roleView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_dfa5393c924ec7673aadfc44138eb510ba67ff8c'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminRole_delete: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminRole_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-role.dto.roleUpdate'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminRole_issueSystemAdminFreshProof: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-role.dto.systemAdminFreshProofIssue'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['admin-role.dto.systemAdminFreshProofIssueRes'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminRole_revokeSystemAdmin: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        userId: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-role.dto.systemAdminRevoke'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminRole_updateSystemAdminAccountStatus: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        userId: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-role.dto.systemAdminAccountStatus'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminRole_updateSystemAdminActivation: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        userId: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-role.dto.systemAdminActivation'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminUser_select: {
-    parameters: {
-      query?: {
-        columns?: string[] | undefined;
-        where?:
-          | {
-              [key: string]: unknown;
-            }
-          | undefined;
-        orders?: string | string[][] | undefined;
-        pageNo?: number;
-        pageSize?: number;
-        createdAt?: Date;
-        name?: string | undefined;
-        activated?: boolean | undefined;
-        accountStatus?: 'active' | 'disabled' | null | undefined;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: components['schemas']['admin-user.dto.userSelectRes'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminUser_view: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data?: components['schemas']['admin-user.dto.userView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_40af9fcb058b9199af19862859aa4705bac1c6ba'];
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminUser_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-user.dto.userUpdate'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminUser_activate: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminUser_updateAccountStatus: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-user.dto.userAccountStatusUpdate'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminUser_replaceUserRoles: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        userId: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-role.dto.userRoleReplace'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            code: string;
-            message: string;
-            data: undefined;
-          };
-        };
-      };
-    };
-    authToken: true;
-  };
-  AdminUser_grantSystemAdmin: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        userId: number | string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['admin-role.dto.systemAdminGrant'];
       };
     };
     responses: {
@@ -6626,5 +4582,374 @@ export interface operations {
       };
     };
     authToken: true;
+  };
+  McpAuthAccessToken_mine: {
+    parameters: {
+      query?: {
+        pageNo?: number;
+        pageSize?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['mcp-auth.dto.accessTokenMineRes'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  McpAuthAccessToken_createMine: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['mcp-auth.dto.accessTokenCreate'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['mcp-auth.dto.accessTokenCreateRes'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  McpAuthAccessToken_deleteMine: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data?: unknown;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  Authorization_summary: {
+    parameters: {
+      query: {
+        request: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['mcp-auth.dto.authorizationSummary'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  Authorization_decision: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['mcp-auth.dto.authorizationDecision'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['mcp-auth.dto.authorizationRedirect'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  McpAuthAuthorizationGrant_mine: {
+    parameters: {
+      query?: {
+        pageNo?: number;
+        pageSize?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['mcp-auth.dto.authorizationGrantMineRes'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  McpAuthAuthorizationGrant_revokeMine: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data?: unknown;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  McpAuthAuthorizationGrant_deleteMine: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data?: unknown;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  McpAuthCustomScope_mine: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['mcp-auth.dto.customScopeMineRes'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  McpAuthCustomScope_catalog: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['mcp-auth.dto.mcpTool'][];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  McpAuthCustomScope_createMine: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['mcp-auth.dto.customScopeCreate_1ff20af69286149eb0b25291d9450172f7bd0054'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['mcp-auth.dto.customScopeView'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  McpAuthCustomScope_updateMine: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['mcp-auth.dto.customScopeCreate_1ff20af69286149eb0b25291d9450172f7bd0054'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['mcp-auth.dto.customScopeView'];
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  McpAuthCustomScope_deleteMine: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number | string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data?: unknown;
+          };
+        };
+      };
+    };
+    authToken: true;
+  };
+  CabloyMcpAccessTokenTest_read: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: string[];
+          };
+        };
+      };
+    };
   };
 }
