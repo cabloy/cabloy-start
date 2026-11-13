@@ -84,6 +84,7 @@ describe('passport.test.ts', { concurrency: false }, () => {
           ...role,
           name: 'Untrusted passport role',
           title: 'Untrusted passport role title',
+          mcpAccess: true,
           instanceId: 'untrusted-role-instance',
           privateMetadata: { secret: 'untrusted-role-secret' },
         };
@@ -99,6 +100,7 @@ describe('passport.test.ts', { concurrency: false }, () => {
         assert.equal(projectedRole.title, role.title);
         assert.deepEqual(projectedRole.titleLocales, role.titleLocales);
         assert.deepEqual(projectedRole.siteIds, role.siteIds);
+        assert.equal(projectedRole.mcpAccess, false);
         assert.equal(projectedRole.builtin, false);
         const safeColumns = [
           'id',
@@ -110,6 +112,7 @@ describe('passport.test.ts', { concurrency: false }, () => {
           'title',
           'titleLocales',
           'siteIds',
+          'mcpAccess',
           'builtin',
         ];
         assert.ok(Object.keys(projectedRole).every(key => safeColumns.includes(key)));
