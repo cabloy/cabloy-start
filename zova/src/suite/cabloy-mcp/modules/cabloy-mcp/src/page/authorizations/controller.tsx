@@ -44,18 +44,6 @@ export class ControllerPageAuthorizations extends BeanControllerPageBase {
     await this.$$modelAuthorizationRecords.revokeMine(item.id).mutateAsync();
   }
 
-  async delete(item: AuthorizationItem) {
-    const confirmed = await this.$performCommand('start-commands:confirm', {
-      text: this.scope.locale.McpAuthorizationDeleteConfirm(),
-    });
-    if (!confirmed) return;
-    await this.$$modelAuthorizationRecords.deleteMine(item.id).mutateAsync();
-    const pageCount = this.queryRecords?.data?.pageCount;
-    if (pageCount !== undefined && this.pageNo > Math.max(1, pageCount)) {
-      this.pageNo = Math.max(1, pageCount);
-    }
-  }
-
   private _status(state: AuthorizationItem['state']) {
     switch (state) {
       case 'pending':
@@ -88,21 +76,11 @@ export class ControllerPageAuthorizations extends BeanControllerPageBase {
       <VCard key={item.id} data-authorization-id={item.id} class="mb-4">
         <VCardTitle class="d-flex flex-wrap align-center justify-space-between ga-3">
           <span class="text-wrap">{item.clientName}</span>
-          <div class="d-flex flex-wrap ga-2">
-            {canRevoke && (
-              <ZButton variant="outlined" size="small" onPerform={() => this.revoke(item)}>
-                {this.scope.locale.Revoke()}
-              </ZButton>
-            )}
-            <ZButton
-              color="error"
-              variant="outlined"
-              size="small"
-              onPerform={() => this.delete(item)}
-            >
-              {this.scope.locale.Delete()}
+          {canRevoke && (
+            <ZButton variant="outlined" size="small" onPerform={() => this.revoke(item)}>
+              {this.scope.locale.Revoke()}
             </ZButton>
-          </div>
+          )}
         </VCardTitle>
         <VCardText>
           <VRow dense>
