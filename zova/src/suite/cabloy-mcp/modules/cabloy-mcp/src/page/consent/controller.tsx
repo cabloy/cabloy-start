@@ -140,7 +140,7 @@ export class ControllerPageConsent extends BeanControllerPageBase {
               {option.tools.map(tool => (
                 <li key={toolIdentityKey(tool)} class="mb-3">
                   <div class="d-flex flex-wrap align-center ga-2">
-                    <span class="font-mono text-body-2">{tool.name}</span>
+                    <span class="text-body-2 text-wrap">{tool.summary?.trim() || tool.name}</span>
                     <VChip size="x-small" color={!tool.available ? 'warning' : undefined}>
                       {!tool.available
                         ? this.scope.locale.McpToolMissing()
@@ -153,7 +153,9 @@ export class ControllerPageConsent extends BeanControllerPageBase {
                     {tool.controller} / {tool.action}
                   </p>
                   {tool.description && (
-                    <p class="text-body-2 text-medium-emphasis">{tool.description}</p>
+                    <p class="text-body-2 text-medium-emphasis" style={{ whiteSpace: 'pre-wrap' }}>
+                      {tool.description}
+                    </p>
                   )}
                 </li>
               ))}
@@ -173,7 +175,6 @@ export class ControllerPageConsent extends BeanControllerPageBase {
     const summary = query?.data;
     const scopes = summary?.scope.split(' ').filter(Boolean) ?? [];
     const selected = summary && this._effectiveOption(summary);
-    const scopesPath = this.$router.getPagePath('/cabloy/mcp/scopes');
     return (
       <ZPage>
         <VContainer class="d-flex align-center justify-center py-10" style={{ minHeight: '100vh' }}>
@@ -196,6 +197,14 @@ export class ControllerPageConsent extends BeanControllerPageBase {
                   <dl class="mb-6">
                     <dt class="text-caption">{this.scope.locale.Application()}</dt>
                     <dd class="text-body-1 font-weight-medium mb-4">{summary.clientName}</dd>
+                    <dt class="text-caption">{this.scope.locale.Resource()}</dt>
+                    <dd
+                      data-mcp-resource
+                      class="text-body-2 text-break font-mono mb-4"
+                      style={{ userSelect: 'text' }}
+                    >
+                      {summary.resource}
+                    </dd>
                     <dt class="text-caption">{this.scope.locale.RequestedScopes()}</dt>
                     <dd class="d-flex flex-wrap ga-2 mt-1" data-mcp-requested-scope>
                       {scopes.map(scope => (
@@ -213,16 +222,14 @@ export class ControllerPageConsent extends BeanControllerPageBase {
                       <p class="text-body-2 text-medium-emphasis">
                         {this.scope.locale.McpEffectiveScopeHelp()}
                       </p>
-                      {scopesPath && (
-                        <a
-                          class="text-primary text-body-2"
-                          href={scopesPath}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {this.scope.locale.McpManageScopes()}
-                        </a>
-                      )}
+                      <a
+                        class="text-primary text-body-2"
+                        href={summary.scopesUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {this.scope.locale.McpManageScopes()}
+                      </a>
                     </div>
                     <VRadioGroup
                       modelValue={selected?.scope}

@@ -2668,6 +2668,8 @@ export interface components {
     'mcp-auth.dto.authorizationSummary': {
       clientName: string;
       resource: string;
+      ssrSiteId: string;
+      scopesUrl: string;
       scope: string;
       options: components['schemas']['mcp-auth.dto.mcpScopeOption'][];
       expiresAt: number;
@@ -2750,6 +2752,8 @@ export interface components {
       updatedAt: Date;
       /** @description ID */
       id: number | string;
+      /** Format: uri */
+      resource: string;
       scope: string;
       /**
        * Name
@@ -4585,7 +4589,8 @@ export interface operations {
   };
   McpAuthAccessToken_mine: {
     parameters: {
-      query?: {
+      query: {
+        ssrSiteId: string;
         pageNo?: number;
         pageSize?: number;
       };
@@ -4612,7 +4617,9 @@ export interface operations {
   };
   McpAuthAccessToken_createMine: {
     parameters: {
-      query?: never;
+      query: {
+        ssrSiteId: string;
+      };
       header?: never;
       path?: never;
       cookie?: never;
@@ -4640,7 +4647,9 @@ export interface operations {
   };
   McpAuthAccessToken_deleteMine: {
     parameters: {
-      query?: never;
+      query: {
+        ssrSiteId: string;
+      };
       header?: never;
       path: {
         id: number | string;
@@ -4720,7 +4729,8 @@ export interface operations {
   };
   McpAuthAuthorizationGrant_mine: {
     parameters: {
-      query?: {
+      query: {
+        ssrSiteId: string;
         pageNo?: number;
         pageSize?: number;
       };
@@ -4747,7 +4757,9 @@ export interface operations {
   };
   McpAuthAuthorizationGrant_revokeMine: {
     parameters: {
-      query?: never;
+      query: {
+        ssrSiteId: string;
+      };
       header?: never;
       path: {
         id: number | string;
@@ -4773,7 +4785,9 @@ export interface operations {
   };
   McpAuthAuthorizationGrant_deleteMine: {
     parameters: {
-      query?: never;
+      query: {
+        ssrSiteId: string;
+      };
       header?: never;
       path: {
         id: number | string;
@@ -4799,7 +4813,9 @@ export interface operations {
   };
   McpAuthCustomScope_mine: {
     parameters: {
-      query?: never;
+      query: {
+        ssrSiteId: string;
+      };
       header?: never;
       path?: never;
       cookie?: never;
@@ -4823,7 +4839,9 @@ export interface operations {
   };
   McpAuthCustomScope_catalog: {
     parameters: {
-      query?: never;
+      query: {
+        ssrSiteId: string;
+      };
       header?: never;
       path?: never;
       cookie?: never;
@@ -4847,7 +4865,9 @@ export interface operations {
   };
   McpAuthCustomScope_createMine: {
     parameters: {
-      query?: never;
+      query: {
+        ssrSiteId: string;
+      };
       header?: never;
       path?: never;
       cookie?: never;
@@ -4875,7 +4895,9 @@ export interface operations {
   };
   McpAuthCustomScope_updateMine: {
     parameters: {
-      query?: never;
+      query: {
+        ssrSiteId: string;
+      };
       header?: never;
       path: {
         id: number | string;
@@ -4905,7 +4927,9 @@ export interface operations {
   };
   McpAuthCustomScope_deleteMine: {
     parameters: {
-      query?: never;
+      query: {
+        ssrSiteId: string;
+      };
       header?: never;
       path: {
         id: number | string;
