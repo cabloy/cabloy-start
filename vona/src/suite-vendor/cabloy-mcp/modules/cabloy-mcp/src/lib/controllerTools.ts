@@ -2,12 +2,14 @@ import type { CallToolResult, Tool } from '@modelcontextprotocol/server';
 import type { Constructable, VonaApplication } from 'vona';
 import type { IMcpToolOptions } from 'vona-module-a-openapiutils';
 import type { IAnalysisPolicy, IQueryPolicy, TypeAnalysisMode } from 'vona-module-a-orm';
+import type { IDecoratorSsrSiteOptions } from 'vona-module-a-ssr';
 import type { TypeMcpScope } from 'vona-module-mcp-auth';
 
 import { fromJsonSchema, ProtocolError, Server } from '@modelcontextprotocol/server';
 import { appMetadata, runWithZodQueryCoercion } from 'vona';
 import { SymbolMcpOptions } from 'vona-module-a-openapiutils';
 import { checkQueryBudget, PublicQueryError, validateQuery } from 'vona-module-a-orm';
+import { RateLimitError, RateLimitUnavailableError } from 'vona-module-a-ratelimit';
 import { getCacheControllerRoutes } from 'vona-module-a-web';
 import { isMcpScope } from 'vona-module-mcp-auth';
 import z from 'zod';
@@ -55,11 +57,14 @@ export interface IControllerToolCatalogEntry extends IControllerToolIdentity {
 }
 
 export interface IControllerToolServerOptions {
+  /** Explicit enabled Site boundary; absence is never an all-Sites registry. */
+  ssrSiteId?: string;
   includeTool?(identity: IControllerToolIdentity): boolean;
   isToolVisible?(identity: IControllerToolIdentity, controller: Constructable): Promise<boolean>;
   /** Exact consented bindings, not names alone or a dynamic include expression. */
   toolAccess?: ReadonlyArray<IControllerToolIdentity & { name: string }>;
   toolAccessReadOnly?: boolean;
+  logout?(): Promise<void>;
 }
 
 interface IControllerTool {
@@ -88,6 +93,21 @@ function objectValidator(schema: z.ZodType): z.ZodObject | undefined {
   return undefined;
 }
 
+const logoutName = 'cabloy_logout';
+const logoutTool: Tool = {
+  name: logoutName,
+  description:
+    'Call only when the user explicitly asks to log out of this MCP server or revoke its current authorization. Revokes the credential used for this request, including OAuth refresh capability. All connections sharing that authorization or personal access token lose access; independent authorizations remain unchanged. Does not close the conversation, clear client credentials or history, or log out of the website. Reconnect requires a new authorization or personal access token.',
+  inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+  outputSchema: {
+    type: 'object',
+    properties: { loggedOut: { type: 'boolean', const: true }, message: { type: 'string' } },
+    required: ['loggedOut', 'message'],
+    additionalProperties: false,
+  },
+  annotations: { readOnlyHint: false, destructiveHint: true, openWorldHint: false },
+};
+
 function failure(message: string): CallToolResult {
   return { isError: true, content: [{ type: 'text', text: message }] };
 }
@@ -101,12 +121,46 @@ export async function createControllerToolServer(
   if (!isMcpScope(scope) || (scope.startsWith('mcp:custom:') && !serverOptions.toolAccess)) {
     throw new Error('MCP authorization scope required');
   }
+  const ssrSiteId = serverOptions.ssrSiteId;
+  const ssrSite = ssrSiteId
+    ? app
+        .scope('a-ssr')
+        .service.ssr.getSitesEnabled()
+        .find(site => (site.beanOptions.options as IDecoratorSsrSiteOptions).siteId === ssrSiteId)
+    : undefined;
+  if (!ssrSite) {
+    throw new Error('Enabled MCP SSR Site required');
+  }
+  const registeredSites = new Set<string>(
+    Object.values(app.bean.onion.ssrSite.onionsNormal).map(site => site.name),
+  );
   return runWithZodQueryCoercion(true, async () => {
     const tools = new Map<string, IControllerTool>();
     const diagnostics: IControllerToolDiagnostic[] = [];
     const routes = getCacheControllerRoutes(app);
     for (const controller of app.bean.onion.controller.getOnionsEnabledCached()) {
       for (const route of routes[controller.beanOptions.beanFullName] ?? []) {
+        const options = appMetadata.getOwnMetadata<IMcpToolOptions>(
+          SymbolMcpOptions,
+          route.controller.prototype,
+          route.action,
+        );
+        if (!options) continue;
+        // Validate declarations even when another Site is selected. Site exclusion must
+        // happen before public-name collisions or schema compilation can cross boundaries.
+        const sites = options.ssrSites as unknown;
+        if (
+          sites !== undefined &&
+          (!Array.isArray(sites) ||
+            !sites.length ||
+            sites.some(site => typeof site !== 'string' || !registeredSites.has(site)) ||
+            new Set(sites).size !== sites.length)
+        ) {
+          throw new Error(
+            `Invalid MCP tool ssrSites: ${controller.beanOptions.beanFullName}#${route.action}`,
+          );
+        }
+        if (Array.isArray(sites) && !sites.includes(ssrSite.name)) continue;
         if (
           serverOptions.includeTool &&
           !serverOptions.includeTool({
@@ -116,16 +170,15 @@ export async function createControllerToolServer(
         ) {
           continue;
         }
-        const options = appMetadata.getOwnMetadata<IMcpToolOptions>(
-          SymbolMcpOptions,
-          route.controller.prototype,
-          route.action,
-        );
-        if (!options) continue;
         const name =
           options.name ??
           `${controller.beanOptions.beanFullName.replace('.controller.', '_').replace(/[^\w-]/g, '_')}_${route.action}`;
-        if (!/^[\w-]{1,128}$/.test(name) || tools.has(name) || name === toolContractName) {
+        if (
+          !/^[\w-]{1,128}$/.test(name) ||
+          tools.has(name) ||
+          name === toolContractName ||
+          name === logoutName
+        ) {
           throw new Error(`Invalid or duplicate MCP tool name: ${name}`);
         }
         try {
@@ -463,6 +516,24 @@ export async function createControllerToolServer(
                   structuredContent,
                 };
               } catch (error) {
+                if (error instanceof RateLimitError || error instanceof RateLimitUnavailableError) {
+                  return {
+                    ...failure(
+                      error instanceof RateLimitError ? 'Too Many Requests' : 'Service Unavailable',
+                    ),
+                    _meta: {
+                      'cabloy/rateLimit':
+                        error instanceof RateLimitError
+                          ? {
+                              kind: 'rate_limit',
+                              status: 429,
+                              limit: error.errors.limit,
+                              retryAfterSeconds: error.errors.retryAfterSeconds,
+                            }
+                          : { kind: 'rate_limit_unavailable', status: 503 },
+                    },
+                  };
+                }
                 if (error instanceof PublicQueryError) {
                   throw new ProtocolError(-32602, 'Invalid tool arguments', {
                     queryCode: error.queryCode,
@@ -530,6 +601,9 @@ export async function createControllerToolServer(
         throw new ProtocolError(-32603, 'Tool discovery failed');
       }
     }
+    const logoutInputCheck = fromJsonSchema(
+      logoutTool.inputSchema as Parameters<typeof fromJsonSchema>[0],
+    )['~standard'];
     const contractInputCheck = fromJsonSchema(
       toolContract.inputSchema as Parameters<typeof fromJsonSchema>[0],
     )['~standard'];
@@ -545,7 +619,11 @@ export async function createControllerToolServer(
       track(async () => {
         const visible = await visibleTools();
         return {
-          tools: [...visible.map(item => item.tool), ...(visible.length ? [toolContract] : [])],
+          tools: [
+            ...visible.map(item => item.tool),
+            ...(visible.length ? [toolContract] : []),
+            ...(serverOptions.logout ? [logoutTool] : []),
+          ],
         };
       }),
     );
@@ -553,13 +631,42 @@ export async function createControllerToolServer(
       track(async () => {
         if (!app.ctx) throw new ProtocolError(-32603, 'Request context required');
         const contractCall = request.params.name === toolContractName;
+        const logoutCall = request.params.name === logoutName && serverOptions.logout;
         const tool = tools.get(request.params.name);
         const admitted = tool && allowed(tool);
         const diagnostic = beginToolCall(
-          contractCall ? toolContractName : admitted ? tool.tool.name : 'unavailable',
+          logoutCall
+            ? logoutName
+            : contractCall
+              ? toolContractName
+              : admitted
+                ? tool.tool.name
+                : 'unavailable',
         );
         recordToolCall(app, diagnostic, 'received');
         try {
+          if (logoutCall) {
+            if ((await logoutInputCheck.validate(request.params.arguments ?? {})).issues) {
+              diagnostic.outcome = 'invalid_arguments';
+              throw new ProtocolError(-32602, 'Invalid tool arguments');
+            }
+            recordToolCall(app, diagnostic, 'dispatch');
+            try {
+              await logoutCall();
+            } catch {
+              return failure('Logout could not be confirmed. Reconnect if access is required.');
+            }
+            const structuredContent = {
+              loggedOut: true,
+              message:
+                'Current MCP authorization revoked. All connections sharing it lose access. Reconnect with a new authorization or personal access token.',
+            };
+            diagnostic.outcome = 'success';
+            return {
+              content: [{ type: 'text' as const, text: JSON.stringify(structuredContent) }],
+              structuredContent,
+            };
+          }
           if (contractCall) {
             const args = request.params.arguments ?? {};
             if ((await contractInputCheck.validate(args)).issues) {
