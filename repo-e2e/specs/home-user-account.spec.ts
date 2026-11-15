@@ -146,7 +146,9 @@ async function openUserMenu(page: Page, username: string) {
   const panel = actions.locator('.header-actions-panel');
   // Login changes the URL before its destination layout necessarily finishes mounting.
   await expect(actions).toBeVisible();
-  if (await more.isVisible()) {
+  // Use the CSS breakpoint, not a visibility snapshot of a potentially still-mounting button.
+  if (await page.evaluate(() => window.matchMedia('(width < 1024px)').matches)) {
+    await expect(more).toBeVisible();
     if (!(await panel.isVisible())) await more.click();
     await expect(more).toHaveAttribute('aria-expanded', 'true');
   }
@@ -656,7 +658,7 @@ test(
             // Recover the exact named token if creation succeeded before its response was read.
             const mineResponse = await requestApi(request, 'GET', `${accessTokenApiPath}/mine`, {
               accessToken: fixture.accessToken,
-              params: { pageNo: 1, pageSize: 100 },
+              params: { ssrSiteId: 'web', pageNo: 1, pageSize: 100 },
             });
             expect(mineResponse.ok()).toBe(true);
             const mine = (await mineResponse.json()) as {
@@ -672,6 +674,7 @@ test(
                 `${accessTokenApiPath}/deleteMine/${item.id}`,
                 {
                   accessToken: fixture.accessToken,
+                  params: { ssrSiteId: 'web' },
                 },
               );
               expect(deleted.ok()).toBe(true);
