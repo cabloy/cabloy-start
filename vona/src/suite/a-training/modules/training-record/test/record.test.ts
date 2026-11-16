@@ -51,6 +51,41 @@ describe('record.test.ts', { concurrency: false }, () => {
     });
   });
 
+  it('action:record:imageScenePolicy', async () => {
+    await app.bean.executor.mockCtx(async () => {
+      const policy = await app.bean.imageUploadPolicy.resolveSceneUploadPolicy({
+        imageScene: 'training-record:sceneImage',
+      });
+      assert.equal(policy.public, false);
+      assert.equal(policy.maxSize, 2 * 1024 * 1024);
+      assert.deepEqual(policy.mimeTypes, ['image/png', 'image/jpeg', 'image/webp']);
+      assert.equal(policy.multiple, true);
+      assert.deepEqual(policy.processing, {
+        enableCrop: false,
+        resize: {
+          width: 1280,
+          height: 1280,
+          fit: 'contain',
+          format: 'jpeg',
+          quality: 90,
+        },
+      });
+      for (const DtoClass of [DtoRecordUpdate, DtoRecordView]) {
+        const apiJson = await app.bean.openapi.generateJsonOfClass(DtoClass);
+        const component = Object.values(apiJson.components!.schemas as any).find(item => {
+          return (item as any).properties?.studentId;
+        }) as any;
+        const form = component?.properties?.sceneImageIds?.rest?.form;
+        assert.equal(form?.render, 'start-image:formFieldImage');
+        assert.deepEqual(form?.options, {
+          imageScene: 'training-record:sceneImage',
+          maxCount: 3,
+          relationName: 'sceneImages',
+        });
+      }
+    });
+  });
+
   it('action:record:emittedDtoSchemas', async () => {
     await app.bean.executor.mockCtx(async () => {
       const subjectApiJson = await app.bean.openapi.generateJsonOfClass(

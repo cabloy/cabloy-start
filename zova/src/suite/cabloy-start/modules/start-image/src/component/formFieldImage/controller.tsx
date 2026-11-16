@@ -11,7 +11,6 @@ import { ZFormField } from 'zova-module-a-form';
 import { ZButton } from 'zova-module-start-button';
 import { createCompoundFormFieldState, renderCompoundFormField } from 'zova-module-start-form';
 
-import type { IImageResizeOptions } from '../../lib/imageTransform.tsx';
 import type { IImageUploaderResult } from '../imageUploader/controller.tsx';
 
 import { ZImageUploader } from '../../.metadata/component/imageUploader.ts';
@@ -28,23 +27,12 @@ declare module 'zova-module-a-openapi' {
   }
 }
 
-export interface IResourceFormFieldImageResizeOptions extends IImageResizeOptions {}
-
 export interface IResourceFormFieldImageOptions extends IResourceFormFieldOptionsBase {
   imageScene?: keyof IImageSceneRecord | string;
   relationName?: string;
   multiple?: boolean;
   maxCount?: number;
-  accept?: string | string[];
-  mimeTypes?: string[];
-  extensions?: string[];
-  maxSize?: number;
-  minSize?: number;
   placeholder?: string;
-  enableCrop?: boolean;
-  cropAspectRatio?: number;
-  cropShape?: 'rect' | 'round';
-  resize?: IResourceFormFieldImageResizeOptions;
 }
 
 export interface ControllerFormFieldImageProps extends IFormFieldComponentOptions {
@@ -64,16 +52,6 @@ export class ControllerFormFieldImage extends BeanControllerBase {
   static $propsDefault = {
     options: {
       maxCount: 1,
-      enableCrop: true,
-      cropAspectRatio: 1,
-      cropShape: 'rect',
-      resize: {
-        width: 512,
-        height: 512,
-        fit: 'cover',
-        format: 'jpeg',
-        quality: 90,
-      },
     },
   };
 
@@ -134,17 +112,10 @@ export class ControllerFormFieldImage extends BeanControllerBase {
             renderControl: ({ disabled, readonly: fieldReadonly }) => (
               <ZImageUploader
                 imageScene={imageScene}
-                accept={this.currentOptions.accept}
-                mimeTypes={this.currentOptions.mimeTypes}
-                extensions={this.currentOptions.extensions}
-                maxSize={this.currentOptions.maxSize}
-                minSize={this.currentOptions.minSize}
                 multiple={this.currentOptions.multiple !== false}
                 onBeforeUpload={(fileCount, policy) => {
                   return this._validateUploadCount(fileCount, policy.multiple);
                 }}
-                crop={this._getCropOptions(this.currentOptions)}
-                resize={this.currentOptions.resize}
                 onUploadedBatch={(uploaded, policy) => {
                   this._handleUploaded(uploaded, propsBucket.disableNotifyChanged, policy.multiple);
                 }}
@@ -314,20 +285,6 @@ export class ControllerFormFieldImage extends BeanControllerBase {
     policyMultiple = this.effectiveMultiple,
   ) {
     return policyMultiple && options?.multiple !== false;
-  }
-
-  private _getCropOptions(options: IResourceFormFieldImageOptions) {
-    if (!options.enableCrop) return undefined;
-    return {
-      labels: {
-        title: this.scope.locale.CropImage(),
-        adjust: this.scope.locale.AdjustImage(),
-        cancel: this.scope.locale.CancelCrop(),
-        apply: this.scope.locale.ApplyCrop(),
-      },
-      aspectRatio: options.cropAspectRatio,
-      shape: options.cropShape,
-    } as const;
   }
 
   private _validateUploadCount(fileCount: number, multiple: boolean) {

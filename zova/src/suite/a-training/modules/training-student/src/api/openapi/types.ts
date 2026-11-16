@@ -112,6 +112,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/image/upload-base64': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Upload image content */
+    post: operations['Image_uploadBase64'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/image/upload-policy': {
     parameters: {
       query?: never;
@@ -121,6 +138,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
+    /** Get image upload policy */
     post: operations['Image_getUploadPolicy'];
     delete?: never;
     options?: never;
@@ -1164,6 +1182,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
+    /**
+     * Read MCP test values
+     * @description Returns fixed array values for managed MCP browser tests.
+     */
     get: operations['CabloyMcpAccessTokenTest_read'];
     put?: never;
     post?: never;
@@ -1259,18 +1281,6 @@ export interface components {
       siteId: string;
       title: string;
     };
-    'a-image.dto.imageUploadPolicyResponse': {
-      imageScene: string;
-      maxSize?: number | undefined;
-      mimeTypes?: string[] | undefined;
-      extensions?: string[] | undefined;
-      multiple?: boolean | undefined;
-      public?: boolean | undefined;
-      directUpload?: boolean | undefined;
-    };
-    'a-image.dto.imageUploadPolicyRequest': {
-      imageScene: string;
-    };
     'a-image.dto.imageUploadResponse': {
       id: number | string;
       filename?: string | undefined;
@@ -1281,6 +1291,47 @@ export interface components {
       public?: boolean | undefined;
       url?: string | undefined;
       signed?: boolean | undefined;
+    };
+    'a-image.dto.imageUploadBase64Request': {
+      imageScene: string;
+      filename: string;
+      /** @enum {string} */
+      mimeType: 'image/png' | 'image/jpeg' | 'image/webp';
+      base64: string;
+    };
+    'a-image.dto.imageUploadPolicyResponse': {
+      imageScene: string;
+      maxSize?: number | undefined;
+      mimeTypes?: string[] | undefined;
+      extensions?: string[] | undefined;
+      multiple?: boolean | undefined;
+      public?: boolean | undefined;
+      directUpload?: boolean | undefined;
+      processing?: components['schemas']['a-image.dto.imageProcessingOptions_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
+    };
+    'a-image.dto.imageProcessingOptions_2d063d28bc7243bed02ebd8bddf1212a93c6305b':
+      | {
+          enableCrop?: boolean | undefined;
+          cropAspectRatio?: number | undefined;
+          /** @enum {string|null} */
+          cropShape?: 'rect' | 'round' | null | undefined;
+          resize?: components['schemas']['a-image.dto.imageResizeOptions_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
+        }
+      | undefined;
+    'a-image.dto.imageResizeOptions_2d063d28bc7243bed02ebd8bddf1212a93c6305b':
+      | {
+          width?: number | undefined;
+          height?: number | undefined;
+          /** @enum {string|null} */
+          fit?: 'scale-down' | 'contain' | 'cover' | 'crop' | 'pad' | null | undefined;
+          background?: string | undefined;
+          /** @enum {string|null} */
+          format?: 'auto' | 'avif' | 'webp' | 'jpeg' | 'png' | null | undefined;
+          quality?: number | undefined;
+        }
+      | undefined;
+    'a-image.dto.imageUploadPolicyRequest': {
+      imageScene: string;
     };
     'a-image.dto.imageDirectUploadResponse': {
       id: number | string;
@@ -2668,6 +2719,8 @@ export interface components {
     'mcp-auth.dto.authorizationSummary': {
       clientName: string;
       resource: string;
+      ssrSiteId: string;
+      scopesUrl: string;
       scope: string;
       options: components['schemas']['mcp-auth.dto.mcpScopeOption'][];
       expiresAt: number;
@@ -2750,6 +2803,8 @@ export interface components {
       updatedAt: Date;
       /** @description ID */
       id: number | string;
+      /** Format: uri */
+      resource: string;
       scope: string;
       /**
        * Name
@@ -2983,6 +3038,34 @@ export interface operations {
         };
       };
     };
+  };
+  Image_uploadBase64: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['a-image.dto.imageUploadBase64Request'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            message: string;
+            data: components['schemas']['a-image.dto.imageUploadResponse'];
+          };
+        };
+      };
+    };
+    authToken: true;
   };
   Image_getUploadPolicy: {
     parameters: {
@@ -4585,7 +4668,8 @@ export interface operations {
   };
   McpAuthAccessToken_mine: {
     parameters: {
-      query?: {
+      query: {
+        ssrSiteId: string;
         pageNo?: number;
         pageSize?: number;
       };
@@ -4612,7 +4696,9 @@ export interface operations {
   };
   McpAuthAccessToken_createMine: {
     parameters: {
-      query?: never;
+      query: {
+        ssrSiteId: string;
+      };
       header?: never;
       path?: never;
       cookie?: never;
@@ -4640,7 +4726,9 @@ export interface operations {
   };
   McpAuthAccessToken_deleteMine: {
     parameters: {
-      query?: never;
+      query: {
+        ssrSiteId: string;
+      };
       header?: never;
       path: {
         id: number | string;
@@ -4720,7 +4808,8 @@ export interface operations {
   };
   McpAuthAuthorizationGrant_mine: {
     parameters: {
-      query?: {
+      query: {
+        ssrSiteId: string;
         pageNo?: number;
         pageSize?: number;
       };
@@ -4747,7 +4836,9 @@ export interface operations {
   };
   McpAuthAuthorizationGrant_revokeMine: {
     parameters: {
-      query?: never;
+      query: {
+        ssrSiteId: string;
+      };
       header?: never;
       path: {
         id: number | string;
@@ -4773,7 +4864,9 @@ export interface operations {
   };
   McpAuthAuthorizationGrant_deleteMine: {
     parameters: {
-      query?: never;
+      query: {
+        ssrSiteId: string;
+      };
       header?: never;
       path: {
         id: number | string;
@@ -4799,7 +4892,9 @@ export interface operations {
   };
   McpAuthCustomScope_mine: {
     parameters: {
-      query?: never;
+      query: {
+        ssrSiteId: string;
+      };
       header?: never;
       path?: never;
       cookie?: never;
@@ -4823,7 +4918,9 @@ export interface operations {
   };
   McpAuthCustomScope_catalog: {
     parameters: {
-      query?: never;
+      query: {
+        ssrSiteId: string;
+      };
       header?: never;
       path?: never;
       cookie?: never;
@@ -4847,7 +4944,9 @@ export interface operations {
   };
   McpAuthCustomScope_createMine: {
     parameters: {
-      query?: never;
+      query: {
+        ssrSiteId: string;
+      };
       header?: never;
       path?: never;
       cookie?: never;
@@ -4875,7 +4974,9 @@ export interface operations {
   };
   McpAuthCustomScope_updateMine: {
     parameters: {
-      query?: never;
+      query: {
+        ssrSiteId: string;
+      };
       header?: never;
       path: {
         id: number | string;
@@ -4905,7 +5006,9 @@ export interface operations {
   };
   McpAuthCustomScope_deleteMine: {
     parameters: {
-      query?: never;
+      query: {
+        ssrSiteId: string;
+      };
       header?: never;
       path: {
         id: number | string;

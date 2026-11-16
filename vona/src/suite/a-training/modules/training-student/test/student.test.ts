@@ -73,6 +73,40 @@ describe('student.test.ts', { concurrency: false }, () => {
     });
   });
 
+  it('action:student:imageScenePolicy', async () => {
+    await app.bean.executor.mockCtx(async () => {
+      const policy = await app.bean.imageUploadPolicy.resolveSceneUploadPolicy({
+        imageScene: 'training-student:studentImage',
+      });
+      assert.equal(policy.public, true);
+      assert.equal(policy.maxSize, 2 * 1024 * 1024);
+      assert.deepEqual(policy.mimeTypes, ['image/png', 'image/jpeg', 'image/webp']);
+      assert.deepEqual(policy.processing, {
+        enableCrop: true,
+        cropAspectRatio: 1,
+        resize: {
+          width: 512,
+          height: 512,
+          fit: 'cover',
+          format: 'jpeg',
+          quality: 90,
+        },
+      });
+      for (const DtoClass of [DtoStudentCreate, DtoStudentUpdate, DtoStudentView]) {
+        const apiJson = await app.bean.openapi.generateJsonOfClass(DtoClass);
+        const component = Object.values(apiJson.components!.schemas as any).find(item => {
+          return (item as any).properties?.trainingRecords;
+        }) as any;
+        const form = component?.properties?.imageId?.rest?.form;
+        assert.equal(form?.render, 'start-image:formFieldImage');
+        assert.deepEqual(form?.options, {
+          imageScene: 'training-student:studentImage',
+          relationName: 'image',
+        });
+      }
+    });
+  });
+
   it('action:student:bulkDeleteMetadata', async () => {
     await app.bean.executor.mockCtx(async () => {
       const dtoApiJson = await app.bean.openapi.generateJsonOfClass(DtoStudentDeleteBulk);
@@ -604,6 +638,102 @@ The stored value must round-trip exactly through the API, model, and summary res
       assert.equal(studentContentForceDeleted, undefined);
       // logout
       await app.bean.passport.signout();
+    });
+  });
+
+  it('action:student:maskedMobileUpdate', async () => {
+    await app.bean.executor.mockCtx(async () => {
+      await app.bean.passport.signinMock();
+      let studentId: string | number | undefined;
+      const studentModel = app.scope('training-student').model.student;
+      const contentModel = app.scope('training-student').model.studentContent;
+      try {
+        studentId = await app.bean.executor.performAction('post', '/training/student', {
+          innerAccess: false,
+          body: {
+            name: '__Masked Mobile__',
+            mobile: '13812345678',
+            level: 1,
+            content: { descriptionMarkdown: '# Original profile' },
+            trainingRecords: [],
+          },
+        });
+        assert.ok(studentId);
+        const original = await studentModel.getById(studentId);
+        assert.ok(original);
+        const student: DtoStudentView = await app.bean.executor.performAction(
+          'get',
+          '/training/student/:id',
+          { innerAccess: false, params: { id: studentId } },
+        );
+        assert.equal(student.mobile, '138****5678');
+        const updateRes = await app.bean.executor.performAction('patch', '/training/student/:id', {
+          innerAccess: false,
+          params: { id: studentId },
+          body: {
+            name: '__Masked Mobile Updated__',
+            mobile: student.mobile,
+            level: 2,
+            content: { descriptionMarkdown: '## Updated profile' },
+            trainingRecords: [],
+          },
+        });
+        assert.equal(updateRes, null);
+        const maskedUpdate = await studentModel.getById(studentId);
+        assert.equal(maskedUpdate?.mobile, original.mobile);
+        assert.equal(maskedUpdate?.name, '__Masked Mobile Updated__');
+        assert.equal(maskedUpdate?.level, 2);
+        assert.equal(String(maskedUpdate?.departmentId), String(original.departmentId));
+        assert.equal(String(maskedUpdate?.userIdOwner), String(original.userIdOwner));
+        const updatedContent = await contentModel.get({ studentId });
+        assert.equal(updatedContent?.descriptionMarkdown, '## Updated profile');
+        assert.equal(updatedContent?.descriptionHtml, '<h2>Updated profile</h2>');
+
+        await assert.rejects(
+          () =>
+            app.bean.executor.performAction('patch', '/training/student/:id', {
+              innerAccess: false,
+              params: { id: studentId },
+              body: { name: '__Invalid Mobile__', mobile: '1391234567', level: 3 },
+            }),
+          (error: { code?: number }) => error.code === 422,
+        );
+        assert.equal((await studentModel.getById(studentId))?.mobile, original.mobile);
+        assert.equal((await studentModel.getById(studentId))?.name, '__Masked Mobile Updated__');
+
+        const normalUpdateRes = await app.bean.executor.performAction(
+          'patch',
+          '/training/student/:id',
+          {
+            innerAccess: false,
+            params: { id: studentId },
+            body: { name: '__Normal Mobile Updated__', mobile: '13987654321', level: 3 },
+          },
+        );
+        assert.equal(normalUpdateRes, null);
+        const normalUpdate = await studentModel.getById(studentId);
+        assert.equal(normalUpdate?.mobile, '13987654321');
+        assert.equal(normalUpdate?.name, '__Normal Mobile Updated__');
+        assert.equal(normalUpdate?.level, 3);
+        const preservedContent = await contentModel.get({ studentId });
+        assert.equal(preservedContent?.descriptionMarkdown, updatedContent?.descriptionMarkdown);
+        assert.equal(preservedContent?.descriptionHtml, updatedContent?.descriptionHtml);
+        const reloaded: DtoStudentView = await app.bean.executor.performAction(
+          'get',
+          '/training/student/:id',
+          { innerAccess: false, params: { id: studentId } },
+        );
+        assert.equal(reloaded.mobile, '139****4321');
+      } finally {
+        try {
+          if (studentId) {
+            await contentModel.delete({ studentId }, { disableDeleted: true });
+            await studentModel.deleteById(studentId, { disableDeleted: true });
+          }
+        } finally {
+          await app.bean.passport.signout();
+        }
+      }
     });
   });
 
