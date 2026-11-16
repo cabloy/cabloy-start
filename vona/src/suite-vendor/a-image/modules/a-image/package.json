@@ -1,6 +1,6 @@
 {
   "name": "vona-module-a-image",
-  "version": "5.0.8",
+  "version": "5.0.9",
   "description": "",
   "keywords": [
     "Vona Module"
@@ -30,6 +30,9 @@
     "prepublishOnly": "npm run tsc:publish",
     "prepack": "clean-package",
     "postpack": "clean-package restore"
+  },
+  "dependencies": {
+    "file-type": "^22.3.0"
   },
   "devDependencies": {
     "clean-package": "^2.2.0",
