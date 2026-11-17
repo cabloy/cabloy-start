@@ -11,6 +11,7 @@ The reusable [`@Mcp.tool()` metadata](/backend/openapi-guide#mcp-tool-metadata) 
 - [MCP Controller Tools](/mcp/mcp-controller-tools): opt Actions in, map arguments and results, compact declarations, retrieve exact-tool contracts, inspect diagnostics, and follow the Student read/write examples.
 - [End-user query skill](https://github.com/cabloy/cabloy/tree/main/repo-client-governance/skills/cabloy-mcp-query): manually load the standalone `cabloy-mcp-query` skill in an already-connected client; no development checkout or automatic installation is required.
 - [End-user image skill](https://github.com/cabloy/cabloy/tree/main/repo-client-governance/skills/cabloy-mcp-image): manually load the standalone `cabloy-mcp-image` skill to resolve scene metadata, retrieve current upload limits and processing guidance, prepare a copy, upload once and optionally bind through a complete resource update; it does not configure connections or grant authority.
+- [End-user Resource pages skill](https://github.com/cabloy/cabloy/tree/main/repo-client-governance/skills/cabloy-mcp-resource-pages): manually load the standalone `cabloy-mcp-resource-pages` skill to choose trusted list, create, view or edit links for browser handoff on the same MCP connection; links are navigation only and do not execute business operations or grant authority.
 - [MCP Browser Authorization](/mcp/mcp-browser-authorization): connect a client through registration, existing login, explicit consent, PKCE, MCP tokens and personal scopes; [log out from a connected client](/mcp/mcp-browser-authorization#log-out-from-an-mcp-client) to revoke its current authorization.
 - [Personal MCP Access Tokens](/mcp/mcp-access-tokens): create and manage a Bearer token for clients that cannot complete OAuth.
 - [Connected-client Query Guide](/mcp/mcp-query-guide): discover an eligible tool, retrieve its exact query contract and compose native queries without source inspection.
@@ -98,6 +99,25 @@ An undefined result or a missing object resource represented by null produces sa
 Retrieve only the needed direction; there is no arbitrary schema-fragment API and no default dump of both schemas. `sections` advertises `query` only where supported. The helper is visible with any visible Action, not just query tools, and freshly checks the exact target's scope and Action guards on every lookup—including non-query reads and mutations. Listing also checks current guards for all targets. It executes no target Action, row query or trial write. It is not part of the consent/selection catalog, grants no execution authority and cannot widen a personal selection. If unavailable, report the limitation rather than using a legacy helper or old-server fallback.
 
 `discovery?: { input?: string[][]; output?: string[][] }` explicitly compacts selected object/array schemas in declarations only. Paths use final MCP object properties and optional terminal `items` for an array item schema; root/scalar/union/missing/overlapping selections are invalid. Student select uses `discovery.output: [['list', 'items']]`. This does **not** redact schema data, shrink business results or change full validators. Automatic compact `where` remains limited to policy-bound query bindings; unbound schemas are not automatically compacted. See [declaration compaction](/mcp/mcp-controller-tools#compact-selected-declaration-schemas).
+
+## Resource page links
+
+A connected client may also discover the read-only built-in tool **`cabloy_resource_page_links`** when the current Site has at least one visible, admitted MCP tool backed by a standard Vona Resource. It is a navigation helper, not a second CRUD API or a permission grant.
+
+Call it with the exact server-published source tool name and one or more standard page requests:
+
+```json
+{
+  "sourceTool": "training-student_student_view",
+  "links": [{ "page": "list" }, { "page": "view", "id": "3" }, { "page": "edit", "id": "3" }]
+}
+```
+
+The supported pages are `list`, `create`, `view` and `edit`. Record pages require an `id`; list and create pages must not receive one. The server limits each request to eight links. The helper derives the business Resource from the exact source-tool metadata, uses the current authenticated MCP Site and trusted Site configuration, and returns standard MCP `resource_link` content together with structured link data. Clients should preserve the link URI as returned rather than constructing a URL from a tool name.
+
+Source-tool admission and each requested target page Action are checked independently using the current scope and business permission guards. A visible read tool therefore does not imply create or edit authority. Requests can return only the authorized subset; an empty link array is a successful bounded result when none of the requested target pages is currently available. Unknown, non-Resource or unavailable source tools fail closed without revealing another Site's catalog.
+
+The links are navigation only. They do not contain Bearer tokens, OAuth codes, cookies or permission data; opening one still requires ordinary browser authentication, Site admission and Resource authorization. A link does not prove that a record exists, that a business operation succeeded, or that the client can perform the target page's action. The helper does not execute the source or target business Action, and the current MCP resource supplies the Site boundary; callers cannot choose `ssrSiteId`, `businessResource`, an origin, an arbitrary path or a query string.
 
 ### Query without requiring a skill
 
