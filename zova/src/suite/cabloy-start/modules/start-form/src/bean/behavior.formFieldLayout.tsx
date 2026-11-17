@@ -56,11 +56,17 @@ export class BehaviorFormFieldLayout extends BeanBehaviorBase<
     }
     if (propsBucket.layout?.compact) {
       const options = propsBucket.options ?? {};
-      propsBucket.options = {
-        ...options,
-        hideDetails: options.hideDetails === undefined ? 'auto' : options.hideDetails,
-        density: options.density === undefined ? 'compact' : options.density,
-      };
+      return next({
+        ...renderContext,
+        propsBucket: {
+          ...propsBucket,
+          options: {
+            ...options,
+            hideDetails: options.hideDetails === undefined ? 'auto' : options.hideDetails,
+            density: options.density === undefined ? 'compact' : options.density,
+          },
+        },
+      });
     }
     return next();
   }
