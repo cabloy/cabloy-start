@@ -1,6 +1,7 @@
 // eslint-disable
 /** controller: begin */
 export * from '../component/actionBack/controller.tsx';
+export * from '../component/actionEdit/controller.tsx';
 export * from '../component/actionSubmit/controller.tsx';
 export * from '../component/blockFormLayout/controller.tsx';
 
@@ -12,6 +13,11 @@ declare module 'zova' {
 declare module 'zova-module-start-form' {
 
         export interface ControllerActionBack {
+          /** @internal */
+          get scope(): ScopeModuleStartForm;
+        }
+
+        export interface ControllerActionEdit {
           /** @internal */
           get scope(): ScopeModuleStartForm;
         }
@@ -29,12 +35,14 @@ declare module 'zova-module-start-form' {
 /** controller: end */
 /** controller: begin */
 import type { ControllerActionBack } from '../component/actionBack/controller.tsx';
+import type { ControllerActionEdit } from '../component/actionEdit/controller.tsx';
 import type { ControllerActionSubmit } from '../component/actionSubmit/controller.tsx';
 import type { ControllerBlockFormLayout } from '../component/blockFormLayout/controller.tsx';
 import 'zova';
 declare module 'zova' {
   export interface IBeanRecordLocal {
     'start-form.controller.actionBack': ControllerActionBack;
+'start-form.controller.actionEdit': ControllerActionEdit;
 'start-form.controller.actionSubmit': ControllerActionSubmit;
 'start-form.controller.blockFormLayout': ControllerBlockFormLayout;
   }
@@ -44,12 +52,15 @@ declare module 'zova' {
 /** components: begin */
 export * from './component/actionBack.ts';
 import { ZActionBack } from './component/actionBack.ts';
+export * from './component/actionEdit.ts';
+import { ZActionEdit } from './component/actionEdit.ts';
 export * from './component/actionSubmit.ts';
 import { ZActionSubmit } from './component/actionSubmit.ts';
 export * from './component/blockFormLayout.ts';
 import { ZBlockFormLayout } from './component/blockFormLayout.ts';
 export const components = {
   'actionBack': ZActionBack,
+'actionEdit': ZActionEdit,
 'actionSubmit': ZActionSubmit,
 'blockFormLayout': ZBlockFormLayout,
 };
@@ -57,11 +68,13 @@ import 'zova';
 declare module 'zova' {
 export interface IComponentRecord {
   'start-form:actionBack': ControllerActionBack;
+'start-form:actionEdit': ControllerActionEdit;
 'start-form:actionSubmit': ControllerActionSubmit;
 'start-form:blockFormLayout': ControllerBlockFormLayout;
 }
 export interface IZovaComponentRecord {
   'start-form:actionBack': typeof ZActionBack;
+'start-form:actionEdit': typeof ZActionEdit;
 'start-form:actionSubmit': typeof ZActionSubmit;
 'start-form:blockFormLayout': typeof ZBlockFormLayout;
 }

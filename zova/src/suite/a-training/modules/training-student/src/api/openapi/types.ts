@@ -2232,7 +2232,7 @@ export interface components {
       count_imageId?: string | undefined;
     };
     /** @description View Student */
-    'training-student.dto.studentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_1587266c819c8b70731e8ba64e7460d7f2809951':
+    'training-student.dto.studentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_6729924489d9e4b7958fd3225e879a0916f5f51d':
       | {
           /**
            * Format: date-time
@@ -4061,7 +4061,7 @@ export interface operations {
           'application/json': {
             code: string;
             message: string;
-            data?: components['schemas']['training-student.dto.studentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_1587266c819c8b70731e8ba64e7460d7f2809951'];
+            data?: components['schemas']['training-student.dto.studentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_6729924489d9e4b7958fd3225e879a0916f5f51d'];
           };
         };
       };
