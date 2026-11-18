@@ -27,7 +27,7 @@ export default {
   StudentSummaryDescription: '按 ID 查看学生摘要。',
   StudentUpdate: '更新学生',
   StudentUpdateDescription:
-    '使用当前学生更新权限，在当前实例中更新学生。先调用 training-student_student_view 读取 params.id 对应的完整详情，仅修改目标字段，再按更新输入契约提交完整 body，必须包含 name、mobile、level，并保留可编辑内容、培训记录及其明细。不要原样回传只读或派生字段。手机号符合脱敏格式（前三位数字、四个星号、剩余数字）时保留数据库原值；其他值按正常规则校验并修改。已声明的嵌套 id/deleted 控制字段可删除子记录。返回 null 仅表示操作完成，不证明记录存在或已读回验证。可能发生部分写入；遇到错误或响应不确定时，不得自动重放。',
+    '使用当前学生更新权限，在当前实例中更新学生。必须包含 name、mobile、level；支持可编辑内容、培训记录及其明细，不包含只读或派生字段。手机号符合脱敏格式（前三位数字、四个星号、剩余数字）时保留数据库原值；其他值按正常规则校验并修改。已声明的嵌套 id/deleted 控制字段可删除子记录。返回 null 仅表示操作完成，不证明记录存在或已读回验证。可能发生部分写入。'
   StudentView: '查看学生',
   StudentViewDescription: '按 ID 查看学生。',
   StudentImage: '学生图片',
