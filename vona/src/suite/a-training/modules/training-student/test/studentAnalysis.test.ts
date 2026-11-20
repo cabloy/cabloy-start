@@ -14,6 +14,8 @@ import { $schema } from 'vona-module-a-openapiutils';
 import { prepareAnalysisFilter } from 'vona-module-a-web';
 import { controllerToolQuery } from 'vona-module-cabloy-mcp';
 
+import enUS from '../src/config/locale/en-us.ts';
+import zhCN from '../src/config/locale/zh-cn.ts';
 import { DtoStudentAggregateRes } from '../src/dto/studentAggregateRes.tsx';
 import { DtoStudentGroupResItem } from '../src/dto/studentGroupResItem.tsx';
 import { DtoStudentSelectReq, studentQuery } from '../src/dto/studentSelectReq.tsx';
@@ -126,8 +128,13 @@ describe('studentAnalysis.test.ts', { concurrency: false }, () => {
         true,
       );
       const publishedRelation = published.bindings[0].capabilities.query.relations!.trainingRecords;
-      assert.deepEqual(Object.keys(publishedRelation).sort(), ['fields', 'operators']);
-      assert.deepEqual(publishedRelation, relation);
+      assert.deepEqual(Object.keys(publishedRelation).sort(), [
+        'description',
+        'fields',
+        'operators',
+        'title',
+      ]);
+      assert.deepEqual(publishedRelation, JSON.parse(JSON.stringify(relation)));
       for (const privateName of [
         'authorizationRequired',
         'relationScopes',
@@ -172,6 +179,41 @@ describe('studentAnalysis.test.ts', { concurrency: false }, () => {
         count_all: '3',
       });
     });
+  });
+
+  it('localizes training-record query semantics without freezing the first locale', async () => {
+    for (const locale of ['en-us', 'zh-cn', 'en-us'] as const) {
+      await app.bean.executor.mockCtx(
+        async () => {
+          const expected = locale === 'en-us' ? enUS : zhCN;
+          const document = await app.bean.openapi.generateJsonOfClass(DtoStudentSelectReq, 'V31');
+          const component = Object.values(document.components!.schemas!).find(
+            item => !('$ref' in item) && Object.hasOwn(item.properties ?? {}, 'pageSize'),
+          );
+          assert.ok(component && !('$ref' in component));
+          const published = controllerToolQuery(
+            component,
+            document.components!.schemas!,
+            [{ type: 'query', query: studentQuery }],
+            true,
+          );
+          const binding = published.bindings[0];
+          const relation = binding.capabilities.query.relations.trainingRecords;
+          assert.equal(relation.title, expected.TrainingRecords);
+          assert.equal(relation.description, expected.TrainingRecordsQueryDescription);
+          const leaf = binding.predicates.anyOf.find(
+            (branch: any) =>
+              branch.properties?.relation?.const === 'trainingRecords' ||
+              branch.properties?.relation?.enum?.includes('trainingRecords'),
+          );
+          assert.ok(leaf);
+          assert.equal(leaf.title, expected.TrainingRecords);
+          assert.equal(leaf.description, expected.TrainingRecordsQueryDescription);
+          assert.equal(leaf.properties.where, undefined);
+        },
+        { locale },
+      );
+    }
   });
 
   it('supports filtered defaults and subsets over HTTP and refreshes cached analysis after writes', async () => {
