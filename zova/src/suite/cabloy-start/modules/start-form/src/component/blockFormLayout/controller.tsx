@@ -47,9 +47,29 @@ export class ControllerBlockFormLayout extends BeanControllerBase {
 
   protected async __init__() {
     this.formLayoutDomIdPrefix = `start-form-layout-${useId()}`;
+    let readyPlan: IResolvedFormLayout | undefined;
+    let readyIdentity: string | undefined;
+    let readyScene: string | undefined;
     this.formLayoutPlan = this.$computed(() => {
       const { $$form } = this.$$renderContext;
-      return resolveFormLayout(this.$props.formLayout, $$form.properties);
+      const formLayout = this.$props.formLayout;
+      const properties = $$form.properties;
+      const { enabled, identity, scene } = $$form.schemaRefresh;
+      if (
+        !enabled ||
+        identity === undefined ||
+        identity !== readyIdentity ||
+        scene !== readyScene
+      ) {
+        readyPlan = undefined;
+      }
+      readyIdentity = identity;
+      readyScene = scene;
+      // Missing locale schema is not a loaded empty schema: keep the current tab topology.
+      if (properties === undefined && readyPlan) return readyPlan;
+      const plan = resolveFormLayout(formLayout, properties);
+      if (enabled && identity !== undefined && properties !== undefined) readyPlan = plan;
+      return plan;
     });
   }
 
@@ -205,6 +225,7 @@ export class ControllerBlockFormLayout extends BeanControllerBase {
   private _renderTabPanel(domIdBase: string, tab: IResolvedFormLayoutTab, active: boolean) {
     return (
       <div
+        key={tab.id}
         id={`${domIdBase}-${tab.id}-panel`}
         role="tabpanel"
         aria-labelledby={`${domIdBase}-${tab.id}-tab`}
