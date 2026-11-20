@@ -11,7 +11,7 @@
     },
     {
       "target": ".agents/skills/cabloy-backend-scaffold/references/follow-up-checklist.md",
-      "sha256": "fde023fdb14d7086e04ac2540a4e3f6ea7fdbbbde825b60d5ce68def767c8126"
+      "sha256": "73ff410a6437011979cfdfd24bc42c3b30799991dd7491df18b9a38ffbd8f8f8"
     },
     {
       "target": ".agents/skills/cabloy-backend-scaffold/SKILL.md",
@@ -203,7 +203,7 @@
     },
     {
       "target": ".claude/skills/cabloy-backend-scaffold/references/follow-up-checklist.md",
-      "sha256": "fde023fdb14d7086e04ac2540a4e3f6ea7fdbbbde825b60d5ce68def767c8126"
+      "sha256": "73ff410a6437011979cfdfd24bc42c3b30799991dd7491df18b9a38ffbd8f8f8"
     },
     {
       "target": ".claude/skills/cabloy-backend-scaffold/SKILL.md",
@@ -391,7 +391,7 @@
     },
     {
       "target": ".cursor/rules/cabloy-governance.mdc",
-      "sha256": "bb3d6db83b6a34a80e2821d20bcf589339e7addbf427f083aee71d611b9ef040"
+      "sha256": "7b46aa1403e745682633ee72d04e398d8b9e141fe9ece472643721da2626755c"
     },
     {
       "target": ".cursor/skills/cabloy-backend-scaffold/evals/evals.json",
@@ -403,7 +403,7 @@
     },
     {
       "target": ".cursor/skills/cabloy-backend-scaffold/references/follow-up-checklist.md",
-      "sha256": "fde023fdb14d7086e04ac2540a4e3f6ea7fdbbbde825b60d5ce68def767c8126"
+      "sha256": "73ff410a6437011979cfdfd24bc42c3b30799991dd7491df18b9a38ffbd8f8f8"
     },
     {
       "target": ".cursor/skills/cabloy-backend-scaffold/SKILL.md",
@@ -575,11 +575,11 @@
     },
     {
       "target": "AGENTS.md",
-      "sha256": "64dfec6c3587d41970e88dc2728c4f00af9b6f3830d15afecb454eadfdf864b3"
+      "sha256": "d41b108eb7a0882eadf789fc3cb82cf1eafc63db8be8853a84b48ea38216f96e"
     },
     {
       "target": "CLAUDE.md",
-      "sha256": "64dfec6c3587d41970e88dc2728c4f00af9b6f3830d15afecb454eadfdf864b3"
+      "sha256": "d41b108eb7a0882eadf789fc3cb82cf1eafc63db8be8853a84b48ea38216f96e"
     }
   ]
 }
