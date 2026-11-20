@@ -23,18 +23,30 @@ export type ApiSchemaHomeBaseDtoSiteCatalogSelectResItem =
   components['schemas']['home-base.dto.siteCatalogSelectResItem'];
 export type ApiSchemaHomeBaseDtoSiteCatalogSelectResItemPartial =
   Partial<ApiSchemaHomeBaseDtoSiteCatalogSelectResItem>;
-export type ApiSchemaAImageDtoImageUploadPolicyResponse =
-  components['schemas']['a-image.dto.imageUploadPolicyResponse'];
-export type ApiSchemaAImageDtoImageUploadPolicyResponsePartial =
-  Partial<ApiSchemaAImageDtoImageUploadPolicyResponse>;
-export type ApiSchemaAImageDtoImageUploadPolicyRequest =
-  components['schemas']['a-image.dto.imageUploadPolicyRequest'];
-export type ApiSchemaAImageDtoImageUploadPolicyRequestPartial =
-  Partial<ApiSchemaAImageDtoImageUploadPolicyRequest>;
 export type ApiSchemaAImageDtoImageUploadResponse =
   components['schemas']['a-image.dto.imageUploadResponse'];
 export type ApiSchemaAImageDtoImageUploadResponsePartial =
   Partial<ApiSchemaAImageDtoImageUploadResponse>;
+export type ApiSchemaAImageDtoImageUploadBase64Request =
+  components['schemas']['a-image.dto.imageUploadBase64Request'];
+export type ApiSchemaAImageDtoImageUploadBase64RequestPartial =
+  Partial<ApiSchemaAImageDtoImageUploadBase64Request>;
+export type ApiSchemaAImageDtoImageUploadPolicyResponse =
+  components['schemas']['a-image.dto.imageUploadPolicyResponse'];
+export type ApiSchemaAImageDtoImageUploadPolicyResponsePartial =
+  Partial<ApiSchemaAImageDtoImageUploadPolicyResponse>;
+export type ApiSchemaAImageDtoImageProcessingOptions_2d063d28bc7243bed02ebd8bddf1212a93c6305b =
+  components['schemas']['a-image.dto.imageProcessingOptions_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
+export type ApiSchemaAImageDtoImageProcessingOptions_2d063d28bc7243bed02ebd8bddf1212a93c6305bPartial =
+  Partial<ApiSchemaAImageDtoImageProcessingOptions_2d063d28bc7243bed02ebd8bddf1212a93c6305b>;
+export type ApiSchemaAImageDtoImageResizeOptions_2d063d28bc7243bed02ebd8bddf1212a93c6305b =
+  components['schemas']['a-image.dto.imageResizeOptions_2d063d28bc7243bed02ebd8bddf1212a93c6305b'];
+export type ApiSchemaAImageDtoImageResizeOptions_2d063d28bc7243bed02ebd8bddf1212a93c6305bPartial =
+  Partial<ApiSchemaAImageDtoImageResizeOptions_2d063d28bc7243bed02ebd8bddf1212a93c6305b>;
+export type ApiSchemaAImageDtoImageUploadPolicyRequest =
+  components['schemas']['a-image.dto.imageUploadPolicyRequest'];
+export type ApiSchemaAImageDtoImageUploadPolicyRequestPartial =
+  Partial<ApiSchemaAImageDtoImageUploadPolicyRequest>;
 export type ApiSchemaAImageDtoImageDirectUploadResponse =
   components['schemas']['a-image.dto.imageDirectUploadResponse'];
 export type ApiSchemaAImageDtoImageDirectUploadResponsePartial =
@@ -149,10 +161,10 @@ export type ApiSchemaAImageDtoImageView = components['schemas']['a-image.dto.ima
 export type ApiSchemaAImageDtoImageViewPartial = Partial<ApiSchemaAImageDtoImageView>;
 export type ApiSchemaAFileDtoFileView = components['schemas']['a-file.dto.fileView'];
 export type ApiSchemaAFileDtoFileViewPartial = Partial<ApiSchemaAFileDtoFileView>;
-export type ApiSchemaTrainingRecordSelectQueryPredicate_5d7645eb449dede52c248d2b353769a1eb9528c6 =
-  components['schemas']['TrainingRecordSelectQueryPredicate_5d7645eb449dede52c248d2b353769a1eb9528c6'];
-export type ApiSchemaTrainingRecordSelectQueryPredicate_5d7645eb449dede52c248d2b353769a1eb9528c6Partial =
-  Partial<ApiSchemaTrainingRecordSelectQueryPredicate_5d7645eb449dede52c248d2b353769a1eb9528c6>;
+export type ApiSchemaTrainingRecordSelectQueryPredicate_c98d2500213d354338d42ca1caeedb367a4ba2b5 =
+  components['schemas']['TrainingRecordSelectQueryPredicate_c98d2500213d354338d42ca1caeedb367a4ba2b5'];
+export type ApiSchemaTrainingRecordSelectQueryPredicate_c98d2500213d354338d42ca1caeedb367a4ba2b5Partial =
+  Partial<ApiSchemaTrainingRecordSelectQueryPredicate_c98d2500213d354338d42ca1caeedb367a4ba2b5>;
 export type ApiSchemaTrainingRecordSelectQueryPredicate =
   components['schemas']['TrainingRecordSelectQueryPredicate'];
 export type ApiSchemaTrainingRecordSelectQueryPredicatePartial =
@@ -189,10 +201,14 @@ export type ApiSchemaAImageDtoImageView_a83c3e638bca4b30ec8675860cdc52d66f6a16d1
   components['schemas']['a-image.dto.imageView_a83c3e638bca4b30ec8675860cdc52d66f6a16d1_2d063d28bc7243bed02ebd8bddf1212a93c6305b_efb37794d7c03c65122279f90d79919f009c34e5_1816ff740d81c738ec055c7038bbd93beb9405a7_537cd6552a384183a9457fb6a920bbae337277f6'];
 export type ApiSchemaAImageDtoImageView_a83c3e638bca4b30ec8675860cdc52d66f6a16d1_2d063d28bc7243bed02ebd8bddf1212a93c6305b_efb37794d7c03c65122279f90d79919f009c34e5_1816ff740d81c738ec055c7038bbd93beb9405a7_537cd6552a384183a9457fb6a920bbae337277f6Partial =
   Partial<ApiSchemaAImageDtoImageView_a83c3e638bca4b30ec8675860cdc52d66f6a16d1_2d063d28bc7243bed02ebd8bddf1212a93c6305b_efb37794d7c03c65122279f90d79919f009c34e5_1816ff740d81c738ec055c7038bbd93beb9405a7_537cd6552a384183a9457fb6a920bbae337277f6>;
-export type ApiSchemaTrainingStudentSelectQueryPredicate_52faf9b0777604cfccabc1d562ef60a2e5b2deb9 =
-  components['schemas']['TrainingStudentSelectQueryPredicate_52faf9b0777604cfccabc1d562ef60a2e5b2deb9'];
-export type ApiSchemaTrainingStudentSelectQueryPredicate_52faf9b0777604cfccabc1d562ef60a2e5b2deb9Partial =
-  Partial<ApiSchemaTrainingStudentSelectQueryPredicate_52faf9b0777604cfccabc1d562ef60a2e5b2deb9>;
+export type ApiSchemaTrainingStudentSelectQueryPredicate_9dfd13b5bc363c88d94914da0f07cea9327a177e =
+  components['schemas']['TrainingStudentSelectQueryPredicate_9dfd13b5bc363c88d94914da0f07cea9327a177e'];
+export type ApiSchemaTrainingStudentSelectQueryPredicate_9dfd13b5bc363c88d94914da0f07cea9327a177ePartial =
+  Partial<ApiSchemaTrainingStudentSelectQueryPredicate_9dfd13b5bc363c88d94914da0f07cea9327a177e>;
+export type ApiSchemaTrainingStudentSelecttrainingRecordsPredicate =
+  components['schemas']['TrainingStudentSelecttrainingRecordsPredicate'];
+export type ApiSchemaTrainingStudentSelecttrainingRecordsPredicatePartial =
+  Partial<ApiSchemaTrainingStudentSelecttrainingRecordsPredicate>;
 export type ApiSchemaTrainingStudentSelectQueryPredicate =
   components['schemas']['TrainingStudentSelectQueryPredicate'];
 export type ApiSchemaTrainingStudentSelectQueryPredicatePartial =
@@ -205,10 +221,10 @@ export type ApiSchemaTrainingStudentDtoStudentAggregateRes =
   components['schemas']['training-student.dto.studentAggregateRes'];
 export type ApiSchemaTrainingStudentDtoStudentAggregateResPartial =
   Partial<ApiSchemaTrainingStudentDtoStudentAggregateRes>;
-export type ApiSchemaTrainingStudentDtoStudentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_1587266c819c8b70731e8ba64e7460d7f2809951 =
-  components['schemas']['training-student.dto.studentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_1587266c819c8b70731e8ba64e7460d7f2809951'];
-export type ApiSchemaTrainingStudentDtoStudentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_1587266c819c8b70731e8ba64e7460d7f2809951Partial =
-  Partial<ApiSchemaTrainingStudentDtoStudentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_1587266c819c8b70731e8ba64e7460d7f2809951>;
+export type ApiSchemaTrainingStudentDtoStudentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_6729924489d9e4b7958fd3225e879a0916f5f51d =
+  components['schemas']['training-student.dto.studentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_6729924489d9e4b7958fd3225e879a0916f5f51d'];
+export type ApiSchemaTrainingStudentDtoStudentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_6729924489d9e4b7958fd3225e879a0916f5f51dPartial =
+  Partial<ApiSchemaTrainingStudentDtoStudentView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_6729924489d9e4b7958fd3225e879a0916f5f51d>;
 export type ApiSchemaTrainingStudentDtoStudentUpdate =
   components['schemas']['training-student.dto.studentUpdate'];
 export type ApiSchemaTrainingStudentDtoStudentUpdatePartial =

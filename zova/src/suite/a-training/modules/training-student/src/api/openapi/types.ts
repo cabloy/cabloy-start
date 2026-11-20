@@ -1724,7 +1724,7 @@ export interface components {
       signed?: boolean;
     };
     /** @description Recursive Boolean predicate: use explicit leaves { field, op, value }, nonempty { and: [...] } / { or: [...] } groups, or { not: predicate }. Field-value maps such as { fieldName: value } are not supported inside where. The isNull and isNotNull operators omit value; in and notIn require nonempty value arrays. Use only fields, operators and value types admitted by this schema and respect its query limits. Omit where for no added restriction. Supplied named filters combine with where by AND. */
-    'TrainingRecordSelectQueryPredicate_5d7645eb449dede52c248d2b353769a1eb9528c6':
+    'TrainingRecordSelectQueryPredicate_c98d2500213d354338d42ca1caeedb367a4ba2b5':
       | {
           /** @enum {string} */
           field: 'name';
@@ -2129,7 +2129,7 @@ export interface components {
         }
       | undefined;
     /** @description Recursive Boolean predicate: use explicit leaves { field, op, value }, nonempty { and: [...] } / { or: [...] } groups, or { not: predicate }. Field-value maps such as { fieldName: value } are not supported inside where. The isNull and isNotNull operators omit value; in and notIn require nonempty value arrays. Use only fields, operators and value types admitted by this schema and respect its query limits. Omit where for no added restriction. Supplied named filters combine with where by AND. */
-    'TrainingStudentSelectQueryPredicate_52faf9b0777604cfccabc1d562ef60a2e5b2deb9':
+    'TrainingStudentSelectQueryPredicate_9dfd13b5bc363c88d94914da0f07cea9327a177e':
       | {
           /** @enum {string} */
           field: 'id';
@@ -2167,6 +2167,13 @@ export interface components {
           value: Date;
         }
       | {
+          /** @enum {string} */
+          relation: 'trainingRecords';
+          /** @enum {string} */
+          op: 'exists' | 'notExists';
+          where?: components['schemas']['TrainingStudentSelecttrainingRecordsPredicate'];
+        }
+      | {
           and: components['schemas']['TrainingStudentSelectQueryPredicate'][];
         }
       | {
@@ -2174,6 +2181,60 @@ export interface components {
         }
       | {
           not: components['schemas']['TrainingStudentSelectQueryPredicate'];
+        };
+    'TrainingStudentSelecttrainingRecordsPredicate':
+      | {
+          /** @enum {string} */
+          field: 'name';
+          /** @enum {string} */
+          op: 'eq' | 'containsI';
+          value: string;
+        }
+      | {
+          /** @enum {string} */
+          field: 'subjectCount';
+          /** @enum {string} */
+          op: 'eq' | 'gte' | 'lte';
+          value: number;
+        }
+      | {
+          /** @enum {string} */
+          field: 'totalScore';
+          /** @enum {string} */
+          op: 'eq' | 'gte' | 'lte';
+          value: number;
+        }
+      | {
+          /** @enum {string} */
+          field: 'averageScore';
+          /** @enum {string} */
+          op: 'eq' | 'gte' | 'lte';
+          value: number;
+        }
+      | {
+          /** @enum {string} */
+          field: 'trainingTime';
+          /** @enum {string} */
+          op: 'gte' | 'lt' | 'lte';
+          /** Format: date-time */
+          value: Date;
+        }
+      | {
+          /** @enum {string} */
+          field: 'createdAt';
+          /** @enum {string} */
+          op: 'gte' | 'lt' | 'lte';
+          /** Format: date-time */
+          value: Date;
+        }
+      | {
+          and: components['schemas']['TrainingStudentSelecttrainingRecordsPredicate'][];
+        }
+      | {
+          or: components['schemas']['TrainingStudentSelecttrainingRecordsPredicate'][];
+        }
+      | {
+          not: components['schemas']['TrainingStudentSelecttrainingRecordsPredicate'];
         };
     'TrainingStudentSelectQueryPredicate':
       | {
@@ -2211,6 +2272,13 @@ export interface components {
           op: 'gte' | 'lt' | 'lte';
           /** Format: date-time */
           value: Date;
+        }
+      | {
+          /** @enum {string} */
+          relation: 'trainingRecords';
+          /** @enum {string} */
+          op: 'exists' | 'notExists';
+          where?: components['schemas']['TrainingStudentSelecttrainingRecordsPredicate'];
         }
       | {
           and: components['schemas']['TrainingStudentSelectQueryPredicate'][];
@@ -3736,7 +3804,7 @@ export interface operations {
         name?: string | undefined;
         studentId?: string | undefined;
         /** @description Recursive Boolean predicate: use explicit leaves { field, op, value }, nonempty { and: [...] } / { or: [...] } groups, or { not: predicate }. Field-value maps such as { fieldName: value } are not supported inside where. The isNull and isNotNull operators omit value; in and notIn require nonempty value arrays. Use only fields, operators and value types admitted by this schema and respect its query limits. Omit where for no added restriction. Supplied named filters combine with where by AND. */
-        where?: components['schemas']['TrainingRecordSelectQueryPredicate_5d7645eb449dede52c248d2b353769a1eb9528c6'];
+        where?: components['schemas']['TrainingRecordSelectQueryPredicate_c98d2500213d354338d42ca1caeedb367a4ba2b5'];
         orders?:
           | {
               /** @enum {string} */
@@ -3914,7 +3982,7 @@ export interface operations {
         name?: string | undefined;
         level?: 1 | 2 | 3 | undefined;
         /** @description Recursive Boolean predicate: use explicit leaves { field, op, value }, nonempty { and: [...] } / { or: [...] } groups, or { not: predicate }. Field-value maps such as { fieldName: value } are not supported inside where. The isNull and isNotNull operators omit value; in and notIn require nonempty value arrays. Use only fields, operators and value types admitted by this schema and respect its query limits. Omit where for no added restriction. Supplied named filters combine with where by AND. */
-        where?: components['schemas']['TrainingStudentSelectQueryPredicate_52faf9b0777604cfccabc1d562ef60a2e5b2deb9'];
+        where?: components['schemas']['TrainingStudentSelectQueryPredicate_9dfd13b5bc363c88d94914da0f07cea9327a177e'];
         orders?:
           | {
               /** @enum {string} */
@@ -3982,7 +4050,7 @@ export interface operations {
         name?: string | undefined;
         level?: 1 | 2 | 3 | undefined;
         /** @description Recursive Boolean predicate: use explicit leaves { field, op, value }, nonempty { and: [...] } / { or: [...] } groups, or { not: predicate }. Field-value maps such as { fieldName: value } are not supported inside where. The isNull and isNotNull operators omit value; in and notIn require nonempty value arrays. Use only fields, operators and value types admitted by this schema and respect its query limits. Omit where for no added restriction. Supplied named filters combine with where by AND. */
-        where?: components['schemas']['TrainingStudentSelectQueryPredicate_52faf9b0777604cfccabc1d562ef60a2e5b2deb9'];
+        where?: components['schemas']['TrainingStudentSelectQueryPredicate_9dfd13b5bc363c88d94914da0f07cea9327a177e'];
         aggrs?: {
           count?: ('*' | 'imageId')[] | undefined;
         };
@@ -4016,7 +4084,7 @@ export interface operations {
         name?: string | undefined;
         level?: 1 | 2 | 3 | undefined;
         /** @description Recursive Boolean predicate: use explicit leaves { field, op, value }, nonempty { and: [...] } / { or: [...] } groups, or { not: predicate }. Field-value maps such as { fieldName: value } are not supported inside where. The isNull and isNotNull operators omit value; in and notIn require nonempty value arrays. Use only fields, operators and value types admitted by this schema and respect its query limits. Omit where for no added restriction. Supplied named filters combine with where by AND. */
-        where?: components['schemas']['TrainingStudentSelectQueryPredicate_52faf9b0777604cfccabc1d562ef60a2e5b2deb9'];
+        where?: components['schemas']['TrainingStudentSelectQueryPredicate_9dfd13b5bc363c88d94914da0f07cea9327a177e'];
         aggrs?: {
           count?: ('*' | 'imageId')[] | undefined;
         };
