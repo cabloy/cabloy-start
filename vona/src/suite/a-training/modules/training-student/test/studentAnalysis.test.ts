@@ -1,5 +1,6 @@
 import type { TableIdentity } from 'table-identity';
 import type { ISchemaObjectExtensionField } from 'vona-module-a-openapi';
+import type { TypeQueryPredicate } from 'vona-module-a-orm';
 
 import { ZodMetadata } from '@cabloy/zod-openapi';
 import assert from 'node:assert';
@@ -11,10 +12,11 @@ import { describe, it } from 'node:test';
 import { app } from 'vona-mock';
 import { $schema } from 'vona-module-a-openapiutils';
 import { prepareAnalysisFilter } from 'vona-module-a-web';
+import { controllerToolQuery } from 'vona-module-cabloy-mcp';
 
 import { DtoStudentAggregateRes } from '../src/dto/studentAggregateRes.tsx';
 import { DtoStudentGroupResItem } from '../src/dto/studentGroupResItem.tsx';
-import { DtoStudentSelectReq } from '../src/dto/studentSelectReq.tsx';
+import { DtoStudentSelectReq, studentQuery } from '../src/dto/studentSelectReq.tsx';
 
 type StudentGroup = { level: number; count_all: string };
 type StudentAggregate = { count_all: string; count_imageId: string };
@@ -69,6 +71,46 @@ describe('studentAnalysis.test.ts', { concurrency: false }, () => {
         prepareAnalysisFilter(DtoStudentSelectReq).schema.safeParse({ columns: ['name'] }).success,
         false,
       );
+      const relation = metadata?.filter?.capabilities?.query?.relations?.trainingRecords;
+      assert.deepEqual(relation?.operators, ['exists', 'notExists']);
+      assert.deepEqual(Object.keys(relation?.fields ?? {}).sort(), [
+        'averageScore',
+        'createdAt',
+        'name',
+        'subjectCount',
+        'totalScore',
+        'trainingTime',
+      ]);
+      assert.equal(
+        request.safeParse({
+          where: {
+            relation: 'trainingRecords',
+            op: 'exists',
+            where: { field: 'totalScore', op: 'gte', value: 80 },
+          },
+        }).success,
+        true,
+      );
+      for (const where of [
+        {
+          relation: 'trainingRecords',
+          op: 'exists',
+          where: { field: 'studentName', op: 'eq', value: 'hidden' },
+        },
+        {
+          relation: 'trainingRecords',
+          op: 'exists',
+          where: { field: 'userIdOwner', op: 'eq', value: '1' },
+        },
+        {
+          relation: 'trainingRecords',
+          op: 'exists',
+          where: { field: 'name', op: 'startsWith', value: 'hidden' },
+        },
+        { relation: 'trainingRecords', op: 'exists', where: { relation: 'student', op: 'exists' } },
+      ]) {
+        assert.equal(request.safeParse({ where }).success, false);
+      }
       const requestDocument = await app.bean.openapi.generateJsonOfClass(
         DtoStudentSelectReq,
         'V31',
@@ -77,6 +119,25 @@ describe('studentAnalysis.test.ts', { concurrency: false }, () => {
         item => !('$ref' in item) && Object.hasOwn(item.properties ?? {}, 'pageSize'),
       );
       assert.ok(requestComponent && !('$ref' in requestComponent));
+      const published = controllerToolQuery(
+        requestComponent,
+        requestDocument.components!.schemas!,
+        [{ type: 'query', query: studentQuery }],
+        true,
+      );
+      const publishedRelation = published.bindings[0].capabilities.query.relations!.trainingRecords;
+      assert.deepEqual(Object.keys(publishedRelation).sort(), ['fields', 'operators']);
+      assert.deepEqual(publishedRelation, relation);
+      for (const privateName of [
+        'authorizationRequired',
+        'relationScopes',
+        'modelLike',
+        'modelClass',
+        'entityClass',
+        'training-record.controller.record',
+      ]) {
+        assert.equal(JSON.stringify(published).includes(privateName), false);
+      }
       assert.deepEqual(Object.keys(requestComponent.properties ?? {}).sort(), [
         'createdAt',
         'level',
@@ -347,17 +408,28 @@ describe('studentAnalysis.test.ts', { concurrency: false }, () => {
     });
   });
 
-  it('public predicates cannot expand Student or Record RBAC scope', async () => {
+  it('keeps root and related Record policy scopes across list, count, group and aggregate', async () => {
     await app.bean.executor.mockCtx(async () => {
       await app.bean.passport.signinMock();
       const context = app.ctx;
       const ownerId = String(app.bean.passport.currentUser!.id);
+      const delegatedOwnerId = '123456789';
+      const roles = app.bean.passport.current!.roles;
       const name = `Scope-${randomUUID()}`;
+      const studentModel = app.scope('training-student').model.student;
+      const recordModel = app.scope('training-record').model.record;
       const ids: TableIdentity[] = [];
       const recordIds: TableIdentity[] = [];
       let off: (() => void) | undefined;
+      let recordDenied = false;
+      let delegatedRecordTerm = false;
+      const policyActions: string[] = [];
+      const recordAction = 'training-record.controller.record#select';
+      const recordChecks = () => policyActions.filter(action => action === recordAction).length;
       try {
-        for (const [index, level] of [1, 2].entries()) {
+        assert.notEqual(ownerId, '0');
+        assert.notEqual(ownerId, delegatedOwnerId);
+        for (const [index, level] of [1, 2, 3].entries()) {
           const id = await app.bean.executor.performAction('post', '/training/student', {
             innerAccess: false,
             body: { name: `${name}-${index}`, mobile: '13812345678', level },
@@ -369,76 +441,123 @@ describe('studentAnalysis.test.ts', { concurrency: false }, () => {
               body: {
                 studentId: id,
                 name: `${name}-${index}`,
-                subjectCount: 0,
-                totalScore: 0,
-                averageScore: 0,
+                subjectCount: 2,
+                totalScore: 180,
+                averageScore: 90,
               },
             }),
           );
         }
-        // Both rows exist in this instance; only one is owned by the granted identity.
-        await app.scope('training-student').model.student.updateById(ids[1], { userIdOwner: '0' });
-        await app
-          .scope('training-record')
-          .model.record.updateById(recordIds[1], { userIdOwner: '0' });
-        assert.notEqual(ownerId, '0');
+        // The second visible parent has only a hidden child. The third parent is hidden,
+        // even though its child is allowed by the Record policy.
+        await studentModel.updateById(ids[2], { userIdOwner: '0' });
+        await recordModel.updateById(recordIds[1], { userIdOwner: '0' });
+        const delegated = await recordModel.insert({
+          studentId: ids[1],
+          name: `${name}-d`,
+          departmentId: null,
+          userIdOwner: delegatedOwnerId,
+          subjectCount: 1,
+          totalScore: 70,
+          averageScore: 70,
+        });
+        recordIds.push(delegated.id);
         app.bean.passport.current!.roles = [];
         assert.equal(await app.bean.passport.isSystemAdmin(), false);
-        const policyActions: string[] = [];
         off = app.scope('a-rbac').event.resolvePolicy.on((request, next) => {
+          // Relation authorization owns a new child context below performAction.
+          // Bind the fixture to this mockCtx ancestry, never to unrelated requests.
+          let caller: typeof context | undefined = app.ctx;
+          while (caller && caller !== context) caller = caller.ctxCaller;
           if (
-            app.ctx.ctxCaller !== context ||
+            caller !== context ||
             String(app.bean.passport.currentUser?.id) !== ownerId ||
             ![
               'training-student.controller.student#select',
               'training-student.controller.student#group',
               'training-student.controller.student#aggregate',
-              'training-record.controller.record#select',
+              recordAction,
             ].includes(request.action.actionKey)
           ) {
             return next();
           }
           assert.equal(request.action.options.dataScope, true);
           policyActions.push(request.action.actionKey);
+          const isRecord = request.action.actionKey === recordAction;
           return {
-            allowed: true,
+            allowed: !(isRecord && recordDenied),
             actionKey: request.action.actionKey,
             action: request.action,
-            terms: [{ dataScope: 'mine' as const, ownerId }],
+            terms: [
+              { dataScope: 'mine' as const, ownerId },
+              ...(isRecord && delegatedRecordTerm
+                ? [{ dataScope: 'mine' as const, ownerId: delegatedOwnerId }]
+                : []),
+            ],
           };
         });
-        const visible = {
-          groups: [{ level: 1, count_all: '1' }],
-          aggregate: { count_all: '1', count_imageId: '0' },
+        const select = async (where?: TypeQueryPredicate) =>
+          await app.bean.executor.performAction('get', '/training/student', {
+            innerAccess: false,
+            query: { name, ...(where ? { where } : {}), pageSize: 1 },
+          });
+        const assertResults = async (
+          where: TypeQueryPredicate | undefined,
+          indexes: number[],
+          relationChecks: number,
+        ) => {
+          const before = recordChecks();
+          const selected = await select(where);
+          assert.equal(recordChecks() - before, relationChecks);
+          assert.equal(selected.total, String(indexes.length));
+          assert.equal(selected.list.length, Math.min(indexes.length, 1));
+          for (const item of selected.list) {
+            assert.ok(indexes.some(index => String(ids[index]) === String(item.id)));
+            assert.equal(Object.hasOwn(item, 'trainingRecords'), false);
+          }
+          const analysis = await readAnalysis({ name, ...(where ? { where } : {}) });
+          assert.equal(recordChecks() - before, relationChecks * 3);
+          assert.deepEqual(analysis, {
+            groups: indexes.map(index => ({ level: index + 1, count_all: '1' })),
+            aggregate: { count_all: String(indexes.length), count_imageId: '0' },
+          });
         };
-        const both = {
+        const exists: TypeQueryPredicate = { relation: 'trainingRecords', op: 'exists' };
+        const notExists: TypeQueryPredicate = { relation: 'trainingRecords', op: 'notExists' };
+        const highScore: TypeQueryPredicate = {
+          relation: 'trainingRecords',
+          op: 'exists',
+          where: { field: 'averageScore', op: 'gte', value: 80 },
+        };
+        const hiddenChild: TypeQueryPredicate = {
+          relation: 'trainingRecords',
+          op: 'exists',
+          where: { field: 'name', op: 'eq', value: `${name}-1` },
+        };
+        const both: TypeQueryPredicate = {
           or: ids.map(id => ({ field: 'id', op: 'eq', value: String(id) })),
         };
-        const selected = await app.bean.executor.performAction('get', '/training/student', {
-          innerAccess: false,
-          query: { name, where: both },
-        });
-        assert.equal(selected.total, '1');
-        assert.deepEqual(
-          selected.list.map((item: any) => String(item.id)),
-          [String(ids[0])],
+        await assertResults(both, [0, 1], 0);
+        await assertResults({ field: 'id', op: 'eq', value: String(ids[2]) }, [], 0);
+        await assertResults(exists, [0], 1);
+        await assertResults(notExists, [1], 1);
+        await assertResults(highScore, [0], 1);
+        await assertResults(hiddenChild, [], 1);
+        await assertResults(
+          { relation: 'trainingRecords', op: 'notExists', where: hiddenChild.where },
+          [0, 1],
+          1,
         );
-        assert.deepEqual(await readAnalysis({ name, where: both }), visible);
-        const outside = { field: 'id', op: 'eq', value: String(ids[1]) };
-        const excluded = await app.bean.executor.performAction('get', '/training/student', {
-          innerAccess: false,
-          query: { name, where: outside },
-        });
-        assert.equal(excluded.total, '0');
-        assert.deepEqual(excluded.list, []);
-        assert.deepEqual(await readAnalysis({ name, where: outside }), {
-          groups: [],
-          aggregate: { count_all: '0', count_imageId: '0' },
-        });
+        await assertResults({ not: exists }, [1], 1);
+        await assertResults({ or: [hiddenChild, { field: 'level', op: 'eq', value: 1 }] }, [0], 1);
+        // A relation nested in a Boolean group authorizes the target action just once.
+        await assertResults({ and: [exists, { field: 'level', op: 'eq', value: 1 }] }, [0], 1);
+
+        // Keep the existing direct Record scope check, independent of the parent scope.
         for (const [where, expected] of [
           [
             { or: ids.map(id => ({ field: 'studentId', op: 'eq', value: String(id) })) },
-            recordIds.slice(0, 1),
+            recordIds.slice(0, 3).filter((_, index) => index !== 1),
           ],
           [{ field: 'studentId', op: 'eq', value: String(ids[1]) }, []],
         ] as const) {
@@ -448,23 +567,75 @@ describe('studentAnalysis.test.ts', { concurrency: false }, () => {
           });
           assert.equal(records.total, String(expected.length));
           assert.deepEqual(
-            records.list.map((item: any) => String(item.id)),
-            expected.map(String),
+            records.list.map((item: any) => String(item.id)).toSorted(),
+            expected.map(String).toSorted(),
           );
         }
+
+        // Policy terms form an OR inside the child EXISTS, not an AND or a root override.
+        delegatedRecordTerm = true;
+        await assertResults(exists, [0, 1], 1);
+        await assertResults(highScore, [0], 1);
+        await assertResults(notExists, [], 1);
+        delegatedRecordTerm = false;
+
+        // Warmed Student queries must change when the Record source changes.
+        assert.equal(studentModel.cacheQuery.enabled, true);
+        await assertResults(highScore, [0], 1);
+        await recordModel.updateById(recordIds[0], { averageScore: 50 });
+        await assertResults(highScore, [], 1);
+        await recordModel.updateById(recordIds[0], { averageScore: 90 });
+        await assertResults(highScore, [0], 1);
+        await recordModel.deleteById(recordIds[0]);
+        await assertResults(exists, [], 1);
+        await assertResults(notExists, [0, 1], 1);
+        await recordModel.updateById(recordIds[0], { deleted: false }, { disableDeleted: true });
+        await assertResults(exists, [0], 1);
+
+        recordDenied = true;
+        // A denied Record action must not be checked for relation-free requests.
+        await assertResults(both, [0, 1], 0);
+        for (const where of [
+          exists,
+          notExists,
+          { or: [{ field: 'level', op: 'eq', value: 1 }, exists] },
+          { not: exists },
+        ] satisfies TypeQueryPredicate[]) {
+          for (const path of [
+            '/training/student',
+            '/training/student/group',
+            '/training/student/aggregate',
+          ] as const) {
+            const before = recordChecks();
+            await assert.rejects(
+              () =>
+                app.bean.executor.performAction('get', path, {
+                  innerAccess: false,
+                  query: { name, where },
+                }),
+              (error: { code?: number }) => error.code === 403,
+            );
+            assert.equal(recordChecks() - before, 1);
+          }
+        }
         assert.deepEqual([...new Set(policyActions)].toSorted(), [
-          'training-record.controller.record#select',
+          recordAction,
           'training-student.controller.student#aggregate',
           'training-student.controller.student#group',
           'training-student.controller.student#select',
         ]);
+
+        // Admin receives an explicit unrestricted child scope, not a missing authorization.
+        app.bean.passport.current!.roles = roles;
+        assert.equal(await app.bean.passport.isSystemAdmin(), true);
+        await assertResults(exists, [0, 1, 2], 0);
+        await assertResults(hiddenChild, [1], 0);
       } finally {
         off?.();
+        app.bean.passport.current!.roles = roles;
         try {
           for (const id of recordIds.toReversed()) {
-            await app
-              .scope('training-record')
-              .model.record.deleteById(id, { disableDeleted: true });
+            await recordModel.deleteById(id, { disableDeleted: true });
           }
           await dropStudents(ids);
         } finally {

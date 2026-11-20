@@ -29,6 +29,13 @@ import { studentAnalysis } from '../lib/studentAnalysis.ts';
 
 export interface IControllerOptionsStudent extends IDecoratorControllerOptions {}
 
+const studentRelationActions = {
+  trainingRecords: {
+    controller: 'training-record.controller.record',
+    action: 'select',
+  },
+};
+
 @Controller<IControllerOptionsStudent>('student', {
   summary: $locale('StudentController'),
 })
@@ -70,6 +77,10 @@ export class ControllerStudent extends BeanBase {
     return await this.scope.service.student.select(
       $compileQuery(this.scope.model.student, studentQuery, params, {
         scopeWhere: rbacScopeCurrent.where(),
+        relationScopes: await this.bean.permission.authorizeQueryRelations(
+          params.where,
+          studentRelationActions,
+        ),
       }),
     );
   }
@@ -92,6 +103,10 @@ export class ControllerStudent extends BeanBase {
         mode: 'group',
         analysis: studentAnalysis,
         scopeWhere: rbacScopeCurrent.where(),
+        relationScopes: await this.bean.permission.authorizeQueryRelations(
+          params.where,
+          studentRelationActions,
+        ),
       }),
     );
   }
@@ -114,6 +129,10 @@ export class ControllerStudent extends BeanBase {
         mode: 'aggregate',
         analysis: studentAnalysis,
         scopeWhere: rbacScopeCurrent.where(),
+        relationScopes: await this.bean.permission.authorizeQueryRelations(
+          params.where,
+          studentRelationActions,
+        ),
       }),
     );
   }

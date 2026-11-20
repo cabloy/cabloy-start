@@ -3019,6 +3019,9 @@ importers:
 
   src/suite-vendor/a-vona/modules/a-permission:
     dependencies:
+      vona-module-a-orm:
+        specifier: workspace:^
+        version: link:../a-orm
       vona-module-a-rbac:
         specifier: workspace:^
         version: link:../../../a-cabloy/modules/a-rbac
