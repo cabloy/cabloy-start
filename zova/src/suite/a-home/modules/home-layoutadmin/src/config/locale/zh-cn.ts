@@ -1,5 +1,6 @@
 export default {
   'Home': '首页',
+  'AiChat': 'AI聊天',
   'Logout': '退出登录',
   'ThemeLight': '亮色',
   'ThemeDark': '暗色',

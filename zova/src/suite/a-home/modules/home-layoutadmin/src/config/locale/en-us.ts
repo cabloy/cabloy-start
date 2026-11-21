@@ -1,5 +1,6 @@
 export default {
   'Home': 'Home',
+  'AiChat': 'AI Chat',
   'Logout': 'Logout',
   'ThemeLight': 'Light',
   'ThemeDark': 'Dark',

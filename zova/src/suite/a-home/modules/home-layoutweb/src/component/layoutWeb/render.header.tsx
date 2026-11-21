@@ -1,8 +1,8 @@
 import { classes } from 'typestyle';
-import { VAppBar, VAppBarNavIcon, VSpacer, VToolbarTitle } from 'vuetify/components';
+import { VAppBar, VAppBarNavIcon, VBtn, VSpacer, VToolbarTitle } from 'vuetify/components';
 import { BeanRenderBase, Use } from 'zova';
 import { Render } from 'zova-module-a-bean';
-import { $iconName } from 'zova-module-a-icon';
+import { $iconName, ZIcon } from 'zova-module-a-icon';
 import { ZButton } from 'zova-module-start-button';
 
 import type { RenderLayoutWeb } from './render.tsx';
@@ -43,6 +43,21 @@ export class RenderHeader extends BeanRenderBase {
             id={this.headerActionsId}
             class={classes('header-actions-panel', this.headerActionsOpen && 'is-open')}
           >
+            {this.sys.env.AI_CHAT_BOT_ENABLE === 'true' && (
+              <VBtn
+                class="header-action"
+                data-header-action="ai-chat"
+                data-testid="ai-chat-nav"
+                to="/cabloy/ai/chat"
+                icon
+                variant="text"
+                aria-label={this.scope.locale.AiChat()}
+                title={this.scope.locale.AiChat()}
+              >
+                <ZIcon name="::comment-dots" width={24} aria-hidden="true" />
+                <span class="header-action-label">{this.scope.locale.AiChat()}</span>
+              </VBtn>
+            )}
             {this.$$r.$$renderLocale.render()}
             {this.$$r.$$renderTheme.renderThemeDark()}
             {this.$$r.$$renderUser.render()}
