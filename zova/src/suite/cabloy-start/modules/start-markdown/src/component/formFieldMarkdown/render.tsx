@@ -529,8 +529,10 @@ export class RenderFormFieldMarkdown extends BeanRenderBase {
         {...this.$props}
         slotDefault={({ propsBucket, props }, $$formField) => {
           this.bindFormField(propsBucket, $$formField);
+          const label = propsBucket.layout?.label || undefined;
           return (
-            <div class={props.class}>
+            <div class={props.class} role={label ? 'group' : undefined} aria-label={label}>
+              {label && <div class="mb-2 text-body-2">{label}</div>}
               <div
                 class={[
                   this.cContainer,
