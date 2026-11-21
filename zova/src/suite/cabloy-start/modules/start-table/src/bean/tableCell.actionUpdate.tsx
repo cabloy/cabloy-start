@@ -36,6 +36,8 @@ export class TableCellActionUpdate extends BeanBase implements ITableCellRender 
       <ZButton
         class={options.class}
         color={options.color}
+        variant="text"
+        title={this.scope.locale.Edit()}
         icon={$$table.compact ? undefined : options.icon}
         prependIcon={$$table.compact ? options.icon : undefined}
         text={$$table.compact ? this.scope.locale.Edit() : undefined}

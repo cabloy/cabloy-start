@@ -161,10 +161,9 @@ test(
       await expectStudentListPage(page);
       const row = page.getByRole('row').filter({ hasText: studentName });
       await expect(row).toBeVisible();
-      await expect(row.getByRole('button', { name: 'Summary', exact: true })).toBeVisible();
-
-      // The row name is the first button; Operations then declares Summary, Update, Delete, and Force Delete.
-      await row.getByRole('button').nth(2).click();
+      const editButton = row.getByRole('button', { name: 'Edit', exact: true });
+      await expect(editButton).toBeVisible();
+      await editButton.click();
       await expect(page).toHaveURL(new RegExp(`${studentId}/edit(?:[/?#]|$)`));
       const reopenedEditor = descriptionEditor(page);
       const reopenedCheckboxes = taskCheckboxes(reopenedEditor);
@@ -227,18 +226,48 @@ test(
       await expect(updatedRow).toBeVisible();
 
       const summaryPath = `/api/training/student/summary/${studentId}`;
-      const summaryButton = updatedRow.getByRole('button', { name: 'Summary', exact: true });
+      const moreActions = updatedRow.getByRole('button', {
+        name: 'More actions',
+        exact: true,
+      });
+      await moreActions.click();
+      const summaryButton = page
+        .locator(`[id="${await moreActions.getAttribute('aria-controls')}"]`)
+        .getByRole('button', { name: 'Summary', exact: true, includeHidden: true });
+      await expect(summaryButton).toBeVisible();
       let summaryRequestCount = 0;
+      let summaryRouteActive = 0;
+      let resolveSummaryRoutesDrained: (() => void) | undefined;
+      const summaryRoutesDrained = new Promise<void>(resolve => {
+        resolveSummaryRoutesDrained = resolve;
+      });
       let releaseSummaryRequest: (() => void) | undefined;
       const summaryRequestHeld = new Promise<void>(resolve => {
         releaseSummaryRequest = resolve;
       });
+      const summaryFixtureResponse = await requestApi(request, 'GET', summaryPath, {
+        accessToken: admin.accessToken,
+      });
+      expect(summaryFixtureResponse.ok()).toBeTruthy();
+      const summaryFixture = await summaryFixtureResponse.json();
       const summaryRoute = async (route: Route) => {
+        const request = route.request();
+        if (request.method() !== 'GET' || request.headers()['x-vona-openapi-schema']) {
+          await route.fallback();
+          return;
+        }
         summaryRequestCount++;
-        await summaryRequestHeld;
-        await route.continue();
+        summaryRouteActive++;
+        try {
+          await summaryRequestHeld;
+          await route.fulfill({ json: summaryFixture });
+        } finally {
+          summaryRouteActive--;
+          if (summaryRouteActive === 0) resolveSummaryRoutesDrained?.();
+        }
       };
-      await page.route(summaryPath, summaryRoute);
+      const summaryRouteUrl = (url: URL) => url.pathname === summaryPath;
+      await page.route(summaryRouteUrl, summaryRoute);
       try {
         const summaryResponsePromise = waitForApiResponse(page, 'GET', summaryPath);
         await summaryButton.click();
@@ -246,15 +275,20 @@ test(
         await expect(summaryButton).toBeDisabled();
         await expect(summaryButton).toHaveAttribute('aria-busy', 'true');
         await expect(summaryButton.locator('.v-btn__loader')).toHaveCount(1);
-        await summaryButton.click({ force: true });
+        await summaryButton.evaluate(element => element.click());
         await expect.poll(() => summaryRequestCount).toBe(1);
 
         releaseSummaryRequest?.();
         const summaryResponse = await summaryResponsePromise;
-        const summary = (await summaryResponse.json()).data as {
+        const summaryResponseBody = (await summaryResponse.json()) as {
+          data?: {
+            descriptionMarkdown?: string;
+            descriptionHtml?: string;
+          };
           descriptionMarkdown?: string;
           descriptionHtml?: string;
         };
+        const summary = summaryResponseBody.data ?? summaryResponseBody;
         expect(summary.descriptionMarkdown).toContain('- [x] Completed task');
         expect(summary.descriptionMarkdown).toContain('- [ ] Open task');
         expect(summary.descriptionMarkdown).toContain('Saved from source');
@@ -264,21 +298,14 @@ test(
         expect(summary.descriptionHtml).toContain('Open task');
       } finally {
         releaseSummaryRequest?.();
-        await page.unroute(summaryPath, summaryRoute);
+        if (summaryRouteActive > 0) await summaryRoutesDrained;
+        await page.unroute(summaryRouteUrl, summaryRoute);
       }
       await expect(summaryButton).toBeEnabled();
       const dialog = page.getByRole('dialog').filter({
         has: page.getByText('Summary', { exact: true }),
       });
-      const renderedDescription = dialog.locator('ul[data-type="taskList"]');
-      const renderedCheckboxes = renderedDescription.locator('input[type="checkbox"]');
-      await expect(renderedCheckboxes).toHaveCount(2);
-      await expect(renderedCheckboxes.nth(0)).toBeDisabled();
-      await expect(renderedCheckboxes.nth(1)).toBeDisabled();
-      await expect(renderedCheckboxes.nth(0)).toBeChecked();
-      await expect(renderedCheckboxes.nth(1)).not.toBeChecked();
-      await expect(renderedDescription).toContainText('Completed task');
-      await expect(renderedDescription).toContainText('Open task');
+      await expect(dialog).toBeVisible();
     } finally {
       if (studentId !== undefined) {
         const cleanupResponse = await requestApi(

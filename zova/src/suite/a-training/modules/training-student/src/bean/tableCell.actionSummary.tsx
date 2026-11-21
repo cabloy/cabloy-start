@@ -34,7 +34,7 @@ export class TableCellActionSummary extends BeanBase implements ITableCellRender
       <ZButton
         class={options.class}
         color="info"
-        variant="outlined"
+        variant="text"
         onPerform={async () => {
           const id = cellContext.row.id as TableIdentity;
           const modelStudent = (await ctx.bean._getBean(
@@ -46,7 +46,8 @@ export class TableCellActionSummary extends BeanBase implements ITableCellRender
           this.$appModal.dialog({
             title: this.scope.locale.Summary(),
             slotDefault: () => {
-              const hasData = querySummary.data !== undefined;
+              const data = querySummary.data;
+              const hasData = data !== undefined;
               const isLoading = !hasData && (querySummary.isPending || querySummary.isFetching);
               const error = querySummary.error;
               return (
@@ -65,16 +66,16 @@ export class TableCellActionSummary extends BeanBase implements ITableCellRender
                     <div class="d-flex flex-column ga-4">
                       <div class="d-flex flex-column ga-1">
                         <div>
-                          {this.scope.locale.Id()}: {querySummary.data?.id ?? '-'}
+                          {this.scope.locale.Id()}: {data?.id ?? '-'}
                         </div>
                         <div>
-                          {this.scope.locale.Name()}: {querySummary.data?.name ?? '-'}
+                          {this.scope.locale.Name()}: {data?.name ?? '-'}
                         </div>
                         <div>
-                          {this.scope.locale.Level()}: {querySummary.data?.levelTitle ?? '-'}
+                          {this.scope.locale.Level()}: {data?.levelTitle ?? '-'}
                         </div>
                       </div>
-                      <ZMarkdownHtml html={querySummary.data?.descriptionHtml ?? ''} />
+                      <ZMarkdownHtml html={data?.descriptionHtml ?? ''} />
                     </div>
                   ) : isLoading ? (
                     <div class="d-flex justify-center">

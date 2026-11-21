@@ -32,7 +32,7 @@ export class TableCellActionDeleteForce extends BeanBase implements ITableCellRe
       <ZButton
         class={options.class}
         color="error"
-        variant="outlined"
+        variant="text"
         onPerform={async () => {
           const confirmed = await $host.$performCommand('start-commands:confirm', {
             text: this.scope.locale.ForceDeleteConfirm(),

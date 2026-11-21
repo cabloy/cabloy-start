@@ -36,6 +36,8 @@ export class TableCellActionDelete extends BeanBase implements ITableCellRender 
       <ZButton
         class={options.class}
         color={options.color}
+        variant="text"
+        title={this.scope.locale.Delete()}
         icon={$$table.compact ? undefined : options.icon}
         prependIcon={$$table.compact ? options.icon : undefined}
         text={$$table.compact ? this.scope.locale.Delete() : undefined}

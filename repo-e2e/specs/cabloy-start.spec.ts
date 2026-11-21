@@ -1871,7 +1871,7 @@ test(
         '0.5',
       );
       await expect(operationsHeader).toHaveCSS('position', 'sticky');
-      await expect(operationsHeader).toHaveCSS('min-width', '360px');
+      await expect(operationsHeader).toHaveCSS('min-width', '240px');
       await expect(operationsHeader).toHaveCSS('text-align', 'center');
       await expect(operationsHeader.locator('.v-data-table-header__sort-icon')).toHaveCount(0);
 
@@ -2299,7 +2299,9 @@ test(
           header.action('locale').locator('svg'),
           header.action('color-mode').locator('svg'),
           header.action('theme').locator('svg'),
-          studentRow(page, students[0]!.name).locator('button.v-btn--icon.text-primary svg'),
+          studentRow(page, students[0]!.name)
+            .locator('.row-actions-primary-group button.v-btn--icon.text-primary svg')
+            .first(),
         ]) {
           await expect(icon).toBeVisible();
           await expect
@@ -2340,9 +2342,17 @@ test(
         await expect(page.getByLabel(field!, { exact: true })).toBeVisible();
         await expect(header.overlay).toHaveCount(0);
         for (const student of students) {
-          await expect(
-            studentRow(page, student.name).getByRole('button', { name: action, exact: true }),
-          ).toBeEnabled();
+          const studentRowLocator = studentRow(page, student.name);
+          const more = studentRowLocator.getByRole('button', {
+            name: 'More actions',
+            exact: true,
+          });
+          await more.click();
+          const actions = page.locator(`[id="${await more.getAttribute('aria-controls')}"]`);
+          await expect(actions).toBeVisible();
+          await expect(actions.getByRole('button', { name: action, exact: true })).toBeEnabled();
+          await page.keyboard.press('Escape');
+          await expect(actions).toBeHidden();
         }
         await expectIcons();
         await expectTargets();
@@ -2393,18 +2403,14 @@ test(
       const row = studentRow(page, student.name);
       const trigger = row.getByRole('button', { name: 'More actions', exact: true });
       const resolveActions = async () => {
-        const id = (await trigger.count())
-          ? await trigger.getAttribute('aria-controls')
-          : await row.locator('[data-row-actions-content]').getAttribute('id');
+        const id = await trigger.getAttribute('aria-controls');
         const popup = page.locator(`[id="${id}"]`);
-        const actions = popup.getByRole('group', {
-          name: 'Row actions',
-          exact: true,
-          includeHidden: true,
-        });
+        const actions = popup;
+        const inline = row.locator('[data-row-actions-content]');
         return {
           popup,
           actions,
+          inline,
           summary: actions.getByRole('button', {
             name: 'Summary',
             exact: true,
@@ -2417,7 +2423,7 @@ test(
           }),
         };
       };
-      let { popup, actions, summary, forceDelete } = await resolveActions();
+      let { popup, actions, inline, summary, forceDelete } = await resolveActions();
       const expectNoDocumentOverflow = async () => {
         const geometry = await page.evaluate(() => ({
           clientWidth: document.documentElement.clientWidth,
@@ -2425,9 +2431,10 @@ test(
         }));
         expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth + 1);
       };
-      const expectActionIcons = async () => {
+      const expectActionIcons = async (container: Locator) => {
+        const primary = container.locator('.row-actions-primary-group');
         for (const name of ['Edit', 'Delete']) {
-          const icon = actions.getByRole('button', { name, exact: true }).locator('.v-icon svg');
+          const icon = primary.getByRole('button', { name, exact: true }).locator('.v-icon svg');
           await expect(icon).toBeVisible();
           await expect(icon.locator('use')).toHaveAttribute('xlink:href', /^#.+/);
         }
@@ -2443,18 +2450,39 @@ test(
         await expect(actions.getByRole('button', { name: 'Delete', exact: true })).toHaveText(
           'Delete',
         );
-        await expectActionIcons();
+        const isCompact = (await tableBlock.getAttribute('data-table-compact')) === 'true';
+        await expectActionIcons(isCompact ? actions : inline);
+        if (isCompact) {
+          await expect(actions.locator('button')).toHaveText([
+            'Edit',
+            'Delete',
+            'Summary',
+            'Force Delete',
+          ]);
+          const compactSurface = actions.locator('[data-row-actions-content]');
+          const overflowWrapper = actions.locator('.row-actions-overflow-group').locator('..');
+          await expect(compactSurface).toHaveCSS('padding', '8px');
+          await expect(compactSurface).toHaveCSS('border-top-width', '1px');
+          await expect(overflowWrapper).toHaveCSS('padding', '0px');
+          for (const side of ['top', 'right', 'bottom', 'left']) {
+            await expect(overflowWrapper).toHaveCSS(`border-${side}-width`, '0px');
+          }
+        }
         const layout = await actions.evaluate(element => {
           const group = element.getBoundingClientRect();
           return Array.from(element.querySelectorAll('button')).map(button => {
             const rect = button.getBoundingClientRect();
+            const buttonGroup = button.closest('.v-btn-group')?.getBoundingClientRect() ?? group;
             const style = getComputedStyle(button);
             return {
               width: rect.width,
               height: rect.height,
-              left: rect.left - group.left,
-              right: rect.right - group.right,
-              labelLeft: button.querySelector('.v-btn__content')!.getBoundingClientRect().left,
+              left: rect.left - buttonGroup.left,
+              right: rect.right - buttonGroup.right,
+              groupClass: button.closest('.v-btn-group')?.className ?? '',
+              labelLeft:
+                button.querySelector('.v-btn__content')!.getBoundingClientRect().left -
+                buttonGroup.left,
               top: rect.top,
               bottom: rect.bottom,
               borderWidth: style.borderTopWidth,
@@ -2465,31 +2493,46 @@ test(
           });
         });
         expect(layout).toHaveLength(4);
+        const firstLabelByGroup = new Map<string, number>();
         for (const [index, button] of layout.entries()) {
           expect(button.width).toBeGreaterThanOrEqual(140);
           expect(button.height).toBeGreaterThanOrEqual(36);
           expect(Math.abs(button.left)).toBeLessThanOrEqual(1);
           expect(Math.abs(button.right)).toBeLessThanOrEqual(1);
-          expect(Math.abs(button.labelLeft - layout[0]!.labelLeft)).toBeLessThanOrEqual(1);
+          const firstLabel = firstLabelByGroup.get(button.groupClass);
+          if (firstLabel === undefined) firstLabelByGroup.set(button.groupClass, button.labelLeft);
+          else expect(Math.abs(button.labelLeft - firstLabel)).toBeLessThanOrEqual(1);
           expect(button.borderWidth).toBe('0px');
           expect(button.radius).toBe('4px');
           expect(button.justifyContent).toBe('flex-start');
           expect(button.textAlign).toBe('left');
-          if (index > 0) expect(button.top - layout[index - 1]!.bottom).toBeGreaterThanOrEqual(4);
+          if (index > 0 && button.groupClass === layout[index - 1]!.groupClass) {
+            expect(button.top - layout[index - 1]!.bottom).toBeGreaterThanOrEqual(4);
+          }
         }
       };
 
       await expect(tableBlock).toHaveAttribute('data-table-compact', 'false');
       expect(await tableBlock.evaluate(element => element.clientWidth)).toBeGreaterThanOrEqual(768);
-      await expect(operationsHeader).toHaveCSS('min-width', '360px');
+      await expect(operationsHeader).toHaveCSS('min-width', '240px');
       await expect(operationsHeader).toHaveCSS('position', 'sticky');
       await expect(nameHeader).toHaveCSS('position', 'sticky');
-      await expect(actions).toHaveClass(/\bv-btn-group--horizontal\b/);
+      await expect(inline).toBeVisible();
+      await expect(inline.locator('.v-btn-group--horizontal')).toBeVisible();
+      await expect(inline.getByRole('button', { name: 'Edit', exact: true })).toHaveText('');
+      await expect(inline.getByRole('button', { name: 'Delete', exact: true })).toHaveText('');
+      await expect(inline.getByRole('button', { name: 'More actions', exact: true })).toHaveCount(
+        0,
+      );
+      await expect(summary).toBeHidden();
+      await expect(trigger).toBeVisible();
+      await trigger.click();
+      await expect(popup).toBeVisible();
       await expect(summary).toBeVisible();
-      await expect(actions.getByRole('button', { name: 'Edit', exact: true })).toHaveText('');
-      await expect(actions.getByRole('button', { name: 'Delete', exact: true })).toHaveText('');
-      await expectActionIcons();
-      await expect(trigger).toHaveCount(0);
+      await expect(forceDelete).toBeVisible();
+      await expectActionIcons(inline);
+      await page.keyboard.press('Escape');
+      await expect(popup).toBeHidden();
 
       // Resize only the owning block: a wide viewport must not force desktop operations.
       const originalStyle = await tableBlock.getAttribute('style');
@@ -2508,7 +2551,9 @@ test(
           1,
         );
         await expect(popup).toBeHidden();
-        await expect(actions).toHaveClass(/\bv-btn-group--vertical\b/);
+        await expect(popup.locator('.v-btn-group--vertical').first()).toHaveClass(
+          /\bv-btn-group--vertical\b/,
+        );
 
         await trigger.scrollIntoViewIfNeeded();
         await trigger.focus();
@@ -2603,14 +2648,14 @@ test(
         }, originalStyle);
       }
       await expect(tableBlock).toHaveAttribute('data-table-compact', 'false');
-      await expect(trigger).toHaveCount(0);
+      await expect(trigger).toBeVisible();
       await expect(row.locator('[data-row-actions-content]')).toHaveCount(1);
-      await expect(operationsHeader).toHaveCSS('min-width', '360px');
+      await expect(operationsHeader).toHaveCSS('min-width', '240px');
       await expect(operationsHeader).toHaveCSS('position', 'sticky');
       await expect(nameHeader).toHaveCSS('position', 'sticky');
-      await expect(actions).toHaveClass(/\bv-btn-group--horizontal\b/);
-      await expect(summary).toBeVisible();
-      await expectActionIcons();
+      await expect(inline.locator('.v-btn-group--horizontal')).toBeVisible();
+      await expect(summary).toBeHidden();
+      await expectActionIcons(inline);
       expect(profileWrites).toEqual([]);
 
       await page.setViewportSize({ width: 390, height: 900 });
@@ -2630,7 +2675,7 @@ test(
       await openStudentListPage(page);
       await expect(tableBlock).toHaveAttribute('data-table-compact', 'false');
       await expect(row).toHaveCount(1);
-      ({ popup, actions, summary, forceDelete } = await resolveActions());
+      ({ popup, actions, inline, summary, forceDelete } = await resolveActions());
       await page.setViewportSize({ width: 390, height: 900 });
       await expect(tableBlock).toHaveAttribute('data-table-compact', 'true');
       await openActions();
@@ -2645,7 +2690,7 @@ test(
         await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', 'admin');
         await expect(page).toHaveURL(listUrl);
         await expect(tableBlock).toHaveAttribute('data-table-compact', 'true');
-        ({ popup, actions, summary, forceDelete } = await resolveActions());
+        ({ popup, actions, inline, summary, forceDelete } = await resolveActions());
         expect(await tableBlock.evaluate(element => element.clientWidth)).toBeLessThan(768);
         await expect(operationsHeader).toHaveCSS('min-width', '80px');
         await expect(operationsHeader).not.toHaveCSS('position', 'sticky');
@@ -2753,11 +2798,18 @@ test(
               const content = row.locator('[data-row-actions-content]');
               await expect(content).toHaveCount(1);
               await expect(content).toBeHidden();
-              await expect(content.locator('button')).toHaveCount(4);
+              await expect(content.locator('button')).toHaveCount(2);
               await expect(operationsCell.getByRole('button')).toHaveCount(1);
+              await expect(more).toHaveAttribute('title', 'More actions');
             } else {
-              await expect(more).toHaveCount(0);
-              await expect(operationsCell.getByRole('button')).toHaveCount(4);
+              await expect(more).toBeVisible();
+              await expect(operationsCell.getByRole('button')).toHaveCount(3);
+              await expect(
+                operationsCell.getByRole('button', { name: 'Edit', exact: true }),
+              ).toBeVisible();
+              await expect(
+                operationsCell.getByRole('button', { name: 'Delete', exact: true }),
+              ).toBeVisible();
             }
 
             releaseScripts();
@@ -2785,9 +2837,9 @@ test(
               expect(
                 await tableBlock.evaluate(element => element.clientWidth),
               ).toBeGreaterThanOrEqual(768);
-              await expect(operationsHeader).toHaveCSS('min-width', '360px');
-              await expect(more).toHaveCount(0);
-              await expect(operationsCell.getByRole('button')).toHaveCount(4);
+              await expect(operationsHeader).toHaveCSS('min-width', '240px');
+              await expect(more).toBeVisible();
+              await expect(operationsCell.getByRole('button')).toHaveCount(3);
             }
             expect(effects.hydrationWarnings).toEqual([]);
             expect(effects.consoleErrors).toEqual([]);
