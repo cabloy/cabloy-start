@@ -221,6 +221,7 @@ export * from '../dto/detailRecordSubjectBase.tsx';
 export * from '../dto/detailRecordSubjectMutate.tsx';
 export * from '../dto/detailRecordSubjectResItem.tsx';
 export * from '../dto/detailRecordSubjectView.tsx';
+export * from '../dto/highestScoresBySubjectResItem.tsx';
 export * from '../dto/recordBulkDelete.ts';
 export * from '../dto/recordCreate.tsx';
 export * from '../dto/recordSelectReq.tsx';
@@ -232,6 +233,7 @@ import type { IDtoOptionsDetailRecordSubjectBase } from '../dto/detailRecordSubj
 import type { IDtoOptionsDetailRecordSubjectMutate } from '../dto/detailRecordSubjectMutate.tsx';
 import type { IDtoOptionsDetailRecordSubjectResItem } from '../dto/detailRecordSubjectResItem.tsx';
 import type { IDtoOptionsDetailRecordSubjectView } from '../dto/detailRecordSubjectView.tsx';
+import type { IDtoOptionsHighestScoresBySubjectResItem } from '../dto/highestScoresBySubjectResItem.tsx';
 import type { IDtoOptionsRecordBulkDelete } from '../dto/recordBulkDelete.ts';
 import type { IDtoOptionsRecordCreate } from '../dto/recordCreate.tsx';
 import type { IDtoOptionsRecordSelectReq } from '../dto/recordSelectReq.tsx';
@@ -247,6 +249,7 @@ declare module 'vona-module-a-web' {
 'training-record:detailRecordSubjectMutate': IDtoOptionsDetailRecordSubjectMutate;
 'training-record:detailRecordSubjectResItem': IDtoOptionsDetailRecordSubjectResItem;
 'training-record:detailRecordSubjectView': IDtoOptionsDetailRecordSubjectView;
+'training-record:highestScoresBySubjectResItem': IDtoOptionsHighestScoresBySubjectResItem;
 'training-record:recordBulkDelete': IDtoOptionsRecordBulkDelete;
 'training-record:recordCreate': IDtoOptionsRecordCreate;
 'training-record:recordSelectReq': IDtoOptionsRecordSelectReq;
@@ -267,6 +270,7 @@ import type { DtoDetailRecordSubjectBase } from '../dto/detailRecordSubjectBase.
 import type { DtoDetailRecordSubjectMutate } from '../dto/detailRecordSubjectMutate.tsx';
 import type { DtoDetailRecordSubjectResItem } from '../dto/detailRecordSubjectResItem.tsx';
 import type { DtoDetailRecordSubjectView } from '../dto/detailRecordSubjectView.tsx';
+import type { DtoHighestScoresBySubjectResItem } from '../dto/highestScoresBySubjectResItem.tsx';
 import type { DtoRecordBulkDelete } from '../dto/recordBulkDelete.ts';
 import type { DtoRecordCreate } from '../dto/recordCreate.tsx';
 import type { DtoRecordSelectReq } from '../dto/recordSelectReq.tsx';
@@ -290,6 +294,10 @@ declare module 'vona-module-training-record' {
 
     export interface IDtoOptionsDetailRecordSubjectView {
       fields?: TypeEntityOptionsFields<DtoDetailRecordSubjectView, IDtoOptionsDetailRecordSubjectView[TypeSymbolKeyFieldsMore]>;
+    }
+
+    export interface IDtoOptionsHighestScoresBySubjectResItem {
+      fields?: TypeEntityOptionsFields<DtoHighestScoresBySubjectResItem, IDtoOptionsHighestScoresBySubjectResItem[TypeSymbolKeyFieldsMore]>;
     }
 
     export interface IDtoOptionsRecordBulkDelete {
@@ -362,6 +370,7 @@ declare module 'vona-module-a-web' {
     }
 export interface IApiPathGetRecord{
         '/training/record': undefined;
+'/training/record/highestScoresBySubject': undefined;
 '/training/record/:id': undefined;
     }
 export interface IApiPathPatchRecord{

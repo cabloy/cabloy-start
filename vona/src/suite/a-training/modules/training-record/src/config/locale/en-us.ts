@@ -12,8 +12,21 @@ export default {
   RecordDeleteBulk: 'Bulk Delete Student Training Records',
   RecordName: 'Training Record Name',
   RecordSelect: 'List Student Training Records',
+  RecordSelectDescription:
+    'Select non-deleted student training records in the current instance using your current training-record select permission and data scope. Returns the existing paginated serialized response with the visible student projection.',
   RecordUpdate: 'Update Student Training Record',
   RecordView: 'View Student Training Record',
+  RecordViewDescription:
+    'Read one non-deleted student training record in the current instance by ID using your current training-record view permission and data scope. Returns the existing serialized detail response, including its visible student, subjects, and file/image metadata.',
+  HighestScoresBySubject: 'Find Highest Scores by Subject',
+  HighestScoresBySubjectDescription:
+    'Using your current training-record select permission and data scope, inspect visible non-deleted records, students, and subjects in the current instance. Group exact subject names and return every source subject row tied for the highest score, including its student and training-record identity. Returns an empty array when no qualifying subject exists and accepts no input filters.',
+  SubjectRecordId: 'Subject Record ID',
+  SubjectName: 'Subject Name',
+  SubjectScore: 'Subject Score',
+  TrainingRecordId: 'Training Record ID',
+  StudentId: 'Student ID',
+  StudentName: 'Student Name',
   TrainingRecordName: 'Training Record Name',
   TrainingTime: 'Training Time',
   ScenePhotos: 'Scene Photos',

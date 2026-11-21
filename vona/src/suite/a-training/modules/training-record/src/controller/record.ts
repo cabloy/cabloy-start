@@ -5,13 +5,14 @@ import type { IDecoratorControllerOptions } from 'vona-module-a-web';
 
 import { BeanBase } from 'vona';
 import { Core } from 'vona-module-a-core';
-import { Api, Resource, v } from 'vona-module-a-openapiutils';
+import { Api, Mcp, Resource, v } from 'vona-module-a-openapiutils';
 import { $compileQuery } from 'vona-module-a-orm';
 import { Passport } from 'vona-module-a-user';
 import { Arg, Controller, Web } from 'vona-module-a-web';
 import { z } from 'zod';
 
 import { $locale } from '../.metadata/locales.ts';
+import { DtoHighestScoresBySubjectResItem } from '../dto/highestScoresBySubjectResItem.tsx';
 import { DtoRecordBulkDelete } from '../dto/recordBulkDelete.ts';
 import { DtoRecordCreate } from '../dto/recordCreate.tsx';
 import { DtoRecordSelectReq, recordQuery } from '../dto/recordSelectReq.tsx';
@@ -47,6 +48,12 @@ export class ControllerRecord extends BeanBase {
     ).id;
   }
 
+  @Mcp.tool({
+    ssrSites: ['start-siteadmin:admin'],
+    description: $locale('RecordSelectDescription'),
+    readOnly: true,
+    discovery: { output: [['list', 'items']] },
+  })
   @Web.get({ summary: $locale('RecordSelect') })
   @Api.body(DtoRecordSelectRes)
   @Core.serializer()
@@ -62,6 +69,28 @@ export class ControllerRecord extends BeanBase {
     );
   }
 
+  @Mcp.tool({
+    ssrSites: ['start-siteadmin:admin'],
+    description: $locale('HighestScoresBySubjectDescription'),
+    readOnly: true,
+  })
+  @Web.get('highestScoresBySubject', { summary: $locale('HighestScoresBySubject') })
+  @Api.body(v.array(DtoHighestScoresBySubjectResItem))
+  @Core.serializer()
+  @Passport.rbac({ dataScope: true, actionInherit: 'select' })
+  async highestScoresBySubject(
+    @Arg.rbacScopeCurrent() rbacScopeCurrent: IRbacScopeAccess,
+  ): Promise<DtoHighestScoresBySubjectResItem[]> {
+    return await this.scope.service.record.highestScoresBySubject({
+      where: rbacScopeCurrent.where(),
+    });
+  }
+
+  @Mcp.tool({
+    ssrSites: ['start-siteadmin:admin'],
+    description: $locale('RecordViewDescription'),
+    readOnly: true,
+  })
   @Web.get(':id', { summary: $locale('RecordView') })
   @Api.body(v.optional(), v.object(DtoRecordView))
   @Core.serializer()
