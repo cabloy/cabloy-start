@@ -485,7 +485,10 @@ function headerActions(page: Page, flavor: 'admin' | 'web') {
   return { actions, more, panel, owner, overlay, list, action, open, openMenu, expectClosed };
 }
 
-function headerActionLabels(flavor: 'admin' | 'web', aiChatEnabled = true) {
+// Match the Start build default, or pass the same override to build and E2E.
+const aiChatEnabled = (process.env.AI_CHAT_BOT_ENABLE ?? 'true') === 'true';
+
+function headerActionLabels(flavor: 'admin' | 'web') {
   const labels: [string, string][] =
     flavor === 'admin'
       ? [
@@ -1251,10 +1254,9 @@ for (const flavor of ['admin', 'web'] as const) {
               });
               expect(response?.ok()).toBeTruthy();
               const responseHtml = await response!.text();
-              const labels = headerActionLabels(
-                flavor,
-                responseHtml.includes('data-header-action="ai-chat"'),
-              );
+              const labels = headerActionLabels(flavor);
+              const aiChatLink = header.action('ai-chat');
+              const aiChatPath = flavor === 'admin' ? '/admin/cabloy/ai/chat' : '/cabloy/ai/chat';
               expect(response?.headers()['cache-control']).toBe(
                 flavor === 'web' ? 'public, max-age=600' : 'private, no-store',
               );
@@ -1280,11 +1282,10 @@ for (const flavor of ['admin', 'web'] as const) {
                   action === 'ai-chat' ? 'A' : 'BUTTON',
                 );
               }
-              if (labels.some(([action]) => action === 'ai-chat')) {
-                await expect(header.action('ai-chat')).toHaveAttribute(
-                  'href',
-                  flavor === 'admin' ? '/admin/cabloy/ai/chat' : '/cabloy/ai/chat',
-                );
+              if (aiChatEnabled) {
+                await expect(aiChatLink).toHaveAttribute('href', aiChatPath);
+              } else {
+                await expect(aiChatLink).toHaveCount(0);
               }
               if (flavor === 'web') {
                 // Public HTML must remain neutral even when the request has a signed-in cookie.
@@ -1318,6 +1319,11 @@ for (const flavor of ['admin', 'web'] as const) {
               releaseScripts();
               await page.waitForLoadState('load');
               await expect(page.locator('html')).toHaveAttribute('data-zova-hydrated', flavor);
+              if (aiChatEnabled) {
+                await expect(aiChatLink).toHaveAttribute('href', aiChatPath);
+              } else {
+                await expect(aiChatLink).toHaveCount(0);
+              }
               if (flavor === 'web') {
                 await expect(header.action('account').locator('.header-account-name')).toHaveText(
                   authenticated ? account!.username : 'Not logged in',

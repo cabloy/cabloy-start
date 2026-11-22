@@ -169,6 +169,10 @@ export type ApiSchemaTrainingRecordSelectQueryPredicate =
   components['schemas']['TrainingRecordSelectQueryPredicate'];
 export type ApiSchemaTrainingRecordSelectQueryPredicatePartial =
   Partial<ApiSchemaTrainingRecordSelectQueryPredicate>;
+export type ApiSchemaTrainingRecordDtoHighestScoresBySubjectResItem =
+  components['schemas']['training-record.dto.highestScoresBySubjectResItem'];
+export type ApiSchemaTrainingRecordDtoHighestScoresBySubjectResItemPartial =
+  Partial<ApiSchemaTrainingRecordDtoHighestScoresBySubjectResItem>;
 export type ApiSchemaTrainingRecordDtoRecordView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_79ca06e0fa89c8f250537d4a0b8a8cc1e39df05a =
   components['schemas']['training-record.dto.recordView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_79ca06e0fa89c8f250537d4a0b8a8cc1e39df05a'];
 export type ApiSchemaTrainingRecordDtoRecordView_2d063d28bc7243bed02ebd8bddf1212a93c6305b_79ca06e0fa89c8f250537d4a0b8a8cc1e39df05aPartial =
@@ -201,10 +205,10 @@ export type ApiSchemaAImageDtoImageView_a83c3e638bca4b30ec8675860cdc52d66f6a16d1
   components['schemas']['a-image.dto.imageView_a83c3e638bca4b30ec8675860cdc52d66f6a16d1_2d063d28bc7243bed02ebd8bddf1212a93c6305b_efb37794d7c03c65122279f90d79919f009c34e5_1816ff740d81c738ec055c7038bbd93beb9405a7_537cd6552a384183a9457fb6a920bbae337277f6'];
 export type ApiSchemaAImageDtoImageView_a83c3e638bca4b30ec8675860cdc52d66f6a16d1_2d063d28bc7243bed02ebd8bddf1212a93c6305b_efb37794d7c03c65122279f90d79919f009c34e5_1816ff740d81c738ec055c7038bbd93beb9405a7_537cd6552a384183a9457fb6a920bbae337277f6Partial =
   Partial<ApiSchemaAImageDtoImageView_a83c3e638bca4b30ec8675860cdc52d66f6a16d1_2d063d28bc7243bed02ebd8bddf1212a93c6305b_efb37794d7c03c65122279f90d79919f009c34e5_1816ff740d81c738ec055c7038bbd93beb9405a7_537cd6552a384183a9457fb6a920bbae337277f6>;
-export type ApiSchemaTrainingStudentSelectQueryPredicate_9dfd13b5bc363c88d94914da0f07cea9327a177e =
-  components['schemas']['TrainingStudentSelectQueryPredicate_9dfd13b5bc363c88d94914da0f07cea9327a177e'];
-export type ApiSchemaTrainingStudentSelectQueryPredicate_9dfd13b5bc363c88d94914da0f07cea9327a177ePartial =
-  Partial<ApiSchemaTrainingStudentSelectQueryPredicate_9dfd13b5bc363c88d94914da0f07cea9327a177e>;
+export type ApiSchemaTrainingStudentSelectQueryPredicate_7d2c9ea34af8c25bc11ac8e4bb21c96554fa1a09 =
+  components['schemas']['TrainingStudentSelectQueryPredicate_7d2c9ea34af8c25bc11ac8e4bb21c96554fa1a09'];
+export type ApiSchemaTrainingStudentSelectQueryPredicate_7d2c9ea34af8c25bc11ac8e4bb21c96554fa1a09Partial =
+  Partial<ApiSchemaTrainingStudentSelectQueryPredicate_7d2c9ea34af8c25bc11ac8e4bb21c96554fa1a09>;
 export type ApiSchemaTrainingStudentSelecttrainingRecordsPredicate =
   components['schemas']['TrainingStudentSelecttrainingRecordsPredicate'];
 export type ApiSchemaTrainingStudentSelecttrainingRecordsPredicatePartial =
@@ -312,6 +316,38 @@ export type ApiSchemaPayMockDtoMockRefundComplete =
   components['schemas']['pay-mock.dto.mockRefundComplete'];
 export type ApiSchemaPayMockDtoMockRefundCompletePartial =
   Partial<ApiSchemaPayMockDtoMockRefundComplete>;
+export type ApiSchemaCabloyAiDtoChatConversation =
+  components['schemas']['cabloy-ai.dto.chatConversation'];
+export type ApiSchemaCabloyAiDtoChatConversationPartial =
+  Partial<ApiSchemaCabloyAiDtoChatConversation>;
+export type ApiSchemaCabloyAiDtoChatCreate = components['schemas']['cabloy-ai.dto.chatCreate'];
+export type ApiSchemaCabloyAiDtoChatCreatePartial = Partial<ApiSchemaCabloyAiDtoChatCreate>;
+export type ApiSchemaCabloyAiDtoChatList = components['schemas']['cabloy-ai.dto.chatList'];
+export type ApiSchemaCabloyAiDtoChatListPartial = Partial<ApiSchemaCabloyAiDtoChatList>;
+export type ApiSchemaCabloyAiDtoChatHistory = components['schemas']['cabloy-ai.dto.chatHistory'];
+export type ApiSchemaCabloyAiDtoChatHistoryPartial = Partial<ApiSchemaCabloyAiDtoChatHistory>;
+export type ApiSchemaCabloyAiDtoChatConversation_626802c24df1498cec99aab0854fedf90c9b6dd3 =
+  components['schemas']['cabloy-ai.dto.chatConversation_626802c24df1498cec99aab0854fedf90c9b6dd3'];
+export type ApiSchemaCabloyAiDtoChatConversation_626802c24df1498cec99aab0854fedf90c9b6dd3Partial =
+  Partial<ApiSchemaCabloyAiDtoChatConversation_626802c24df1498cec99aab0854fedf90c9b6dd3>;
+export type ApiSchemaCabloyAiDtoChatMessage = components['schemas']['cabloy-ai.dto.chatMessage'];
+export type ApiSchemaCabloyAiDtoChatMessagePartial = Partial<ApiSchemaCabloyAiDtoChatMessage>;
+export type ApiSchemaCabloyAiDtoChatHistoryRequest =
+  components['schemas']['cabloy-ai.dto.chatHistoryRequest'];
+export type ApiSchemaCabloyAiDtoChatHistoryRequestPartial =
+  Partial<ApiSchemaCabloyAiDtoChatHistoryRequest>;
+export type ApiSchemaCabloyAiDtoChatRun = components['schemas']['cabloy-ai.dto.chatRun'];
+export type ApiSchemaCabloyAiDtoChatRunPartial = Partial<ApiSchemaCabloyAiDtoChatRun>;
+export type ApiSchemaCabloyAiDtoChatStatusRequest =
+  components['schemas']['cabloy-ai.dto.chatStatusRequest'];
+export type ApiSchemaCabloyAiDtoChatStatusRequestPartial =
+  Partial<ApiSchemaCabloyAiDtoChatStatusRequest>;
+export type ApiSchemaCabloyAiDtoChatRename = components['schemas']['cabloy-ai.dto.chatRename'];
+export type ApiSchemaCabloyAiDtoChatRenamePartial = Partial<ApiSchemaCabloyAiDtoChatRename>;
+export type ApiSchemaCabloyAiDtoChatPin = components['schemas']['cabloy-ai.dto.chatPin'];
+export type ApiSchemaCabloyAiDtoChatPinPartial = Partial<ApiSchemaCabloyAiDtoChatPin>;
+export type ApiSchemaCabloyAiDtoChatSend = components['schemas']['cabloy-ai.dto.chatSend'];
+export type ApiSchemaCabloyAiDtoChatSendPartial = Partial<ApiSchemaCabloyAiDtoChatSend>;
 export type ApiSchemaMcpAuthDtoAccessTokenMineRes =
   components['schemas']['mcp-auth.dto.accessTokenMineRes'];
 export type ApiSchemaMcpAuthDtoAccessTokenMineResPartial =

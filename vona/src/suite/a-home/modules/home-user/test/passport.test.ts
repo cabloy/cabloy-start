@@ -85,6 +85,7 @@ describe('passport.test.ts', { concurrency: false }, () => {
           name: 'Untrusted passport role',
           title: 'Untrusted passport role title',
           mcpAccess: true,
+          aiChatAccess: true,
           instanceId: 'untrusted-role-instance',
           privateMetadata: { secret: 'untrusted-role-secret' },
         };
@@ -101,6 +102,7 @@ describe('passport.test.ts', { concurrency: false }, () => {
         assert.deepEqual(projectedRole.titleLocales, role.titleLocales);
         assert.deepEqual(projectedRole.siteIds, role.siteIds);
         assert.equal(projectedRole.mcpAccess, false);
+        assert.equal(projectedRole.aiChatAccess, false);
         assert.equal(projectedRole.builtin, false);
         const safeColumns = [
           'id',
@@ -113,6 +115,7 @@ describe('passport.test.ts', { concurrency: false }, () => {
           'titleLocales',
           'siteIds',
           'mcpAccess',
+          'aiChatAccess',
           'builtin',
         ];
         assert.ok(Object.keys(projectedRole).every(key => safeColumns.includes(key)));
@@ -206,7 +209,7 @@ describe('passport.test.ts', { concurrency: false }, () => {
     }
   });
 
-  it('OpenAPI exposes a required nullable table identity on current and every Passport/JWT response', async () => {
+  it('OpenAPI exposes the instance identity and AI Chat role access in Passport responses', async () => {
     await app.bean.executor.mockCtx(async () => {
       const actions = [
         ['current', 'get'],
@@ -255,6 +258,12 @@ describe('passport.test.ts', { concurrency: false }, () => {
         );
         assert.equal(user.properties?.instanceId, undefined);
         assert.ok(user.properties?.displayName);
+        const roles = resolve(passport.properties?.roles as SchemaObject);
+        const role = resolve(roles.items as SchemaObject);
+        assert.ok(role.properties?.aiChatAccess);
+        const aiChatAccess = resolve(role.properties.aiChatAccess as SchemaObject);
+        assert.equal(aiChatAccess.type, 'boolean');
+        assert.equal(aiChatAccess.default, false);
         if (operation.requestBody && 'content' in operation.requestBody) {
           const request = resolve(
             operation.requestBody.content['application/json'].schema as SchemaObject,

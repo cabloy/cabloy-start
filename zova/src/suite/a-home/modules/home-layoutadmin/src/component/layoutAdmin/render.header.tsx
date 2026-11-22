@@ -57,12 +57,12 @@ export class RenderHeader extends BeanRenderBase {
             id={this.headerActionsId}
             class={classes('header-actions-panel', this.headerActionsOpen && 'is-open')}
           >
-            {this.sys.env.AI_CHAT_BOT_ENABLE === 'true' && (
+            {this.sys.env.AI_CHAT_BOT_ENABLE === 'true' && this.$passport.aiChatAccess && (
               <VBtn
                 class="header-action"
                 data-header-action="ai-chat"
                 data-testid="ai-chat-nav"
-                to="/cabloy/ai/chat"
+                to={this.$router.getPagePath('/cabloy/ai/chat')}
                 icon
                 variant="text"
                 activeColor="primary"

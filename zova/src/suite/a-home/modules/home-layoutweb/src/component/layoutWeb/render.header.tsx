@@ -48,7 +48,7 @@ export class RenderHeader extends BeanRenderBase {
                 class="header-action"
                 data-header-action="ai-chat"
                 data-testid="ai-chat-nav"
-                to="/cabloy/ai/chat"
+                to={this.$router.getPagePath('/cabloy/ai/chat')}
                 icon
                 variant="text"
                 activeColor="primary"
