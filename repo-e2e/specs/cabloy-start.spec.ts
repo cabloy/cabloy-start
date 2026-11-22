@@ -309,7 +309,7 @@ async function openStudentDraftEdit(page: Page, name: string, id: string | numbe
     .locator('tbody tr')
     .filter({ has: page.getByRole('button', { name, exact: true }) });
   await expect(row).toHaveCount(1);
-  await row.locator('button.v-btn--icon.text-primary').click();
+  await row.getByRole('button', { name: 'Edit', exact: true }).click();
   await expect(page).toHaveURL(
     new RegExp(`/training-student(?:%3A|:)student/${id}/edit(?:[?#]|$)`),
   );
@@ -464,7 +464,16 @@ function headerActions(page: Page, flavor: 'admin' | 'web') {
     if (await more.isVisible()) await open();
     if (keyboard) await action(name).press('ArrowDown');
     else await action(name).click();
-    await expect(list).toBeVisible();
+    if (!(await list.isVisible())) await action(name).click();
+    await expect
+      .poll(async () => {
+        if (await list.isVisible()) return true;
+        return await page.evaluate(() => {
+          const active = document.querySelector<HTMLElement>('.v-overlay--active');
+          return active?.querySelector('[data-header-actions-owner] [role="list"]') !== null;
+        });
+      })
+      .toBe(true);
     await expect(overlay).toHaveCount(1);
     return list;
   };
@@ -474,6 +483,24 @@ function headerActions(page: Page, flavor: 'admin' | 'web') {
     await expect(overlay).toHaveCount(0);
   };
   return { actions, more, panel, owner, overlay, list, action, open, openMenu, expectClosed };
+}
+
+function headerActionLabels(flavor: 'admin' | 'web', aiChatEnabled = true) {
+  const labels: [string, string][] =
+    flavor === 'admin'
+      ? [
+          ['locale', 'Language'],
+          ['color-mode', 'Color mode'],
+          ['theme', 'Theme'],
+          ['account', 'Account'],
+        ]
+      : [
+          ['locale', 'Language'],
+          ['color-mode', 'Color mode'],
+          ['account', 'Account'],
+        ];
+  if (aiChatEnabled) labels.unshift(['ai-chat', 'AI Chat']);
+  return labels;
 }
 
 async function getHeaderGeometry(page: Page, flavor: 'admin' | 'web') {
@@ -1198,12 +1225,23 @@ for (const flavor of ['admin', 'web'] as const) {
               releaseScripts = resolve;
             });
             let heldScripts = 0;
+            let activeRoutes = 0;
+            let resolveRoutesDrained!: () => void;
+            const routesDrained = new Promise<void>(resolve => {
+              resolveRoutesDrained = resolve;
+            });
             const holdExternalScripts = async (route: Route) => {
-              if (route.request().resourceType() === 'script') {
-                heldScripts++;
-                await scriptsHeld;
+              activeRoutes++;
+              try {
+                if (route.request().resourceType() === 'script') {
+                  heldScripts++;
+                  await scriptsHeld;
+                }
+                await route.continue();
+              } finally {
+                activeRoutes--;
+                if (activeRoutes === 0) resolveRoutesDrained();
               }
-              await route.continue();
             };
             // CSS and inline theme/body-ready scripts must still execute before measuring SSR.
             await page.route('**/*', holdExternalScripts);
@@ -1212,6 +1250,11 @@ for (const flavor of ['admin', 'web'] as const) {
                 waitUntil: 'commit',
               });
               expect(response?.ok()).toBeTruthy();
+              const responseHtml = await response!.text();
+              const labels = headerActionLabels(
+                flavor,
+                responseHtml.includes('data-header-action="ai-chat"'),
+              );
               expect(response?.headers()['cache-control']).toBe(
                 flavor === 'web' ? 'public, max-age=600' : 'private, no-store',
               );
@@ -1228,24 +1271,20 @@ for (const flavor of ['admin', 'web'] as const) {
               await expect(header.more).toHaveAttribute('aria-controls', header.owner);
               await expect(header.more).toHaveAttribute('aria-label', 'More actions');
               await expect(header.more).toHaveAttribute('aria-expanded', 'false');
-              const labels =
-                flavor === 'admin'
-                  ? [
-                      ['locale', 'Language'],
-                      ['color-mode', 'Color mode'],
-                      ['theme', 'Theme'],
-                      ['account', 'Account'],
-                    ]
-                  : [
-                      ['locale', 'Language'],
-                      ['color-mode', 'Color mode'],
-                      ['account', 'Account'],
-                    ];
               await expect(header.panel.locator('[data-header-action]')).toHaveCount(labels.length);
               for (const [action, label] of labels) {
                 await expect(header.action(action!)).toHaveAttribute('title', label!);
                 await expect(header.action(action!)).toHaveAttribute('aria-label', label!);
-                await expect(header.action(action!)).toHaveJSProperty('tagName', 'BUTTON');
+                await expect(header.action(action!)).toHaveJSProperty(
+                  'tagName',
+                  action === 'ai-chat' ? 'A' : 'BUTTON',
+                );
+              }
+              if (labels.some(([action]) => action === 'ai-chat')) {
+                await expect(header.action('ai-chat')).toHaveAttribute(
+                  'href',
+                  flavor === 'admin' ? '/admin/cabloy/ai/chat' : '/cabloy/ai/chat',
+                );
               }
               if (flavor === 'web') {
                 // Public HTML must remain neutral even when the request has a signed-in cookie.
@@ -1253,7 +1292,7 @@ for (const flavor of ['admin', 'web'] as const) {
                   '',
                 );
                 await expect(header.action('account')).toHaveText('');
-                if (account) expect(await response!.text()).not.toContain(account.username);
+                if (account) expect(responseHtml).not.toContain(account.username);
               }
               if (width < 1024) {
                 await expect(header.more).toBeVisible();
@@ -1293,6 +1332,7 @@ for (const flavor of ['admin', 'web'] as const) {
               await expectNoHeaderOverflow(page);
             } finally {
               releaseScripts();
+              if (activeRoutes > 0) await routesDrained;
               await page.unroute('**/*', holdExternalScripts);
             }
           }
@@ -1354,12 +1394,9 @@ for (const flavor of ['admin', 'web'] as const) {
       await expect(header.panel).toHaveCSS('width', '256px');
       await expectHeaderPopupBounds(header.panel, 320);
       const actions = header.panel.locator('[data-header-action]');
-      await expect(actions).toHaveCount(flavor === 'admin' ? 4 : 3);
-      for (const [action, label] of [
-        ['locale', 'Language'],
-        ['color-mode', 'Color mode'],
-        ...(flavor === 'admin' ? [['theme', 'Theme']] : []),
-      ]) {
+      const labels = headerActionLabels(flavor);
+      await expect(actions).toHaveCount(labels.length);
+      for (const [action, label] of labels.filter(([name]) => name !== 'account')) {
         await expect(header.action(action!)).toHaveText(label!);
         await expect(header.action(action!)).toHaveAttribute('title', label!);
       }
@@ -1477,7 +1514,7 @@ for (const flavor of ['admin', 'web'] as const) {
       const link = accountList.getByRole('link', { name: destination, exact: true });
       await expect(link).toHaveAttribute(
         'href',
-        flavor === 'admin' ? '/home/user/account' : /\/login(?:\?|$)/,
+        flavor === 'admin' ? '/admin/home/user/account' : /\/login(?:\?|$)/,
       );
       await link.click();
       await header.expectClosed();
@@ -1545,7 +1582,7 @@ for (const flavor of ['admin', 'web'] as const) {
         await expect(header.actions).toHaveCount(1);
         await expect(header.panel).toHaveCount(1);
         await expect(header.panel.locator('[data-header-action]')).toHaveCount(
-          flavor === 'admin' ? 4 : 3,
+          headerActionLabels(flavor).length,
         );
         await header.openMenu('account');
         await expectHeaderPopupBounds(header.overlay, 390);
@@ -2300,8 +2337,9 @@ test(
           header.action('color-mode').locator('svg'),
           header.action('theme').locator('svg'),
           studentRow(page, students[0]!.name)
-            .locator('.row-actions-primary-group button.v-btn--icon.text-primary svg')
-            .first(),
+            .locator('.row-actions-primary-group')
+            .getByRole('button', { name: /^(Edit|编辑)$/ })
+            .locator('svg'),
         ]) {
           await expect(icon).toBeVisible();
           await expect
@@ -2344,7 +2382,7 @@ test(
         for (const student of students) {
           const studentRowLocator = studentRow(page, student.name);
           const more = studentRowLocator.getByRole('button', {
-            name: 'More actions',
+            name: language === 'Chinese' ? '更多操作' : 'More actions',
             exact: true,
           });
           await more.click();
@@ -4128,7 +4166,7 @@ test(
       await recoverStudentDraft(page);
       const row = studentDraftTrainingRow(page, recordName);
       await expect(row).toHaveCount(1);
-      await row.locator('button.v-btn--icon.text-primary').click();
+      await row.getByRole('button', { name: 'Edit Detail', exact: true }).click();
       await expect(dialog).toHaveCount(1);
       // Recovered ISO strings must remain usable by the Start DATE_FULL text renderer.
       await expectTrainingTime(page, dialog, date);
@@ -4223,7 +4261,7 @@ test(
         await page.getByRole('tab', { name: 'Student Training Records', exact: true }).click();
         const row = studentDraftTrainingRow(page, recordName);
         await expect(row).toHaveCount(1);
-        await row.locator('button.v-btn--icon.text-primary').click();
+        await row.getByRole('button', { name: 'Edit Detail', exact: true }).click();
         await expect(page.getByRole('dialog')).toHaveCount(1);
       };
       const dialog = page.getByRole('dialog');
