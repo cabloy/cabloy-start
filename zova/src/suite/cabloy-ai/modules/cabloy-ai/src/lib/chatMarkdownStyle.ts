@@ -168,7 +168,8 @@ export function chatMarkdownStyle(): NestedCSSProperties {
         borderBottom: 0,
       },
       '& .markstream-vue .table-node thead th': {
-        background: 'rgb(var(--v-theme-surface-variant))',
+        background:
+          'color-mix(in srgb, rgb(var(--v-theme-on-surface)) 12%, rgb(var(--v-theme-surface)))',
         borderBottom: '2px solid rgba(var(--v-border-color), var(--v-border-opacity))',
         color: 'rgb(var(--v-theme-on-surface))',
         fontWeight: 600,
@@ -178,10 +179,12 @@ export function chatMarkdownStyle(): NestedCSSProperties {
         transition: 'background-color 120ms ease',
       },
       '& .markstream-vue .table-node tbody tr:nth-child(even)': {
-        background: 'color-mix(in srgb, rgb(var(--v-theme-on-surface)) 4%, rgb(var(--v-theme-surface)))',
+        background:
+          'color-mix(in srgb, rgb(var(--v-theme-on-surface)) 4%, rgb(var(--v-theme-surface)))',
       },
       '& .markstream-vue .table-node tbody tr:hover': {
-        background: 'color-mix(in srgb, rgb(var(--v-theme-on-surface)) 8%, rgb(var(--v-theme-surface)))',
+        background:
+          'color-mix(in srgb, rgb(var(--v-theme-on-surface)) 8%, rgb(var(--v-theme-surface)))',
       },
     },
   };

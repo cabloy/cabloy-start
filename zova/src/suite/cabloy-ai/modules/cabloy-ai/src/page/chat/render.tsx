@@ -128,40 +128,32 @@ export class RenderPageChat extends BeanRenderBase {
     return (
       <ZPage>
         <VContainer data-testid="ai-chat" class="py-6" style={{ maxWidth: '1200px' }}>
-          <div class="d-flex flex-wrap align-center justify-space-between ga-3 mb-5">
-            <div>
-              <h1 class="text-h4">{this.scope.locale.PrivateAiChat()}</h1>
-              <p class="text-body-2 text-medium-emphasis mt-2">
-                {this.scope.locale.PrivateAiChatNotice()}
-              </p>
-            </div>
-            <div class="d-flex flex-wrap ga-2">
-              <ZButton
-                color="primary"
-                variant="outlined"
-                data-testid="ai-chat-new"
-                disabled={model.creating}
-                onPerform={async () => {
-                  await model.create();
-                }}
-              >
-                {this.scope.locale.NewConversation()}
-              </ZButton>
-              <ZButton
-                color="primary"
-                variant="outlined"
-                class="d-md-none"
-                data-testid="ai-chat-conversations-toggle"
-                aria-expanded={this.mobileConversationsOpen}
-                aria-controls="ai-chat-conversations"
-                onPerform={() => {
-                  this.mobileConversationsOpen = !this.mobileConversationsOpen;
-                }}
-              >
-                {this.scope.locale.Conversations()}
-              </ZButton>
-            </div>
-          </div>
+          <header class="d-flex flex-wrap align-center ga-2 mb-5">
+            <ZButton
+              color="primary"
+              variant="outlined"
+              data-testid="ai-chat-new"
+              disabled={model.creating}
+              onPerform={async () => {
+                await model.create();
+              }}
+            >
+              {this.scope.locale.NewConversation()}
+            </ZButton>
+            <ZButton
+              color="primary"
+              variant="outlined"
+              class="d-md-none"
+              data-testid="ai-chat-conversations-toggle"
+              aria-expanded={this.mobileConversationsOpen}
+              aria-controls="ai-chat-conversations"
+              onPerform={() => {
+                this.mobileConversationsOpen = !this.mobileConversationsOpen;
+              }}
+            >
+              {this.scope.locale.Conversations()}
+            </ZButton>
+          </header>
           <VRow>
             <VCol
               cols="12"
@@ -170,8 +162,7 @@ export class RenderPageChat extends BeanRenderBase {
               class={this.mobileConversationsOpen ? undefined : 'd-none d-md-block'}
             >
               <VCard>
-                <VCardTitle class="text-subtitle-1">{this.scope.locale.Conversations()}</VCardTitle>
-                <VCardText class="pt-0">
+                <VCardText>
                   <nav
                     id="ai-chat-conversations"
                     aria-label={this.scope.locale.Conversations()}

@@ -65,6 +65,8 @@ export class RenderHeader extends BeanRenderBase {
                 to="/cabloy/ai/chat"
                 icon
                 variant="text"
+                activeColor="primary"
+                style={{ '--v-activated-opacity': 0 }}
                 aria-label={this.scope.locale.AiChat()}
                 title={this.scope.locale.AiChat()}
               >
