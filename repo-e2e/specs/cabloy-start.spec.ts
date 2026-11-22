@@ -2011,23 +2011,20 @@ test(
       await nameHeader.click();
       await expect(nameHeader).toHaveAttribute('aria-sort', 'descending');
 
-      const tableWrapper = page
-        .locator('.v-table__wrapper')
-        .filter({ has: page.locator('table') })
-        .first();
+      // The full desktop viewport may fit every column. Keep the table non-compact
+      // while making it narrow enough to exercise horizontal scrolling.
+      await page.setViewportSize({ width: 800, height: 900 });
+      await expect(tableBlock).toHaveAttribute('data-table-compact', 'false');
+      const tableWrapper = tableBlock.locator('.v-table__wrapper');
       await expect(tableWrapper).toBeVisible();
-      expect(
-        await tableWrapper.evaluate(element => element.scrollWidth > element.clientWidth),
-      ).toBeTruthy();
-      await tableWrapper.evaluate(element => {
+      const scrollLeft = await tableWrapper.evaluate(element => {
         element.scrollLeft = element.scrollWidth;
+        return element.scrollLeft;
       });
+      expect(scrollLeft).toBeGreaterThan(0);
       await expect(operationsHeader).toHaveCSS('position', 'sticky');
 
-      // Header widths and desktop row actions above require a genuinely wide container.
-      // Keep the footer's existing 800px/390px viewport geometry coverage independent.
-      await page.setViewportSize({ width: 800, height: 900 });
-      const footer = page.locator('.v-data-table-footer').first();
+      const footer = tableBlock.locator('.v-data-table-footer');
       await expect(footer).toBeVisible();
       const footerGeometry = await getTableFooterGeometry(footer);
       expect(footerGeometry.footer.display).toBe('flex');
