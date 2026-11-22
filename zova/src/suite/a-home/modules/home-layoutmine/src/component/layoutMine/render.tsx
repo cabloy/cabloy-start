@@ -29,7 +29,7 @@ export class RenderLayoutMine extends BeanRenderBase {
           <VBtn
             icon
             variant="text"
-            href={this.app.$getPagePathHome()}
+            to={this.app.$getPagePathHome()}
             aria-label={this.scope.locale.Home()}
           >
             <ZIcon name=":social:cabloy" width={24} />

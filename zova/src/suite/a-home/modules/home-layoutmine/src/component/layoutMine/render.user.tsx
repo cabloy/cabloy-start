@@ -45,20 +45,9 @@ export class RenderUser extends BeanRenderBase {
             <>
               <VListItem
                 title={this.scope.locale.AccountSettings()}
-                href={this.$router.getPagePath('/home/user/account')}
-                onClick={event => {
+                to={this.$router.getPagePath('/home/user/account')}
+                onClick={() => {
                   this.closeHeaderActions(true);
-                  if (
-                    event.button !== 0 ||
-                    event.metaKey ||
-                    event.ctrlKey ||
-                    event.shiftKey ||
-                    event.altKey
-                  ) {
-                    return;
-                  }
-                  event.preventDefault();
-                  this.app.$gotoPage('/home/user/account');
                 }}
               />
               <VListItem>
@@ -78,20 +67,9 @@ export class RenderUser extends BeanRenderBase {
           ) : (
             <VListItem
               title={this.scope.locale.Login()}
-              href={this.app.$getPagePathLogin(true)}
-              onClick={event => {
+              to={this.app.$getPagePathLogin(true)}
+              onClick={() => {
                 this.closeHeaderActions(true);
-                if (
-                  event.button !== 0 ||
-                  event.metaKey ||
-                  event.ctrlKey ||
-                  event.shiftKey ||
-                  event.altKey
-                ) {
-                  return;
-                }
-                event.preventDefault();
-                this.app.$gotoLogin(true);
               }}
             />
           )}
