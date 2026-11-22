@@ -851,6 +851,14 @@ test(
     await list.getByRole('link', { name: 'Account Settings', exact: true }).click();
     await expect(page).toHaveURL('/admin/home/user/account');
     await expect(page.getByRole('heading', { name: 'Account Settings' })).toBeVisible();
+    const accountMenu = await openUserMenu(page, 'admin');
+    const accountLink = accountMenu.getByRole('link', {
+      name: 'Account Settings',
+      exact: true,
+    });
+    await expect(accountLink).toHaveClass(/v-list-item--active/);
+    await expect(accountLink).toHaveClass(/text-primary/);
+    await expect(accountLink).toHaveAttribute('aria-current', 'page');
     await expect(page.getByTestId('layout-mine')).toBeVisible();
     const navigation = page.getByTestId('mine-navigation');
     await expect(navigation.getByRole('link')).toHaveText(minePages.map(item => item.title));

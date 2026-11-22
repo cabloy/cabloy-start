@@ -44,6 +44,7 @@ export class RenderUser extends BeanRenderBase {
             <VListItem
               title={this.scope.locale.AccountSettings()}
               to={this.$router.getPagePath('/home/user/account')}
+              activeClass="text-primary"
               onClick={() => {
                 this.closeHeaderActions(true);
               }}
