@@ -4,7 +4,7 @@ export const config = (_sys: ZovaSys) => {
   return {
     layout: {
       sidebar: {
-        width: 360,
+        width: 240,
         bodyReadyObserver: true,
         breakpoint: 1023,
         leftOpenPCCapability: true,
