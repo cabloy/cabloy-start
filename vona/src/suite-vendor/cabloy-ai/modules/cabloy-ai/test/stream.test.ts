@@ -268,7 +268,7 @@ describe('cabloy-ai native HTTP stream', { concurrency: false }, () => {
       await context(async () => {
         const usage = await scope().model.usage.get({ runId: status.id, userId: fixture!.userId });
         assert.ok(usage);
-        // PostgreSQL returns BIGINT columns as strings.
+        // PostgreSQL returns these BIGINT columns as strings.
         assert.equal(Number(usage.inputTokens), 3);
         assert.equal(Number(usage.outputTokens), 4);
         assert.equal(Number(usage.totalTokens), 7);

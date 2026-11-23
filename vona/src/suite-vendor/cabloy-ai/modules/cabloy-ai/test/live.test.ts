@@ -97,8 +97,6 @@ describe('cabloy-ai live browser qualification', { concurrency: false }, () => {
         try {
           // Await asynchronously so this app continues serving the browser child.
           // Capture diagnostics: raw child errors/output must not expose credentials.
-          const env = Object.fromEntries(Object.entries(process.env)) as NodeJS.ProcessEnv;
-          env.CABLOY_AI_LIVE_PREPARED = runId;
           const { stdout, stderr } = await promisify(execFile)(
             process.execPath,
             [
@@ -111,7 +109,7 @@ describe('cabloy-ai live browser qualification', { concurrency: false }, () => {
             ],
             {
               cwd: dirname(app.projectPath),
-              env,
+              env: { ...process.env, CABLOY_AI_LIVE_PREPARED: runId },
               timeout: 200_000,
               maxBuffer: 4 * 1024 * 1024,
             },
