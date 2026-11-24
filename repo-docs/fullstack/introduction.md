@@ -1,6 +1,6 @@
 # Fullstack Introduction
 
-Cabloy is a Node.js fullstack framework for AI vibe coding, with AI Spec-Driven Development guiding work from confirmed specs to verifiable delivery.
+Cabloy is a Node.js fullstack framework for AI-native vibe coding and spec-driven development, with agent-driven business automation through MCP.
 
 ## Shared architecture
 
@@ -30,6 +30,19 @@ The [Contract Loop Playbook](/fullstack/contract-loop-playbook) explains the gen
 [AI Spec-Driven Development](/ai/ai-spec-driven-development) uses Traceable Spec Delivery to carry confirmed product intent into bounded work and verifiable evidence. The contract loop keeps Vona and Zova consumers aligned when that work changes a fullstack contract. Contract synchronization alone does not establish product approval or complete acceptance.
 
 For schema-driven UI decisions, the [Semantic Presentation Contract](/fullstack/semantic-presentation-contract) connects the approved audience and task to the appropriate renderer without changing security or ownership authority.
+
+## MCP Business Automation
+
+Cabloy enables AI agents to use existing business APIs through the Model Context Protocol (MCP). Existing Vona Controller Actions can be exposed as MCP tools with `@Mcp.tool()`, reusing the same contracts, validation, serialization, authorization, and business logic as their HTTP APIs.
+
+MCP Skills guide agents through task-level workflows such as querying data, making business changes, uploading images, and handing off to browser pages. Site-scoped MCP endpoints, OAuth authorization, and personal access tokens keep connected clients within the permissions and business scope of the current account.
+
+- **MCP Tools:** Expose selected business operations to authorized agents.
+- **MCP Skills:** Turn individual tools into reusable, task-oriented business workflows.
+- **Shared business logic:** Serve HTTP and MCP clients through the same Vona Controller Actions.
+- **Scoped authorization:** Control Site, tool, and account access independently.
+
+Read the [MCP Integration Guide](/mcp/mcp-guide) and [MCP Controller Tools](/mcp/mcp-controller-tools) to connect a client or expose an API as an MCP tool.
 
 ## Technology layers
 
