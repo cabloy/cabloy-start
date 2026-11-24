@@ -223,10 +223,11 @@ export class RenderPageChat extends BeanRenderBase {
                     <div
                       class="d-flex flex-column ga-4"
                       ref={element => {
-                        if (!this.ctx.disposed)
+                        if (!this.ctx.disposed) {
                           this.setMessagesContent?.(
                             (element as HTMLDivElement | null) ?? undefined,
                           );
+                        }
                       }}
                     >
                       {messages.map(message => (
