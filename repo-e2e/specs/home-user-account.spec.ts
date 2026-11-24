@@ -26,6 +26,7 @@ const accessTokensPath = '/cabloy/mcp/accessTokens';
 const accessTokenApiPath = '/api/mcp/auth/accessToken';
 const minePages = [
   { title: 'Account Settings', path: accountPath },
+  { title: 'MCP quick start', path: '/cabloy/mcp/quickStart' },
   { title: 'MCP scopes', path: '/cabloy/mcp/scopes' },
   { title: 'MCP authorizations', path: '/cabloy/mcp/authorizations' },
   { title: 'MCP access tokens', path: accessTokensPath },
@@ -500,6 +501,27 @@ test(
         await link.click();
         await expect(page).toHaveURL(item.path);
         await expect(page.getByRole('heading', { name: item.title, exact: true })).toBeVisible();
+        if (item.path === '/cabloy/mcp/quickStart') {
+          const quickStart = page.getByTestId('mcp-quick-start');
+          await expect(quickStart).toBeVisible();
+          await expect(quickStart.locator('[data-testid^="mcp-quick-start-card-"]')).toHaveCount(3);
+          const prompt = page.getByTestId('mcp-quick-start-prompt-1');
+          await expect(prompt).toContainText(
+            'https://github.com/cabloy/cabloy/tree/main/repo-client-governance/skills/',
+          );
+          await expect(prompt).toContainText(`${new URL(page.url()).origin}/mcp/web`);
+          const connectionName = await prompt.getAttribute('data-connection-name');
+          expect(connectionName).toMatch(/^[a-z0-9]+(?:_[a-z0-9]+)+$/);
+          await expect(page.getByTestId('mcp-quick-start-prompt-3')).toContainText(connectionName!);
+          await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], {
+            origin: new URL(page.url()).origin,
+          });
+          await page.getByTestId('mcp-quick-start-copy-prompt-3').click();
+          await expect
+            .poll(() => page.evaluate(() => navigator.clipboard.readText()))
+            .toContain(connectionName!);
+          await page.evaluate(() => navigator.clipboard.writeText(''));
+        }
         await expect(link).toHaveAttribute('aria-current', 'page');
         await expect(navigation.locator('[aria-current="page"]')).toHaveCount(1);
         const reloaded = await page.reload({ waitUntil: 'load' });

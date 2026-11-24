@@ -3,6 +3,7 @@ import { IModuleRoute } from 'zova-module-a-router';
 import { ZPageAccessTokens } from './.metadata/page/accessTokens.ts';
 import { ZPageAuthorizations } from './.metadata/page/authorizations.ts';
 import { ZPageConsent } from './.metadata/page/consent.ts';
+import { ZPageQuickStart } from './.metadata/page/quickStart.ts';
 import { ZPageScopes } from './.metadata/page/scopes.ts';
 
 export const routes: IModuleRoute[] = [
@@ -19,6 +20,11 @@ export const routes: IModuleRoute[] = [
   {
     path: 'scopes',
     component: ZPageScopes,
+    meta: { layout: 'mine', requiresAuth: true, ssrProfile: 'session' },
+  },
+  {
+    path: 'quickStart',
+    component: ZPageQuickStart,
     meta: { layout: 'mine', requiresAuth: true, ssrProfile: 'session' },
   },
   {

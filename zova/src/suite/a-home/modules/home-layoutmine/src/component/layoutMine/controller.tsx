@@ -127,6 +127,7 @@ export class ControllerLayoutMine extends BeanControllerBase {
     return {
       title: 'MCP',
       items: [
+        { path: '/cabloy/mcp/quickStart', title: this.scope.locale.McpQuickStart() },
         { path: '/cabloy/mcp/scopes', title: this.scope.locale.McpScopes() },
         { path: '/cabloy/mcp/authorizations', title: this.scope.locale.McpAuthorizations() },
         { path: '/cabloy/mcp/accessTokens', title: this.scope.locale.McpAccessTokens() },
