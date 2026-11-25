@@ -9,10 +9,12 @@ import { ZItemLink } from 'zova-module-home-base';
 
 import type { TypeMenuGroup, TypeMenuItem } from '../../model/menu.ts';
 
-type TypeMenuLeaf = Exclude<TypeMenuItem, TypeMenuGroup>;
+export type TypeMenuLeaf = Exclude<TypeMenuItem, TypeMenuGroup>;
 
 @Render()
 export class RenderTabs extends BeanRenderBase {
+  menuItemExtra?: (item: TypeMenuLeaf) => VNode | undefined;
+
   public renderTabs() {
     const $$modelTabs = this.$$modelTabs;
     if (!$$modelTabs) return;
@@ -130,8 +132,13 @@ export class RenderTabs extends BeanRenderBase {
         prependIcon={this._getMenuItemIcon(item)}
       >
         {titleLocale}
+        {this.menuItemExtra ? this.menuItemExtra(item) : this._renderMenuItemExtra(item)}
       </VTab>
     );
+  }
+
+  protected _renderMenuItemExtra(_item: TypeMenuLeaf): VNode | undefined {
+    return undefined;
   }
 
   private _buildLinkProps(item: TypeMenuItem) {
